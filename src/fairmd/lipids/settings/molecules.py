@@ -46,7 +46,9 @@ class Molecule(ABC):
         :return:
         """
         self._mapping_fpath = os.path.join(self._get_path(), fname)
-        assert os.path.isfile(self._mapping_fpath)
+        if not os.path.isfile(self._mapping_fpath):
+            msg = f"Cannot find '{self._mapping_fpath}' mapping for molecule {self.name}"
+            raise FileNotFoundError(msg)
 
     @property
     def mapping_dict(self) -> dict:
