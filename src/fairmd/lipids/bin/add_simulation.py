@@ -11,8 +11,12 @@ The script adds a simulation into the Databank based on ``info.yaml`` file.
 -f FILE, --file=FILE   Input config file in yaml format.
 -d, --debug            Enable debug logging output
 -n, --no-cache         Always redownload repository files
--w WORK_DIR, --work-dir=WORK_DIR  Set custom temporary working directory \
-        [not set = read from YAML]
+-w WORK_DIR, --work-dir=WORK_DIR  Set custom temporary working directory
+                                  [not set = read from YAML]
+--dru-run              Download only 50MB of big files. Very usefull when
+                       user is testing the addition.
+--non-interactive      Answer N to all interactive questions. Exit if meet
+                       any uncertainty
 
 **Returns** error codes:
 
@@ -116,6 +120,7 @@ Returns error codes:
         help="perform a dry-run download of the files with 50MB limit",
         action="store_true",
     )
+    parser.add_argument("--non-interactive", help="answer N automatically to console questions", action="store_true")
 
     args = parser.parse_args()
 
@@ -566,14 +571,22 @@ Returns error codes:
         number_of_atoms += np.sum(sim["COMPOSITION"][key_mol]["COUNT"]) * mapping_file_length
 
     if number_of_atoms != natoms_trj:
-        stop = input(
+        msg = (
             f"Number of atoms in trajectory {natoms_trj} and README.yaml "
             f"{number_of_atoms} do no match. Check the mapping files and molecule"
-            f" names. {os.linesep} If you know what you are doing, you can still "
-            "continue the running the script. Do you want to (y/n)?",
+            f" names."
         )
+        if args.non_interactive:
+            logger.error(msg)
+            stop = "n"
+        else:
+            msg += (
+                "If you know what you are doing, you can still continue the running the script. Do you want to (y/n)? "
+            )
+            stop = input(msg)
         if stop == "n":
-            os.exit(1)
+            msg = "Number of atoms do not match"
+            raise RuntimeError(msg)
         if stop == "y":
             logger.warning(
                 "Progressed even thought that atom numbers did not match. CHECK RESULTS MANUALLY!",
