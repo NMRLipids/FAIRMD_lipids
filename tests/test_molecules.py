@@ -1,5 +1,6 @@
 """Test the Molecules class for correct lipid metadata."""
 
+import os
 import pytest
 import pytest_check as check
 
@@ -8,6 +9,78 @@ pytestmark = [pytest.mark.sim2, pytest.mark.min]
 
 LIPIDS_SET_LENGTH = 5
 POPE_MOLECULAR_WEIGHT = 718
+
+@pytest.fixture(scope="module")
+def toy_mols() -> dict:
+    from fairmd.lipids import FMDL_MOL_PATH
+    from fairmd.lipids.settings.molecules import lipids_set
+
+    print(FMDL_MOL_PATH)
+    print(lipids_set)
+
+    mol1 = lipids_set.get("POPE")
+    mol1.register_mapping("mappingPOPEcharmm.yaml")
+
+    mol2 = lipids_set.get("POPC")
+    mol2.register_mapping("mappingPOPClipid14.yaml")
+
+    return {"pope/charmm": mol1, "popc/amber": mol2}
+
+def test_check_mapping_amber(toy_mols):
+    import MDAnalysis as mda
+    popc2_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc2.gro")
+    popc1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc1.gro")
+
+    u_popc2 = mda.Universe(popc2_fp)  # correct amber
+
+    toy_popc = toy_mols["popc/amber"]
+
+    # correct mapping
+    with check.check:
+        toy_popc.check_mapping(u_popc2, "POPC")
+
+    # correct mapping, incorrect resname
+    # it doesn't matter here because resnames are in the mapping file
+    with check.check:
+        toy_popc.check_mapping(u_popc2, "BUBA")
+
+    # mapping is OK but one atom in the mol is missing
+    u_popc2_minus_atom = mda.Merge(u_popc2.select_atoms("id 2:1000"))
+    with check.raises(KeyError):
+        toy_popc.check_mapping(u_popc2_minus_atom, "")
+
+    # incorrect residue name in MD
+    u_popc2.select_atoms("resname PA").residues.resnames = "PAA"
+    with check.raises(KeyError):
+        toy_popc.check_mapping(u_popc2, "")
+
+
+def test_check_mapping(toy_mols):
+    import MDAnalysis as mda
+    pope1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "pope1.gro")
+    popc1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc1.gro")
+
+    u_pope = mda.Universe(pope1_fp)
+    u_popc = mda.Universe(popc1_fp)
+
+    toy_pope = toy_mols["pope/charmm"]
+
+    # correct mapping
+    with check.check:
+        toy_pope.check_mapping(u_pope, "POPE")
+
+    # correct mapping, incorrect resname
+    with check.raises(KeyError):
+        toy_pope.check_mapping(u_pope, "BUBA")
+
+    # correct resname, incorrect mapping
+    with check.raises(KeyError):
+        toy_pope.check_mapping(u_popc, "POPC")
+
+    # mapping is OK but one atom in the mol is missing
+    u_pope_minus_atom = mda.Merge(u_pope.select_atoms("id 2:1000"))
+    with check.raises(KeyError):
+        toy_pope.check_mapping(u_pope_minus_atom, "POPE")
 
 
 def test_lipids_metadata():

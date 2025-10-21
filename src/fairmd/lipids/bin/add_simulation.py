@@ -553,9 +553,15 @@ Returns error codes:
     natoms_trj = u.atoms.n_atoms
 
     number_of_atoms = 0
-    for key_mol in sim["COMPOSITION"]:
+    for key_mol, comp_mol in sim["COMPOSITION"].items():
         mol = Lipid(key_mol) if key_mol in lipids_set else NonLipid(key_mol)
-        mol.register_mapping(sim["COMPOSITION"][key_mol]["MAPPING"])
+        map_file = comp_mol["MAPPING"]
+        mol.register_mapping(map_file)
+        try:
+            mol.check_mapping(u, comp_mol["NAME"])
+        except KeyError as e:
+            msg = f"Your mapping file '{map_file}' contains mistakes."
+            raise RuntimeError(msg) from e
 
         if sim.get("UNITEDATOM_DICT") and "SOL" not in key_mol:
             mapping_file_length = 0

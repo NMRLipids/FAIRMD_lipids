@@ -7,12 +7,14 @@ There is a dictionary of lipids, ions, etc. If you add a lipid which is not yet
 in the databank, you have to add it here!
 """
 
+import fnmatch
 import os
 import re
 from abc import ABC, abstractmethod
 from collections.abc import MutableSet
 from typing import Any
 
+import MDAnalysis as mda
 import yaml
 
 from fairmd.lipids import FMDL_MOL_PATH
@@ -50,13 +52,59 @@ class Molecule(ABC):
             msg = f"Cannot find '{self._mapping_fpath}' mapping for molecule {self.name}"
             raise FileNotFoundError(msg)
 
+    def check_mapping(self, u: mda.Universe, name: str) -> bool:
+        """Check consistency of mapping file against Universe.
+
+        :param u: MDAnalysis Universe
+        :param name: string standing for residue name if it is not in the mapping file
+        """
+        res_set = {v["RESIDUE"] for _, v in self.mapping_dict.items() if v.get("RESIDUE") is not None}
+        res_set.add(name)
+        res_atoms = u.select_atoms("resname " + " ".join(res_set))
+        for a in res_atoms:
+            _ = self.md2nml(a.name)
+        for unm in self.mapping_dict:
+            sel_str = self.nml2selection(unm, name)
+            ats: mda.AtomGroup = u.select_atoms(sel_str)
+            if ats.n_atoms == 0:
+                msg = f"Atom {unm} was not found in the universe using selection '{sel_str}'."
+                if name in sel_str:
+                    msg += f" Could be mapping error or incorrect residue name '{name}'."
+                raise KeyError(msg)
+
+
     @property
     def mapping_dict(self) -> dict:
-        # preload on first call
+        """Return mapping dictionary (load on first call)"""
         if self._mapping_dict is None:
             with open(self._mapping_fpath) as yaml_file:
                 self._mapping_dict = yaml.load(yaml_file, Loader=yaml.FullLoader)
         return self._mapping_dict
+
+    def md2nml(self, mdatomname: str, mdresname: str | None = None) -> str:
+        """Convert MD atom name to NMLDB Universal Atom Name."""
+        for universal_name in self.mapping_dict:
+            mapping_aname = self.mapping_dict[universal_name]["ATOMNAME"]
+            # MDAnalysis uses fnmatch patterns for selection language
+            # https://userguide.mdanalysis.org/stable/selections.html
+            if "RESIDUE" in self.mapping_dict[universal_name] and mdresname is not None:
+                mapping_rname = self.mapping_dict[universal_name]["RESIDUE"]
+                if not fnmatch.fnmatch(mapping_rname, mdresname):
+                    continue
+            if fnmatch.fnmatch(mapping_aname, mdatomname):
+                return universal_name
+        emsg = f"Atom {mdatomname} is not found in {self}"
+        raise KeyError(emsg)
+
+    def nml2selection(self, uname: str, resname: str) -> str:
+        """Convert NMLDB Universal Atom Name to MD atom name."""
+        anm = self.mapping_dict[uname]["ATOMNAME"]
+        selstr = f"name {anm}"
+        if "RESIDUE" in self.mapping_dict[uname]:
+            selstr += " and resname " + self.mapping_dict[uname]["RESIDUE"]
+        else:
+            selstr += " and resname " + resname
+        return selstr
 
     def __init__(self, name: str) -> None:
         """
@@ -86,7 +134,8 @@ class Molecule(ABC):
         """
         pat = r"[A-Za-z0-9_]+"
         if not re.match(pat, name):
-            raise ValueError(f"Only {pat} symbols are allowed in Molecule name.")
+            msg = f"Only {pat} symbols are allowed in Molecule name."
+            raise ValueError(msg)
 
     @abstractmethod
     def _populate_meta_data(self) -> None:
@@ -122,8 +171,9 @@ class Molecule(ABC):
 
 class Lipid(Molecule):
     """
-    Lipid class inherited from Molecule base. Contains all the molecules
-    which belongs to the bilayer.
+    Lipid class inherited from :class:`Molecule` base.
+
+    Is used for all the molecules located in the bilayer.
     """
 
     _lipids_dir: str = os.path.join(FMDL_MOL_PATH, "membrane")
@@ -140,7 +190,8 @@ class Lipid(Molecule):
             with open(meta_path) as yaml_file:
                 self._metadata = yaml.load(yaml_file, Loader=yaml.FullLoader)
         else:
-            raise FileNotFoundError(f"Metadata file not found for {self.name}.")
+            msg = f"Metadata file not found for {self.name}."
+            raise FileNotFoundError(msg)
 
     @property
     def metadata(self) -> dict:
