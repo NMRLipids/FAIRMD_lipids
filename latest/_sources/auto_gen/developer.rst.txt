@@ -13,6 +13,7 @@ Python files
    developer.ProcessInfoFile
    developer.RunAnalysis
    developer.ValidateData
+   developer.align-mapping
    developer.buildH_calcOP_test
    developer.check_bonds
    developer.check_densities
