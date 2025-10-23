@@ -234,6 +234,46 @@ def download_resource_from_uri(
     return return_code
 
 
+def download_and_verify(url: str, dest_path: str, expected_size: int | None = None):
+    """
+    Downloads a file from a URL, verifies its size, and retries on failure.
+
+    It first checks the remote file size. If `expected_size` is provided,
+    it's compared against the remote size. The file is then downloaded.
+    After download, the local file size is verified against the remote size.
+    The entire process leverages the retry mechanism within
+    `download_resource_from_uri`.
+
+    :param url: The URL to download the file from.
+    :param dest_path: The local path to save the file.
+    :param expected_size: The expected file size in bytes from the databank info.
+    """
+    fi_name = os.path.basename(dest_path)
+    try:
+        remote_size = get_file_size_with_retry(url)
+        if expected_size is not None and remote_size != expected_size:
+            logger.warning(
+                f"File size mismatch for {fi_name}. "
+                f"Expected: {expected_size}, but remote reports: {remote_size}. "
+                "Proceeding with download.",
+            )
+
+        download_resource_from_uri(url, dest_path)
+
+        local_size = os.path.getsize(dest_path)
+        if remote_size is not None and local_size != remote_size:
+            raise OSError(
+                f"Downloaded file size mismatch for {fi_name}. "
+                f"Expected {remote_size} bytes, but got {local_size} bytes.",
+            )
+
+        logger.info(f"Successfully downloaded and verified {fi_name}.")
+
+    except (urllib.error.URLError, ConnectionError, OSError) as e:
+        logger.error(f"Failed to download or verify {url}. Reason: {e}")
+        raise
+
+
 def resolve_doi_url(doi: str, validate_uri: bool = True) -> str:
     """Resolve a DOI to a full URL and validates that it is reachable.
 
