@@ -76,9 +76,12 @@ def first_last_carbon(system: System, logger: Logger) -> tuple[str, str]:
                     atom = "M_G11C" + str(c_idx) + "_M"
                 elif "M_CA4_M" in mapping:
                     atom = "M_CA" + str(c_idx) + "_M"
+                else:
+                    # cannot be determined for this particular lipid. Maybe another ..
+                    break
                 _la = mapping.get(atom, {}).get("ATOMNAME")
                 last_atom = _la if _la else last_atom
-            logger.info(f"Found last atom {last_atom} and g3 atom {g3_atom} for system {system['ID']}")
+    logger.info(f"Found last atom {last_atom} and g3 atom {g3_atom} for system {system['ID']}")
 
     return (last_atom, g3_atom)
 

@@ -31,7 +31,7 @@ from DatabankLib import (
 )
 from DatabankLib import analyze_nmrpca as nmrpca
 from DatabankLib.core import System
-from DatabankLib.databankio import resolve_download_file_url
+from DatabankLib.databankio import download_resource_from_uri, resolve_download_file_url
 from DatabankLib.databankLibrary import GetNlipids, getLipids, system2MDanalysisUniverse
 from DatabankLib.databankop import find_OP
 from DatabankLib.jsonEncoders import CompactJSONEncoder
@@ -689,7 +689,7 @@ def computeMAICOS(  # noqa: N802 (API)
             trj_url = resolve_download_file_url(doi, trj)
             if not os.path.isfile(trj_name):
                 print("Downloading trajectory with the size of ", system["TRAJECTORY_SIZE"], " to ", system["path"])
-                _ = urllib.request.urlretrieve(trj_url, trj_name)
+                _ = download_resource_from_uri(trj_url, trj_name)
 
         # make a function like this
         # TODO TPR should not be obligatory for GROMACS

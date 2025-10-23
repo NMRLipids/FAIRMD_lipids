@@ -301,17 +301,15 @@ def system2MDanalysisUniverse(system):  # noqa: N802 (API name)
             top_name = None
         else:
             top_name = os.path.join(system_path, top)
-    except Exception as e:
-        logger.error("Error getting structure/topology/trajectory filenames.")
-        logger.error(str(e))
+    except Exception:
+        logger.exception(f"Error getting structure/topology/trajectory filenames for system {system['ID']}.")
         raise
 
     # downloading trajectory (obligatory)
     if skip_downloading:
         if not os.path.isfile(trj_name):
-            raise FileNotFoundError(
-                f"Trajectory should be downloaded [{trj_name}] by user",
-            )
+            msg = (f"Trajectory should be downloaded [{trj_name}] by user",)
+            raise FileNotFoundError(msg)
     else:
         trj_url = resolve_download_file_url(doi, trj)
         if not os.path.isfile(trj_name):
@@ -321,7 +319,8 @@ def system2MDanalysisUniverse(system):  # noqa: N802 (API name)
     if top is not None:
         if skip_downloading:
             if not os.path.isfile(top_name):
-                raise FileNotFoundError(f"TPR should be downloaded [{top_name}]")
+                msg = f"TPR should be downloaded [{top_name}]"
+                raise FileNotFoundError(msg)
         else:
             top_url = resolve_download_file_url(doi, top)
             if not os.path.isfile(top_name):
@@ -331,7 +330,8 @@ def system2MDanalysisUniverse(system):  # noqa: N802 (API name)
     if struc is not None:
         if skip_downloading:
             if not os.path.isfile(struc_name):
-                raise FileNotFoundError(f"GRO should be downloaded [{struc_name}]")
+                msg = f"GRO should be downloaded [{struc_name}]"
+                raise FileNotFoundError(msg)
         else:
             struc_url = resolve_download_file_url(doi, struc)
             if not os.path.isfile(struc_name):

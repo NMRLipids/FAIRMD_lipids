@@ -73,9 +73,9 @@ See :py:func:`Scripts.DatabankLib.analyze.computeAPL` for computing details.
 
 
 
-2. :file:`POPC_OrderParameters.json` contains C-H bond order parameters and their uncertainties.
-Key in json format gives the universal C and H atom names.
-Values are average over lipids, standard deviation, and the standard error of the mean, respectively. |br|
+2. :file:`XXXXOrderParameters.json` contains C-H bond order parameters and their uncertainties for each lipid XXXX.
+Key in json format is the merged universal C and H atom names.
+Three values are given: order parameter value for the C-H bond, standard deviation, and the standard error of the mean. |br|
 See :py:func:`Scripts.DatabankLib.analyze.computeOP` for computing details.
 
 3. :file:`FormFactor.json` contains simulated X-ray scattering form factor.
