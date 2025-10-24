@@ -10,14 +10,14 @@ def main():
     else:
         repo_root = os.path.abspath(os.path.join(source_dir, "..", ".."))
 
-    scripts_dir = os.path.relpath(os.path.join(repo_root, "src", "fairmd", "lipids"), source_dir)
+    scripts_dir = os.path.relpath(os.path.join(repo_root, "src", "fairmd"), source_dir)
     developer_dir = os.path.relpath(os.path.join(repo_root, "developer"), source_dir)
     auto_dir = "auto_gen"
     template_dir = "_templates/apidoc"
     excluded_patterns = ["*tests*", "*init*"]
 
     runs = [
-        (scripts_dir, "fairmd.lipids"),
+        (scripts_dir, "fairmd"),
         (developer_dir, "Developer"),
     ]
 

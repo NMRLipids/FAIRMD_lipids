@@ -8,7 +8,7 @@ Project has four sub-folders in the root directory:
 
    Main project package. Contains most of the project’s logic and API.
 
-   :doc:`More info on fairmd-lipids <auto_gen/fairmd-lipids>`
+   :doc:`More info on fairmd-lipids <auto_gen/fairmd.lipids>`
 
 
 #. ``tests``
@@ -29,6 +29,6 @@ Project has four sub-folders in the root directory:
 .. toctree::
    :maxdepth: 3
 
-   auto_gen/DatabankLib
+   auto_gen/fairmd.lipids
    auto_gen/developer
    miscsrc/unittesting.rst
