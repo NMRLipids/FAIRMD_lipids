@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 authors = [
-    {name = "NMRlipids Open Collaboration"},
+    {name = "FAIRMD lipids team"},
     {name = "Samuli Ollila", email = "samuli.ollila@helsinki.fi"}
 ]
 classifiers = [
@@ -20,7 +20,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Shells",
 ]
-description = "NMRlipids Databank main package (DatabankLib). The package contains the core functionality for managing and accessing the NMRlipids Databank."
+description = "FAIRMD Lipids project contains the core functionality for managing and accessing the Database."
 dynamic = ["version"]
 keywords = [
     "Science",
@@ -29,7 +29,7 @@ keywords = [
 ]
 license = "GPL-3.0-or-later"
 # maintainers = [] TODO
-name = "nmrlipids_databank"
+name = "fairmd-lipids"
 readme = "README.md"
 dependencies = [
     "buildh>=1.6.1",
@@ -46,46 +46,46 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://databank.nmrlipids.fi"
+homepage = "https://fairmd-lipids.nmrlipids.fi"
 documentation = "https://nmrlipids.github.io/index.html"
-repository = "https://github.com/NMRLipids/Databank"
+repository = "https://github.com/NMRLipids/fairmd-lipids"
 # changelog = ""
-issues = "https://github.com/NMRLipids/Databank/issues"
+issues = "https://github.com/NMRLipids/fairmd-lipids/issues"
 
 [project.scripts]
-nml_add_simulation = "DatabankLib.bin.add_simulation:add_simulation"
-nml_compute_databank = "DatabankLib.bin.compute_databank:compute_databank"
-nml_evaluate_quality = "DatabankLib.bin.evaluate_quality:evaluate_quality"
-nml_make_ranking = "DatabankLib.bin.make_ranking:make_ranking"
-nml_match_experiments = "DatabankLib.bin.match_experiments:match_experiments"
-nml_initialize_data = "DatabankLib.bin.initialize_data:initialize_data"
+fmdl_add_simulation = "fairmd.lipids.bin.add_simulation:add_simulation"
+fmdl_compute_databank = "fairmd.lipids.bin.compute_databank:compute_databank"
+fmdl_evaluate_quality = "fairmd.lipids.bin.evaluate_quality:evaluate_quality"
+fmdl_make_ranking = "fairmd.lipids.bin.make_ranking:make_ranking"
+fmdl_match_experiments = "fairmd.lipids.bin.match_experiments:match_experiments"
+fmdl_initialize_data = "fairmd.lipids.bin.initialize_data:initialize_data"
 
 [tool.check-manifest]
-ignore = ["src/DatabankLib/_version.py"]
+ignore = ["src/fairmd/lipids/_version.py"]
 
 [tool.pytest.ini_options]
 testpaths = "tests"
 addopts = [
     "-ra",
-    "--cov=DatabankLib",
+    "--cov=fairmd.lipids",
     "--cov-append",
     "--cov-report=",
     "--import-mode=append",
 ]
 markers = [
-    "sim1: toy-databank for computing properties from scratch",
-    "sim2: toy-databank with pre-computed properties for API tests",
+    "sim1: toy-database for computing properties from scratch",
+    "sim2: toy-database with pre-computed properties for API tests",
     "adddata: for AddData.py standalone script testing",
     "nodata: test auxilary functions not related to Data",
     "all: run all tests",
-    "min: run tests not requiring gromacs",
+    "min: run tests not requiring GROMACS installation",
 ]
 
 [tool.ruff]
 target-version = "py310"
 # Set the maximum line length to 120
 line-length = 120
-exclude = ["src/DatabankLib/_version.py"]
+exclude = ["src/fairmd/lipids/_version.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "B", "I"]
@@ -100,7 +100,7 @@ ignore = []
 convention = "pep257"
 
 [tool.setuptools_scm]
-version_file = "src/DatabankLib/_version.py"
+version_file = "src/fairmd/lipids/_version.py"
 
 [tool.setuptools.package-data]
-"DatabankLib.data" = ["*"]
+"fairmd.lipids.data" = ["*"]

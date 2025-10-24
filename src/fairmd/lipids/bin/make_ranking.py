@@ -4,13 +4,13 @@ Creates different types of ranking lists inside the Databank.
 
 It ranks simulations based on their quality against experiments. The ranking lists are stored in
 ``{NMLDB_DATA_PATH}/Ranking/`` folder in JSON format.
-The lists can be shown with the ``DatabankLib.plottings`` module.
+The lists can be shown with the ``fairmd.lipids.plottings`` module.
 
 **Usage:**
 
 .. code-block:: console
 
-    nml_make_ranking
+    fmdl_make_ranking
 
 No arguments are needed.
 """
@@ -18,10 +18,10 @@ No arguments are needed.
 import json
 import os
 
-from DatabankLib import NMLDB_DATA_PATH, NMLDB_SIMU_PATH
-from DatabankLib.core import initialize_databank
-from DatabankLib.databankLibrary import lipids_set
-from DatabankLib.jsonEncoders import CompactJSONEncoder
+from fairmd.lipids import NMLDB_DATA_PATH, NMLDB_SIMU_PATH
+from fairmd.lipids.core import initialize_databank
+from fairmd.lipids.databankLibrary import lipids_set
+from fairmd.lipids.jsonEncoders import CompactJSONEncoder
 
 
 def make_ranking():

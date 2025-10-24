@@ -2,7 +2,7 @@ import json
 
 import yaml
 
-from DatabankLib.core import initialize_databank
+from fairmd.lipids.core import initialize_databank
 
 if __name__ == "__main__":
     systems = initialize_databank()

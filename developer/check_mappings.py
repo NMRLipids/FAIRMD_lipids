@@ -13,8 +13,8 @@ import traceback
 import MDAnalysis as mda
 from tqdm import tqdm
 
-from DatabankLib import NMLDB_SIMU_PATH
-from DatabankLib.core import initialize_databank, lipids_set
+from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids.core import initialize_databank, lipids_set
 
 if __name__ == "__main__":
     systems = initialize_databank()

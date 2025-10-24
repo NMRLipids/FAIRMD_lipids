@@ -49,11 +49,11 @@ from deprecated import deprecated
 from MDAnalysis.analysis.base import AnalysisFromFunction
 from scipy import signal
 
-from DatabankLib import NMLDB_SIMU_PATH
-from DatabankLib.core import System
-from DatabankLib.databankio import download_resource_from_uri, resolve_download_file_url
-from DatabankLib.databankLibrary import lipids_set
-from DatabankLib.settings.molecules import Lipid
+from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids.core import System
+from fairmd.lipids.databankio import download_resource_from_uri, resolve_download_file_url
+from fairmd.lipids.databankLibrary import lipids_set
+from fairmd.lipids.settings.molecules import Lipid
 
 # suppress some MDAnalysis warnings issued from mda.analysis.align
 warnings.filterwarnings("ignore")

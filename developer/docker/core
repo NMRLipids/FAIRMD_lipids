@@ -5,9 +5,6 @@ USER root
 ARG RUNNER_UID=1000
 ARG RUNNER_GID=1000
 
-# Copy the dev requirements
-COPY Scripts/DatabankLib/requirements-dev.txt /tmp/requirements-dev.txt
-
 # Install minimal environment dependencies and bootstrap venv
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

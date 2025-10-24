@@ -4,7 +4,7 @@ universe and from-trajectories computations.
 
 Test folder: ToyData/Simulations.1
 
-NOTE: globally import of DatabankLib is **STRICTLY FORBIDDEN** because it
+NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
       breaks the substitution of global path folders
 """
 
@@ -23,10 +23,10 @@ pytestmark = [pytest.mark.sim1]
 
 @pytest.fixture(scope="module")
 def systems():
-    import DatabankLib
-    from DatabankLib.core import initialize_databank
+    import fairmd.lipids
+    from fairmd.lipids.core import initialize_databank
 
-    if os.path.isfile(os.path.join(DatabankLib.NMLDB_DATA_PATH, ".notest")):
+    if os.path.isfile(os.path.join(lipids.NMLDB_DATA_PATH, ".notest")):
         pytest.exit("Test are corrupted. I see '.notest' file in the data folder.")
     s = initialize_databank()
     print(f"Loaded: {len(s)} systems")
@@ -37,7 +37,7 @@ def systems():
         _s = s.loc(_sid)
 
         def gbGen(x):
-            return glob.glob(os.path.join(DatabankLib.NMLDB_SIMU_PATH, _s["path"], x))
+            return glob.glob(os.path.join(lipids.NMLDB_SIMU_PATH, _s["path"], x))
 
         clearList = ["*.xtc", "*.gro"]
         for pat in clearList:
@@ -59,7 +59,7 @@ def systems():
     ],
 )
 def test_system2MDAnalysisUniverse(systems, systemid, natoms, nframes):
-    from DatabankLib.databankLibrary import system2MDanalysisUniverse
+    from fairmd.lipids.databankLibrary import system2MDanalysisUniverse
 
     s = systems.loc(systemid)
     u = system2MDanalysisUniverse(s)
@@ -73,14 +73,14 @@ def test_system2MDAnalysisUniverse(systems, systemid, natoms, nframes):
 
 @pytest.fixture(scope="function")
 def failSys():
-    import DatabankLib
+    import fairmd.lipids
 
-    with TemporaryDirectory(prefix=DatabankLib.NMLDB_SIMU_PATH + os.sep) as tmpd:
+    with TemporaryDirectory(prefix=lipids.NMLDB_SIMU_PATH + os.sep) as tmpd:
         s = {
             "DOI": "localhost",
             "GRO": [["md.gro"]],
             "TRJ": [["md.trr"]],
-            "path": os.path.relpath(DatabankLib.NMLDB_SIMU_PATH, tmpd),
+            "path": os.path.relpath(lipids.NMLDB_SIMU_PATH, tmpd),
             "SOFTWARE": "gromacs",
         }
         yield s
@@ -89,7 +89,7 @@ def failSys():
 
 @pytest.mark.xfail(reason="Localhost with non-downloaded files", raises=FileNotFoundError)
 def test_fail1_system2MDAnalysisUniverse(failSys):
-    from DatabankLib.databankLibrary import system2MDanalysisUniverse
+    from fairmd.lipids.databankLibrary import system2MDanalysisUniverse
 
     _ = system2MDanalysisUniverse(failSys)
 
@@ -113,7 +113,7 @@ def hashFV(x):
     ],
 )
 def test_PJangle(systems, systemid, lipid, fvhash):
-    from DatabankLib.databankLibrary import (
+    from fairmd.lipids.databankLibrary import (
         read_trj_PN_angles,
         simulation2universal_atomnames,
         system2MDanalysisUniverse,

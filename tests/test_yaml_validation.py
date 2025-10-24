@@ -27,14 +27,14 @@ def valid_instance():
 
 
 def test_valid(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     errors = validate_info_dict(valid_instance)
     assert len(errors) == 0
 
 
 def test_missing_required(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     del valid_instance["DOI"]
     errors = validate_info_dict(valid_instance)
@@ -43,7 +43,7 @@ def test_missing_required(valid_instance):
 
 
 def test_wrong_type(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     valid_instance["TRJ"] = 1
     errors = validate_info_dict(valid_instance)
@@ -52,7 +52,7 @@ def test_wrong_type(valid_instance):
 
 
 def test_composition_extra_key(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     valid_instance["COMPOSITION"]["DOPC"]["NONSENSE"] = 1
     errors = validate_info_dict(valid_instance)
@@ -61,7 +61,7 @@ def test_composition_extra_key(valid_instance):
 
 
 def test_composition_missing_mapping(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     del valid_instance["COMPOSITION"]["DOPC"]["MAPPING"]
     errors = validate_info_dict(valid_instance)
@@ -70,7 +70,7 @@ def test_composition_missing_mapping(valid_instance):
 
 
 def test_good_united_atom_dict(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     valid_instance["UNITEDATOM_DICT"] = {"atom1": "oxygen", "atom2": "hydrogen"}
     errors = validate_info_dict(valid_instance)
@@ -78,7 +78,7 @@ def test_good_united_atom_dict(valid_instance):
 
 
 def test_united_atom_dict_wrong_type(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     valid_instance["UNITEDATOM_DICT"] = {"atom1": "oxygen", "atomo2": 2}
     errors = validate_info_dict(valid_instance)
@@ -87,7 +87,7 @@ def test_united_atom_dict_wrong_type(valid_instance):
 
 
 def test_united_atom_dict_is_null(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     valid_instance["UNITEDATOM_DICT"] = None
     errors = validate_info_dict(valid_instance)
@@ -95,7 +95,7 @@ def test_united_atom_dict_is_null(valid_instance):
 
 
 def test_missing_tpr_non_gromacs(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     valid_instance["SOFTWARE"] = "openMM"
     del valid_instance["TPR"]
@@ -105,7 +105,7 @@ def test_missing_tpr_non_gromacs(valid_instance):
 
 
 def test_missing_tpr_gromacs(valid_instance):
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 
     del valid_instance["TPR"]
     errors = validate_info_dict(valid_instance)
@@ -114,8 +114,8 @@ def test_missing_tpr_gromacs(valid_instance):
 
 
 def test_valid_info_file():
-    from DatabankLib import NMLDB_DATA_PATH
-    from DatabankLib.SchemaValidation.ValidateYAML import validate_info_file
+    from fairmd.lipids import NMLDB_DATA_PATH
+    from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_file
 
     valid_info_path = os.path.join(NMLDB_DATA_PATH, "info", "info566.yaml")
     errors = validate_info_file(valid_info_path)

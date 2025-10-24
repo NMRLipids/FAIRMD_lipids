@@ -6,12 +6,12 @@ on:
 
 jobs:
   build:
-    if: github.repository == 'NMRLipids/Databank'
+    if: github.repository == 'NMRLipids/fairmd-lipids'
     name: Build distribution
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/project/nmrlipids_databank
+      url: https://pypi.org/project/fairmd-lipids
     permissions:
       id-token: write
       contents: write

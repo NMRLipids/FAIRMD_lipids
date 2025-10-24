@@ -30,7 +30,7 @@ SIM_MAP = {
 
 @pytest.fixture(autouse=True, scope="module")
 def header_module_scope(request):
-    """Set env vars depending on data required, remove DatabankLib on teardown."""
+    """Set env vars depending on data required, remove fairmd-lipids on teardown."""
     # Find pytest marker:
     sim_key = None
     for key in ("sim1", "sim2", "adddata", "nodata"):
@@ -79,7 +79,7 @@ def logger():
 
 
 def remove_databank_import() -> None:
-    """Delete DatabankLib module from sys.modules, resets future imports"""
+    """Delete fairmd.lipids module from sys.modules, resets future imports"""
     for name in list(sys.modules):
-        if name.startswith("DatabankLib"):
+        if name.startswith("fairmd.lipids"):
             del sys.modules[name]

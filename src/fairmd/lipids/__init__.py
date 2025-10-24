@@ -1,9 +1,8 @@
 """
-DatabankLib package for NMRlipids Databank project.
+FAIRMD Lipids project.
 
-Here we define the main package variables and constants used throughout the NMRlipids
-Databank project.
-This includes *Package Information*, *Paths*, and *Return Codes*.
+Here we define the main package variables and constants used throughout the FAIRMD
+Lipids project. This includes *Package Information*, *Paths*, and *Return Codes*.
 """
 
 import importlib.metadata
@@ -14,7 +13,7 @@ import sys
 from ._version import __version__
 
 # Package Information
-_mtd = importlib.metadata.metadata("nmrlipids_databank")
+_mtd = importlib.metadata.metadata("fairmd-lipids")
 __author__ = _mtd["Author"]
 __author_email__ = _mtd["Author-email"]
 __description__ = _mtd["Summary"]  # reads toml's `description` field
@@ -55,43 +54,43 @@ RCODE_ERROR: int = 2
 
 
 print(
-    f"DatabankLib {__version__} by {__author__} - {__license__}",
+    f"fairmd-lipids {__version__} by {__author__} - {__license__}",
 )
 
 if os.path.isdir(NMLDB_DATA_PATH):
 
     def raise_if_subpath_of_dblspec(p: str) -> None:
         """Raise if p is a subpath of the package path."""
-        pkgpth = importlib.util.find_spec("DatabankLib").submodule_search_locations[0]
+        pkgpth = importlib.util.find_spec("fairmd.lipids").submodule_search_locations[0]
         ndp = os.path.abspath(p)
         if os.path.commonpath([pkgpth, ndp]) == pkgpth:
             msg = (
                 "We forbid using ToyData in the distribution package directly."
-                "Please run `nml_initialize_data toy` instead"
+                "Please run `fmdl_initialize_data toy` instead"
             )
             raise RuntimeError(msg)
 
     for p in [NMLDB_DATA_PATH, NMLDB_EXP_PATH, NMLDB_MOL_PATH, NMLDB_SIMU_PATH]:
         raise_if_subpath_of_dblspec(p)
 
-    from DatabankLib.settings import molecules
+    from fairmd.lipids.settings import molecules
 
     _ = len(molecules.lipids_set)
     print(
-        f"NMRlipids Databank is initialized from the folder: {NMLDB_DATA_PATH}\n"
+        f"FAIRMD Lipids is initialized from the folder: {NMLDB_DATA_PATH}\n"
         "---------------------------------------------------------------",
     )
-elif "nml_initialize_data" in sys.argv[0]:
-    # nml_initialize_data is used to create databank directories
+elif "fmdl_initialize_data" in sys.argv[0]:
+    # fmdl_initialize_data is used to create databank directories
     # so we should not complain that directories don't exist
     pass
 else:
     msg = f"""
 Error: no data folder {NMLDB_DATA_PATH}.
 If Data folder was not created, please create it by using
- $ nml_initialize_data.py toy
+ $ fmdl_initialize_data.py toy
           OR
- $ nml_initialize_data.py stable
+ $ fmdl_initialize_data.py stable
 and then specify by NMLDB_DATA_PATH environment variable."""
     raise RuntimeError(msg)
 

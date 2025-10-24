@@ -9,7 +9,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-from DatabankLib import NMLDB_EXP_PATH, NMLDB_SIMU_PATH
+from fairmd.lipids import NMLDB_EXP_PATH, NMLDB_SIMU_PATH
 
 
 def plotFormFactor(  # noqa: N802
@@ -260,7 +260,7 @@ def plotSimulation(system, lipid: str):  # noqa: N802
     Creates plots of form factor and C-H bond order parameters for the selected
     ``lipid`` from a simulation given by system.
 
-    :param system: NMRlipids databank ID number of the simulation
+    :param system: FAIRMD Lipids ID number of the simulation
     :param lipid: universal molecul name of the lipid
 
     """

@@ -11,8 +11,8 @@ import re
 import MDAnalysis as mda
 import periodictable
 
-from DatabankLib import NMLDB_DATA_PATH
-from DatabankLib.core import System
+from fairmd.lipids import NMLDB_DATA_PATH
+from fairmd.lipids.core import System
 
 
 def uname2element(mapping_name: str) -> str:

@@ -15,7 +15,7 @@ from typing import Any
 
 import yaml
 
-from DatabankLib import NMLDB_MOL_PATH
+from fairmd.lipids import NMLDB_MOL_PATH
 
 
 class Molecule(ABC):

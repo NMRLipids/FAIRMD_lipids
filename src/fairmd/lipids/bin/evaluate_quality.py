@@ -3,13 +3,13 @@
 Perform comparison of experiments and simulations.
 
 The script compares according to **EXPERIMENT** field inside :ref:`the simulation README.yaml file <readmesimu>`.
-In the standard protocol, it should be run *after* :ref:`nml_match_experiments <match_experiments_py>`.
+In the standard protocol, it should be run *after* :ref:`fmdl_match_experiments <match_experiments_py>`.
 
 **Usage:**
 
 .. code-block:: console
 
-    nml_evaluate_quality
+    fmdl_evaluate_quality
 
 No arguments are needed.
 """
@@ -20,9 +20,9 @@ import os
 import numpy as np
 import yaml
 
-import DatabankLib.quality as qq
-from DatabankLib import NMLDB_EXP_PATH, NMLDB_SIMU_PATH
-from DatabankLib.jsonEncoders import CompactJSONEncoder
+import fairmd.lipids.quality as qq
+from fairmd.lipids import NMLDB_EXP_PATH, NMLDB_SIMU_PATH
+from fairmd.lipids.jsonEncoders import CompactJSONEncoder
 
 
 def evaluate_quality():

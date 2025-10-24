@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 r"""
-Add new simulation into the NMRlipids Databank.
+Add new simulation into the FAIRMD Lipids.
 
 The script adds a simulation into the Databank based on ``info.yaml`` file.
 
 **Usage:**
-    nml_add_simulation [-h] [-f FILE] [-d] [-n] [-w WORK_DIR] [--dry-run]
+    fmdl_add_simulation [-h] [-f FILE] [-d] [-n] [-w WORK_DIR] [--dry-run]
 
 -h, --help             Show this help message and exit
 -f FILE, --file=FILE   Input config file in yaml format.
@@ -42,20 +42,19 @@ import yaml
 from MDAnalysis import Universe
 
 # import databank dictionaries
-import DatabankLib
-from DatabankLib.core import System, initialize_databank
+from fairmd.lipids.core import System, initialize_databank
 
 # helpers
-from DatabankLib.databankio import (
+from fairmd.lipids.databankio import (
     calc_file_sha1_hash,
     create_databank_directories,
     download_resource_from_uri,
     resolve_download_file_url,
 )
-from DatabankLib.databankLibrary import lipids_set, molecules_set, parse_valid_config_settings
-from DatabankLib.SchemaValidation.ValidateYAML import validate_info_dict
-from DatabankLib.settings.engines import get_struc_top_traj_fnames, software_dict
-from DatabankLib.settings.molecules import Lipid, NonLipid
+from fairmd.lipids.databankLibrary import lipids_set, molecules_set, parse_valid_config_settings
+from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
+from fairmd.lipids.settings.engines import get_struc_top_traj_fnames, software_dict
+from fairmd.lipids.settings.molecules import Lipid, NonLipid
 
 pd.set_option("display.max_rows", 500)
 pd.set_option("display.max_columns", 500)
@@ -65,7 +64,7 @@ pd.set_option("display.max_colwidth", 1000)
 
 def add_simulation():
     info_template_path = os.path.join(
-        importlib.util.find_spec("DatabankLib").submodule_search_locations[0],
+        importlib.util.find_spec("fairmd.lipids").submodule_search_locations[0],
         "SchemaValidation",
         "Schema",
         "info_template.yaml",
@@ -74,7 +73,7 @@ def add_simulation():
     parser = argparse.ArgumentParser(
         prog="Add Simulation Script",
         description=f"""
-Add new simulation into the NMRlipids Databank. The script adds a
+Add new simulation into the FAIRMD Lipids. The script adds a
 simulation into the Databank based on ``info.yaml`` file. You can
 get template info-file from here:
 
@@ -614,7 +613,7 @@ Returns error codes:
         directory_path = create_databank_directories(
             sim,
             sim_hashes,
-            DatabankLib.NMLDB_SIMU_PATH,
+            lipids.NMLDB_SIMU_PATH,
             dry_run_mode=args.dry_run,
         )
     except NotImplementedError:

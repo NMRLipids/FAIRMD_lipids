@@ -4,7 +4,7 @@ downloading everything from testing repository.
 
 Test data is stored in `./ToyData/Simulations.1`
 
-NOTE: globally import of DatabankLib is **STRICTLY FORBIDDEN** because it
+NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
       breaks the substitution of global path folders
 """
 
@@ -43,11 +43,11 @@ pytestmark = pytest.mark.sim1
 
 @pytest.fixture(scope="module")
 def systems():
-    import DatabankLib
-    from DatabankLib.core import initialize_databank
+    import fairmd.lipids
+    from fairmd.lipids.core import initialize_databank
 
     logger.info("Starting systems fixture initialization")
-    if os.path.isfile(os.path.join(DatabankLib.NMLDB_DATA_PATH, ".notest")):
+    if os.path.isfile(os.path.join(lipids.NMLDB_DATA_PATH, ".notest")):
         pytest.exit("Test are corrupted. I see '.notest' file in the data folder.")
     s = initialize_databank()
     logger.info(f"Loaded: {len(s)} systems")
@@ -57,7 +57,7 @@ def systems():
     for _s in s:
 
         def gbGen(x):
-            return glob.glob(os.path.join(DatabankLib.NMLDB_SIMU_PATH, _s["path"], x))
+            return glob.glob(os.path.join(lipids.NMLDB_SIMU_PATH, _s["path"], x))
 
         clear_list = []
         if "NMLDB_TEST_NOWIPE" in os.environ:
@@ -85,8 +85,8 @@ def systems():
 
 @pytest.fixture(scope="module")
 def systemLoadTraj(systems):
-    import DatabankLib
-    from DatabankLib.databankLibrary import system2MDanalysisUniverse
+    import fairmd.lipids
+    from fairmd.lipids.databankLibrary import system2MDanalysisUniverse
 
     logger.info("Downloading trajectory data.")
     for s in systems:
@@ -109,7 +109,7 @@ def systemLoadTraj(systems):
                 except (KeyError, TypeError):
                     logger.warning(f"No {wp} file found for system")
                     continue
-                file_ = os.path.join(DatabankLib.NMLDB_SIMU_PATH, s["path"], file_)
+                file_ = os.path.join(lipids.NMLDB_SIMU_PATH, s["path"], file_)
                 logger.debug(f"Checking file: {file_}")
                 if os.path.exists(file_):
                     os.remove(file_)
@@ -131,7 +131,7 @@ def compareJSONsBtwSD(jsfn: str):
     """
     import json
     import numpy as np
-    from DatabankLib import NMLDB_DATA_PATH
+    from fairmd.lipids import NMLDB_DATA_PATH
 
     logger.info(f"Comparing JSON files for: {jsfn}")
 
@@ -168,18 +168,18 @@ def compareJSONsBtwSD(jsfn: str):
 
 @pytest.mark.parametrize("systemid", [86, 243, 281, 566, 787])
 def test_analyze_apl(systems, systemLoadTraj, systemid, logger):
-    import DatabankLib
-    from DatabankLib.analyze import computeAPL
+    import fairmd.lipids
+    from fairmd.lipids.analyze import computeAPL
 
     s = systems.loc(systemid)
 
     rCode = computeAPL(s, logger)
-    assert rCode == DatabankLib.analyze.RCODE_COMPUTED
+    assert rCode == lipids.analyze.RCODE_COMPUTED
 
-    cFile = os.path.join(DatabankLib.NMLDB_SIMU_PATH, s["path"], "apl.json")
+    cFile = os.path.join(lipids.NMLDB_SIMU_PATH, s["path"], "apl.json")
     assert os.path.isfile(cFile)
     assert os.path.getsize(cFile) > 1e3
-    compareJSONsBtwSD(os.path.relpath(cFile, DatabankLib.NMLDB_SIMU_PATH))
+    compareJSONsBtwSD(os.path.relpath(cFile, lipids.NMLDB_SIMU_PATH))
 
 
 @pytest.mark.parametrize(
@@ -187,45 +187,45 @@ def test_analyze_apl(systems, systemLoadTraj, systemid, logger):
     [(281, 1), (566, 1), (787, 2), (243, 1), (86, 1)],
 )
 def test_analyze_op(systems, systemLoadTraj, systemid, rcodex, logger):
-    import DatabankLib
-    from DatabankLib.analyze import computeOP
-    from DatabankLib.settings.molecules import lipids_set
+    import fairmd.lipids
+    from fairmd.lipids.analyze import computeOP
+    from fairmd.lipids.settings.molecules import lipids_set
 
     s = systems.loc(systemid)
     rCode = computeOP(s, logger)
     assert rCode == rcodex, f"rCode = {rCode} is not the same as rcodex = {rcodex}"
-    if rcodex == DatabankLib.RCODE_ERROR:
+    if rcodex == lipids.RCODE_ERROR:
         return
 
     for lip in set(s["COMPOSITION"].keys()).intersection(set(lipids_set.names)):
         cFile = os.path.join(
-            DatabankLib.NMLDB_SIMU_PATH,
+            lipids.NMLDB_SIMU_PATH,
             s["path"],
             lip + "OrderParameters.json",
         )
         assert os.path.isfile(cFile), f"File {cFile} wasn't created for {lip}!"
         assert os.path.getsize(cFile) > 1e3, f"File {cFile} for {lip} is less than 1K!"
-        compareJSONsBtwSD(os.path.relpath(cFile, DatabankLib.NMLDB_SIMU_PATH))
+        compareJSONsBtwSD(os.path.relpath(cFile, lipids.NMLDB_SIMU_PATH))
 
 
 @pytest.mark.parametrize("systemid, rcodex", [(281, 1), (566, 1), (787, 2), (243, 1), (86, 1)])
 def test_analyze_maicos(systems, systemLoadTraj, systemid, rcodex, logger):
-    import DatabankLib
-    from DatabankLib.analyze import computeMAICOS
+    import fairmd.lipids
+    from fairmd.lipids.analyze import computeMAICOS
 
     s = systems.loc(systemid)
     rCode = computeMAICOS(s, logger)
     assert rCode == rcodex, f"rCode = {rCode} is not the same as rcodex = {rcodex}"
-    if rcodex == DatabankLib.RCODE_ERROR:
+    if rcodex == lipids.RCODE_ERROR:
         return
 
     for fn in ["WaterDensity.json", "LipidDensity.json", "TotalDensity.json", "FormFactor.json"]:
-        cFile = os.path.join(DatabankLib.NMLDB_SIMU_PATH, s["path"], fn)
+        cFile = os.path.join(lipids.NMLDB_SIMU_PATH, s["path"], fn)
         check.is_true(os.path.isfile(cFile))
         check.is_true(os.path.getsize(cFile) > 1e3)
         try:
             compareJSONsBtwSD(
-                os.path.relpath(cFile, DatabankLib.NMLDB_SIMU_PATH),
+                os.path.relpath(cFile, lipids.NMLDB_SIMU_PATH),
             )
         except AssertionError as e:
             check.is_true(False, msg=str(e))
@@ -237,17 +237,17 @@ def test_analyze_maicos(systems, systemLoadTraj, systemid, rcodex, logger):
     [(281, 1), (566, 1), (787, 2), (243, 1), (86, 1)],
 )
 def test_analyze_nmrpca(systems, systemLoadTraj, systemid, rcodex, logger):
-    import DatabankLib
-    from DatabankLib.analyze import computeNMRPCA
+    import fairmd.lipids
+    from fairmd.lipids.analyze import computeNMRPCA
 
     s = systems.loc(systemid)
     rCode = computeNMRPCA(s, logger)
     assert rCode == rcodex
 
-    if rCode == DatabankLib.RCODE_ERROR:
+    if rCode == lipids.RCODE_ERROR:
         return
 
-    cFile = os.path.join(DatabankLib.NMLDB_SIMU_PATH, s["path"], "eq_times.json")
+    cFile = os.path.join(lipids.NMLDB_SIMU_PATH, s["path"], "eq_times.json")
     assert os.path.isfile(cFile)
     assert os.path.getsize(cFile) > 10
-    compareJSONsBtwSD(os.path.relpath(cFile, DatabankLib.NMLDB_SIMU_PATH))
+    compareJSONsBtwSD(os.path.relpath(cFile, lipids.NMLDB_SIMU_PATH))

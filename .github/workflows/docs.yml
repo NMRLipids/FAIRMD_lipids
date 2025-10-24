@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    if: github.repository == 'NMRlipids/Databank'
+    if: github.repository == 'NMRlipids/fairmd-lipids'
     runs-on: ubuntu-latest
 
     steps:
@@ -45,7 +45,7 @@ jobs:
           if-no-files-found: error
 
   deploy:
-    if: github.event_name == 'push' && github.repository == 'NMRlipids/Databank'
+    if: github.event_name == 'push' && github.repository == 'NMRlipids/fairmd-lipids'
     needs: build
     runs-on: ubuntu-latest
     permissions:

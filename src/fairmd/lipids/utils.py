@@ -10,8 +10,8 @@ import sys
 from collections.abc import Callable
 from logging import Logger
 
-from DatabankLib import RCODE_COMPUTED, RCODE_ERROR, RCODE_SKIPPED
-from DatabankLib.core import initialize_databank
+from fairmd.lipids import RCODE_COMPUTED, RCODE_ERROR, RCODE_SKIPPED
+from fairmd.lipids.core import initialize_databank
 
 
 def run_analysis(
@@ -29,7 +29,7 @@ def run_analysis(
                      which means all new systems, or (0, None) which means all
                      old systems.
     Environment variables:
-        - ``NML_STRICT_MODE``: if set to ``"true"`` or ``"1"`` (case-insensitive),
+        - ``fmdl_STRICT_MODE``: if set to ``"true"`` or ``"1"`` (case-insensitive),
           the function will exit with code ``RCODE_ERROR`` if one or more analyses
           fail. When unset, empty, or any other value, failed analyses are only
           logged and execution continues normally.
@@ -60,7 +60,7 @@ def run_analysis(
     SKIPPED: {result_dict[RCODE_SKIPPED]}
     ERROR: {result_dict[RCODE_ERROR]}
     """)
-    strict_mode = os.getenv("NML_STRICT_MODE", "").lower() in ("1", "true")
+    strict_mode = os.getenv("fmdl_STRICT_MODE", "").lower() in ("1", "true")
     if strict_mode and result_dict[RCODE_ERROR] > 0:
         logger.error(
             "Detected %d failed analyses. Exiting with code %d.",

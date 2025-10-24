@@ -1,7 +1,7 @@
 """
 Perform integration testing of adding-simulation functionality.
 
-NOTE: globally import of DatabankLib is **STRICTLY FORBIDDEN** because it
+NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
       breaks the substitution of global path folders
 """
 
@@ -28,14 +28,14 @@ def tmp_work_dir():
 class TestAddData:
     @classmethod
     def setup_class(cls):
-        import DatabankLib
+        from fairmd import lipids
 
-        if os.path.isfile(os.path.join(DatabankLib.NMLDB_DATA_PATH, ".notest")):
+        if os.path.isfile(os.path.join(lipids.NMLDB_DATA_PATH, ".notest")):
             pytest.exit("Test are corrupted. I see '.notest' file in the data folder.")
         cls.exe = os.path.join(
-            os.path.dirname(os.path.dirname(__file__)), "src", "DatabankLib", "bin", "add_simulation.py"
+            os.path.dirname(os.path.dirname(__file__)), "src", "fairmd", "lipids", "bin", "add_simulation.py"
         )
-        cls.out_dir = DatabankLib.NMLDB_SIMU_PATH
+        cls.out_dir = lipids.NMLDB_SIMU_PATH
         os.mkdir(cls.out_dir)
 
     @classmethod
@@ -116,7 +116,7 @@ class TestAddData:
         assert result.returncode == 1
 
     def _check_new_readme(self, capsys):
-        from DatabankLib.core import initialize_databank
+        from fairmd.lipids.core import initialize_databank
 
         ss = initialize_databank()
         captured = capsys.readouterr()

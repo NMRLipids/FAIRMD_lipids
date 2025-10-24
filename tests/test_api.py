@@ -8,7 +8,7 @@ files and precomputed JSON data.
 Test data is stored in `./ToyData/Simulations.2`
 
 -------------------------------------------------------------------------------
-NOTE: globally import of DatabankLib is **STRICTLY FORBIDDEN** because it
+NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
       breaks the substitution of global path folders
 """
 
@@ -30,10 +30,10 @@ N_SYSTEMS_IN_TESTSET = 5
 @pytest.fixture(scope="module")
 def systems():
     """Fixture for loading the toy databank once per module."""
-    import DatabankLib
-    from DatabankLib.core import initialize_databank
+    from fairmd.lipids import NMLDB_DATA_PATH
+    from fairmd.lipids.core import initialize_databank
 
-    if os.path.isfile(os.path.join(DatabankLib.NMLDB_DATA_PATH, ".notest")):
+    if os.path.isfile(os.path.join(NMLDB_DATA_PATH, ".notest")):
         pytest.exit("Test are corrupted. I see '.notest' file in the data folder.")
     s = initialize_databank()
     print(f"Loaded: {len(s)} systems")
@@ -46,7 +46,7 @@ def test_initialize_n(systems):
 
 
 def test_print_README(systems, capsys):
-    from DatabankLib.core import print_README
+    from fairmd.lipids.core import print_README
 
     sys0 = systems[0]
     print_README(sys0)
@@ -69,7 +69,7 @@ def test_print_README(systems, capsys):
     ],
 )
 def test_CalcAreaPerMolecule(systems, systemid, result):
-    from DatabankLib.databankLibrary import CalcAreaPerMolecule
+    from fairmd.lipids.databankLibrary import CalcAreaPerMolecule
 
     sys0 = systems.loc(systemid)
     apm = CalcAreaPerMolecule(sys0)
@@ -81,7 +81,7 @@ def test_CalcAreaPerMolecule(systems, systemid, result):
     [(281, 4142.234), (566, 3923.568), (787, 4694.191), (243, 2241.920), (86, 3869.417)],
 )
 def test_calcArea(systems, systemid, result):
-    from DatabankLib.databankLibrary import calcArea
+    from fairmd.lipids.databankLibrary import calcArea
 
     sys0 = systems.loc(systemid)
     area = calcArea(sys0)
@@ -90,7 +90,7 @@ def test_calcArea(systems, systemid, result):
 
 @pytest.mark.parametrize("systemid, result", [(281, 128), (566, 128), (787, 120), (243, 72), (86, 128)])
 def test_GetNLipids(systems, systemid, result):
-    from DatabankLib.databankLibrary import GetNlipids
+    from fairmd.lipids.databankLibrary import GetNlipids
 
     sys0 = systems.loc(systemid)
     nlip = GetNlipids(sys0)
@@ -109,7 +109,7 @@ def test_GetNLipids(systems, systemid, result):
 def test_GetFormFactorMin(systems, systemid, result):
     import numpy as np
 
-    from DatabankLib.databankLibrary import GetFormFactorMin
+    from fairmd.lipids.databankLibrary import GetFormFactorMin
 
     sys0 = systems.loc(systemid)
     ffl = GetFormFactorMin(sys0)
@@ -123,7 +123,7 @@ def test_GetFormFactorMin(systems, systemid, result):
 
 @pytest.mark.parametrize("systemid, result", [(281, 31.5625), (566, 31.0), (787, 75.0), (243, 39.7778), (86, 27.75)])
 def test_getHydrationLevel(systems, systemid, result):
-    from DatabankLib.databankLibrary import getHydrationLevel
+    from fairmd.lipids.databankLibrary import getHydrationLevel
 
     sys0 = systems.loc(systemid)
     hl = getHydrationLevel(sys0)
@@ -141,7 +141,7 @@ def test_getHydrationLevel(systems, systemid, result):
     ],
 )
 def test_calcLipidFraction(systems, systemid, lipid, result):
-    from DatabankLib.databankLibrary import calcLipidFraction
+    from fairmd.lipids.databankLibrary import calcLipidFraction
 
     sys0 = systems.loc(systemid)
     assert calcLipidFraction(sys0, "SOPC") == 0  # absent lipid
@@ -162,7 +162,7 @@ def test_calcLipidFraction(systems, systemid, lipid, result):
     ],
 )
 def test_averageOrderParameters(systems, systemid, result):
-    from DatabankLib.databankLibrary import averageOrderParameters
+    from fairmd.lipids.databankLibrary import averageOrderParameters
 
     sys0 = systems.loc(systemid)
     sn1, sn2 = averageOrderParameters(sys0)
@@ -174,7 +174,7 @@ def test_averageOrderParameters(systems, systemid, result):
 
 @pytest.mark.parametrize("systemid", [787])
 def test_raises_averageOrderParameters(systems, systemid):
-    from DatabankLib.databankLibrary import averageOrderParameters
+    from fairmd.lipids.databankLibrary import averageOrderParameters
 
     sys0 = systems.loc(systemid)
     with pytest.raises(FileNotFoundError) as exc_info:
@@ -194,7 +194,7 @@ def test_raises_averageOrderParameters(systems, systemid):
     ],
 )
 def test_getUniversalAtomName(systems, systemid, lipid, result):
-    from DatabankLib.databankLibrary import getUniversalAtomName
+    from fairmd.lipids.databankLibrary import getUniversalAtomName
 
     sys0 = systems.loc(systemid)
     i = 0
@@ -212,7 +212,7 @@ def test_getUniversalAtomName(systems, systemid, lipid, result):
     [(243, "DPPC/nonExisting", "Atom was not found"), (243, "nonExisting/P8", "was not found in the system")],
 )
 def test_bad_getUniversalAtomName(systems, systemid, lipat, result, capsys):
-    from DatabankLib.databankLibrary import getUniversalAtomName
+    from fairmd.lipids.databankLibrary import getUniversalAtomName
 
     sys0 = systems.loc(systemid)
     lip, atom = tuple(lipat.split("/"))
@@ -224,7 +224,7 @@ def test_bad_getUniversalAtomName(systems, systemid, lipat, result, capsys):
 
 @pytest.mark.parametrize("systemid, lipid, result", [(243, "DPPC", "44ea5"), (787, "TOCL", "78629")])
 def test_getAtoms(systems, systemid, lipid, result):
-    from DatabankLib.databankLibrary import getAtoms
+    from fairmd.lipids.databankLibrary import getAtoms
 
     sys0 = systems.loc(systemid)
     atoms = getAtoms(sys0, lipid).split()
@@ -240,7 +240,7 @@ def test_getAtoms(systems, systemid, lipid, result):
 @pytest.mark.xfail(reason="Completely deprecated function", run=True, raises=NotImplementedError, strict=True)
 @pytest.mark.parametrize("systemid, lipid, result", [(281, ["POPC"], [134])])
 def test_raise_loadMappingFile(systems, systemid, lipid, result):
-    from DatabankLib.databankLibrary import loadMappingFile
+    from fairmd.lipids.databankLibrary import loadMappingFile
 
     sys0 = systems.loc(systemid)
     i = 0
@@ -260,7 +260,7 @@ def test_raise_loadMappingFile(systems, systemid, lipid, result):
     ],
 )
 def test_simulation2universal_atomnames(systems, systemid, lipid, result):
-    from DatabankLib.databankLibrary import simulation2universal_atomnames
+    from fairmd.lipids.databankLibrary import simulation2universal_atomnames
 
     sys0 = systems.loc(systemid)
     i = 0
@@ -278,7 +278,7 @@ def test_simulation2universal_atomnames(systems, systemid, lipid, result):
     ],
 )
 def test_bad_simulation2universal_atomnames(systems, systemid, lipat, result, capsys):
-    from DatabankLib.databankLibrary import simulation2universal_atomnames
+    from fairmd.lipids.databankLibrary import simulation2universal_atomnames
 
     sys0 = systems.loc(systemid)
     lip, atom = tuple(lipat.split("/"))
@@ -299,7 +299,7 @@ def test_bad_simulation2universal_atomnames(systems, systemid, lipat, result, ca
     ],
 )
 def test_getLipids(systems, systemid, result):
-    from DatabankLib.databankLibrary import getLipids
+    from fairmd.lipids.databankLibrary import getLipids
 
     sys0 = systems.loc(systemid)
     gl = getLipids(sys0)
@@ -308,14 +308,14 @@ def test_getLipids(systems, systemid, result):
 
 @pytest.fixture(scope="function")
 def wipeth(systems):
-    import DatabankLib
+    from fairmd.lipids import NMLDB_SIMU_PATH
 
     # TD-FIXTURE FOR REMOVING THICKNESS AFTER TEST CALCULATIONS
     yield
     # TEARDOWN
     for sid in [243, 281]:
         sys0 = systems.loc(sid)
-        fn = os.path.join(DatabankLib.NMLDB_SIMU_PATH, sys0["path"], "thickness.json")
+        fn = os.path.join(NMLDB_SIMU_PATH, sys0["path"], "thickness.json")
         try:
             os.remove(fn)
         except FileNotFoundError:
@@ -327,13 +327,13 @@ def wipeth(systems):
 
 @pytest.mark.parametrize("systemid, result, thickres", [(281, 1, 4.19996), (243, 1, 4.25947)])
 def test_analyze_th(systems, systemid, result, wipeth, thickres, logger):
-    import DatabankLib
-    from DatabankLib.analyze import computeTH
+    from fairmd.lipids import NMLDB_SIMU_PATH
+    from fairmd.lipids.analyze import computeTH
 
     sys0 = systems.loc(systemid)
     rc = computeTH(sys0, logger)
     assert rc == result
-    fn = os.path.join(DatabankLib.NMLDB_SIMU_PATH, sys0["path"], "thickness.json")
+    fn = os.path.join(NMLDB_SIMU_PATH, sys0["path"], "thickness.json")
     assert os.path.isfile(fn)
     with open(fn) as file:
         data = float(file.read().rstrip())
@@ -342,7 +342,7 @@ def test_analyze_th(systems, systemid, result, wipeth, thickres, logger):
 
 @pytest.mark.parametrize("systemid, result", [(281, None), (243, None), (566, 4.2576), (787, None), (86, 4.1327)])
 def test_GetThickness(systems, systemid, result):
-    from DatabankLib.databankLibrary import GetThickness
+    from fairmd.lipids.databankLibrary import GetThickness
 
     sys0 = systems.loc(systemid)
     th = GetThickness(sys0)
@@ -360,8 +360,8 @@ def test_GetThickness(systems, systemid, result):
     ],
 )
 def test_GetEquilibrationTimes(systems, systemid, result):
-    from DatabankLib.databankLibrary import GetEquilibrationTimes
-    from DatabankLib.settings.molecules import lipids_set
+    from fairmd.lipids.databankLibrary import GetEquilibrationTimes
+    from fairmd.lipids.settings.molecules import lipids_set
 
     sys0 = systems.loc(systemid)
     eq_times = GetEquilibrationTimes(sys0)
@@ -377,6 +377,6 @@ def test_GetEquilibrationTimes(systems, systemid, result):
 @pytest.mark.xfail(reason="EQtimes were not computed", run=True, raises=FileNotFoundError, strict=True)
 def test_GetEquilibrationTimes_fail(systems):
     sys0 = systems.loc(787)
-    from DatabankLib.databankLibrary import GetEquilibrationTimes
+    from fairmd.lipids.databankLibrary import GetEquilibrationTimes
 
     GetEquilibrationTimes(sys0)

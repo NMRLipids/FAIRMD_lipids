@@ -4,11 +4,11 @@ Project structure
 Project has four sub-folders in the root directory:
 
 
-#. ``src/DatabankLib``
+#. ``src/fairmd/lipids``
 
    Main project package. Contains most of the project’s logic and API.
 
-   :doc:`More info on DatabankLib <auto_gen/DatabankLib>`
+   :doc:`More info on fairmd-lipids <auto_gen/fairmd-lipids>`
 
 
 #. ``tests``

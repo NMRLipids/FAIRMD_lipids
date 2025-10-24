@@ -24,11 +24,11 @@ Before using the Docker-based development environment, you'll need to have Docke
 ## 2. Using the Docker Development Environment
 
 ### Setting Up the Development Environment
-Go to the directory where you have the Databank repository. Then, 
+Go to the directory where you have the fairmd-lipids repository. Then,
 
-1. Download the latest nmrlipids core image:
+1. Download the latest fairmd-lipids core image:
    ```
-   docker pull nmrlipids/core:latest
+   docker pull fairmd-lipids/core:latest
    ```
 
 2. Alternatively the Docker image can be built locally:
@@ -51,13 +51,13 @@ Go to the directory where you have the Databank repository. Then,
    or
    if you pulled the latest image,
    ```bash
-   docker run -it -v $(pwd):/github/workspace nmrlipids/core:latest
+   docker run -it -v $(pwd):/github/workspace fairmd-lipids/core:latest
    ```
 
 2. Inside the container:
    ```bash
-   # Install base requirements and the DatabankLib
-   pip install -e . -r Scripts/DatabankLib/requirements.txt
+   # Install base requirements and the fairmd-lipids package in editable mode
+   pip install -e .
    
    # Run tests
    ./runtests.sh
@@ -65,7 +65,7 @@ Go to the directory where you have the Databank repository. Then,
    ```
 
    You can specify additional arguments to the `pytest` via
-   `./runtests.sh -vx`
+   `tox -e tests`
 
    For full list of accepted flags, please look at [pytest documentation](https://docs.pytest.org/en/6.2.x/usage.html).
 

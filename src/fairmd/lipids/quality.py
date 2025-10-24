@@ -13,8 +13,8 @@ import numpy as np
 import scipy.signal
 import scipy.stats
 
-from DatabankLib import NMLDB_SIMU_PATH
-from DatabankLib.core import System, initialize_databank, lipids_set
+from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids.core import System, initialize_databank, lipids_set
 
 
 # TODO: inherit from System

@@ -43,7 +43,7 @@ import numpy as np
 import pandas as pd
 from MDAnalysis.coordinates import XTC
 
-from DatabankLib.settings import dic_lipids_UA
+from fairmd.lipids.settings import dic_lipids_UA
 
 # Constants.
 # From https://en.wikipedia.org/wiki/Carbon%E2%80%93hydrogen_bond

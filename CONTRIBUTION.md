@@ -51,17 +51,17 @@ need to install `tox` first
     conda install -c conda-forge tox
 ```
 
-Then go to the [develop project](https://github.com/NMRLipids/Databank/) page, hit the
+Then go to the [develop project](https://github.com/NMRLipids/fairmd-lipids/) page, hit the
 ``Fork`` button and clone your forked branch to your machine.
 
 ```bash
-  git clone git@github.com:your-user-name/Databank.git
+  git clone git@github.com:your-user-name/fairmd-lipids.git
 ```
 
 Now you have a local version on your machine which you can install by
 
 ```bash
-  cd Databank
+  cd fairmd-lipids
   pip install -e .
 ```
 
@@ -122,6 +122,6 @@ following command (or open the :file:`docs/build/html/index.html` file manually)
 
 # Data handling
 
-NMRlipids Databank separates codespace from
+FAIRMD Lipids separates codespace from
 [the Database](https://github.com/NMRLipids/BilayerData) since June 2025 (v.1.1.0). 
 Data contribution rules are moved there accordingly.

@@ -1,6 +1,6 @@
 """
 Library contains all API functions and many functions used in building and
-analyzing the NMRlipids databank
+analyzing the FAIRMD Lipids
 """
 
 import copy
@@ -16,11 +16,11 @@ import MDAnalysis as mda
 import numpy as np
 from deprecated import deprecated
 
-from DatabankLib import NMLDB_SIMU_PATH
-from DatabankLib.core import System
-from DatabankLib.databankio import download_resource_from_uri, resolve_download_file_url
-from DatabankLib.settings.engines import get_struc_top_traj_fnames, software_dict
-from DatabankLib.settings.molecules import lipids_set, molecule_ff_set, molecules_set
+from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids.core import System
+from fairmd.lipids.databankio import download_resource_from_uri, resolve_download_file_url
+from fairmd.lipids.settings.engines import get_struc_top_traj_fnames, software_dict
+from fairmd.lipids.settings.molecules import lipids_set, molecule_ff_set, molecules_set
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ def CalcAreaPerMolecule(system):  # noqa: N802 (API name)
     It is using the ``apl.json`` file where area per lipid as a function of time
     calculated by the ``calcAPL.py`` is stored.
 
-    :param system: NMRlipids databank dictionary defining a simulation.
+    :param system: FAIRMD Lipids dictionary defining a simulation.
 
     :return: area per lipid (Å^2)
     """
@@ -54,7 +54,7 @@ def GetThickness(system):  # noqa: N802 (API name)
     Gets thickness for a simulation defined with ``system`` from the ``thickness.json``
     file where thickness calculated by the ``calc_thickness.py`` is stored.
 
-    :param system: NMRlipids databank dictionary defining a simulation.
+    :param system: FAIRMD Lipids dictionary defining a simulation.
 
     :return: membrane thickess (nm) or None
     """
@@ -73,7 +73,7 @@ def ShowEquilibrationTimes(system: System):  # noqa: N802 (API name)
     by ``system``. Relative equilibration times are calculated with
     ``NMRPCA_timerelax.py`` and stored in ``eq_times.json`` files.
 
-    :param system: NMRlipids databank dictionary defining a simulation.
+    :param system: FAIRMD Lipids dictionary defining a simulation.
     """
     warnings.warn(
         "This function is deprecated. Use GetEquilibrationTimes instead.",
@@ -98,7 +98,7 @@ def GetEquilibrationTimes(system: System):  # noqa: N802 (API name)
     by ``system``. Relative equilibration times are calculated with
     ``NMRPCA_timerelax.py`` and stored in ``eq_times.json`` files.
 
-    :param system: NMRlipids databank dictionary defining a simulation.
+    :param system: FAIRMD Lipids dictionary defining a simulation.
 
     :return: dictionary of relative equilibration times for each lipid
     """
@@ -117,7 +117,7 @@ def GetNlipids(system: System):  # noqa: N802 (API name)
     """
     Returns the total number of lipids in a simulation defined by ``system``.
 
-    :param system: NMRlipids databank dictionary defining a simulation.
+    :param system: FAIRMD Lipids dictionary defining a simulation.
 
     :return: the total number of lipids in the ``system``.
     """
@@ -133,7 +133,7 @@ def getLipids(system: System, molecules=lipids_set):  # noqa: N802 (API name)
     Returns a string using MDAnalysis notation that can used to select all lipids from
     the ``system``.
 
-    :param system: NMRlipids databank dictionary defining a simulation.
+    :param system: FAIRMD Lipids dictionary defining a simulation.
 
     :return: a string using MDAnalysis notation that can used to select all lipids from
              the ``system``.
@@ -277,10 +277,10 @@ def calc_z_dim(gro):
 def system2MDanalysisUniverse(system):  # noqa: N802 (API name)
     """
     Takes the ``system`` dictionary as an input, downloads the required files to
-    the NMRlipids databank directory and retuns MDAnalysis universe corressponding
+    the FAIRMD Lipids directory and retuns MDAnalysis universe corressponding
     the ``system``.
 
-    :param system: NMRlipids databank dictionary describing the simulation.
+    :param system: FAIRMD Lipids dictionary describing the simulation.
 
     :return: MDAnalysis universe
     """

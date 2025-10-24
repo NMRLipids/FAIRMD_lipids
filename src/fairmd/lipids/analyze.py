@@ -1,5 +1,5 @@
 """
-DatabankLib.analyze contains top-level methods for properties' computing.
+fairmd.lipids.analyze contains top-level methods for properties' computing.
 
 Module includes APL, TH, MAICoS, NMRPCA, and OP core analysis functions.
 Code-intensive computations are performed inside corresponding modules.
@@ -22,20 +22,20 @@ import numpy as np
 from maicos.core.base import AnalysisCollection
 from tqdm import tqdm
 
-from DatabankLib import (
+from fairmd.lipids import (
     NMLDB_DATA_PATH,
     NMLDB_SIMU_PATH,
     RCODE_COMPUTED,
     RCODE_ERROR,
     RCODE_SKIPPED,
 )
-from DatabankLib import analyze_nmrpca as nmrpca
-from DatabankLib.core import System
-from DatabankLib.databankio import download_resource_from_uri, resolve_download_file_url
-from DatabankLib.databankLibrary import GetNlipids, getLipids, system2MDanalysisUniverse
-from DatabankLib.databankop import find_OP
-from DatabankLib.jsonEncoders import CompactJSONEncoder
-from DatabankLib.maicos import (
+from fairmd.lipids import analyze_nmrpca as nmrpca
+from fairmd.lipids.core import System
+from fairmd.lipids.databankio import download_resource_from_uri, resolve_download_file_url
+from fairmd.lipids.databankLibrary import GetNlipids, getLipids, system2MDanalysisUniverse
+from fairmd.lipids.databankop import find_OP
+from fairmd.lipids.jsonEncoders import CompactJSONEncoder
+from fairmd.lipids.maicos import (
     DensityPlanar,
     DielectricPlanar,
     DiporderPlanar,
@@ -44,9 +44,9 @@ from DatabankLib.maicos import (
     is_system_suitable_4_maicos,
     traj_centering_for_maicos,
 )
-from DatabankLib.settings import elements
-from DatabankLib.settings.engines import get_struc_top_traj_fnames
-from DatabankLib.settings.molecules import lipids_set
+from fairmd.lipids.settings import elements
+from fairmd.lipids.settings.engines import get_struc_top_traj_fnames
+from fairmd.lipids.settings.molecules import lipids_set
 
 
 def computeNMRPCA(  # noqa: N802 (API)

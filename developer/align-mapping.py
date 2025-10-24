@@ -21,10 +21,10 @@ import yaml
 from rdkit import Chem, RDLogger
 from rdkit.Chem import MolStandardize
 
-import DatabankLib as dlb
-import DatabankLib.core as dlc
-import DatabankLib.databankio as dbio
-import DatabankLib.settings.elements as elements
+import fairmd.lipids as dlb
+import fairmd.lipids.core as dlc
+import fairmd.lipids.databankio as dbio
+import fairmd.lipids.settings.elements as elements
 
 lg = RDLogger.logger()
 lg.setLevel(RDLogger.CRITICAL)

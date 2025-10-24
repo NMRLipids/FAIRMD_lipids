@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    if: github.repository == 'NMRLipids/Databank'
+    if: github.repository == 'NMRLipids/fairmd-lipids'
     runs-on: ubuntu-22.04
 
     steps:

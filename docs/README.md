@@ -4,8 +4,8 @@ To manually recreate documentation, run:
 tox -e docs
 ```
 
-**Note!** You should be already in the environment suitable for working with NMRLipids
-Databank project.
+**Note!** You should be already in the environment suitable for working with
+fairmd-lipids project.
 
 Then run:
 ```

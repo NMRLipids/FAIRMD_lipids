@@ -10,9 +10,9 @@ permissions:
 
 jobs:
   documentation-links:
-    if: github.repository == 'NMRLipids/Databank'
+    if: github.repository == 'NMRLipids/fairmd-lipids'
     runs-on: ubuntu-latest
     steps:
       - uses: readthedocs/actions/preview@v1
         with:
-          project-slug: Databank
+          project-slug: fairmd-lipids

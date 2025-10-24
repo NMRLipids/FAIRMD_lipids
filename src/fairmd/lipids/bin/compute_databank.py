@@ -10,7 +10,7 @@ water orientation, dielectric profiles, X-ray form factor).
 
 .. code-block:: console
 
-    nml_compute_databank [--apl] [--nmrpca] [--maicos] [--thickness] \
+    fmdl_compute_databank [--apl] [--nmrpca] [--maicos] [--thickness] \
         [--OP] [--range 0-1000] [--debug] [-h]
 
 
@@ -35,7 +35,7 @@ import argparse
 import logging
 import sys
 
-from DatabankLib.utils import run_analysis
+from fairmd.lipids.utils import run_analysis
 
 
 def compute_databank():
@@ -126,12 +126,12 @@ def compute_databank():
 
     if args.apl:
         logger.info("Computing APL (Area Per Lipid) for all systems")
-        from DatabankLib.analyze import computeAPL
+        from fairmd.lipids.analyze import computeAPL
 
         run_analysis(computeAPL, logger, id_range=id_range)
     if args.nmrpca:
         logger.info("Computing NMR PCA for all systems")
-        from DatabankLib.analyze import computeNMRPCA
+        from fairmd.lipids.analyze import computeNMRPCA
 
         run_analysis(computeNMRPCA, logger, id_range=id_range)
 
@@ -140,13 +140,13 @@ def compute_databank():
 
     if args.ff and not args.maicos:
         logger.info("Computing MAICoS electron density and form-factor for all systems")
-        from DatabankLib.analyze import computeMAICOS
+        from fairmd.lipids.analyze import computeMAICOS
 
         run_analysis(computeMAICOS, logger, id_range=id_range)
 
     if args.maicos:
         logger.info("Computing MAICOS for all systems")
-        from DatabankLib.analyze import computeMAICOS
+        from fairmd.lipids.analyze import computeMAICOS
 
         def compute_all_maicos_props(s, ell):
             return computeMAICOS(s, ell, ffonly=False)
@@ -155,12 +155,12 @@ def compute_databank():
 
     if args.thickness:
         logger.info("Computing Thickness for all systems")
-        from DatabankLib.analyze import computeTH
+        from fairmd.lipids.analyze import computeTH
 
         run_analysis(computeTH, logger, id_range=id_range)
     if args.OP:
         logger.info("Computing Order Parameter for all systems")
-        from DatabankLib.analyze import computeOP
+        from fairmd.lipids.analyze import computeOP
 
         run_analysis(computeOP, logger, id_range=id_range)
 

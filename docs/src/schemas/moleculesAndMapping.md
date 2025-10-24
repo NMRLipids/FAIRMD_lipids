@@ -3,7 +3,7 @@
 # Universal molecule and atom names
 
 ## Molecule names
-To enable automatic analyses over all simulations, universal names for molecules are defined in the NMRlipids databank as listed in the table below. These names are connected to simulation specific molecule names using the COMPOSITION dictionary in README.yaml files.
+To enable automatic analyses over all simulations, universal names for molecules are defined in the FAIRMD Lipids as listed in the table below. These names are connected to simulation specific molecule names using the COMPOSITION dictionary in README.yaml files.
 
 Abbreviation | Molecule name 
 ------------ | -------------
@@ -60,7 +60,7 @@ SOL | water
 
 
 ## Universal atom names in mapping files
-To enable automatic analyses over all simulations, universal atom names for each molecule are defined in the NMRlipids databank using the **mapping files**. In these files, universal atom names are connected to simulation specific atom names using python dictionaries stored in yaml file format. The first key in the mapping file dictionary is the universal atom name, second keys define the simulation specific atom name (`ATOMNAME`) and molecule fragment (`FRAGMENT:` head group, glycerol backbone, sn-1 or sn-2). For example, the beginning of the mapping file for CHARMM36 POPC looks like this:
+To enable automatic analyses over all simulations, universal atom names for each molecule are defined in the FAIRMD Lipids using the **mapping files**. In these files, universal atom names are connected to simulation specific atom names using python dictionaries stored in yaml file format. The first key in the mapping file dictionary is the universal atom name, second keys define the simulation specific atom name (`ATOMNAME`) and molecule fragment (`FRAGMENT:` head group, glycerol backbone, sn-1 or sn-2). For example, the beginning of the mapping file for CHARMM36 POPC looks like this:
 
      M_G1_M:
       ATOMNAME: C3
@@ -84,7 +84,7 @@ To enable automatic analyses over all simulations, universal atom names for each
     .
     .
 
-Universal atom names start with "M_" flag and ends with "_M" flag. In the actual naming convention between the flags, the first two characters define in which glycerol backbone chain the atoms attached (G1, G2 or G3), third character tells the atom type and fourth character tells the counting number from the glycerol backbone carbon. If there are hydrogens or other atoms attached to the main chain, those will be added to the end of the naming. More details can be found from [the original NMRlipids project post defining the mapping files](https://nmrlipids.blogspot.com/2015/03/mapping-scheme-for-lipid-atom-names-for.html). Examples already existing mapping files can be found from [the NMRlipids databank git](https://github.com/NMRLipids/Databank/tree/main/Scripts/BuildDatabank/mapping_files).
+Universal atom names start with "M_" flag and ends with "_M" flag. In the actual naming convention between the flags, the first two characters define in which glycerol backbone chain the atoms attached (G1, G2 or G3), third character tells the atom type and fourth character tells the counting number from the glycerol backbone carbon. If there are hydrogens or other atoms attached to the main chain, those will be added to the end of the naming. More details can be found from [the original NMRlipids project post defining the mapping files](https://nmrlipids.blogspot.com/2015/03/mapping-scheme-for-lipid-atom-names-for.html). Examples already existing mapping files can be found from [the FAIRMD Lipids git](https://github.com/NMRLipids/Databank/tree/main/Scripts/BuildDatabank/mapping_files).
 
 ## Cardiolipin universal naming conventions
 

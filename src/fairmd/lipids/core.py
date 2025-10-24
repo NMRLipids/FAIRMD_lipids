@@ -1,7 +1,7 @@
 """
 Core databank class and system initialization function.
 
-Imported by :mod:`DatabankLib.databankLibrary` by default.
+Imported by :mod:`fairmd.lipids.databankLibrary` by default.
 Can be imported without additional libraries to scan Databank system file tree!
 """
 
@@ -11,8 +11,8 @@ from collections.abc import Iterable, Iterator, Mapping, MutableMapping, Sequenc
 
 import yaml
 
-from DatabankLib import NMLDB_SIMU_PATH
-from DatabankLib.settings.molecules import Lipid, Molecule, NonLipid, lipids_set, molecules_set
+from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids.settings.molecules import Lipid, Molecule, NonLipid, lipids_set, molecules_set
 
 
 class System(MutableMapping):
@@ -118,7 +118,7 @@ class Databank:
     Representation of all simulation in the NMR lipids databank.
 
     `path` should be the local location of `{NMLDB_DATA_PATH}/Simulations/` in
-    the NMRlipids databank folder. Example usage to loop over systems:
+    the FAIRMD Lipids folder. Example usage to loop over systems:
 
     .. code-block:: python
 
@@ -166,13 +166,13 @@ System: {ydict!s}\n""")
         return systems
 
     def get_systems(self) -> SystemsCollection:
-        """List all systems in the NMRlipids databank."""
+        """List all systems in the FAIRMD Lipids."""
         return self._systems
 
 
 def initialize_databank() -> SystemsCollection:
     """
-    Intialize the NMRlipids databank.
+    Intialize the FAIRMD Lipids.
 
     :return: list of dictionaries that contain the content of README.yaml files for
              each system.
@@ -186,7 +186,7 @@ def print_README(system: str | Mapping) -> None:  # noqa: N802
     """
     Print the content of ``system`` dictionary in human readable format.
 
-    :param system: NMRlipids databank dictionary defining a simulation or "example".
+    :param system: FAIRMD Lipids dictionary defining a simulation or "example".
     """
     if system == "example":
         current_folder = os.path.dirname(os.path.realpath(__file__))

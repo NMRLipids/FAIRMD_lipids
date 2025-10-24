@@ -12,10 +12,10 @@ POPE_MOLECULAR_WEIGHT = 718
 
 def test_lipids_metadata():
     """Test metadata of lipids_set, especially for POPE."""
-    import DatabankLib
-    from DatabankLib.settings.molecules import lipids_set
+    from fairmd.lipids import NMLDB_MOL_PATH
+    from fairmd.lipids.settings.molecules import lipids_set
 
-    print(DatabankLib.NMLDB_MOL_PATH)
+    print(NMLDB_MOL_PATH)
     print(lipids_set)
 
     check.equal(len(lipids_set), LIPIDS_SET_LENGTH, "LipidSet should have length 5")

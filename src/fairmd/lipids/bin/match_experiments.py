@@ -11,7 +11,7 @@ files and into a log file.
 
 .. code-block:: console
 
-    nml_match_experiments
+    fmdl_match_experiments
 
 No arguments are needed.
 """
@@ -23,9 +23,9 @@ from typing import IO
 import yaml
 from tqdm import tqdm
 
-from DatabankLib import NMLDB_EXP_PATH, NMLDB_SIMU_PATH
-from DatabankLib.core import System, initialize_databank
-from DatabankLib.databankLibrary import lipids_set
+from fairmd.lipids import NMLDB_EXP_PATH, NMLDB_SIMU_PATH
+from fairmd.lipids.core import System, initialize_databank
+from fairmd.lipids.databankLibrary import lipids_set
 
 logger = logging.getLogger("__name__")
 

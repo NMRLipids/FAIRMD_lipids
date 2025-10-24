@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Initializes NMRlipids Databank data folder for further work and creates `databank_env.rc` file.
+Initializes FAIRMD Lipids data folder for further work and creates `databank_env.rc` file.
 
 
 **Usage:**
 
 .. code-block:: console
 
-    nml_initialize_data [toy|stable|dev|-h]
+    fmdl_initialize_data [toy|stable|dev|-h]
     source databank_env.rc
 
 - ``toy``: copies ToyData from the package data. This Databank contains only 4 very small systems
@@ -67,17 +67,17 @@ def download_and_extract_zip(tag: str) -> None:
 
 def download_toy_folder(dest: str = TOYDIRN) -> None:
     """Download a folder from a package data."""
-    pkgspec = importlib.util.find_spec("DatabankLib")
-    src_path = os.path.join(pkgspec.submodule_search_locations[0], "data", "ToyData")
+    pkgspec = importlib.util.find_spec("fairmd")
+    src_path = os.path.join(pkgspec.submodule_search_locations[0], "lipids", "data", "ToyData")
     shutil.copytree(src_path, dest)
 
 
 def initialize_data() -> None:
     """Code program logic."""
-    print("== NMRlipids Databank Data Initializer ==")
+    print("== FAIRMD Lipids Data Initializer ==")
     # can be prg toy | prg stable | prg dev
     if len(sys.argv) != 2:
-        sys.stderr.write("Usage: nml_initialize_data.py [toy|stable|dev]\n")
+        sys.stderr.write("Usage: fmdl_initialize_data.py [toy|stable|dev]\n")
         sys.exit(1)
 
     prg = sys.argv[1].lower()
@@ -112,10 +112,10 @@ def initialize_data() -> None:
         data_path = os.path.join(os.getcwd(), LOCDIRN)
     elif prg in ["-h", "--help"]:
         print("""
-Initializes NMRlipids Databank data folder for further work and creates `databank_env.rc` file.
+Initializes FAIRMD Lipids data folder for further work and creates `databank_env.rc` file.
 
 Usage:
-    nml_initialize_data [toy|stable|dev|-h]
+    fmdl_initialize_data [toy|stable|dev|-h]
     source databank_env.rc
 
 toy - copies ToyData from the package data. This Databank contains only 4 very small systems.

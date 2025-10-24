@@ -8,7 +8,7 @@ on:
 jobs:
   build_gromacs_and_core:
     runs-on: ubuntu-latest
-    if: github.repository == 'NMRLipids/Databank'
+    if: github.repository == 'NMRLipids/fairmd-lipids'
     steps:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -24,7 +24,7 @@ jobs:
             echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
             echo "Latest tag: $tag" 
         
-      - name: Checkout Databank repo
+      - name: Checkout repo
         uses: actions/checkout@v5
 
       - name: Build gromacs image
