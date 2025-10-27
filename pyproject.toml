@@ -46,11 +46,11 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://fairmd-lipids.nmrlipids.fi"
+homepage = "https://FAIRMD_lipids.nmrlipids.fi"
 documentation = "https://nmrlipids.github.io/index.html"
-repository = "https://github.com/NMRLipids/fairmd-lipids"
+repository = "https://github.com/NMRLipids/FAIRMD_lipids"
 # changelog = ""
-issues = "https://github.com/NMRLipids/fairmd-lipids/issues"
+issues = "https://github.com/NMRLipids/FAIRMD_lipids/issues"
 
 [project.scripts]
 fmdl_add_simulation = "fairmd.lipids.bin.add_simulation:add_simulation"

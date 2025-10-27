@@ -11,7 +11,7 @@ permissions:
       
 jobs:
   tests:
-    if: github.repository == 'NMRLipids/fairmd-lipids' 
+    if: github.repository == 'NMRLipids/FAIRMD_lipids' 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
     strategy:

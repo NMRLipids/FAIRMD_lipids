@@ -6,7 +6,7 @@ on:
 
 jobs:
   lint:
-    if: github.repository == 'NMRLipids/fairmd-lipids' 
+    if: github.repository == 'NMRLipids/FAIRMD_lipids' 
     runs-on: ubuntu-22.04
 
     steps:

@@ -8,7 +8,7 @@ on:
 jobs:
   build_gromacs_and_core:
     runs-on: ubuntu-latest
-    if: github.repository == 'NMRLipids/fairmd-lipids'
+    if: github.repository == 'NMRLipids/FAIRMD_lipids'
     steps:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3

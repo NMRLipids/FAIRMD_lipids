@@ -1,9 +1,9 @@
 # FAIRMD Lipids
 
-[![tests status](https://img.shields.io/github/checks-status/NMRLipids/fairmd-lipids/main)](https://github.com/NMRLipids/fairmd-lipids/actions?query=branch%3Amain)
+[![tests status](https://img.shields.io/github/checks-status/NMRLipids/FAIRMD_lipids/main)](https://github.com/NMRLipids/FAIRMD_lipids/actions?query=branch%3Amain)
 [![documentation-stable](https://img.shields.io/badge/📚_documentation-stable-sucess)](https://nmrlipids.github.io/fairmd-lipids/)
 [![documentation-latest](https://img.shields.io/badge/📒_documentation-latest-yellow)](https://nmrlipids.github.io/fairmd-lipids/latest/index.html)
-[![coverage](https://codecov.io/gh/NMRLipids/fairmd-lipids/branch/main/graph/badge.svg)](https://codecov.io/gh/NMRLipids/fairmd-lipids)
+[![coverage](https://codecov.io/gh/NMRLipids/FAIRMD_lipids/branch/main/graph/badge.svg)](https://codecov.io/gh/NMRLipids/FAIRMD_lipids)
 
 This is the FAIRMD Lipids &mdash; a community-driven catalogue containing atomistic MD
 simulations of biologically relevant lipid membranes emerging from the [NMRlipids open
@@ -26,7 +26,7 @@ conda activate fairmd-lipids
 Install *fairmd-lipids* package from repo:
 
 ```bash
-pip install git+https://github.com/NMRlipids/fairmd-lipids.git
+pip install git+https://github.com/NMRLipids/FAIRMD_lipids.git
 ```
 
 or from pypi:
@@ -74,7 +74,7 @@ with simulation specific names delivered by mapping files can be used to perform
 automatic analyses over large sets of simulations. The results for large analyses can be
 stored using the same structure as used for `README.yaml` files as done, for example,
 for [water
-permeation](https://github.com/NMRLipids/fairmd-lipids/tree/main/Data/MD-PERMEATION)
+permeation](https://github.com/NMRLipids/FAIRMD_lipids/tree/main/Data/MD-PERMEATION)
 and lipid
 [flip-flop](https://github.com/NMRLipids/DataBankManuscript/tree/main/Data/Flipflops)
 rates in the [repository related to the FAIRMD Lipids

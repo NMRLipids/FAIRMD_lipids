@@ -51,7 +51,7 @@ need to install `tox` first
     conda install -c conda-forge tox
 ```
 
-Then go to the [develop project](https://github.com/NMRLipids/fairmd-lipids/) page, hit the
+Then go to the [develop project](https://github.com/NMRLipids/FAIRMD_lipids/) page, hit the
 ``Fork`` button and clone your forked branch to your machine.
 
 ```bash
