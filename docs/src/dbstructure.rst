@@ -179,8 +179,8 @@ info.yaml
 ~~~~~~~~~
 Contains information given by contributor when adding data into the FAIRMD Lipids, i.e.
 all non-recomputable fields of simulation ``README.yaml``. This file is given as an
-input to :py:data:`Scripts.BuildDatabank.AddData` to create ``README.yaml`` files:
-:code:`python3 AddData.py -f info.yaml`. These files are not required but currently are
+input to :ref:`_add_simulation_py` to create ``README.yaml`` files:
+:code:`fmdl_add_simulation -f info.yaml`. These files are not required but currently are
 stored historically in ``info_files`` subfolder of
 :py:data:`fairmd.lipids.NMLDB_DATA_PATH`.
 

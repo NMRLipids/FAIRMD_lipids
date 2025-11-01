@@ -8,17 +8,16 @@ and perform automatic quality evaluation are given here. The first three steps a
 minimum requirements to add a simulation. The first three steps can be performed using
 graphical GitHub interface. To run the basic analyses and quality evaluation from steps
 4 forward, you need to create a local fork of the `NMRlipids BilayerData git
-<https://github.com/NMRLipids/BilayerData/>`_. Remember that data is plugged to the main
-Databank repo as a submodule.
+<https://github.com/NMRLipids/BilayerData/>`_. 
 
 #. Add trajectory and topology (tpr for Gromacs, pdb or corresponding to other programs)
    file into a `Zenodo <https://zenodo.org/>`_ repository.\ If you want to use other
    repository than Zenodo, please do not hesitate to open an `GitHub issue
-   <https://github.com/NMRLipids/Databank/issues>`_ on this.
+   <https://github.com/NMRLipids/FAIRMD_lipids/issues>`_ on this.
 
 #. Create an ``info.yaml`` file containing the essential information on your simulation
    by filling the `info template
-   <https://github.com/NMRLipids/Databank/blob/main/src/fairmd/lipids/SchemaValidateion/Schema/info_template.yaml>`_.
+   <https://github.com/NMRLipids/FAIRMD_lipids/blob/main/src/fairmd/lipids/SchemaValidateion/Schema/info_template.yaml>`_.
    For instructions, see :ref:`readmesimu` and `examples
    <https://github.com/NMRLipids/BilayerData/tree/main/info_files>`_. Mapping files are
    described in  :ref:`molecule_names` and are located in the :ref:`molecule_record`
@@ -29,7 +28,7 @@ Databank repo as a submodule.
    BilayerData git and make a pull request to the main branch. **You can stop here or
    continue to create ``README.yaml`` file in step 4.**
 
-#. Before continuing, make sure that your ``Data`` submodule is switched to your own
+#. Before continuing, make sure that your BilayerData repository is switched to your own
    fork. To create the ``README.yaml`` file for the databank you should run
    :ref:`add_simulation_py` on your info-file:
 
@@ -38,8 +37,7 @@ Databank repo as a submodule.
       fmdl_add_simulation -f {path to the info.yaml file that you created} -w
       {working-directory}
 
-   After this is finished, you should see a new folder in `./simulations
-   <https://github.com/NMRLipids/Databank/tree/main/Data/Simulations>`_ which contains
+   After this is finished, you should see a new folder in ``./Simulations`` which contains
    the ``README.yaml`` file of your system. Commit the created ``README.yaml`` file into
    the git.
 
@@ -82,7 +80,7 @@ Databank repo as a submodule.
       git add Simulations/**/README.yaml git add Simulations/**/*.json
 
    To create rankings of simulations based on their quality against experiments (see
-   :ref:`make_ranking_py`) and to store the results in folder `Data/Ranking
+   :ref:`make_ranking_py`) and to store the results in folder `Ranking
    <https://github.com/NMRLipids/BilayerData/tree/main/Ranking>`_, run
 
    .. code-block:: bash

@@ -11,7 +11,7 @@ Test function requiring ``Simulation.1`` and ``Simulation.2`` path plugged in as
 selection is performed in ``conftest.py::header_module_scope`` fixture at the
 test-module level.
 
-Tests are organized via `tox <httsp://tox.wiki/>`_.
+Tests are organized via `tox <https://tox.wiki/>`_.
 
 .. code-block:: bash
 

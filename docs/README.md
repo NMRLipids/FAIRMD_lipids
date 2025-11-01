@@ -21,10 +21,10 @@ This command combines running the python file: `source/run_apidoc` with the `mak
 command.
 
 ### Custom module rst files
-If you want to include custom templates for individual modules, for instance AddData.py: 
+If you want to include custom templates for individual modules, for instance `add_simulation.py`: 
 
 Look at name of the RST file produced by `make all` within `source/auto_gen` folder,
-with this example it's `Scripts.BuildDatabank.AddData.rst` then put your custom rst file
+with this example it's `fairmd.lipid.bin.add_simulation.rst` then put your custom rst file
 with the same name within this folder. It will not be overwritten. 
 
 ### Custom apidoc and sphinx templates used 

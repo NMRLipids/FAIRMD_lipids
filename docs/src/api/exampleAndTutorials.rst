@@ -18,7 +18,6 @@ A template project for analyses utilizing the FAIRMD Lipids is available in `her
 
    Demonstrates the usage of API by three examples. 1) Selects a random simulation and prints the related databank content in human readable format. 2) Shows the readily analyzed properties for the selected random simulation (area per lipid, membrane thickness, relative equilibration times, X-ray scattering form factors, and C-H bond order parameters). 3) Selects a random simulation with the trajectory size below 100Mb and calculates P-N vector angle with respect to membrane normal for all lipids for which P and N atoms are available in headgroup. In addition to `GitHub <https://github.com/NMRLipids/databank-template/blob/main/scripts/template.ipynb>`_, the code can be run at `Colab <https://colab.research.google.com/github/NMRLipids/databank-template/blob/main/scripts/template.ipynb>`_ without additional setup.
 
-#. `Showing statistics from the FAIRMD Lipids <https://github.com/NMRLipids/Databank/blob/main/Scripts/AnalyzeDatabank/stats.ipynb>`_
+#. `Showing statistics from the FAIRMD Lipids (OUTDATED) <https://github.com/NMRLipids/MuseumDatabank/blob/main/Scripts/AnalyzeDatabank/stats.ipynb>`_
 
-   Plots distributions of simulation lengths, number of atoms and trajectory sizes, distribution of number of lipid components, available single component bilayers and binary lipid mixtures, and pie diagram of temperatures. In addition to `GitHub <https://github.com/NMRLipids/Databank/blob/main/Scripts/AnalyzeDatabank/stats.ipynb>`_, the code can be run at `Colab <https://colab.research.google.com/github/NMRLipids/Databank/blob/main/Scripts/AnalyzeDatabank/stats.ipynb>`_ without additional setup.
-
+   Plots distributions of simulation lengths, number of atoms and trajectory sizes, distribution of number of lipid components, available single component bilayers and binary lipid mixtures, and pie diagram of temperatures.

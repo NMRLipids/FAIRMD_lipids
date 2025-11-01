@@ -46,24 +46,20 @@ Lipids. This enables wide range of novel data-driven applications from construct
 machine learning models that predict membrane properties, to automatic analysis of
 virtually any property across all simulations in the Databank. For examples of novel
 analyses enabled by the FAIRMD Lipids API see the `FAIRMD Lipids manuscript
-<https://doi.org/10.26434/chemrxiv-2023-jrpwm>`_.
+<https://doi.org/10.1038/s41467-024-45189-z>`_.
 
 Functions available for simulation analyses are described in :mod:`fairmd.lipids.core`
-and :mod:`fairmd.lipids.databankLibrary`. A project `template
+and :mod:`fairmd.lipids.databankLibrary`. A project `Databank template
 <https://github.com/NMRLipids/databank-template>`_ designed to intialize projects that
 analyse data from FAIRMD Lipids contains a `minimum example for looping over available
 simulations
 <https://github.com/NMRLipids/databank-template/blob/main/scripts/template.ipynb>`_. For
-further examples, see codes that analyze the `area per lipid
-<https://github.com/NMRLipids/Databank/blob/main/Scripts/AnalyzeDatabank/calcAPL.py>`_,
-`C-H bond order parameters
-<https://github.com/NMRLipids/Databank/blob/main/Scripts/AnalyzeDatabank/calcOrderParameters.py>`_,
-`X-ray scattering form factors
-<https://github.com/NMRLipids/Databank/blob/main/Scripts/AnalyzeDatabank/calc_FormFactors.py>`_,
-and `principal component equilibration
-<https://github.com/NMRLipids/Databank/blob/main/Scripts/AnalyzeDatabank/NMRPCA_timerelax.py>`_.
+further examples, see codes called by :ref:`add_simulation_py` that analyze the area per lipid (),
+C-H bond order parameters (:py:func:`fairmd.lipids.analyze.computeAPL`),
+X-ray scattering form factors (:py:func:`fairmd.lipids.analyze.computeMAICOS`),
+and principal component equilibration time (:py:func:`fairmd.lipids.analyze.computeNMRPCA`).
 For these analyses, the universal molecule and atom names are connected to simulation
-specific names using README.yaml and mapping files as described in
+specific names using ``README.yaml`` and mapping files as described in
 :ref:`molecule_names`.
 
 
