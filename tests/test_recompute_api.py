@@ -23,10 +23,10 @@ pytestmark = [pytest.mark.sim1]
 
 @pytest.fixture(scope="module")
 def systems():
-    import fairmd.lipids
+    from fairmd.lipids import NMLDB_DATA_PATH, NMLDB_SIMU_PATH
     from fairmd.lipids.core import initialize_databank
 
-    if os.path.isfile(os.path.join(lipids.NMLDB_DATA_PATH, ".notest")):
+    if os.path.isfile(os.path.join(NMLDB_DATA_PATH, ".notest")):
         pytest.exit("Test are corrupted. I see '.notest' file in the data folder.")
     s = initialize_databank()
     print(f"Loaded: {len(s)} systems")
@@ -37,7 +37,7 @@ def systems():
         _s = s.loc(_sid)
 
         def gbGen(x):
-            return glob.glob(os.path.join(lipids.NMLDB_SIMU_PATH, _s["path"], x))
+            return glob.glob(os.path.join(NMLDB_SIMU_PATH, _s["path"], x))
 
         clearList = ["*.xtc", "*.gro"]
         for pat in clearList:
@@ -73,14 +73,14 @@ def test_system2MDAnalysisUniverse(systems, systemid, natoms, nframes):
 
 @pytest.fixture(scope="function")
 def failSys():
-    import fairmd.lipids
+    from fairmd.lipids import NMLDB_SIMU_PATH
 
-    with TemporaryDirectory(prefix=lipids.NMLDB_SIMU_PATH + os.sep) as tmpd:
+    with TemporaryDirectory(prefix=NMLDB_SIMU_PATH + os.sep) as tmpd:
         s = {
             "DOI": "localhost",
             "GRO": [["md.gro"]],
             "TRJ": [["md.trr"]],
-            "path": os.path.relpath(lipids.NMLDB_SIMU_PATH, tmpd),
+            "path": os.path.relpath(NMLDB_SIMU_PATH, tmpd),
             "SOFTWARE": "gromacs",
         }
         yield s

@@ -8,7 +8,7 @@ and perform automatic quality evaluation are given here. The first three steps a
 minimum requirements to add a simulation. The first three steps can be performed using
 graphical GitHub interface. To run the basic analyses and quality evaluation from steps
 4 forward, you need to create a local fork of the `NMRlipids BilayerData git
-<https://github.com/NMRLipids/BilayerData/>`_. 
+<https://github.com/NMRLipids/BilayerData/>`_.
 
 #. Add trajectory and topology (tpr for Gromacs, pdb or corresponding to other programs)
    file into a `Zenodo <https://zenodo.org/>`_ repository.\ If you want to use other
