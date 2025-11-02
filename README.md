@@ -1,13 +1,14 @@
 # FAIRMD Lipids
 
 [![tests status](https://img.shields.io/github/checks-status/NMRLipids/FAIRMD_lipids/main)](https://github.com/NMRLipids/FAIRMD_lipids/actions?query=branch%3Amain)
-[![documentation-stable](https://img.shields.io/badge/📚_documentation-stable-sucess)](https://nmrlipids.github.io/fairmd-lipids/)
-[![documentation-latest](https://img.shields.io/badge/📒_documentation-latest-yellow)](https://nmrlipids.github.io/fairmd-lipids/latest/index.html)
+[![documentation-stable](https://img.shields.io/badge/📚_documentation-stable-sucess)](https://nmrlipids.github.io/FAIRMD_lipids/)
+[![documentation-latest](https://img.shields.io/badge/📒_documentation-latest-yellow)](https://nmrlipids.github.io/FAIRMD_lipids/latest/index.html)
 [![coverage](https://codecov.io/gh/NMRLipids/FAIRMD_lipids/branch/main/graph/badge.svg)](https://codecov.io/gh/NMRLipids/FAIRMD_lipids)
 
-This is the FAIRMD Lipids &mdash; a community-driven catalogue containing atomistic MD
-simulations of biologically relevant lipid membranes emerging from the [NMRlipids open
-collaboration](http://nmrlipids.blogspot.com/2021/03/second-online-meeting-on-nmrlipids.html). 
+This is the FAIRMD Lipids &mdash; an API package for the community-driven catalogue 
+FAIRMD Lipid Databank (formerly NMRlipids Databank) containing atomistic MD
+simulations of biologically relevant lipid membranes emerging from the [NMRlipids Open
+Collaboration](http://nmrlipids.blogspot.com/2021/03/second-online-meeting-on-nmrlipids.html). 
 
 # Installation
 
@@ -52,7 +53,7 @@ your python code.
 # Documentation
 
 The FAIRMD Lipids project documentation is available in
-[here](https://nmrlipids.github.io/fairmd-lipids/latest/). More information and example
+[here](https://nmrlipids.github.io/FAIRMD_lipids/latest/). More information and example
 applications are available from the [FAIRMD Lipids
 manuscript](https://doi.org/10.1038/s41467-024-45189-z).
 
@@ -69,7 +70,7 @@ notebook](https://github.com/NMRLipids/databank-template/blob/main/scripts/templ
 can be used to get started with the analyses utilizing the FAIRMD Lipids.
 
 Connection of [Universal molecule and atom naming
-conventions](https://nmrlipids.github.io/fairmd-lipids/latest/schemas/moleculesAndMapping.html)
+conventions](https://nmrlipids.github.io/FAIRMD_lipids/latest/schemas/moleculesAndMapping.html)
 with simulation specific names delivered by mapping files can be used to perform
 automatic analyses over large sets of simulations. The results for large analyses can be
 stored using the same structure as used for `README.yaml` files as done, for example,
@@ -82,7 +83,7 @@ manuscript](https://github.com/NMRLipids/DataBankManuscript).
 
 # Web UI
 
-[FAIRMD Lipids-webUI](https://fairmd-lipids.nmrlipids.fi/) provides an easy access to the
+[FAIRMD Lipids-webUI](https://databank.nmrlipids.fi/) provides an easy access to the
 FAIRMD Lipids content. Simulations can be searched based on their molecular composition,
 force field, temperature, membrane properties, and quality; the search results are
 ranked based on the simulation quality as evaluated against experimental data when
@@ -97,3 +98,6 @@ The Web-UI is being developed in the repository
 The project is open for contributions! 
 
 Please consult [CONTRIBUTION.md](./CONTRIBUTION.md) for further information.
+
+Do not hesitate contacting us via [databank@nmrlipids.fi](email:databank@nmrlipids.fi) if 
+you have any questions or inquiries!

@@ -4,8 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 authors = [
-    {name = "FAIRMD lipids team"},
-    {name = "Samuli Ollila", email = "samuli.ollila@helsinki.fi"}
+    {name = "NMRlipids Open Collaboration", email = "databank@nmrlipids.fi"},
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -20,7 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Shells",
 ]
-description = "FAIRMD Lipids project contains the core functionality for managing and accessing the Database."
+description = "FAIRMD Lipids project (formerly NMRlipids) contains the core functionality for managing and accessing the Database."
 dynamic = ["version"]
 keywords = [
     "Science",
@@ -47,7 +46,7 @@ dependencies = [
 
 [project.urls]
 homepage = "https://FAIRMD_lipids.nmrlipids.fi"
-documentation = "https://nmrlipids.github.io/index.html"
+documentation = "https://nmrlipids.github.io/FAIRMD_lipids/latest/"
 repository = "https://github.com/NMRLipids/FAIRMD_lipids"
 # changelog = ""
 issues = "https://github.com/NMRLipids/FAIRMD_lipids/issues"
