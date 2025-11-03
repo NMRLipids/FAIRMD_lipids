@@ -1,0 +1,60 @@
+##################################################################################
+## Mandatory fields for the metadata template.
+# This template is used to describe the metadata of a molecule metadata.yaml file
+# in a standardized way.
+##################################################################################
+NMRlipids:
+  id: string
+  name: string
+  charge: integer # The charge of the molecule, e.g. 0 for neutral, -1 for anionic, +1 for cationic
+
+# Chemical identifiers for the molecule serving as a unique identifier
+  # The identifier.org prefix is used to look up the identifier in the 
+  # identifiers.org database.
+  # The value is the unique identifier for the molecule in that database
+  # For example, pubchem.compound: 5497103 means that the molecule can be 
+  # found at https://identifiers.org/pubchem.compound/5497103
+  # The identifiers are used to link the molecule to other databases and resources
+  # All identifier fields are optional, but at least one should be provided.
+sameAs:
+  #key names must correspond to the identifier.org prefix
+  # test lookup at https://identifiers.org/[prefix]/[value]
+  pubchem.compound: integer
+  ChEBI: string
+  lipidmaps: string
+  metabolights: string
+  slm: string
+  pdb.ligand: string
+  unii: string
+  cas: string
+
+# Bioschema properties for the molecule
+# These properties are used to describe the molecule in a standardized way
+# and are used by the Bioschemas community to improve discoverability
+# and interoperability of molecular data.
+# The properties are based on the Bioschemas Molecule schema
+# https://bioschemas.org/profiles/MolecularEntity/0.5-RELEASE
+bioschema_properties:
+  name: string
+  # This is the IUPAC name, which is a systematic way to name chemical compounds
+  iupacName: string
+  molecularFormula: string
+  molecularWeight: number
+  # InChI is a standard way to represent chemical substances
+  # It is a text string that encodes the molecular structure
+  # InChIKey is a hashed version of the InChI, used for easier searching
+  # Both are used to uniquely identify chemical substances
+  # In case that multiple protonation states exist, multiple InChis and 
+  # InChIKeys may be provided
+  inChI: string
+  inChIKey: string
+  smiles: string
+  # Either a url or a file path to the 2D or 3D structure of the molecule
+  image: string
+  description: string
+  alternateName:
+    - string
+
+# Additonal properties for the molecule, not covered by bioschema_properties
+properties:
+     

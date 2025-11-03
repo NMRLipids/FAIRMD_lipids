@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "NMRlipids": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the molecule"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the molecule"
+        },
+        "charge": {
+          "type": "integer",
+          "description": "The charge of the molecule (0 for neutral, -1 for anionic, +1 for cationic)"
+        }
+      }
+    },
+    "sameAs": {
+      "type": "object",
+      "properties": {
+        "pubchem.compound": {
+          "type": "integer",
+          "description": "PubChem Compound identifier",
+          "pattern": "^\\d+$"
+        },
+        "ChEBI": {
+          "type": "string",
+          "description": "ChEBI identifier",
+          "pattern": "^CHEBI:\\d+$"
+        },
+        "ChEMBL": {
+          "type": "string",
+          "description": "CHEMBL identifier",
+          "pattern": "^CHEMBL\\d+$"
+        },
+        "lipidmaps": {
+          "type": "string",
+          "description": "LipidMaps identifier",
+          "pattern": "^LM(FA|GL|GP|SP|ST|PR|SL|PK)[0-9]{4}([0-9a-zA-Z]{4,6})?$"
+        },
+        "metabolights": {
+          "type": "string", 
+          "description": "MetaboLights identifier",
+          "pattern": "^MTBL[CS]\\d+$"
+        },
+        "slm": {
+          "type": "string",
+          "description": "SLM identifier",
+          "pattern": "^SLM:\\d+$"
+        },
+        "pdb": {
+          "type": "string",
+          "description": "Protein Data Bank identifier",
+          "pattern": "^[A-Za-z0-9]+$"
+        },
+        "unii": {
+          "type": "string",
+          "description": "Unique Ingredient Identifier",
+          "pattern": "^[A-Z0-9]+$"
+        },
+        "cas": {
+          "type": "string",
+          "description": "CAS Registry Number",
+          "pattern": "^\\d{1,7}\\-\\d{2}\\-\\d$"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Chemical identifiers for the molecule with validated patterns"
+    },
+    "bioschema_properties": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the molecule"
+        },
+        "iupacName": {
+          "type": "string",
+          "description": "IUPAC systematic name of the chemical compound"
+        },
+        "molecularFormula": {
+          "type": "string",
+          "description": "Molecular formula of the compound"
+        },
+        "molecularWeight": {
+          "type": "number",
+          "description": "Molecular weight of the compound"
+        },
+        "inChI": {
+          "type": "string",
+          "description": "IUPAC International Chemical Identifier"
+        },
+        "inChIKey": {
+          "type": "string",
+          "description": "Hashed version of InChI for easier searching"
+        },
+        "smiles": {
+          "type": "string",
+          "description": "Simplified Molecular-Input Line-Entry System representation"
+        },
+        "image": {
+          "type": "string",
+          "description": "URL or file path to the 2D or 3D structure of the molecule"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the molecule"
+        },
+        "alternateName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Alternative names for the molecule"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["name", "molecularFormula"],
+      "description": "Bioschema properties for molecular entity"
+    },
+    "properties": {
+      "type": "object",
+      "description": "Additional properties for the molecule not covered by bioschema_properties",
+      "additionalProperties": true
+    }
+  },
+  "required": ["NMRlipids", "sameAs", "bioschema_properties"],
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "required": ["sameAs"],
+      "properties": {
+        "sameAs": {
+          "minProperties": 1
+        }
+      }
+    }
+  ],
+  "description": "Molecule Metadata Schema for NMRlipids",
+  "$comment": "Schema version 1.0.0, Last updated: 2025-10-30"
+}
