@@ -391,6 +391,6 @@ def test_GetEquilibrationTimes_fail(systems):
 def test_GetOP_reads_valid_json(systemid, lipid):
     from fairmd.lipids.databankLibrary import GetOP
     sys0 = systems.loc(systemid)
-    resdic = databankLibrary.GetOP(sys)
+    resdic = databankLibrary.GetOP(sys0)
 
     assert lipid in resdic
