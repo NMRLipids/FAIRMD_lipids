@@ -24,7 +24,7 @@ if os.getenv("READTHEDOCS") == "True":
         data_path = os.path.join(repo_root, "src", "fairmd", "lipids", "data", "ToyData")
         os.environ.setdefault("FMDL_DATA_PATH", data_path)
 
-import fairmd.lipids as dbl
+import fairmd.lipids as fmdl
 
 # Directory containing this conf.py
 here = os.path.dirname(__file__)
@@ -37,8 +37,8 @@ year = datetime.now().year
 
 # -- Project information -----------------------------------------------------
 
-project = f"FAIRMD Lipids v{dbl.__version__}"
-author = dbl.__author__
+project = f"FAIRMD Lipids v{fmdl.__version__}"
+author = fmdl.__author_email__
 copyright = f"""{year}, {author}
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
@@ -49,10 +49,10 @@ copyright = f"""{year}, {author}
 
 
 # The full version, including alpha/beta/rc tags
-release = dbl.__version__
+release = fmdl.__version__
 html_context = {
-    "copyright_link": dbl.__url__ + "/blob/main/LICENSE.txt",
-    "repo_link": dbl.__url__,
+    "copyright_link": fmdl.__url__ + "/blob/main/LICENSE.txt",
+    "repo_link": fmdl.__url__,
 }
 
 # -- General configuration ---------------------------------------------------

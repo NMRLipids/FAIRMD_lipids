@@ -8,14 +8,15 @@ Lipids project. This includes *Package Information*, *Paths*, and *Return Codes*
 import importlib.metadata
 import importlib.util
 import os
+import re
 import sys
 
 from ._version import __version__
 
 # Package Information
 _mtd = importlib.metadata.metadata("fairmd-lipids")
-__author__ = _mtd["Author"]
 __author_email__ = _mtd["Author-email"]
+__author__ = re.sub(r" ?<.*>$", "", __author_email__)
 __description__ = _mtd["Summary"]  # reads toml's `description` field
 __license__ = _mtd["Licence-Expression"]
 __url__ = _mtd.json["project_url"][2].split(", ")[1]  # url nr 3
