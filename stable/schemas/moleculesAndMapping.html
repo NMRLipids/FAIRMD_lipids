@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Universal molecule and atom names &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Adding new molecule" href="../contrib/addingMolecule.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../dbcontribute.html">Data Contribution</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../contrib/addingSimulation.html">Adding simulations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contrib/addingExpData.html">Adding experimental data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contrib/addingMolecule.html">Adding new molecule</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Universal molecule and atom names</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Molecule names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#universal-atom-names-in-mapping-files">Universal atom names in mapping files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cardiolipin-universal-naming-conventions">Cardiolipin universal naming conventions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../dbcontribute.html">Data Contribution</a></li>
+      <li class="breadcrumb-item active">Universal molecule and atom names</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/schemas/moleculesAndMapping.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="universal-molecule-and-atom-names">
+<span id="molecule-names"></span><h1>Universal molecule and atom names<a class="headerlink" href="#universal-molecule-and-atom-names" title="Link to this heading"></a></h1>
+<section id="id1">
+<h2>Molecule names<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>To enable automatic analyses over all simulations, universal names for molecules are defined in the FAIRMD Lipids as listed in the table below. These names are connected to simulation specific molecule names using the COMPOSITION dictionary in README.yaml files.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Abbreviation</p></th>
+<th class="head"><p>Molecule name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>POPC</p></td>
+<td><p>1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-odd"><td><p>POPG</p></td>
+<td><p>1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoglycerol</p></td>
+</tr>
+<tr class="row-even"><td><p>POPS</p></td>
+<td><p>1-palmitoyl-2-oleoyl-sn-glycero-3-phospho-L-serine</p></td>
+</tr>
+<tr class="row-odd"><td><p>POPE</p></td>
+<td><p>1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoethanolamine</p></td>
+</tr>
+<tr class="row-even"><td><p>PYPC</p></td>
+<td><p>1-(16:0)-2-(16:1$^\Delta9$)-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-odd"><td><p>PAzePCprot</p></td>
+<td><p>1-palmitoyl-2-azelaoyl-sn-glycero-3-phosphocholine protonated</p></td>
+</tr>
+<tr class="row-even"><td><p>PAzePCdeprot</p></td>
+<td><p>1-palmitoyl-2-azelaoyl-sn-glycero-3-phosphocholine deprotonated</p></td>
+</tr>
+<tr class="row-odd"><td><p>DMPC</p></td>
+<td><p>1,2-dimyristoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-even"><td><p>DPPC</p></td>
+<td><p>1,2-dipalmitoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-odd"><td><p>DPPE</p></td>
+<td><p>1,2-dipalmitoyl-sn-glycero-3-phosphoethanolamine</p></td>
+</tr>
+<tr class="row-even"><td><p>DPPG</p></td>
+<td><p>1,2-dipalmitoyl-sn-glycero-3-phospho-(1’-rac-glycerol) (sodium salt)</p></td>
+</tr>
+<tr class="row-odd"><td><p>DEPC</p></td>
+<td><p>1,2-dierucoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-even"><td><p>DRPC</p></td>
+<td><p>1,2-(14:1$^\Delta9$)-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-odd"><td><p>DYPC</p></td>
+<td><p>1,2-(16:1$^\Delta9$)-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-even"><td><p>DLPC</p></td>
+<td><p>1,2-dilauroyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-odd"><td><p>DLIPC</p></td>
+<td><p>1,2-dilinoleoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-even"><td><p>DOG</p></td>
+<td><p>1,2-dioleoyl-sn-glycerol</p></td>
+</tr>
+<tr class="row-odd"><td><p>DOPC</p></td>
+<td><p>1,2-dioleoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-even"><td><p>DOPE</p></td>
+<td><p>1,2-dioleoyl-sn-glycero-3-phosphoethanolamine</p></td>
+</tr>
+<tr class="row-odd"><td><p>DDOPC</p></td>
+<td><p>1,2-didocosahexaenoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-even"><td><p>DOPS</p></td>
+<td><p>1,2-dioleoyl-sn-glycero-3-phospho-L-serine</p></td>
+</tr>
+<tr class="row-odd"><td><p>DSPC</p></td>
+<td><p>1,2-distearoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-even"><td><p>DAPC</p></td>
+<td><p>1,2-diarachidonoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-odd"><td><p>SLiPC</p></td>
+<td><p>1-(18:0)-2-(18:2 $^{\Delta9,12}$)-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-even"><td><p>DMTAP</p></td>
+<td><p>1,2-dimyristoyl-3-trimethylammonium-propane</p></td>
+</tr>
+<tr class="row-odd"><td><p>GM1</p></td>
+<td><p>GM1 Ganglioside</p></td>
+</tr>
+<tr class="row-even"><td><p>SOPC</p></td>
+<td><p>1-stearoyl-2-oleoyl-sn-glycero-3-phosphocholine</p></td>
+</tr>
+<tr class="row-odd"><td><p>POPI</p></td>
+<td><p>1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoinositol</p></td>
+</tr>
+<tr class="row-even"><td><p>SAPI</p></td>
+<td><p>1-stearoyl-2-arachidonoyl-sn-glycero-3-phosphoinositol</p></td>
+</tr>
+<tr class="row-odd"><td><p>SAPI24</p></td>
+<td><p>1-stearoyl-2-arachidonoyl-sn-glycero-3-phospho-(1’-myo-inositol-4’,5’-bisphosphate)</p></td>
+</tr>
+<tr class="row-even"><td><p>SLPI</p></td>
+<td><p>1-stearoyl-2-lauroyl-sn-glycero-3-phosphoinositol</p></td>
+</tr>
+<tr class="row-odd"><td><p>SDG</p></td>
+<td><p>1-stearoyl-2-docosahexaenoyl-sn-glycerol</p></td>
+</tr>
+<tr class="row-even"><td><p>SDPE</p></td>
+<td><p>1-stearoyl-2-docosahexaenoyl-sn-glycero-3-phosphoethanolamine</p></td>
+</tr>
+<tr class="row-odd"><td><p>SM16</p></td>
+<td><p>N-palmitoyl-D-erythro-sphingosylphosphorylcholine</p></td>
+</tr>
+<tr class="row-even"><td><p>SM18</p></td>
+<td><p>N-stearoyl-D-erythro-sphingosylphosphorylcholine</p></td>
+</tr>
+<tr class="row-odd"><td><p>TOCL</p></td>
+<td><p>1’,3’-Bis[1,2-dioleoyl-sn-glycero-3-phospho]-glycerol</p></td>
+</tr>
+<tr class="row-even"><td><p>TLCL</p></td>
+<td><p>tetralinoleoyl cardiolipin</p></td>
+</tr>
+<tr class="row-odd"><td><p>CER</p></td>
+<td><p>N-palmitoyl-D-erythro-sphingosine</p></td>
+</tr>
+<tr class="row-even"><td><p>CER180</p></td>
+<td><p>N-stearoyl-D-erythro-sphingosine</p></td>
+</tr>
+<tr class="row-odd"><td><p>CHOL</p></td>
+<td><p>cholesterol</p></td>
+</tr>
+<tr class="row-even"><td><p>DCHOL</p></td>
+<td><p>18,19-di-nor-cholesterol</p></td>
+</tr>
+<tr class="row-odd"><td><p>DHMDMAB</p></td>
+<td><p>dihexadecyldimethylammonium</p></td>
+</tr>
+<tr class="row-even"><td><p>DPPGK</p></td>
+<td><p>1,2-dioleoyl-sn-glycero-3-[phospho-rac-(3-lysyl(1-glycerol))] (lysyl-PG)</p></td>
+</tr>
+<tr class="row-odd"><td><p>POT</p></td>
+<td><p>potassium ion</p></td>
+</tr>
+<tr class="row-even"><td><p>SOD</p></td>
+<td><p>sodium ion</p></td>
+</tr>
+<tr class="row-odd"><td><p>CLA</p></td>
+<td><p>chloride ion</p></td>
+</tr>
+<tr class="row-even"><td><p>CAL</p></td>
+<td><p>calcium ion</p></td>
+</tr>
+<tr class="row-odd"><td><p>CES</p></td>
+<td><p>caesium ion</p></td>
+</tr>
+<tr class="row-even"><td><p>C20</p></td>
+<td><p>n-eicosane</p></td>
+</tr>
+<tr class="row-odd"><td><p>SOL</p></td>
+<td><p>water</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="universal-atom-names-in-mapping-files">
+<h2>Universal atom names in mapping files<a class="headerlink" href="#universal-atom-names-in-mapping-files" title="Link to this heading"></a></h2>
+<p>To enable automatic analyses over all simulations, universal atom names for each molecule are defined in the FAIRMD Lipids using the <strong>mapping files</strong>. In these files, universal atom names are connected to simulation specific atom names using python dictionaries stored in yaml file format. The first key in the mapping file dictionary is the universal atom name, second keys define the simulation specific atom name (<code class="docutils literal notranslate"><span class="pre">ATOMNAME</span></code>) and molecule fragment (<code class="docutils literal notranslate"><span class="pre">FRAGMENT:</span></code> head group, glycerol backbone, sn-1 or sn-2). For example, the beginning of the mapping file for CHARMM36 POPC looks like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span> M_G1_M:
+  ATOMNAME: C3
+  FRAGMENT: glycerol backbone
+M_G1H1_M:
+  ATOMNAME: HX
+  FRAGMENT: glycerol backbone
+M_G1H2_M:
+  ATOMNAME: HY
+  FRAGMENT: glycerol backbone
+M_G1O1_M:
+  ATOMNAME: O31
+  FRAGMENT: glycerol backbone
+M_G1C2_M:
+  ATOMNAME: C31
+  FRAGMENT: sn-1
+M_G1C2O1_M:
+  ATOMNAME: O32
+  FRAGMENT: sn-1
+.
+.
+.
+</pre></div>
+</div>
+<p>Universal atom names start with “M_” flag and ends with “_M” flag. In the actual naming convention between the flags, the first two characters define in which glycerol backbone chain the atoms attached (G1, G2 or G3), third character tells the atom type and fourth character tells the counting number from the glycerol backbone carbon. If there are hydrogens or other atoms attached to the main chain, those will be added to the end of the naming. More details can be found from <a class="reference external" href="https://nmrlipids.blogspot.com/2015/03/mapping-scheme-for-lipid-atom-names-for.html">the original NMRlipids project post defining the mapping files</a>. Examples already existing mapping files can be found in <a class="reference external" href="https://github.com/NMRLipids/FAIRMD_lipids/tree/main/src/fairmd/lipids/data/ToyData/Molecules">the Toy Databank</a>.</p>
+</section>
+<section id="cardiolipin-universal-naming-conventions">
+<h2>Cardiolipin universal naming conventions<a class="headerlink" href="#cardiolipin-universal-naming-conventions" title="Link to this heading"></a></h2>
+<p>If you add a lipid of this family, you can stick to following namings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                        <span class="n">G02O1</span>
+                    <span class="n">G01</span><span class="o">--</span><span class="n">G02</span><span class="o">--</span><span class="n">G03</span>
+                  <span class="o">/</span>               \
+               <span class="n">G23P1O1</span>           <span class="n">G13P1O1</span>
+  <span class="n">G23P1O</span><span class="p">[</span><span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">]</span><span class="o">--</span><span class="n">G23P1</span>             <span class="n">G13P1</span><span class="o">--</span><span class="n">G12P1O</span><span class="p">[</span><span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">]</span>
+               <span class="n">G23O1</span>             <span class="n">G13O1</span>
+                 <span class="o">|</span>                <span class="o">|</span>
+   <span class="n">G22C2O1</span>       <span class="n">G23</span>              <span class="n">G13</span>         <span class="n">G12C2O1</span>
+   <span class="o">||</span>            <span class="o">|</span>                <span class="o">|</span>            <span class="o">||</span>
+   <span class="n">G22C2</span><span class="o">--</span><span class="n">G22O1</span><span class="o">--</span><span class="n">G22</span>              <span class="n">G12</span><span class="o">--</span><span class="n">G12O1</span><span class="o">--</span><span class="n">G12C2</span>
+  <span class="n">G22C3</span>          <span class="o">|</span>                <span class="o">|</span>            <span class="n">G12C3</span>
+ <span class="n">G22C4</span>           <span class="n">G21</span>              <span class="n">G11</span>           <span class="n">G12C4</span>
+ <span class="o">..</span>           <span class="n">G21O1</span>                <span class="n">G11O1</span>          <span class="o">..</span>
+      <span class="n">G21C2O1</span><span class="o">==</span><span class="n">G21C2</span>              <span class="n">G11C2</span><span class="o">==</span><span class="n">G11C2O1</span>
+                <span class="n">G21C3</span>              <span class="n">G11C3</span>
+               <span class="n">G32C4</span>              <span class="n">G11C4</span>
+                <span class="o">..</span>                 <span class="o">..</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../contrib/addingMolecule.html" class="btn btn-neutral float-left" title="Adding new molecule" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAIRMD Lipids Project &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting started" href="gettingstarted.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">FAIRMD Lipids Project</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fairmd-lipids-project">
+<span id="index"></span><h1>FAIRMD Lipids Project<a class="headerlink" href="#fairmd-lipids-project" title="Link to this heading"></a></h1>
+<p>FAIRMD Lipids is a community-driven catalogue of biologically relevant lipid membranes
+emerging from the <a class="reference external" href="http://nmrlipids.blogspot.com/">NMRlipids Open Collaboration</a>. It
+gathers atomistic MD simulations, X-ray scattering experiments, and NMR experiments on
+C-H bond order parameters in one place.</p>
+<p><em>FAIRMD Lipids is an overlay databank.</em> Each databank entry (molecule, simulation or
+experiment) contains the metadata YAML-file, which stores all the essential information
+for the data upcycling and reuse. This includes, for example, the information about
+permanent location of each simulation file, but raw data is located in distributed
+locations outside the FAIRMD Lipids. The organisation of the data as well as description
+of metadata schemas are described in <a class="reference internal" href="dbstructure.html#dbstructure"><span class="std std-ref">Data Organization</span></a>. Physically, the database is
+located in <a class="reference external" href="https://github.com/NMRlipids/BilayerData">BilayerData GitHub repository</a>.</p>
+<p>The scientific background and initial motivation of the project is described in the
+<a class="reference external" href="https://doi.org/10.1038/s41467-024-45189-z">FAIRMD Lipids Manuscript (Nat.Comm., 2024)</a>.</p>
+<section id="databank-nmrlipids-fi-web-ui">
+<h2>databank.nmrlipids.fi web-UI<a class="headerlink" href="#databank-nmrlipids-fi-web-ui" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://databank.nmrlipids.fi/">FAIRMD Lipids-webUI</a> provides easy access to the
+FAIRMD Lipids content. Simulations can be searched based on their molecular composition,
+force field, temperature, membrane properties, and quality; the search results are
+ranked based on the simulation quality as evaluated against experimental data when
+available. Web-UI provides basic graphical reports for the computed properties as well
+as graphical comparison between simulation and experimental data.</p>
+<p>The Web-UI is being developed in the repository <a class="reference external" href="https://github.com/NMRlipids/BilayerGUI_laravel">BilayerGUI_laravel</a>.</p>
+</section>
+<section id="fairmd-lipids-api">
+<h2>FAIRMD Lipids-API<a class="headerlink" href="#fairmd-lipids-api" title="Link to this heading"></a></h2>
+<p>The FAIRMD Lipids-API provides programmatic access to all simulation data in the FAIRMD
+Lipids. This enables wide range of novel data-driven applications from construction of
+machine learning models that predict membrane properties, to automatic analysis of
+virtually any property across all simulations in the Databank. For examples of novel
+analyses enabled by the FAIRMD Lipids API see the <a class="reference external" href="https://doi.org/10.1038/s41467-024-45189-z">FAIRMD Lipids manuscript</a>.</p>
+<p>Functions available for simulation analyses are described in <a class="reference internal" href="auto_gen/fairmd.lipids.core.html#module-fairmd.lipids.core" title="fairmd.lipids.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fairmd.lipids.core</span></code></a>
+and <a class="reference internal" href="auto_gen/fairmd.lipids.databankLibrary.html#module-fairmd.lipids.databankLibrary" title="fairmd.lipids.databankLibrary"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fairmd.lipids.databankLibrary</span></code></a>. A project <a class="reference external" href="https://github.com/NMRLipids/databank-template">Databank template</a> designed to intialize projects that
+analyse data from FAIRMD Lipids contains a <a class="reference external" href="https://github.com/NMRLipids/databank-template/blob/main/scripts/template.ipynb">minimum example for looping over available
+simulations</a>. For
+further examples, see codes called by <a class="reference internal" href="dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a> that analyze the area per lipid (),
+C-H bond order parameters (<a class="reference internal" href="auto_gen/fairmd.lipids.analyze.html#fairmd.lipids.analyze.computeAPL" title="fairmd.lipids.analyze.computeAPL"><code class="xref py py-func docutils literal notranslate"><span class="pre">fairmd.lipids.analyze.computeAPL()</span></code></a>),
+X-ray scattering form factors (<a class="reference internal" href="auto_gen/fairmd.lipids.analyze.html#fairmd.lipids.analyze.computeMAICOS" title="fairmd.lipids.analyze.computeMAICOS"><code class="xref py py-func docutils literal notranslate"><span class="pre">fairmd.lipids.analyze.computeMAICOS()</span></code></a>),
+and principal component equilibration time (<a class="reference internal" href="auto_gen/fairmd.lipids.analyze.html#fairmd.lipids.analyze.computeNMRPCA" title="fairmd.lipids.analyze.computeNMRPCA"><code class="xref py py-func docutils literal notranslate"><span class="pre">fairmd.lipids.analyze.computeNMRPCA()</span></code></a>).
+For these analyses, the universal molecule and atom names are connected to simulation
+specific names using <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> and mapping files as described in
+<a class="reference internal" href="schemas/moleculesAndMapping.html#molecule-names"><span class="std std-ref">Universal molecule and atom names</span></a>.</p>
+</section>
+<section id="adding-simulations-into-the-fairmd-lipids">
+<h2>Adding simulations into the FAIRMD Lipids<a class="headerlink" href="#adding-simulations-into-the-fairmd-lipids" title="Link to this heading"></a></h2>
+<p>The FAIRMD Lipids is open for additions of simulation and experimental data by anyone.
+For detailed instructions to add new data, to update databank analyses and run quality
+evaluations, see <a class="reference internal" href="contrib/addingSimulation.html#addsimulation"><span class="std std-ref">Adding simulations</span></a>. Quick and minimal steps to add a new simulation
+are here:</p>
+<ol class="arabic simple">
+<li><p>Add trajectory and topology (tpr for Gromacs, pdb or corresponding to other programs)
+file into a <a class="reference external" href="https://zenodo.org/">Zenodo</a> repository.</p></li>
+<li><p>Login to <a class="reference external" href="https://upload-portal.nmrlipids.fi/">NMRlipids Upload Portal</a> and fill up
+the form with metadata for your simulation. For instructions, see <a class="reference internal" href="schemas/simulation_metadata.html#readmesimu"><span class="std std-ref">Simulation metadata (README.yaml)</span></a>
+and <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/info_files">examples</a>.
+Mapping files are described in  <a class="reference internal" href="schemas/moleculesAndMapping.html#molecule-names"><span class="std std-ref">Universal molecule and atom names</span></a> and are available from <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/Molecules/membranes">here</a> .</p></li>
+<li><p>Your simulation will be automatically processed via GitHub Actions on the server side
+after the approval of your submission by one of the NMRlipids contributors.</p></li>
+</ol>
+<p>Experimental data addition is currently not automatized and should be performed manually
+via making pull request to the BilayerData repository. The instrutions are available at
+<a class="reference internal" href="contrib/addingExpData.html#addingexpdata"><span class="std std-ref">Adding experimental data</span></a>.</p>
+<p>Do not hesitate to ask assistance regarding data addition on the GitHub page of
+<a class="reference external" href="https://github.com/NMRLipids/BilayerData/issues">BilayerData Issues</a>.</p>
+</section>
+<section id="installation-and-system-requirements">
+<h2>Installation and system requirements<a class="headerlink" href="#installation-and-system-requirements" title="Link to this heading"></a></h2>
+<p>The code has been tested in Linux, MacOS and Windows environment with python 3.10 or
+newer and recent <a class="reference external" href="https://manual.gromacs.org/current/install-guide/index.html">Gromacs</a> version installed.</p>
+<p>Setup is straingforward using <code class="docutils literal notranslate"><span class="pre">pip</span></code> or <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>nmrlipids_databank
+fmdl_initialize_data<span class="w"> </span>dev
+<span class="nb">source</span><span class="w"> </span>databank_env.rc
+</pre></div>
+</div>
+<p>More detailed instructions are coming soon.</p>
+<p><strong>TODO: write the block</strong></p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/exampleAndTutorials.html">Examples and tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dbprograms.html">fairmd-lipids CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dbprograms.html#module-fairmd.lipids.bin.initialize_data">fmdl_initialize_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbprograms.html#module-fairmd.lipids.bin.add_simulation">fmdl_add_simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbprograms.html#module-fairmd.lipids.bin.compute_databank">fmdl_compute_databank</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbprograms.html#module-fairmd.lipids.bin.match_experiments">fmdl_match_experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbprograms.html#module-fairmd.lipids.bin.evaluate_quality">fmdl_evaluate_quality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbprograms.html#module-fairmd.lipids.bin.make_ranking">fmdl_make_ranking</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Project structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="auto_gen/fairmd.lipids.html">fairmd.lipids</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="auto_gen/fairmd.lipids.html#subfolders">Subfolders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="auto_gen/fairmd.lipids.html#python-files">Python files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="auto_gen/fairmd.lipids.html#module-fairmd.lipids">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="auto_gen/developer.html">developer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="auto_gen/developer.html#python-files">Python files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="miscsrc/unittesting.html">Project testing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="miscsrc/unittesting.html#testing-strategy">Testing strategy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="miscsrc/unittesting.html#simulation-1-and-simulation-2">Simulation.1 and Simulation.2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dbstructure.html">Data Organization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dbstructure.html#simulation-record">Simulation record</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#simulation-metadata-readme-yaml">Simulation metadata README.yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#simulation-computed-properties">Simulation computed properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#simulation-quality-files">Simulation quality files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbstructure.html#experiment-record">Experiment record</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#order-parameter-nmr-experiment">Order parameter NMR experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#form-factor-x-ray-experiment-metadata">Form factor X-ray experiment metadata</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbstructure.html#molecule-record">Molecule record</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#molecule-metadata">Molecule metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#mapping-files">Mapping files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbstructure.html#other-files">Other files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#info-yaml">info.yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#lipid-united-atom-dictionary">Lipid united-atom dictionary</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dbcontribute.html">Data Contribution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contrib/addingSimulation.html">Adding simulations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="schemas/simulation_metadata.html">Simulation metadata (README.yaml)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="contrib/addingExpData.html">Adding experimental data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="schemas/experiment_metadata.html">Experiment metadata</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="contrib/addingMolecule.html">Adding new molecule</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="contrib/addingMolecule.html#metadata-file-creation">Metadata file creation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/addingMolecule.html#mapping-file-creation">Mapping file creation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="schemas/moleculesAndMapping.html">Universal molecule and atom names</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="schemas/moleculesAndMapping.html#id1">Molecule names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="schemas/moleculesAndMapping.html#universal-atom-names-in-mapping-files">Universal atom names in mapping files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="schemas/moleculesAndMapping.html#cardiolipin-universal-naming-conventions">Cardiolipin universal naming conventions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gettingstarted.html" class="btn btn-neutral float-right" title="Getting started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

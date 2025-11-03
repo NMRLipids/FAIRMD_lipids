@@ -1,0 +1,428 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulation metadata (README.yaml) &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Adding experimental data" href="../contrib/addingExpData.html" />
+    <link rel="prev" title="Adding simulations" href="../contrib/addingSimulation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../dbcontribute.html">Data Contribution</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../contrib/addingSimulation.html">Adding simulations</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Simulation metadata (README.yaml)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../contrib/addingExpData.html">Adding experimental data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contrib/addingMolecule.html">Adding new molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="moleculesAndMapping.html">Universal molecule and atom names</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../dbcontribute.html">Data Contribution</a></li>
+          <li class="breadcrumb-item"><a href="../contrib/addingSimulation.html">Adding simulations</a></li>
+      <li class="breadcrumb-item active">Simulation metadata (README.yaml)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/schemas/simulation_metadata.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="simulation-metadata-readme-yaml">
+<span id="readmesimu"></span><h1>Simulation metadata (README.yaml)<a class="headerlink" href="#simulation-metadata-readme-yaml" title="Link to this heading"></a></h1>
+<p>Each simulation in the FAIRMD Lipids is assigned with a <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> metadata file which contains all the essential information of the simulation. These files are created from the manually contributed <a class="reference internal" href="../dbstructure.html#info-files"><span class="std std-ref">info.yaml</span></a> files as described in <a class="reference internal" href="../contrib/addingSimulation.html#addsimulation"><span class="std std-ref">Adding simulations</span></a>. The <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> files are stored as described in <a class="reference internal" href="../dbstructure.html#dbstructure"><span class="std std-ref">Data organisation</span></a>.</p>
+<p>You can view examples in the <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/Simulations">BilayerData GitHub repository</a>.</p>
+<p>README files contain information that is manually entered into <a class="reference internal" href="../dbstructure.html#info-files"><span class="std std-ref">info.yaml</span></a> files and automatically exctracted information by the <a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a> program.
+Table below lists the manually entered compulsory and optional parameters, as well as automatically extracted information from simulation files.</p>
+<hr class="docutils" />
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>description</p></th>
+<th class="head"><p>type</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DOI</p></td>
+<td><p>DOI from where the raw data is found</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>TRJ</p></td>
+<td><p>Name of the trajectory file found from DOI</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>TPR</p></td>
+<td><p>Name of the topology file found from DOI</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>SOFTWARE</p></td>
+<td><p>Software used to run the simulation</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>PREEQTIME</p></td>
+<td><p>Pre-equilibrate time in nanoseconds.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>TIMELEFTOUT</p></td>
+<td><p>Equilibration period in the uploaded trajectory.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>DATEOFRUNNIG</p></td>
+<td><p>Date when added into the databank</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>DIR_WRK</p></td>
+<td><p>Temporary local working directory</p></td>
+<td><p>Deprecated</p></td>
+</tr>
+<tr class="row-even"><td><p>UNITEDATOM_DICT</p></td>
+<td><p>Hydrogen information for united atom simulations</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>TYPEOFSYSTEM</p></td>
+<td><p>Lipid bilayer or something else</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>SYSTEM</p></td>
+<td><p>System description in the free text format</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>TEMPERATURE</p></td>
+<td><p>Temperature of the simulation.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>COMPOSITION</p></td>
+<td><p>Molecules’ names, mappings, number.</p></td>
+<td><p>Mixed*</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>PUBLICATION</p></td>
+<td><p>Reference to a publication(s) related to the data.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>AUTHORS_CONTACT</p></td>
+<td><p>Name and email of the main author(s) of the data.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>BATCHID</p></td>
+<td><p>Identifier for a series of related simulations</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>SOFTWARE_VERSION</p></td>
+<td><p>Version of the used software</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>FF</p></td>
+<td><p>Name of the used force field</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>FF_SOURCE</p></td>
+<td><p>Source of the force field parameters</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>FF_DATE</p></td>
+<td><p>Date when force field parameters were accessed</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>FF{molname}</p></td>
+<td><p>Molecule specific force field information.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>CPT</p></td>
+<td><p>Name of the Gromacs checkpoint file.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>LOG</p></td>
+<td><p>Name of the Gromacs log file.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>TOP</p></td>
+<td><p>Name of the Gromacs top file.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p>GRO</p></td>
+<td><p>Name of the Gromacs gro file.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-even"><td><p>EDR</p></td>
+<td><p>Name of the Gromacs edr file.</p></td>
+<td><p>User-given</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>TRAJECTORY_SIZE</p></td>
+<td><p>Size of the trajectory file in bytes</p></td>
+<td><p>Autofilled</p></td>
+</tr>
+<tr class="row-odd"><td><p>TRJLENGTH</p></td>
+<td><p>Lenght of the trajectory (ps).</p></td>
+<td><p>Autofilled</p></td>
+</tr>
+<tr class="row-even"><td><p>NUMBER_OF_ATOMS</p></td>
+<td><p>Number of atoms in the simulation.</p></td>
+<td><p>Autofilled</p></td>
+</tr>
+<tr class="row-odd"><td><p>EXPERIMENT</p></td>
+<td><p>Potentially connected experimental data</p></td>
+<td><p>Gen by tools</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>ID</p></td>
+<td><p>Unique integer identifier of the simulation</p></td>
+<td><p>Gen by CI/CD</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p><em>* — names and mappings are set by user whereas number of residues is autofilled</em></p>
+<p><strong>Fields description</strong></p>
+<ol class="arabic simple">
+<li><p><strong>DOI</strong> (compulsory)<br />
+Give the DOI identity for the location of simulation files.
+Current databank works only for the data in <a class="reference external" href="https://www.zenodo.org">Zenodo</a>, but other potential sources are may be implemented in the future.
+Note that the DOI must point to a specific version of dataset in Zenodo. DOIs pointing to all versions of certain dataset do not work.</p></li>
+<li><p><strong>TRJ</strong> (compulsory)<br />
+Give the name of the trajectory file that is found from the DOI given above.</p></li>
+<li><p><strong>TPR</strong> (compulsory)<br />
+Give the name of the file with topology information (tpr file in the case of Gromacs) that is found from the DOI given above.</p></li>
+<li><p><strong>SOFTWARE</strong> (compulsory)<br />
+Give the name of software used to run the simulation. The options are GROMACS, AMBER, NAMD, CHARMM and OPENMM. So far, only simulations run with GROMACS are accepted by the script.</p></li>
+<li><p><strong>PREEQTIME</strong> (compulsory)<br />
+Give the time simulated before the uploaded trajectory in nanoseconds. For example, if you upload 100-200 ns part of total 200 ns simulation, this should value should be 100.</p></li>
+<li><p><strong>TIMELEFTOUT</strong> (compulsory)<br />
+Give the time that should be considered as an equilibration period in the uploaded trajectory. Frames before the give time will be discarded in the analysis.
+For example, if you upload 0-200 ns part of total 200 ns simulation where the first 100 ns should be considered as an equilibration, this value should be 100.</p></li>
+<li><p><strong>COMPOSITION</strong> (compulsory)<br />
+Information about the composition (i.e., the number of molecules) of each simulation is stored in COMPOSITION as python dictionary format.
+As an input, the COMPOSITION requires the universal name for each molecule present in the simulation (for definitions, see <a class="reference internal" href="moleculesAndMapping.html#molecule-names"><span class="std std-ref">Universal molecule and atom names</span></a>) as the first keys.
+For each molecule, another dictionary containing the simulation specific residue name (NAME) and the name of the mapping file (MAPPING) needs to be then defined.
+Mapping file defines the universal atom names for each molecule, for details see <a class="reference internal" href="moleculesAndMapping.html#molecule-names"><span class="std std-ref">Universal molecule and atom names</span></a>).
+For example, the COMPOSITION dictionary input for <a class="reference external" href="https://doi.org/10.5281/zenodo.259392">a system</a> containing POPC, Cholesterol (CHOL), water (SOL), sodium (SOD), and chloride (CLA) is given as:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">COMPOSITION</span><span class="p">:</span>
+     <span class="n">CHOL</span><span class="p">:</span>                                      <span class="c1"># universal molecule name</span>
+      <span class="n">NAME</span><span class="p">:</span> <span class="n">CHL1</span>                                <span class="c1"># simulation specific molecule name</span>
+      <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingCHOLESTEROLcharmm</span><span class="o">.</span><span class="n">txt</span>     <span class="c1"># name of the mapping file</span>
+     <span class="n">POPC</span><span class="p">:</span>
+      <span class="n">NAME</span><span class="p">:</span> <span class="n">POPC</span>
+      <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingPOPCcharmm</span><span class="o">.</span><span class="n">txt</span>
+     <span class="n">SOL</span><span class="p">:</span>
+      <span class="n">NAME</span><span class="p">:</span> <span class="n">TIP3</span>
+      <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingTIP3PCHARMMgui</span><span class="o">.</span><span class="n">txt</span>
+     <span class="n">SOD</span><span class="p">:</span>
+      <span class="n">NAME</span><span class="p">:</span> <span class="n">SOD</span>
+      <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingSOD</span><span class="o">.</span><span class="n">txt</span>
+     <span class="n">CLA</span><span class="p">:</span>
+      <span class="n">NAME</span><span class="p">:</span> <span class="n">CLA</span>
+      <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingCLA</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>When running <a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a>, the numbers of molecules are added in additional <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> keys into dictionaries of each molecule, see COMPOSITION (ouput) below.</p>
+<ol class="arabic simple" start="8">
+<li><p><strong>DIR_WRK</strong> (deprecated)<br />
+Give the path of the working directory in your local computer. The trajectory and topology files will be downloaded to this trajectory, and temporary files created during processing will be stored here.</p></li>
+<li><p><strong>UNITEDATOM_DICT</strong> (compulsory for united atom trajectories)<br />
+Order parameters from united atom simulations are calculated using the <a class="reference external" href="https://github.com/patrickfuchs/buildH">buildH code</a>.
+For united atom simulations, you need to tell how hydrogens are added based on definitions in
+the <a class="reference internal" href="../dbstructure.html#uadic-files"><span class="std std-ref">JSON UA dictionary</span></a>.
+In the case of an all atom simulation, UNITEDATOM is left empty.</p></li>
+<li><p><strong>TYPEOFSYSTEM</strong> (compulsory)<br />
+Tell whether the system is lipid bilayer or something else. Only lipid bilayers are currently supported, but other systems will be included in the future.</p></li>
+<li><p><strong>SYSTEM</strong> (compulsory)<br />
+Give description of system in free format. For example ‘’POPC with cholesterol at 301K’’.</p></li>
+<li><p><strong>PUBLICATION</strong><br />
+Give reference to a publication(s) related to the data.</p></li>
+<li><p><strong>AUTHORS_CONTACT</strong><br />
+Give the name and email of the main author(s) of the data.</p></li>
+<li><p><strong>BATCHID</strong><br />
+Give an identifier for a series of related simulations e.g. NVT simulations with the same composition but different volume carried out to determine a surface pressure-area per lipid isotherm.</p></li>
+<li><p><strong>SOFTWARE_VERSION</strong><br />
+Give the version of the software used.</p></li>
+<li><p><strong>FF</strong><br />
+Give the name of the force field used used in the simulation.</p></li>
+<li><p><strong>FF_SOURCE</strong><br />
+Describe the source of the force field parameters. For example, CHARMM-GUI, link to webpage where parameters were downloaded, or citation to a paper.</p></li>
+<li><p><strong>FF_DATE</strong><br />
+Give the date when parameters were accessed or created. The format is day/month/year.</p></li>
+<li><p><strong>Individual force field names for molecules</strong>
+TODO: probably doesn’t work currently!
+In some cases special force fields are used for certain molecules. For example, non-standard parameters for ions or other molecules have been used. These can be specified giving forcefield names separately for individual molecules. These can be given as parameters named as
+FF+{abbreviation from table above}, i.e., FFPOPC, FFPOT, FFSOL etc.</p></li>
+<li><p><strong>CPT</strong> (Gromacs)<br />
+Give the name of the Gromacs checkpoint file that is found from the DOI given above.
+CPT stands for the name of the cpt file.</p></li>
+<li><p><strong>LOG</strong> (Gromacs)<br />
+Give the name of the Gromacs log file that is found from the DOI given above.</p></li>
+<li><p><strong>TOP</strong> (Gromacs)<br />
+Give the name of the Gromacs top file that is found from the DOI given above.</p></li>
+<li><p><strong>EDR</strong> (Gromacs)<br />
+Give the name of the Gromacs edr file that is found from the DOI given above.</p></li>
+<li><p><strong>TRAJECTORY_SIZE</strong>
+Size of the trajectory file in bytes.</p></li>
+<li><p><strong>TRJLENGTH</strong><br />
+Lenght of the trajectory (ps).</p></li>
+<li><p><strong>TEMPERATURE</strong><br />
+Temperature of the simulation.</p></li>
+<li><p><strong>NUMBER_OF_ATOMS</strong><br />
+Total number of atoms in the simulation.</p></li>
+<li><p><strong>DATEOFRUNNIG</strong><br />
+Date when added into the databank.</p></li>
+<li><p><strong>EXPERIMENT</strong><br />
+Potentially connected experimental data.</p></li>
+<li><p><strong>COMPOSITION</strong> (output)<br />
+When adding a simulation into FAIRMD Lipids with the <a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a>, numbers of molecules are automatically calculated and stored into <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> keys for each molecule in the COMPOSITION dictionary. Number of lipids are calculated separately for both membrane leaflets. For example, the result for the simulation with COMPOSITION input exemplified above is:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="n">COMPOSITION</span><span class="p">:</span>
+         <span class="n">CHOL</span><span class="p">:</span>
+          <span class="n">NAME</span><span class="p">:</span> <span class="n">CHL1</span>
+          <span class="n">COUNT</span><span class="p">:</span>
+           <span class="o">-</span> <span class="mi">25</span>
+           <span class="o">-</span> <span class="mi">25</span>
+          <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingCHOLESTEROLcharmm</span><span class="o">.</span><span class="n">yaml</span>
+         <span class="n">POPC</span><span class="p">:</span>
+          <span class="n">NAME</span><span class="p">:</span> <span class="n">POPC</span>
+          <span class="n">COUNT</span><span class="p">:</span>
+           <span class="o">-</span> <span class="mi">100</span>
+           <span class="o">-</span> <span class="mi">100</span>
+          <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingPOPCcharmm</span><span class="o">.</span><span class="n">yaml</span>
+         <span class="n">SOL</span><span class="p">:</span>
+          <span class="n">NAME</span><span class="p">:</span> <span class="n">TIP3</span>
+          <span class="n">COUNT</span><span class="p">:</span> <span class="mi">9000</span>
+          <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingTIP3PCHARMMgui</span><span class="o">.</span><span class="n">yaml</span>
+         <span class="n">SOD</span><span class="p">:</span>
+          <span class="n">NAME</span><span class="p">:</span> <span class="n">SOD</span>
+          <span class="n">COUNT</span><span class="p">:</span> <span class="mi">21</span>
+          <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingSOD</span><span class="o">.</span><span class="n">yaml</span>
+         <span class="n">CLA</span><span class="p">:</span>
+          <span class="n">NAME</span><span class="p">:</span> <span class="n">CLA</span>
+          <span class="n">COUNT</span><span class="p">:</span> <span class="mi">21</span>
+          <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingCLA</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="31">
+<li><p><strong>ID</strong><br />
+Unique numeric identifier assigned to the simulation. It is generated by the CI/CD pipelines of the databank.</p></li>
+</ol>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../contrib/addingSimulation.html" class="btn btn-neutral float-left" title="Adding simulations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../contrib/addingExpData.html" class="btn btn-neutral float-right" title="Adding experimental data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

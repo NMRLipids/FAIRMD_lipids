@@ -1,0 +1,7 @@
+fairmd.lipids.analyze module
+============================
+
+.. automodule:: fairmd.lipids.analyze
+   :members:
+   :show-inheritance:
+   :undoc-members:

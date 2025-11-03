@@ -1,0 +1,7 @@
+developer.align\-mapping module
+===============================
+
+.. automodule:: developer.align-mapping
+   :members:
+   :show-inheritance:
+   :undoc-members:

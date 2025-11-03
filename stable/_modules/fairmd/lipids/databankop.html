@@ -1,0 +1,437 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fairmd.lipids.databankop &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.databankop</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fairmd.lipids.databankop</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module for calculation of order parameters of lipid bilayers</span>
+<span class="sd">from a MD trajectory</span>
+
+<span class="sd">**Authors:**</span>
+<span class="sd">- Made by Joe,  Last edit 2017/02/02</span>
+<span class="sd">- Refactored for performance by Gemini</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="c1"># Maximum bond length for a C-H bond to be considered reasonable.</span>
+<span class="n">bond_len_max</span> <span class="o">=</span> <span class="mf">1.5</span>  <span class="c1"># in Angstrom</span>
+<span class="n">bond_len_max_sq</span> <span class="o">=</span> <span class="n">bond_len_max</span><span class="o">**</span><span class="mi">2</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_OrderParameter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for storing and manipulating order parameter (OP) related metadata</span>
+<span class="sd">    (definition, name, etc.), OP trajectories, and methods to evaluate OPs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">resname</span><span class="p">,</span>
+        <span class="n">atom_name_a</span><span class="p">,</span>
+        <span class="n">atom_name_b</span><span class="p">,</span>
+        <span class="n">univ_atom_name_a</span><span class="p">,</span>
+        <span class="n">univ_atom_name_b</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the OrderParameter object.</span>
+
+<span class="sd">        It doesn&#39;t matter which atom (A or B) comes first for the OP calculation.</span>
+
+<span class="sd">        :param resname: Name of the residue the atoms are in.</span>
+<span class="sd">        :type resname: str</span>
+<span class="sd">        :param atom_name_a: Name of the first atom in the topology.</span>
+<span class="sd">        :type atom_name_a: str</span>
+<span class="sd">        :param atom_name_b: Name of the second atom in the topology.</span>
+<span class="sd">        :type atom_name_b: str</span>
+<span class="sd">        :param univ_atom_name_a: Generic/mapping name for atom A.</span>
+<span class="sd">        :type univ_atom_name_a: str</span>
+<span class="sd">        :param univ_atom_name_b: Generic/mapping name for atom B.</span>
+<span class="sd">        :type univ_atom_name_b: str</span>
+<span class="sd">        :param args: Optional positional arguments. If provided, should be a pair of (avg, std).</span>
+<span class="sd">        :type args: tuple</span>
+<span class="sd">        :raises RuntimeError: If any of the provided names are empty strings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resname</span> <span class="o">=</span> <span class="n">resname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aname_a</span> <span class="o">=</span> <span class="n">atom_name_a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aname_b</span> <span class="o">=</span> <span class="n">atom_name_b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_aname_a</span> <span class="o">=</span> <span class="n">univ_atom_name_a</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_aname_b</span> <span class="o">=</span> <span class="n">univ_atom_name_b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">univ_atom_name_a</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">univ_atom_name_b</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">field_value</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Provided name for field &#39;</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&#39; is empty! &quot;</span>
+                        <span class="s2">&quot;Cannot use empty names for atoms and OP definitions.&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Provided value for &#39;</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&#39; is not a string: </span><span class="si">{</span><span class="n">field_value</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="s2">&quot;Unexpected behaviour might occur.&quot;</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">avg</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stem</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">avg</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stem</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Number of optional positional arguments is </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">, not 0 or 2. Args: </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="se">\n</span><span class="s2">Wrong file format?&quot;</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># For storing final OP results.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List of AtomGroups, one for each residue.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atomgroup</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># A single AtomGroup containing all atoms for this OP.</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_avg_std_stem_OP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># noqa: N802 (API compliance)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provides average, stddev, and standard error of the mean of OPs.</span>
+
+<span class="sd">        :return: A tuple containing (average, stddev, stem).</span>
+<span class="sd">        :rtype: tuple[float, float, float]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="p">)</span>
+        <span class="n">stem</span> <span class="o">=</span> <span class="n">std</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="p">),</span> <span class="n">std</span><span class="p">,</span> <span class="n">stem</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_read_trajs_calc_OPs</span><span class="p">(</span>
+    <span class="n">op_obj_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_OrderParameter</span><span class="p">],</span>
+    <span class="n">top</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">trajs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates an MDAnalysis Universe, reads trajectories, and calculates Order Parameters (&quot;S&quot;).</span>
+
+<span class="sd">    This function calculates the order parameters for each definition in ``op_obj_list``.</span>
+<span class="sd">    This version is optimized for single-core performance using vectorized calculations.</span>
+<span class="sd">    The results are stored in-place in the ``traj`` attribute of the objects in ``op_obj_list``.</span>
+
+<span class="sd">    :param op_obj_list: A list of _OrderParameter objects to be processed.</span>
+<span class="sd">    :type op_obj_list: list[_OrderParameter]</span>
+<span class="sd">    :param top: Path to the topology file (e.g., .gro, .tpr).</span>
+<span class="sd">    :type top: str</span>
+<span class="sd">    :param trajs: A list of paths to trajectory files (e.g., .xtc).</span>
+<span class="sd">    :type trajs: list[str]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># --- 1. Setup Universe and Atom Selections ---</span>
+    <span class="n">mol</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">trajs</span><span class="p">)</span>
+    <span class="n">improper_ops</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">op</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">op_obj_list</span><span class="p">):</span>
+        <span class="n">sel_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;resname </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">resname</span><span class="si">}</span><span class="s2"> and name </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">aname_a</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">aname_b</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">selection_by_residue</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">sel_str</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;residue&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">selection_by_residue</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Selection is empty: [</span><span class="si">{</span><span class="n">sel_str</span><span class="si">}</span><span class="s2">]. Check residue and atom names in the mapping file.&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">improper_ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Validate that each residue selection contains exactly two atoms</span>
+        <span class="n">valid_selection</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">selection_by_residue</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">n_atoms</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Selection &#39;name </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">aname_a</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">aname_b</span><span class="si">}</span><span class="s2">&#39; in residue &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">resids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> contains </span><span class="si">{</span><span class="n">res</span><span class="o">.</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2"> atoms, but should be 2. &quot;</span>
+                    <span class="s2">&quot;This residue will be skipped.&quot;</span><span class="p">,</span>
+                    <span class="ne">UserWarning</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">valid_selection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_selection</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No valid atom pairs found for selection: [</span><span class="si">{</span><span class="n">sel_str</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">improper_ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">op</span><span class="o">.</span><span class="n">selection</span> <span class="o">=</span> <span class="n">valid_selection</span>
+        <span class="c1"># Create a single, combined AtomGroup for efficient, vectorized access</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">atomgroup</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">AtomGroup</span><span class="p">([</span><span class="n">atom</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">op</span><span class="o">.</span><span class="n">selection</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">res</span><span class="p">])</span>
+
+    <span class="c1"># Remove OP definitions that resulted in invalid selections</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">improper_ops</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">del</span> <span class="n">op_obj_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="n">n_frames</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">trajectory</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">op_obj_list</span><span class="p">:</span>
+        <span class="n">n_res</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">selection</span><span class="p">)</span>
+        <span class="c1"># We accumulate sums here, so initialize with zeros</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_res</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing trajectory with optimized single-core engine...&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="n">n_frames</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;frame&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">op_obj_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">atomgroup</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">atomgroup</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Get all atom positions for this OP in one go</span>
+            <span class="c1"># Shape: (n_residues * 2, 3)</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">atomgroup</span><span class="o">.</span><span class="n">positions</span>
+
+            <span class="c1"># Reshape to easily access atom pairs</span>
+            <span class="c1"># Shape: (n_residues, 2, 3) where axis 1 is [atom_A, atom_B]</span>
+            <span class="n">positions_reshaped</span> <span class="o">=</span> <span class="n">positions</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+            <span class="c1"># Calculate vectors between atom pairs for all residues at once</span>
+            <span class="n">vec</span> <span class="o">=</span> <span class="n">positions_reshaped</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">positions_reshaped</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+
+            <span class="c1"># Calculate squared distance for all residues</span>
+            <span class="n">d2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">vec</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Create a mask for valid bond lengths to avoid unnecessary calculations</span>
+            <span class="c1"># and warnings for atoms that are too far apart (e.g., due to PBC issues).</span>
+            <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">d2</span> <span class="o">&lt;=</span> <span class="n">bond_len_max_sq</span>
+
+            <span class="c1"># Initialize cos2 array. We only compute for valid pairs.</span>
+            <span class="n">cos2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
+
+            <span class="c1"># Safely calculate cosine-squared of the angle with the z-axis</span>
+            <span class="c1"># for all valid vectors simultaneously.</span>
+            <span class="c1"># np.divide handles potential division by zero if d2 is 0.</span>
+            <span class="n">d2_valid</span> <span class="o">=</span> <span class="n">d2</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+            <span class="n">vec_valid</span> <span class="o">=</span> <span class="n">vec</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+            <span class="n">cos2</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+                <span class="n">vec_valid</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="n">d2_valid</span><span class="p">,</span>
+                <span class="n">where</span><span class="o">=</span><span class="n">d2_valid</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Calculate order parameters for all residues</span>
+            <span class="n">op_values</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mf">3.0</span> <span class="o">*</span> <span class="n">cos2</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+
+            <span class="c1"># Add the results for the current frame to the running sum.</span>
+            <span class="c1"># We only add the valid ones, others remain 0 for this frame.</span>
+            <span class="n">op</span><span class="o">.</span><span class="n">traj</span> <span class="o">+=</span> <span class="n">op_values</span>
+
+    <span class="c1"># Average the accumulated sums over all frames</span>
+    <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">op_obj_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">n_frames</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">op</span><span class="o">.</span><span class="n">traj</span> <span class="o">/=</span> <span class="n">n_frames</span>
+        <span class="c1"># Convert back to a list to maintain original API behavior</span>
+        <span class="n">op</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_op_input</span><span class="p">(</span><span class="n">mapping_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">lipid_resname</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parses a mapping dictionary to form a list of C-H pairs for OP calculation.</span>
+
+<span class="sd">    :param mapping_dict: The mapping dictionary.</span>
+<span class="sd">    :type mapping_dict: dict</span>
+<span class="sd">    :param lipid_resname: The default lipid residue name.</span>
+<span class="sd">    :type lipid_resname: str</span>
+<span class="sd">    :return: A list of _OrderParameter instances.</span>
+<span class="sd">    :rtype: list[_OrderParameter]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">opvals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">atom_c</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">atom_h</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">resname</span> <span class="o">=</span> <span class="n">lipid_resname</span>
+
+    <span class="c1"># Regex to identify carbon and hydrogen atoms from mapping keys</span>
+    <span class="n">regexp_h</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;M_([A-Z0-9]*C[0-9]*|G[0-9]*|C[0-9]*)H[0-9]*_M&quot;</span><span class="p">)</span>
+    <span class="n">regexp_c</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;M_([A-Z0-9]*C[0-9]*|G[0-9]{1,2}|C[0-9]{1,2})_M&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">mapping_key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;ATOMNAME&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">regexp_c</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">mapping_key</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">regexp_h</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">mapping_key</span><span class="p">):</span>
+            <span class="n">atom_c</span> <span class="o">=</span> <span class="p">[</span><span class="n">mapping_key</span><span class="p">,</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]]</span>
+            <span class="c1"># Use residue name from mapping if available, otherwise use default</span>
+            <span class="n">resname</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">,</span> <span class="n">lipid_resname</span><span class="p">)</span>
+            <span class="n">atom_h</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Reset hydrogen atom</span>
+        <span class="k">elif</span> <span class="n">regexp_h</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">mapping_key</span><span class="p">):</span>
+            <span class="n">atom_h</span> <span class="o">=</span> <span class="p">[</span><span class="n">mapping_key</span><span class="p">,</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">atom_c</span><span class="p">,</span> <span class="n">atom_h</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>  <span class="c1"># Reset for non-matching keys</span>
+
+        <span class="k">if</span> <span class="n">atom_h</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">atom_c</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Cannot define carbon for the hydrogen </span><span class="si">{</span><span class="n">atom_h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">atom_h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># If both a carbon and a hydrogen have been found, create the pair</span>
+        <span class="k">if</span> <span class="n">atom_h</span> <span class="ow">and</span> <span class="n">atom_c</span><span class="p">:</span>
+            <span class="n">op</span> <span class="o">=</span> <span class="n">_OrderParameter</span><span class="p">(</span><span class="n">resname</span><span class="p">,</span> <span class="n">atom_c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">atom_h</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">atom_c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">atom_h</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">opvals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+            <span class="c1"># Important: Reset hydrogen to look for the next one for the same carbon</span>
+            <span class="n">atom_h</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="n">opvals</span>
+
+
+<div class="viewcode-block" id="find_OP">
+<a class="viewcode-back" href="../../../miscsrc/OrderParameter.html#fairmd.lipids.databankop.find_OP">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_OP</span><span class="p">(</span>
+    <span class="n">mdict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">top_fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">traj_fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">lipid_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Externally used function for computing OP values.</span>
+
+<span class="sd">    :param mdict: The mapping dictionary.</span>
+<span class="sd">    :type mdict: dict</span>
+<span class="sd">    :param top_fname: Filename of the topology file (e.g., .gro, .tpr).</span>
+<span class="sd">    :type top_fname: str</span>
+<span class="sd">    :param traj_fname: Filename(s) of the trajectory file(s).</span>
+<span class="sd">    :type traj_fname: str or list[str]</span>
+<span class="sd">    :param lipid_name: The residue name of the lipid.</span>
+<span class="sd">    :type lipid_name: str</span>
+<span class="sd">    :return: A list of _OrderParameter instances with calculated data.</span>
+<span class="sd">    :rtype: list[_OrderParameter]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">op_pairs</span> <span class="o">=</span> <span class="n">_parse_op_input</span><span class="p">(</span><span class="n">mdict</span><span class="p">,</span> <span class="n">lipid_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj_fname</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">traj_fname</span> <span class="o">=</span> <span class="p">[</span><span class="n">traj_fname</span><span class="p">]</span>
+    <span class="n">_read_trajs_calc_OPs</span><span class="p">(</span><span class="n">op_pairs</span><span class="p">,</span> <span class="n">top_fname</span><span class="p">,</span> <span class="n">traj_fname</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">op_pairs</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

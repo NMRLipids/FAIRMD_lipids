@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Organization &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Data Contribution" href="dbcontribute.html" />
+    <link rel="prev" title="Project testing" href="miscsrc/unittesting.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Organization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simulation-record">Simulation record</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simulation-metadata-readme-yaml">Simulation metadata README.yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simulation-computed-properties">Simulation computed properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simulation-quality-files">Simulation quality files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#experiment-record">Experiment record</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#order-parameter-nmr-experiment">Order parameter NMR experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#form-factor-x-ray-experiment-metadata">Form factor X-ray experiment metadata</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#molecule-record">Molecule record</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#molecule-metadata">Molecule metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mapping-files">Mapping files</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#other-files">Other files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#info-yaml">info.yaml</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lipid-united-atom-dictionary">Lipid united-atom dictionary</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Data Organization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/dbstructure.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="data-organization">
+<span id="dbstructure"></span><h1>Data Organization<a class="headerlink" href="#data-organization" title="Link to this heading"></a></h1>
+<p>The Databank includes three types of objects: Simulation, Experiment, and Molecule. Each is described by it’s own metadata file. Metadata is stored in YAML format. Simulation object stores precomputed properties in JSON format. Experiment object stores experimental data in JSON format.</p>
+<p>Databank objects are stored in the separated repository; by default, it’s a <a class="reference external" href="https://github.com/NMRlipids/BilayerData">BilayerData</a> but any of its forks or even completely new repo could be used instead.
+It is connected into the FAIRMD Lipids repository as a submodule into <code class="file docutils literal notranslate"><span class="pre">./Data</span></code> folder.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Data/</span>
+<span class="go">├── Simulations/</span>
+<span class="go">│   └── rw5/</span>
+<span class="go">│       └── g8v/</span>
+<span class="go">│           └── au3/</span>
+<span class="go">│               └── b8c/</span>
+<span class="go">│                   ├── data-piece.json</span>
+<span class="go">│                   └── README.yaml</span>
+<span class="go">├── experiments/</span>
+<span class="go">│   ├── FormFactors/</span>
+<span class="go">│   │   └── 10.1001/</span>
+<span class="go">│   │       └── j.some.thing.3242.11/</span>
+<span class="go">│   │           └── 1/</span>
+<span class="go">│   │               ├── form-factor-data.json</span>
+<span class="go">│   │               └── README.yaml</span>
+<span class="go">│   └── OrderParameter/</span>
+<span class="go">│   │   └── 10.1001/</span>
+<span class="go">│   │       └── j.some.thing.3242.11/</span>
+<span class="go">│   │           └── 1/</span>
+<span class="go">│   │               ├── lipid1-data.json</span>
+<span class="go">│   │               ├── lipid2-data.json</span>
+<span class="go">│   │               └── README.yaml</span>
+<span class="go">├── info_files/</span>
+<span class="go">│   └── some-folder/</span>
+<span class="go">│       ├── info1.yaml</span>
+<span class="go">│       └── info2.yaml</span>
+<span class="go">├── lipid_json_buildH/</span>
+<span class="go">│   ├── ua-dictionary-1.json</span>
+<span class="go">│   └── ua-dictionary-2.json</span>
+<span class="go">├── Ranking/</span>
+<span class="go">│   ├── lipid1-headgroup-ranking.json</span>
+<span class="go">│   └── lipid2-tail1-ranking.json</span>
+<span class="go">└── Molecules/</span>
+<span class="go">    ├── membrane/</span>
+<span class="go">    │   └── lipid1/</span>
+<span class="go">    │       ├── lipid1-forcefield2-mapping.yaml</span>
+<span class="go">    │       └── metadata.yaml</span>
+<span class="go">    └── solution/</span>
+<span class="go">        └── ion1/</span>
+<span class="go">            ├── ion1-forcefield3-mapping.yaml</span>
+<span class="go">            └── metadata.yaml</span>
+</pre></div>
+</div>
+<section id="simulation-record">
+<span id="dbstructure-simu"></span><h2>Simulation record<a class="headerlink" href="#simulation-record" title="Link to this heading"></a></h2>
+<section id="simulation-metadata-readme-yaml">
+<h3>Simulation metadata README.yaml<a class="headerlink" href="#simulation-metadata-readme-yaml" title="Link to this heading"></a></h3>
+<p>A file containing all the relevant information of each simulation entry. These files are
+stored at <a class="reference internal" href="auto_gen/fairmd.lipids.html#fairmd.lipids.FMDL_SIMU_PATH" title="fairmd.lipids.FMDL_SIMU_PATH"><code class="xref py py-data docutils literal notranslate"><span class="pre">fairmd.lipids.FMDL_SIMU_PATH</span></code></a>.</p>
+<p>For more information see <a class="reference internal" href="schemas/simulation_metadata.html"><span class="doc">Simulation metadata (README.yaml)</span></a>.</p>
+</section>
+<section id="simulation-computed-properties">
+<h3>Simulation computed properties<a class="headerlink" href="#simulation-computed-properties" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="file docutils literal notranslate"><span class="pre">apl.json</span></code> contains area per lipid (Å<sup>2</sup>) as a function of time (ps) for
+a simulation. <br /> See <a class="reference internal" href="auto_gen/fairmd.lipids.analyze.html#fairmd.lipids.analyze.computeAPL" title="fairmd.lipids.analyze.computeAPL"><code class="xref py py-func docutils literal notranslate"><span class="pre">fairmd.lipids.analyze.computeAPL()</span></code></a> for computing details.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">XXXXOrderParameters.json</span></code> contains C-H bond order parameters and their
+uncertainties for each lipid XXXX.
+Key in json format is the merged universal C and H atom names. Three values are given:
+order parameter value for the C-H bond, standard deviation, and the standard error of
+the mean. <br /> See <a class="reference internal" href="auto_gen/fairmd.lipids.analyze.html#fairmd.lipids.analyze.computeOP" title="fairmd.lipids.analyze.computeOP"><code class="xref py py-func docutils literal notranslate"><span class="pre">fairmd.lipids.analyze.computeOP()</span></code></a> for computing details.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">FormFactor.json</span></code> contains simulated X-ray scattering form factor.
+X-axis value unit are Å<sup>-1</sup> and y-axis value units are e/nm<sup>2</sup>. <br /> See
+<code class="xref py py-func docutils literal notranslate"><span class="pre">fairmd.lipids.analyze.computeFF()</span></code> for computing details.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">XXXXDensity.json</span></code> contains electron densities calculated from trajectory.
+We store separately lipid, water, and total densities. X-axis units are nm and y-axis
+units e/nm<sup>3</sup>. <br /> See <code class="xref py py-func docutils literal notranslate"><span class="pre">fairmd.lipids.analyze.computeDensity()</span></code> for
+computing details.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">thickness.json</span></code> contains thickness (nm) calculated from the trajectory. <br />
+See <code class="xref py py-func docutils literal notranslate"><span class="pre">fairmd.lipids.analyze.computeThickness()</span></code> for computing details.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">eq_times.json</span></code> contains a dictionary with relative equilibration time of
+molecule principal components. It demonstrates how long time is required in this
+particular simulation to sample the ensemble for each lipid molecule. <br />
+See <a class="reference internal" href="auto_gen/fairmd.lipids.analyze.html#fairmd.lipids.analyze.computeNMRPCA" title="fairmd.lipids.analyze.computeNMRPCA"><code class="xref py py-func docutils literal notranslate"><span class="pre">fairmd.lipids.analyze.computeNMRPCA()</span></code></a> for computing details.</p></li>
+</ol>
+</section>
+<section id="simulation-quality-files">
+<h3>Simulation quality files<a class="headerlink" href="#simulation-quality-files" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p><code class="file docutils literal notranslate"><span class="pre">POPC_OrderParameters_quality.json</span></code> contains a dictionary with the quality of
+each C-H bond against experiments if available. First key is the DOI for the source
+of experimental data. Second key gives C-H pair univeral atom names. Third key gives
+values for simulation order parameter, its stardard deviation, standard error of the
+mean, experimental order parameter, its error, and finally the quality of the order
+parameter. Quality is the probability for the agreement between simulated and
+experimental values taking into account the error bars.</p>
+<p>For more details, see the <a class="reference external" href="https://doi.org/10.1038/s41467-024-45189-z">FAIRMD Lipids manuscript</a>.</p>
+</li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">POPC_FragmentQuality.json</span></code> contains fragment qualities determined separately
+for each lipid in the simulation with experimental data available using Eq. (4) in
+the <a class="reference external" href="https://doi.org/10.1038/s41467-024-45189-z">FAIRMD Lipids manuscript</a>.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">SYSTEM_quality.json</span></code> contains total qualities averaged over different lipids
+for different membrane parts calculated from Eq. (5) in the <a class="reference external" href="https://doi.org/10.1038/s41467-024-45189-z">FAIRMD Lipids manuscript</a>.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">FormFactorQuality.json</span></code> contains quality of form factor against experimental
+data determined as described in the <a class="reference external" href="https://doi.org/10.1038/s41467-024-45189-z">FAIRMD Lipids manuscript</a>. Second term is the scaling
+coefficient for experimental intensities (Eq. (6) in the <a class="reference external" href="https://doi.org/10.1038/s41467-024-45189-z">FAIRMD Lipids manuscript</a>).</p></li>
+</ol>
+</section>
+</section>
+<section id="experiment-record">
+<span id="dbstructure-exp"></span><h2>Experiment record<a class="headerlink" href="#experiment-record" title="Link to this heading"></a></h2>
+<p>The data is located in subfolders named after the DOI of the original source publication
+of the data. Because a publication can contain more than one experimental data set, each
+data set is stored in a subfolder with integer name, for example,
+[experiments/OrderParameters/10.1039/c2cp42738a/2](<a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters/10.1039/c2cp42738a/2">https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters/10.1039/c2cp42738a/2</a>).
+Each of such folders then contain the experimental data and <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> files
+describing the experimental conditions.</p>
+<section id="order-parameter-nmr-experiment">
+<h3>Order parameter NMR experiment<a class="headerlink" href="#order-parameter-nmr-experiment" title="Link to this heading"></a></h3>
+<p>TODO: write the block</p>
+<ol class="arabic simple">
+<li><p><code class="file docutils literal notranslate"><span class="pre">README.yaml</span></code> contains metadata of the experiment, such as DOI, lamellar phase
+preparation protocol, temperature, B0 field, ions concentration and other relevant
+information.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">POPC_OrderParameters.json</span></code> contains C-H bond order parameters and their
+experimental uncertainties defined for universal atom names.</p></li>
+</ol>
+</section>
+<section id="form-factor-x-ray-experiment-metadata">
+<h3>Form factor X-ray experiment metadata<a class="headerlink" href="#form-factor-x-ray-experiment-metadata" title="Link to this heading"></a></h3>
+<p>TODO: write the block</p>
+<ol class="arabic simple">
+<li><p><code class="file docutils literal notranslate"><span class="pre">README.yaml</span></code> contains metadata of the experiment, such as DOI, properties of
+the source, type of liposome suspension, and other relevant information.</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">FormFactor.json</span></code> contains X-ray scattering form factor data.</p></li>
+</ol>
+</section>
+</section>
+<section id="molecule-record">
+<span id="id5"></span><h2>Molecule record<a class="headerlink" href="#molecule-record" title="Link to this heading"></a></h2>
+<section id="molecule-metadata">
+<h3>Molecule metadata<a class="headerlink" href="#molecule-metadata" title="Link to this heading"></a></h3>
+<p>TODO: write the block</p>
+</section>
+<section id="mapping-files">
+<h3>Mapping files<a class="headerlink" href="#mapping-files" title="Link to this heading"></a></h3>
+<p>Describe connection between universal atom names and simulation specific atom names.
+These enable automatic analyses over simulations with different naming conventions. For
+more information, see <a class="reference internal" href="schemas/moleculesAndMapping.html#molecule-names"><span class="std std-ref">Universal molecule and atom names</span></a></p>
+</section>
+</section>
+<section id="other-files">
+<h2>Other files<a class="headerlink" href="#other-files" title="Link to this heading"></a></h2>
+<section id="info-yaml">
+<span id="info-files"></span><h3>info.yaml<a class="headerlink" href="#info-yaml" title="Link to this heading"></a></h3>
+<p>Contains information given by contributor when adding data into the FAIRMD Lipids, i.e.
+all non-recomputable fields of simulation <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code>. This file is given as an
+input to <span class="xref std std-ref">_add_simulation_py</span> to create <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> files:
+<code class="code docutils literal notranslate"><span class="pre">fmdl_add_simulation</span> <span class="pre">-f</span> <span class="pre">info.yaml</span></code>. These files are not required but currently are
+stored historically in <code class="docutils literal notranslate"><span class="pre">info_files</span></code> subfolder of
+<a class="reference internal" href="auto_gen/fairmd.lipids.html#fairmd.lipids.FMDL_DATA_PATH" title="fairmd.lipids.FMDL_DATA_PATH"><code class="xref py py-data docutils literal notranslate"><span class="pre">fairmd.lipids.FMDL_DATA_PATH</span></code></a>.</p>
+<p>For more information see <a class="reference internal" href="schemas/simulation_metadata.html#readmesimu"><span class="std std-ref">Simulation metadata (README.yaml)</span></a> and <a class="reference internal" href="contrib/addingSimulation.html#addsimulation"><span class="std std-ref">Adding simulations</span></a>.</p>
+</section>
+<section id="lipid-united-atom-dictionary">
+<span id="uadic-files"></span><h3>Lipid united-atom dictionary<a class="headerlink" href="#lipid-united-atom-dictionary" title="Link to this heading"></a></h3>
+<p>TODO: write the block</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="miscsrc/unittesting.html" class="btn btn-neutral float-left" title="Project testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dbcontribute.html" class="btn btn-neutral float-right" title="Data Contribution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

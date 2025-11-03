@@ -1,0 +1,217 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adding simulations &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Simulation metadata (README.yaml)" href="../schemas/simulation_metadata.html" />
+    <link rel="prev" title="Data Contribution" href="../dbcontribute.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../dbcontribute.html">Data Contribution</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Adding simulations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../schemas/simulation_metadata.html">Simulation metadata (README.yaml)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="addingExpData.html">Adding experimental data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addingMolecule.html">Adding new molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/moleculesAndMapping.html">Universal molecule and atom names</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../dbcontribute.html">Data Contribution</a></li>
+      <li class="breadcrumb-item active">Adding simulations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/contrib/addingSimulation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="adding-simulations">
+<span id="addsimulation"></span><h1>Adding simulations<a class="headerlink" href="#adding-simulations" title="Link to this heading"></a></h1>
+<p>Stepwise instructions to add simulation into the FAIRMD Lipids, run the basic analyses
+and perform automatic quality evaluation are given here. The first three steps are a
+minimum requirements to add a simulation. The first three steps can be performed using
+graphical GitHub interface. To run the basic analyses and quality evaluation from steps
+4 forward, you need to create a local fork of the <a class="reference external" href="https://github.com/NMRLipids/BilayerData/">NMRlipids BilayerData git</a>.</p>
+<ol class="arabic">
+<li><p>Add trajectory and topology (tpr for Gromacs, pdb or corresponding to other programs)
+file into a <a class="reference external" href="https://zenodo.org/">Zenodo</a> repository.If you want to use other
+repository than Zenodo, please do not hesitate to open an <a class="reference external" href="https://github.com/NMRLipids/FAIRMD_lipids/issues">GitHub issue</a> on this.</p></li>
+<li><p>Create an <code class="docutils literal notranslate"><span class="pre">info.yaml</span></code> file containing the essential information on your simulation
+by filling the <a class="reference external" href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/src/fairmd/lipids/SchemaValidateion/Schema/info_template.yaml">info template</a>.
+For instructions, see <a class="reference internal" href="../schemas/simulation_metadata.html#readmesimu"><span class="std std-ref">Simulation metadata (README.yaml)</span></a> and <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/info_files">examples</a>. Mapping files are
+described in  <a class="reference internal" href="../schemas/moleculesAndMapping.html#molecule-names"><span class="std std-ref">Universal molecule and atom names</span></a> and are located in the <a class="reference internal" href="../dbstructure.html#molecule-record"><span class="std std-ref">Molecule record</span></a>
+inside the folder of corresponding molecule.</p></li>
+<li><p>You can store the created <code class="docutils literal notranslate"><span class="pre">info.yaml</span></code> file somewhere inside <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/info_files">./info_files/</a> folder in the
+BilayerData git and make a pull request to the main branch. <strong>You can stop here or
+continue to create ``README.yaml`` file in step 4.</strong></p></li>
+<li><p>Before continuing, make sure that your BilayerData repository is switched to your own
+fork. To create the <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> file for the databank you should run
+<a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a> on your info-file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>fmdl_add_simulation<span class="w"> </span>-f<span class="w"> </span><span class="o">{</span>path<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>info.yaml<span class="w"> </span>file<span class="w"> </span>that<span class="w"> </span>you<span class="w"> </span>created<span class="o">}</span><span class="w"> </span>-w
+<span class="o">{</span>working-directory<span class="o">}</span>
+</pre></div>
+</div>
+<p>After this is finished, you should see a new folder in <code class="docutils literal notranslate"><span class="pre">./Simulations</span></code> which contains
+the <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> file of your system. Commit the created <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> file into
+the git.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>Simulations/**/README.yaml
+</pre></div>
+</div>
+</li>
+<li><p>To perform basic analyses for the added system(s) you should run
+<a class="reference internal" href="../dbprograms.html#compute-databank-py"><span class="std std-ref">fmdl_compute_databank</span></a> with the following keys:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>fmdl_compute_databank<span class="w"> </span>--apl<span class="w"> </span>--nmrpca<span class="w"> </span>--ff<span class="w"> </span>--thickness<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--OP<span class="w"> </span>--range<span class="w"> </span>*-0
+</pre></div>
+</div>
+<p>By default, your new-created system gets ID -1, -2, etc, so we run recomputing only
+on range from -inf to 0. After this, you should see the results in the same folder
+where <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> is located. The results files should be staged by running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>Simulations/**/*.json
+</pre></div>
+</div>
+</li>
+<li><p>For the quality evaluation against experiments, the simulation needs to be first
+connected to the corresponding experimental data (if available) by running
+<a class="reference internal" href="../dbprograms.html#match-experiments-py"><span class="std std-ref">fmdl_match_experiments</span></a>. This will add the <code class="docutils literal notranslate"><span class="pre">EXPERIMENT</span></code> dictionary into the
+<code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> files. This dictionary defines the location of related experimental
+data in <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/experiments">./experiments</a> folder. Then the
+quality evaluation can be then done by running <a class="reference internal" href="../dbprograms.html#quality-evaluation-py"><span class="std std-ref">fmdl_evaluate_quality</span></a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>fmdl_match_experiments<span class="w"> </span>fmdl_evaluate_quality
+</pre></div>
+</div>
+<p>The resulting qualities can be then added into the git by running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>Simulations/**/README.yaml<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>Simulations/**/*.json
+</pre></div>
+</div>
+<p>To create rankings of simulations based on their quality against experiments (see
+<a class="reference internal" href="../dbprograms.html#make-ranking-py"><span class="std std-ref">fmdl_make_ranking</span></a>) and to store the results in folder <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/Ranking">Ranking</a>, run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>fmdl_make_ranking<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>Ranking/*.json
+</pre></div>
+</div>
+</li>
+<li><p>Finally, commit the added data into your fork and make a pull request into the main
+branch.</p></li>
+</ol>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/simulation_metadata.html">Simulation metadata (README.yaml)</a></li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../dbcontribute.html" class="btn btn-neutral float-left" title="Data Contribution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../schemas/simulation_metadata.html" class="btn btn-neutral float-right" title="Simulation metadata (README.yaml)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

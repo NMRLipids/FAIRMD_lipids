@@ -1,0 +1,7 @@
+fairmd.lipids.bin.make\_ranking module
+======================================
+
+.. automodule:: fairmd.lipids.bin.make_ranking
+   :members:
+   :show-inheritance:
+   :undoc-members:

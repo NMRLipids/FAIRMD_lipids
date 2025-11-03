@@ -1,0 +1,7 @@
+fairmd.lipids.bin.evaluate\_quality module
+==========================================
+
+.. automodule:: fairmd.lipids.bin.evaluate_quality
+   :members:
+   :show-inheritance:
+   :undoc-members:

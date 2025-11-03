@@ -1,0 +1,7 @@
+fairmd.lipids.SchemaValidation.ValidateYAML module
+==================================================
+
+.. automodule:: fairmd.lipids.SchemaValidation.ValidateYAML
+   :members:
+   :show-inheritance:
+   :undoc-members:

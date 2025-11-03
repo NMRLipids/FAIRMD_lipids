@@ -1,0 +1,205 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiment metadata &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Adding new molecule" href="../contrib/addingMolecule.html" />
+    <link rel="prev" title="Adding experimental data" href="../contrib/addingExpData.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../dbcontribute.html">Data Contribution</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../contrib/addingSimulation.html">Adding simulations</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../contrib/addingExpData.html">Adding experimental data</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Experiment metadata</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../contrib/addingMolecule.html">Adding new molecule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="moleculesAndMapping.html">Universal molecule and atom names</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../dbcontribute.html">Data Contribution</a></li>
+          <li class="breadcrumb-item"><a href="../contrib/addingExpData.html">Adding experimental data</a></li>
+      <li class="breadcrumb-item active">Experiment metadata</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/schemas/experiment_metadata.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="experiment-metadata">
+<span id="readmeexp"></span><h1>Experiment metadata<a class="headerlink" href="#experiment-metadata" title="Link to this heading"></a></h1>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DOI</p></td>
+<td><p>DOI of the of the original publication of the experimental data</p></td>
+</tr>
+<tr class="row-odd"><td><p>TEMPERATURE</p></td>
+<td><p>Temperature of the experiment</p></td>
+</tr>
+<tr class="row-even"><td><p>MOLAR_FRACTIONS</p></td>
+<td><p>Dictionary of molar fractions of bilayer components</p></td>
+</tr>
+<tr class="row-odd"><td><p>ION_CONCENTRATIONS</p></td>
+<td><p>Dictionary of ion concentrations in the system</p></td>
+</tr>
+<tr class="row-even"><td><p>TOTAL_LIPID_CONCENTRATION</p></td>
+<td><p>Total concentration of lipid components</p></td>
+</tr>
+<tr class="row-odd"><td><p>COUNTER_IONS</p></td>
+<td><p>Type of counter ions if present</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Field descriptions</strong></p>
+<ol class="arabic simple">
+<li><p><strong>DOI</strong><br />
+DOI of the original publication where the experimental data originates.</p></li>
+<li><p><strong>TEMPERATURE</strong><br />
+Temperature of the experiment.</p></li>
+<li><p><strong>MOLAR_FRACTIONS</strong><br />
+Dictionary of molar fractions of bilayer components. For example:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MOLAR_FRACTIONS</span><span class="p">:</span>
+  <span class="n">POPC</span><span class="p">:</span> <span class="mf">0.93</span>
+  <span class="n">CHOL</span><span class="p">:</span> <span class="mf">0.07</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p><strong>ION_CONCENTRATIONS</strong><br />
+Dictionary of ion concentrations of the system ([ion]= N<sub>ion</sub>*[water]/N<sub>water</sub>, where [water] = 55.5 M). For example:</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ION_CONCENTRATIONS</span><span class="p">:</span>
+  <span class="n">POT</span><span class="p">:</span> <span class="mi">0</span>
+  <span class="n">SOD</span><span class="p">:</span> <span class="mf">0.1</span>
+  <span class="n">CLA</span><span class="p">:</span> <span class="mf">0.1</span>
+  <span class="n">CAL</span><span class="p">:</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p><strong>TOTAL_LIPID_CONCENTRATION</strong><br />
+Total concentration of lipid components ([lipid]= N<sub>lipid</sub>*[water]/N<sub>water</sub>, where [water] = 55.5 M). If exact concentration is not known, but experiments are performed in excess water, ’full hydration’ can be given.</p></li>
+<li><p><strong>COUNTER_IONS</strong><br />
+Type of counter ions if present.</p></li>
+</ol>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../contrib/addingExpData.html" class="btn btn-neutral float-left" title="Adding experimental data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../contrib/addingMolecule.html" class="btn btn-neutral float-right" title="Adding new molecule" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

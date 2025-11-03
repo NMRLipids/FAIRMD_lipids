@@ -1,0 +1,24 @@
+
+
+fairmd.lipids.bin
+=================
+Python files
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   fairmd.lipids.bin.add_simulation
+   fairmd.lipids.bin.compute_databank
+   fairmd.lipids.bin.evaluate_quality
+   fairmd.lipids.bin.initialize_data
+   fairmd.lipids.bin.make_ranking
+   fairmd.lipids.bin.match_experiments
+
+Module contents
+---------------
+
+.. automodule:: fairmd.lipids.bin
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,7 @@
+fairmd.lipids.bin.add\_simulation module
+========================================
+
+.. automodule:: fairmd.lipids.bin.add_simulation
+   :members:
+   :show-inheritance:
+   :undoc-members:

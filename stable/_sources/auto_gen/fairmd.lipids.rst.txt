@@ -1,0 +1,41 @@
+
+
+fairmd.lipids
+=============
+Subfolders
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
+   fairmd.lipids.SchemaValidation
+   fairmd.lipids.bin
+   fairmd.lipids.settings
+
+Python files
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   fairmd.lipids.analyze
+   fairmd.lipids.analyze_nmrpca
+   fairmd.lipids.core
+   fairmd.lipids.databankLibrary
+   fairmd.lipids.databankio
+   fairmd.lipids.databankop
+   fairmd.lipids.jpyroutines
+   fairmd.lipids.jsonEncoders
+   fairmd.lipids.maicos
+   fairmd.lipids.openmm_parser
+   fairmd.lipids.plottings
+   fairmd.lipids.quality
+   fairmd.lipids.utils
+
+Module contents
+---------------
+
+.. automodule:: fairmd.lipids
+   :members:
+   :show-inheritance:
+   :undoc-members:

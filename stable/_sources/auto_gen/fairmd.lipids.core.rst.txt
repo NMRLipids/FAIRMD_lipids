@@ -1,0 +1,7 @@
+fairmd.lipids.core module
+=========================
+
+.. automodule:: fairmd.lipids.core
+   :members:
+   :show-inheritance:
+   :undoc-members:

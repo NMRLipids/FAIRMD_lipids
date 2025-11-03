@@ -1,0 +1,7 @@
+fairmd.lipids.openmm\_parser module
+===================================
+
+.. automodule:: fairmd.lipids.openmm_parser
+   :members:
+   :show-inheritance:
+   :undoc-members:

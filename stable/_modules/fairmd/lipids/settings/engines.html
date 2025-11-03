@@ -1,0 +1,689 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fairmd.lipids.settings.engines &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.settings.engines</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fairmd.lipids.settings.engines</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The module defines dictionaries describing parsing of YAML depending on MD engine used.</span>
+
+<span class="sd">Engine-specific dictionaries have a fixed subfield types:</span>
+
+<span class="sd">- REQUIRED</span>
+
+<span class="sd">  Boolean field indicating if the field SHOULD be filled in `README.yaml`</span>
+
+<span class="sd">- TYPE</span>
+<span class="sd">    + file</span>
+<span class="sd">    + files</span>
+<span class="sd">    + string</span>
+<span class="sd">    + dictionary</span>
+<span class="sd">    + float</span>
+<span class="sd">    + integer</span>
+
+<span class="sd">- CATEGORY</span>
+
+<span class="sd">  For file(s) type it can be:</span>
+
+<span class="sd">    + structure</span>
+<span class="sd">    + topology</span>
+<span class="sd">    + trajectory</span>
+<span class="sd">    + energy</span>
+<span class="sd">    + None</span>
+
+<span class="sd">- EXTENSION</span>
+
+<span class="sd">  Is a tuple of possible file extensions</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
+
+<span class="c1"># GROMACS</span>
+<span class="n">gromacs_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;INI&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span>
+            <span class="s2">&quot;gro&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pdb&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">},</span>  <span class="c1"># Could be not needed in the future (tpr)</span>
+    <span class="s2">&quot;MDP&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;mdp&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>  <span class="c1"># Could be not needed in the future (tpr)</span>
+    <span class="s2">&quot;TRJ&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;trajectory&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;xtc&quot;</span><span class="p">,</span> <span class="s2">&quot;trr&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TPR&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;topology&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;tpr&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;CPT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;cpt&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TOP&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;top&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;ITP&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;itp&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;LOG&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;GRO&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;structure&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;gro&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;EDR&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;energy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;edr&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF_SOURCE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF_DATE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DOI&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;SYSTEM&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TEMPERATURE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TRJLENGTH&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PREEQTIME&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TIMELEFTOUT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;UNITEDATOM_DICT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;dictionary&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PUBLICATION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;AUTHORS_CONTACT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;SOFTWARE_VERSION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DATEOFRUNNING&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;NUMBER_OF_ATOMS&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TRAJECTORY_SIZE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;COMPOSITION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;dictionary&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;WARNINGS&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;dictionary&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TYPEOFSYSTEM&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;BATCHID&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="c1"># Amber</span>
+<span class="n">amber_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;TRJ&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;trajectory&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;nc&quot;</span><span class="p">,</span> <span class="s2">&quot;ncdf&quot;</span><span class="p">,</span> <span class="s2">&quot;trj&quot;</span><span class="p">,</span> <span class="s2">&quot;mdcrd&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TOP&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;topology&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;prmtop&quot;</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="s2">&quot;parm7&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF_SOURCE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF_DATE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PDB&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;structure&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="s2">&quot;pdb&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DOI&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;SYSTEM&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TEMPERATURE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TRJLENGTH&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PREEQTIME&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TIMELEFTOUT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;UNITEDATOM_DICT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;dictionary&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PUBLICATION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;AUTHORS_CONTACT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;SOFTWARE_VERSION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DATEOFRUNNING&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;NUMBER_OF_ATOMS&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TRAJECTORY_SIZE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;COMPOSITION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;dictionary&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+<span class="c1"># NAMD</span>
+<span class="n">namd_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;TRJ&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;trajectory&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;dcd&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;INP&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;.inp&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;LOG&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">),</span>
+        <span class="c1"># can be parsed to get software version etc.</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TOP&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;topology&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;psf&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF_SOURCE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF_DATE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PDB&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;structure&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="s2">&quot;pdb&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DOI&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;SYSTEM&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TEMPERATURE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TRJLENGTH&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PREEQTIME&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TIMELEFTOUT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;UNITEDATOM_DICT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;dictionary&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PUBLICATION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;AUTHORS_CONTACT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;SOFTWARE_VERSION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DATEOFRUNNING&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;NUMBER_OF_ATOMS&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TRAJECTORY_SIZE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;COMPOSITION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;dictionary&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+<span class="c1"># CHARMM</span>
+<span class="n">charmm_dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="c1"># OPENMM</span>
+<span class="n">openmm_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;TRJ&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;trajectory&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;xtc&quot;</span><span class="p">,</span> <span class="s2">&quot;trr&quot;</span><span class="p">,</span> <span class="s2">&quot;nc&quot;</span><span class="p">,</span> <span class="s2">&quot;ncdf&quot;</span><span class="p">,</span> <span class="s2">&quot;trj&quot;</span><span class="p">,</span> <span class="s2">&quot;mdcrd&quot;</span><span class="p">,</span> <span class="s2">&quot;dcd&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PDB&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;structure&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TOP&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;topology&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;psf&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;XML&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># state files from openmm, almost similar to a restart file</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;xml&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;CHK&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;chk&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;CRD&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;crd&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;INP&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># input file used to run the simulation</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;inp&quot;</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF_SOURCE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;FF_DATE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DOI&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;SYSTEM&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TEMPERATURE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TRJLENGTH&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PREEQTIME&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TIMELEFTOUT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;UNITEDATOM_DICT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;dictionary&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PUBLICATION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;AUTHORS_CONTACT&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;SOFTWARE_VERSION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;DATEOFRUNNING&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;NUMBER_OF_ATOMS&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;TRAJECTORY_SIZE&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;COMPOSITION&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;dictionary&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<span class="c1"># SOFTWARE</span>
+<span class="n">software_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;GROMACS&quot;</span><span class="p">:</span> <span class="n">gromacs_dict</span><span class="p">,</span>
+    <span class="s2">&quot;AMBER&quot;</span><span class="p">:</span> <span class="n">amber_dict</span><span class="p">,</span>
+    <span class="s2">&quot;NAMD&quot;</span><span class="p">:</span> <span class="n">namd_dict</span><span class="p">,</span>
+    <span class="s2">&quot;CHARMM&quot;</span><span class="p">:</span> <span class="n">charmm_dict</span><span class="p">,</span>
+    <span class="s2">&quot;OPENMM&quot;</span><span class="p">:</span> <span class="n">openmm_dict</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="get_struc_top_traj_fnames">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.engines.html#fairmd.lipids.settings.engines.get_struc_top_traj_fnames">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_struc_top_traj_fnames</span><span class="p">(</span>
+    <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span>
+    <span class="n">allow_structure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">join_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns filenames of structure/topology/trajectory according to system&#39;s engine.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        system (dict): Databank System</span>
+<span class="sd">        allow_structure (bool, optional): Allow using structure instead of topology for</span>
+<span class="sd">            further MDAnalysis&#39; Universe initialization. Defaults to False.</span>
+<span class="sd">        join_path (str,None): path to be joined with filenames</span>
+
+<span class="sd">    Returns ((string, string, string)): structure filename, topology filename,</span>
+<span class="sd">            trajectory filename</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">        ValueError: function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sft</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">]</span>
+    <span class="n">sft_spec</span> <span class="o">=</span> <span class="n">software_dict</span><span class="p">[</span><span class="n">sft</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+    <span class="n">trj_fn</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sft_spec</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">&quot;CATEGORY&quot;</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;CATEGORY&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;trajectory&quot;</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">system</span> <span class="ow">and</span> <span class="n">system</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trj_fn</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">break</span>
+    <span class="n">top_fn</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sft_spec</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">&quot;CATEGORY&quot;</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;CATEGORY&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;topology&quot;</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">system</span> <span class="ow">and</span> <span class="n">system</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">top_fn</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">break</span>
+    <span class="n">struc_fn</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sft_spec</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">&quot;CATEGORY&quot;</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;CATEGORY&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;structure&quot;</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">system</span> <span class="ow">and</span> <span class="n">system</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">struc_fn</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">break</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_sequence</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">))</span>
+
+    <span class="c1"># taking first elements</span>
+    <span class="c1"># TODO can it be removed?</span>
+    <span class="k">if</span> <span class="n">is_sequence</span><span class="p">(</span><span class="n">top_fn</span><span class="p">):</span>
+        <span class="n">top_fn</span> <span class="o">=</span> <span class="n">top_fn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">is_sequence</span><span class="p">(</span><span class="n">top_fn</span><span class="p">):</span>
+            <span class="n">top_fn</span> <span class="o">=</span> <span class="n">top_fn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">is_sequence</span><span class="p">(</span><span class="n">trj_fn</span><span class="p">):</span>
+        <span class="n">trj_fn</span> <span class="o">=</span> <span class="n">trj_fn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">is_sequence</span><span class="p">(</span><span class="n">trj_fn</span><span class="p">):</span>
+            <span class="n">trj_fn</span> <span class="o">=</span> <span class="n">trj_fn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">is_sequence</span><span class="p">(</span><span class="n">struc_fn</span><span class="p">):</span>
+        <span class="n">struc_fn</span> <span class="o">=</span> <span class="n">struc_fn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">is_sequence</span><span class="p">(</span><span class="n">struc_fn</span><span class="p">):</span>
+            <span class="n">struc_fn</span> <span class="o">=</span> <span class="n">struc_fn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># applying joinPath</span>
+    <span class="k">if</span> <span class="n">join_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">top_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">top_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">join_path</span><span class="p">,</span> <span class="n">top_fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trj_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trj_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">join_path</span><span class="p">,</span> <span class="n">trj_fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">struc_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">struc_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">join_path</span><span class="p">,</span> <span class="n">struc_fn</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">struc_fn</span><span class="p">,</span> <span class="n">top_fn</span><span class="p">,</span> <span class="n">trj_fn</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

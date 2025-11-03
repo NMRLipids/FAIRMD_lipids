@@ -1,0 +1,629 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fairmd.lipids.quality &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.quality</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fairmd.lipids.quality</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module `quality` accumulate functions required for major QualityEvaluation script.</span>
+<span class="sd">TODO: add tests</span>
+<span class="sd">TODO: remove code duplication and commented code</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">decimal</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.signal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_SIMU_PATH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span><span class="p">,</span> <span class="n">initialize_databank</span><span class="p">,</span> <span class="n">lipids_set</span>
+
+
+<span class="c1"># TODO: inherit from System</span>
+<div class="viewcode-block" id="QualSimulation">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.QualSimulation">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">QualSimulation</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span> <span class="n">op_data</span><span class="p">,</span> <span class="n">ff_data</span><span class="p">,</span> <span class="n">idx_path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">:</span> <span class="n">System</span> <span class="o">=</span> <span class="n">system</span>
+        <span class="c1"># dictionary where key is the lipid type and value is order parameter file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">op_data</span> <span class="o">=</span> <span class="n">op_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ff_data</span> <span class="o">=</span> <span class="n">ff_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_path</span> <span class="o">=</span> <span class="n">idx_path</span>
+
+<div class="viewcode-block" id="QualSimulation.get_lipids">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.QualSimulation.get_lipids">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lipids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="n">lipids_set</span><span class="p">):</span>
+        <span class="n">lipids</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">lipids</span></div>
+
+
+    <span class="c1"># fraction of each lipid with respect to total amount of lipids (only for lipids!)</span>
+<div class="viewcode-block" id="QualSimulation.molar_fraction">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.QualSimulation.molar_fraction">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">molar_fraction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="n">lipids_set</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">cmps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]</span>
+        <span class="n">number</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">cmps</span><span class="p">[</span><span class="n">molecule</span><span class="p">][</span><span class="s2">&quot;COUNT&quot;</span><span class="p">])</span>
+        <span class="n">all_counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;COUNT&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cmps</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">number</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">sum</span><span class="p">,</span> <span class="n">all_counts</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Experiment">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.Experiment">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Experiment</span><span class="p">:</span>
+    <span class="k">pass</span></div>
+
+
+
+<span class="c1"># ------------------------------------</span>
+
+
+<span class="c1"># Quality evaluation of simulated data</span>
+<span class="c1"># Order parameters</span>
+<div class="viewcode-block" id="prob_S_in_g">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.prob_S_in_g">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">prob_S_in_g</span><span class="p">(</span><span class="n">OP_exp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">exp_error</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">OP_sim</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">op_sim_sd</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Main quality function computing the quality value from experimental and</span>
+<span class="sd">    simulation OP data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        OP_exp (float): Experimental OP value</span>
+<span class="sd">        exp_error (float): Experimental error</span>
+<span class="sd">        OP_sim (float): Simulated OP value</span>
+<span class="sd">        op_sim_sd (float): Standard deviation from simulation</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        float: single-OP quality value or NaN</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># normal distribution N(s, OP_sim, op_sim_sd)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">OP_exp</span> <span class="o">-</span> <span class="n">exp_error</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">OP_exp</span> <span class="o">+</span> <span class="n">exp_error</span>
+
+    <span class="n">a_rel</span> <span class="o">=</span> <span class="p">(</span><span class="n">OP_sim</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">op_sim_sd</span>
+    <span class="n">b_rel</span> <span class="o">=</span> <span class="p">(</span><span class="n">OP_sim</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="n">op_sim_sd</span>
+    <span class="n">p_s</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">b_rel</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">scipy</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">a_rel</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">p_s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">p_s</span>
+
+    <span class="c1"># this is an attempt to deal with precision, max set manually to 70</span>
+    <span class="n">dc</span><span class="o">.</span><span class="n">getcontext</span><span class="p">()</span><span class="o">.</span><span class="n">prec</span> <span class="o">=</span> <span class="mi">70</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="o">-</span><span class="n">dc</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="n">p_s</span><span class="p">)</span><span class="o">.</span><span class="n">log10</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">p_s</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># quality of molecule fragments</span>
+<div class="viewcode-block" id="get_fragments">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.get_fragments">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fragments</span><span class="p">(</span><span class="n">mapping_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="n">fragments</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">key_m</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">key_f</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">key_f</span> <span class="o">=</span> <span class="s2">&quot;n/d&quot;</span>
+        <span class="n">fragments</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key_f</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key_m</span><span class="p">)</span>
+
+    <span class="c1"># merge glycerol backbone fragment into headgroup fragment</span>
+    <span class="k">if</span> <span class="s2">&quot;glycerol backbone&quot;</span> <span class="ow">in</span> <span class="n">fragments</span> <span class="ow">and</span> <span class="s2">&quot;headgroup&quot;</span> <span class="ow">in</span> <span class="n">fragments</span><span class="p">:</span>
+        <span class="n">fragments</span><span class="p">[</span><span class="s2">&quot;headgroup&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fragments</span><span class="p">[</span><span class="s2">&quot;glycerol backbone&quot;</span><span class="p">]</span>
+        <span class="n">fragments</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;glycerol backbone&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fragments</span></div>
+
+
+
+<div class="viewcode-block" id="filterCH">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.filterCH">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">filterCH</span><span class="p">(</span><span class="n">fragment_key</span><span class="p">,</span> <span class="n">fragments</span><span class="p">):</span>
+    <span class="n">re_CH</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;M_([GC0-9]*[A-Z0-9]*C[0-9]*H[0-9]*)*([GC0-9]*H[0-9]*)*_M&quot;</span><span class="p">)</span>
+    <span class="n">filtered</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">re_CH</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">fragments</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">filtered</span></div>
+
+
+
+<div class="viewcode-block" id="checkForCH">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.checkForCH">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">checkForCH</span><span class="p">(</span><span class="n">fragment_key</span><span class="p">,</span> <span class="n">fragments</span><span class="p">):</span>
+    <span class="n">filtered</span> <span class="o">=</span> <span class="n">filterCH</span><span class="p">(</span><span class="n">fragment_key</span><span class="p">,</span> <span class="n">fragments</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">filtered</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="evaluated_percentage">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.evaluated_percentage">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluated_percentage</span><span class="p">(</span><span class="n">fragments</span><span class="p">,</span> <span class="n">exp_op_data</span><span class="p">):</span>
+    <span class="c1"># C-H bonds only???</span>
+
+    <span class="n">frag_percentage</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">fragments</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">fragment_key</span> <span class="ow">in</span> <span class="n">fragments</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>  <span class="c1"># go through fragments</span>
+        <span class="n">count_value</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">fragment_size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">exp_op_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">fragments</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]:</span>  <span class="c1"># check if atom belongs to the fragment</span>
+                <span class="n">fragment_size</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">count_value</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">fragment_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">frag_percentage</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">count_value</span> <span class="o">/</span> <span class="n">fragment_size</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">frag_percentage</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;experiment data availability percentage&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">frag_percentage</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">frag_percentage</span></div>
+
+
+
+<div class="viewcode-block" id="fragmentQuality">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.fragmentQuality">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fragmentQuality</span><span class="p">(</span><span class="n">fragments</span><span class="p">,</span> <span class="n">exp_op_data</span><span class="p">,</span> <span class="n">sim_op_data</span><span class="p">):</span>
+    <span class="c1"># depends on the experiment file what fragments are in this dictionary</span>
+    <span class="n">p_F</span> <span class="o">=</span> <span class="n">evaluated_percentage</span><span class="p">(</span><span class="n">fragments</span><span class="p">,</span> <span class="n">exp_op_data</span><span class="p">)</span>
+    <span class="n">exp_error</span> <span class="o">=</span> <span class="mf">0.02</span>
+
+    <span class="c1"># empty dictionary with fragment names as keys</span>
+    <span class="n">fragment_quality</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">fragments</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">for</span> <span class="n">fragment_key</span> <span class="ow">in</span> <span class="n">fragments</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">E_sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">AV_sum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">p_F</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">fragment_quality</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p_F</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">key_exp</span><span class="p">,</span> <span class="n">value_exp</span> <span class="ow">in</span> <span class="n">exp_op_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">key_exp</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">fragments</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">value_exp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]):</span>
+                        <span class="n">OP_exp</span> <span class="o">=</span> <span class="n">value_exp</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">OP_sim</span> <span class="o">=</span> <span class="n">sim_op_data</span><span class="p">[</span><span class="n">key_exp</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                            <span class="k">continue</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">op_sim_STEM</span> <span class="o">=</span> <span class="n">sim_op_data</span><span class="p">[</span><span class="n">key_exp</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+                            <span class="c1"># change here if you want to use shitness(TM) scale for</span>
+                            <span class="c1"># fragments. Warning big numbers will dominate</span>
+                            <span class="c1"># TODO: remove commented</span>
+                            <span class="c1"># if OP_exp != float(&quot;NaN&quot;):</span>
+                            <span class="n">QE</span> <span class="o">=</span> <span class="n">prob_S_in_g</span><span class="p">(</span><span class="n">OP_exp</span><span class="p">,</span> <span class="n">exp_error</span><span class="p">,</span> <span class="n">OP_sim</span><span class="p">,</span> <span class="n">op_sim_STEM</span><span class="p">)</span>
+                            <span class="c1"># print(OP_exp, OP_sim ,QE)</span>
+                            <span class="c1"># print(QE, 10**(-QE))</span>
+
+                            <span class="c1"># print(&#39;prob_S&#39;)</span>
+                            <span class="c1"># print(QE)</span>
+                            <span class="c1">#  if QE &gt;0:</span>
+                            <span class="c1">#   if QE == float(&quot;NaN&quot;):</span>
+                            <span class="c1">#    E_sum = E_sum</span>
+                            <span class="c1">#    if QE == float(&quot;inf&quot;): #&#39;Infinity&#39; or QE == &#39;inf&#39;:</span>
+                            <span class="c1">#         E_sum += 300</span>
+                            <span class="c1">#         AV_sum += 1</span>
+                            <span class="c1">#    else:</span>
+                            <span class="c1">#        print(QE)</span>
+                            <span class="c1">#        E_sum += prob_S_in_g(OP_exp, exp_error, OP_sim,</span>
+                            <span class="c1">#                               op_sim_STEM)</span>
+                            <span class="c1">#        AV_sum += 1</span>
+                            <span class="n">E_sum</span> <span class="o">+=</span> <span class="n">QE</span>
+                            <span class="n">AV_sum</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">AV_sum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">E_F</span> <span class="o">=</span> <span class="p">(</span><span class="n">E_sum</span> <span class="o">/</span> <span class="n">AV_sum</span><span class="p">)</span> <span class="o">*</span> <span class="n">p_F</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span>
+                    <span class="n">fragment_quality</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">E_F</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">fragment_quality</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fragment_quality</span><span class="p">[</span><span class="n">fragment_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fragment quality &quot;</span><span class="p">,</span> <span class="n">fragment_quality</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fragment_quality</span></div>
+
+
+
+<div class="viewcode-block" id="fragmentQualityAvg">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.fragmentQualityAvg">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fragmentQualityAvg</span><span class="p">(</span>
+    <span class="n">lipid</span><span class="p">,</span>
+    <span class="n">fragment_qual_dict</span><span class="p">,</span>
+    <span class="n">fragments</span><span class="p">,</span>
+<span class="p">):</span>  <span class="c1"># handles one lipid at a time</span>
+    <span class="n">sums_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">doi</span> <span class="ow">in</span> <span class="n">fragment_qual_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key_fragment</span> <span class="ow">in</span> <span class="n">fragment_qual_dict</span><span class="p">[</span><span class="n">doi</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">f_value</span> <span class="o">=</span> <span class="n">fragment_qual_dict</span><span class="p">[</span><span class="n">doi</span><span class="p">][</span><span class="n">key_fragment</span><span class="p">]</span>
+            <span class="n">sums_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key_fragment</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f_value</span><span class="p">)</span>
+
+    <span class="n">avg_total_quality</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">key_fragment</span> <span class="ow">in</span> <span class="n">sums_dict</span><span class="p">:</span>
+        <span class="c1"># remove nan values</span>
+        <span class="n">to_be_summed</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sums_dict</span><span class="p">[</span><span class="n">key_fragment</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">to_be_summed</span><span class="p">:</span>
+            <span class="n">avg_value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">to_be_summed</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_be_summed</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">avg_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">avg_total_quality</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key_fragment</span><span class="p">,</span> <span class="n">avg_value</span><span class="p">)</span>
+
+    <span class="c1"># if average fragment quality exists for all fragments that contain CH bonds then</span>
+    <span class="c1"># calculate total quality over all fragment quality averages</span>
+    <span class="k">if</span> <span class="p">[</span>
+        <span class="n">x</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">avg_total_quality</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">checkForCH</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fragments</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">avg_total_quality</span><span class="p">[</span><span class="n">x</span><span class="p">]))</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">checkForCH</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fragments</span><span class="p">))</span>
+    <span class="p">]:</span>
+        <span class="n">list_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">avg_total_quality</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+        <span class="n">avg_total_quality</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">list_values</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_values</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">avg_total_quality</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fragment avg&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">avg_total_quality</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">avg_total_quality</span></div>
+
+
+
+<span class="c1"># fragments is different for each lipid ---&gt; need to make individual dictionaries</span>
+<div class="viewcode-block" id="systemQuality">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.systemQuality">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">systemQuality</span><span class="p">(</span><span class="n">system_fragment_qualities</span><span class="p">,</span> <span class="n">simulation</span><span class="p">):</span>
+    <span class="n">system_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">lipid_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">w_nan</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">lipid</span> <span class="ow">in</span> <span class="n">system_fragment_qualities</span><span class="p">:</span>
+        <span class="c1"># copy keys to new dictionary</span>
+        <span class="n">lipid_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">system_fragment_qualities</span><span class="p">[</span><span class="n">lipid</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">w</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">molar_fraction</span><span class="p">(</span><span class="n">lipid</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">system_fragment_qualities</span><span class="p">[</span><span class="n">lipid</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="n">lipid_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># save 1 - w of a lipid into a list if the fragment quality is nan</span>
+                <span class="n">w_nan</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="p">)</span>
+
+        <span class="n">system_dict</span><span class="p">[</span><span class="n">lipid</span><span class="p">]</span> <span class="o">=</span> <span class="n">lipid_dict</span>
+
+    <span class="n">system_quality</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">headgroup</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">tails</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">lipid_key</span> <span class="ow">in</span> <span class="n">system_dict</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">system_dict</span><span class="p">[</span><span class="n">lipid_key</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;total&quot;</span><span class="p">:</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="n">value</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;headgroup&quot;</span><span class="p">:</span>
+                <span class="n">headgroup</span> <span class="o">+=</span> <span class="n">value</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;sn-1&quot;</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;sn-2&quot;</span><span class="p">:</span>
+                <span class="n">tails</span> <span class="o">+=</span> <span class="n">value</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tails</span> <span class="o">+=</span> <span class="n">value</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">w_nan</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># multiply all elements of w_nan and divide the sum by the product</span>
+        <span class="n">system_quality</span><span class="p">[</span><span class="s2">&quot;headgroup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">headgroup</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">w_nan</span><span class="p">)</span>
+        <span class="n">system_quality</span><span class="p">[</span><span class="s2">&quot;tails&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tails</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">w_nan</span><span class="p">)</span>
+        <span class="n">system_quality</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">w_nan</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">system_quality</span><span class="p">[</span><span class="s2">&quot;headgroup&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">headgroup</span>
+        <span class="n">system_quality</span><span class="p">[</span><span class="s2">&quot;tails&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tails</span>
+        <span class="n">system_quality</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;system_quality&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">system_quality</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">system_quality</span></div>
+
+
+
+<div class="viewcode-block" id="calc_k_e">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.calc_k_e">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_k_e</span><span class="p">(</span><span class="n">SimExpData</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scaling factor as defined by Kučerka et al. 2008b,</span>
+<span class="sd">    doi:10.1529/biophysj.107.122465</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sum1</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sum2</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">SimExpData</span><span class="p">:</span>
+        <span class="n">F_e</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">deltaF_e</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">F_s</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="n">sum1</span> <span class="o">=</span> <span class="n">sum1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F_s</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F_e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">deltaF_e</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">sum2</span> <span class="o">=</span> <span class="n">sum2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F_e</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">deltaF_e</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">k_e</span> <span class="o">=</span> <span class="n">sum1</span> <span class="o">/</span> <span class="n">sum2</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">SimExpData</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">k_e</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="FormFactorMinFromData">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.FormFactorMinFromData">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">FormFactorMinFromData</span><span class="p">(</span><span class="n">FormFactor</span><span class="p">):</span>
+    <span class="n">FFtmp</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">FormFactor</span><span class="p">:</span>
+        <span class="n">FFtmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">savgol_filter</span><span class="p">(</span><span class="n">FFtmp</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FFtmp:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">FFtmp</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">e</span>
+
+    <span class="n">minX</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">peak_ind</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">peak_ind</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">FormFactor</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+            <span class="n">minX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FormFactor</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">minX</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">minX</span></div>
+
+
+
+<div class="viewcode-block" id="formfactorQuality">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.formfactorQuality">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">formfactorQuality</span><span class="p">(</span><span class="n">simFFdata</span><span class="p">,</span> <span class="n">expFFdata</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate form factor quality for a simulation as defined by</span>
+<span class="sd">    Kučerka et al. 2010, doi:10.1007/s00232-010-9254-5</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># SAMULI: This creates a array containing experiments and simualtions with</span>
+    <span class="c1"># the overlapping x-axis values</span>
+    <span class="n">SimExpData</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">SimValues</span> <span class="ow">in</span> <span class="n">simFFdata</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ExpValues</span> <span class="ow">in</span> <span class="n">expFFdata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">SimValues</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ExpValues</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">0.0005</span><span class="p">:</span>  <span class="c1"># and ExpValues[0] &lt; 0.41:</span>
+                <span class="n">SimExpData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">ExpValues</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ExpValues</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ExpValues</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">SimValues</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                <span class="p">)</span>
+
+    <span class="c1"># Calculates the scaling factor for plotting</span>
+    <span class="n">k_e</span> <span class="o">=</span> <span class="n">calc_k_e</span><span class="p">(</span><span class="n">SimExpData</span><span class="p">)</span>
+
+    <span class="n">SimMin</span> <span class="o">=</span> <span class="n">FormFactorMinFromData</span><span class="p">(</span><span class="n">simFFdata</span><span class="p">)</span>
+    <span class="n">ExpMin</span> <span class="o">=</span> <span class="n">FormFactorMinFromData</span><span class="p">(</span><span class="n">expFFdata</span><span class="p">)</span>
+
+    <span class="n">SQsum</span> <span class="o">=</span> <span class="p">(</span><span class="n">SimMin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ExpMin</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">khi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">SQsum</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">SimExpData</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">SimMin</span><span class="p">,</span> <span class="n">ExpMin</span><span class="p">,</span> <span class="n">khi2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">khi2</span><span class="p">,</span> <span class="n">k_e</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="formfactorQualitySIMtoEXP">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.formfactorQualitySIMtoEXP">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">formfactorQualitySIMtoEXP</span><span class="p">(</span><span class="n">simFFdata</span><span class="p">,</span> <span class="n">expFFdata</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate form factor quality for a simulation as defined by</span>
+<span class="sd">    Kučerka et al. 2010, doi:10.1007/s00232-010-9254-5</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># SAMULI: This creates a array containing experiments and simualtions with</span>
+    <span class="c1"># the overlapping x-axis values</span>
+    <span class="n">SimExpData</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">SimValues</span> <span class="ow">in</span> <span class="n">simFFdata</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ExpValues</span> <span class="ow">in</span> <span class="n">expFFdata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">SimValues</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ExpValues</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">0.0005</span><span class="p">:</span>  <span class="c1"># and ExpValues[0] &lt; 0.41:</span>
+                <span class="n">SimExpData</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">ExpValues</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ExpValues</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ExpValues</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">SimValues</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                <span class="p">)</span>
+
+    <span class="n">k_e</span> <span class="o">=</span> <span class="n">calc_k_e</span><span class="p">(</span><span class="n">SimExpData</span><span class="p">)</span>
+
+    <span class="n">sum1</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">SimExpData</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">SimExpData</span><span class="p">)):</span>
+        <span class="n">F_e</span> <span class="o">=</span> <span class="n">SimExpData</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">deltaF_e</span> <span class="o">=</span> <span class="n">expFFdata</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">F_s</span> <span class="o">=</span> <span class="n">SimExpData</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="n">sum1</span> <span class="o">=</span> <span class="n">sum1</span> <span class="o">+</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F_s</span><span class="p">)</span> <span class="o">-</span> <span class="n">k_e</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">F_e</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">k_e</span> <span class="o">*</span> <span class="n">deltaF_e</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">khi2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sum1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">khi2</span><span class="p">,</span> <span class="n">k_e</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="loadSimulations">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.loadSimulations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">loadSimulations</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">QualSimulation</span><span class="p">]:</span>
+    <span class="n">systems</span> <span class="o">=</span> <span class="n">initialize_databank</span><span class="p">()</span>
+
+    <span class="n">simulations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">system</span> <span class="ow">in</span> <span class="n">systems</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">experiments</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>  <span class="c1"># if experiments is not empty</span>
+                <span class="n">simOPdata</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># order parameter files for each type of lipid</span>
+                <span class="k">for</span> <span class="n">lipMol</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">lipMol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lipids_set</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">filename2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                        <span class="n">FMDL_SIMU_PATH</span><span class="p">,</span>
+                        <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+                        <span class="n">lipMol</span> <span class="o">+</span> <span class="s2">&quot;OrderParameters.json&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">OPdata</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename2</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                            <span class="n">OPdata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                        <span class="c1"># OP data for this lipid is missed</span>
+                        <span class="k">pass</span>
+                    <span class="n">simOPdata</span><span class="p">[</span><span class="n">lipMol</span><span class="p">]</span> <span class="o">=</span> <span class="n">OPdata</span>
+
+                <span class="n">simFFdata</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># form factor data</span>
+                <span class="n">filename2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">FMDL_SIMU_PATH</span><span class="p">,</span>
+                    <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;FormFactor.json&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename2</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                        <span class="n">simFFdata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="c1"># FormFactor data for this system is missed</span>
+                    <span class="k">pass</span>
+                <span class="n">simulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">QualSimulation</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">simOPdata</span><span class="p">,</span> <span class="n">simFFdata</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The simulation does not have experimental data.&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+    <span class="k">return</span> <span class="n">simulations</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

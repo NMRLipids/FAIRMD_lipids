@@ -1,0 +1,556 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fairmd.lipids.maicos &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.maicos</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fairmd.lipids.maicos</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Wrappers for MAICoS calculations adapted to Databank needs.</span>
+
+<span class="sd">- Checks if a system is suitable for maicos calculations</span>
+<span class="sd">- Custom JSON encoder for numpy arrays</span>
+<span class="sd">- Custom maicos analysis classes with save methods adapted to Databank needs</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">maicos</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">maicos.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProfilePlanarBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">maicos.lib.weights</span><span class="w"> </span><span class="kn">import</span> <span class="n">density_weights</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.jsonEncoders</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompactJSONEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.settings.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span>
+
+
+<div class="viewcode-block" id="is_system_suitable_4_maicos">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.is_system_suitable_4_maicos">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_system_suitable_4_maicos</span><span class="p">(</span><span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the system is suitable for maicos calculations.&quot;</span>
+
+<span class="sd">    :param system: Databank System object (System)</span>
+<span class="sd">    :return: False if system should be skipped</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TYPEOFSYSTEM&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;miscellaneous&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">][</span><span class="s2">&quot;ORIENTATION&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skipping due to ORIENTATION warning:&quot;</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">][</span><span class="s2">&quot;ORIENTATION&quot;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">][</span><span class="s2">&quot;PBC&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;hexagonal-box&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skipping due to PBC warning:&quot;</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">][</span><span class="s2">&quot;PBC&quot;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">][</span><span class="s2">&quot;NOWATER&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skipping because there is not water in the trajectory.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="first_last_carbon">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.first_last_carbon">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">first_last_carbon</span><span class="p">(</span><span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find last carbon of sn-1 tail and g3 carbon.&quot;&quot;&quot;</span>
+    <span class="n">g3_atom</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">last_atom</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">molecule</span> <span class="ow">in</span> <span class="n">lipids_set</span><span class="p">:</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">molecule</span><span class="p">]</span><span class="o">.</span><span class="n">mapping_dict</span>
+
+            <span class="c1"># TODO: rewrite via lipid dictionary!</span>
+            <span class="k">for</span> <span class="n">nm</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;M_G3_M&quot;</span><span class="p">,</span> <span class="s2">&quot;M_G13_M&quot;</span><span class="p">,</span> <span class="s2">&quot;M_C32_M&quot;</span><span class="p">]:</span>
+                <span class="n">_ga</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nm</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">)</span>
+                <span class="n">g3_atom</span> <span class="o">=</span> <span class="n">_ga</span> <span class="k">if</span> <span class="n">_ga</span> <span class="k">else</span> <span class="n">g3_atom</span>
+
+            <span class="c1"># TODO: rewrite via lipid dictionary</span>
+            <span class="k">for</span> <span class="n">c_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s2">&quot;M_G1C4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+                    <span class="n">atom</span> <span class="o">=</span> <span class="s2">&quot;M_G1C&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span>
+                <span class="k">elif</span> <span class="s2">&quot;M_G11C4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+                    <span class="n">atom</span> <span class="o">=</span> <span class="s2">&quot;M_G11C&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span>
+                <span class="k">elif</span> <span class="s2">&quot;M_CA4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+                    <span class="n">atom</span> <span class="o">=</span> <span class="s2">&quot;M_CA&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># cannot be determined for this particular lipid. Maybe another ..</span>
+                    <span class="k">break</span>
+                <span class="n">_la</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">)</span>
+                <span class="n">last_atom</span> <span class="o">=</span> <span class="n">_la</span> <span class="k">if</span> <span class="n">_la</span> <span class="k">else</span> <span class="n">last_atom</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found last atom </span><span class="si">{</span><span class="n">last_atom</span><span class="si">}</span><span class="s2"> and g3 atom </span><span class="si">{</span><span class="n">g3_atom</span><span class="si">}</span><span class="s2"> for system </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">last_atom</span><span class="p">,</span> <span class="n">g3_atom</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="traj_centering_for_maicos">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.traj_centering_for_maicos">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">traj_centering_for_maicos</span><span class="p">(</span>
+    <span class="n">system_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">trj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">tpr_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">last_atom</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">g3_atom</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">eq_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">recompute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Center trajectory around the center of mass of all methyl carbons.&quot;&quot;&quot;</span>
+    <span class="n">xtccentered</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="s2">&quot;centered.xtc&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">xtccentered</span>  <span class="c1"># already done</span>
+    <span class="k">if</span> <span class="n">recompute</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">)</span>
+
+    <span class="c1"># make index</span>
+    <span class="c1"># TODO refactor to MDAnalysis</span>
+    <span class="n">ndxpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="s2">&quot;foo.ndx&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">echo_input</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;a </span><span class="si">{</span><span class="n">last_atom</span><span class="si">}</span><span class="se">\n</span><span class="s2">q</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">tpr_name</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">ndxpath</span><span class="p">],</span> <span class="nb">input</span><span class="o">=</span><span class="n">echo_input</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Subprocess failed during ndx file creation: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ndxpath</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">last_lines</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">last_atom_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="n">last_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ndxpath</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;[ centralAtom ]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">last_atom_id</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Some error occurred while reading the foo.ndx </span><span class="si">{</span><span class="n">ndxpath</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="c1"># start preparing centered trajectory</span>
+    <span class="n">xtcwhole</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="s2">&quot;whole.xtc&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Make molecules whole in the trajectory&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xtcwhole</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">echo_proc</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;System</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+                <span class="n">trj_name</span><span class="p">,</span>
+                <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+                <span class="n">tpr_name</span><span class="p">,</span>
+                <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+                <span class="n">xtcwhole</span><span class="p">,</span>
+                <span class="s2">&quot;-pbc&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mol&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">eq_time</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">echo_proc</span><span class="p">,</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;trjconv for whole.xtc failed&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="c1"># centering irt methyl-groups</span>
+    <span class="n">xtcfoo</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="s2">&quot;foo2.xtc&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xtcfoo</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">echo_input</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;centralAtom</span><span class="se">\n</span><span class="s2">System&quot;</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-center&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-pbc&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mol&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-n&quot;</span><span class="p">,</span>
+                <span class="n">ndxpath</span><span class="p">,</span>
+                <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+                <span class="n">xtcwhole</span><span class="p">,</span>
+                <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+                <span class="n">tpr_name</span><span class="p">,</span>
+                <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+                <span class="n">xtcfoo</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">echo_input</span><span class="p">,</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;trjconv for center failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ndxpath</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xtcwhole</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Failed to remove temporary files: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="c1"># Center around the center of mass of all the g_3 carbons</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">echo_input</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;a </span><span class="si">{</span><span class="n">g3_atom</span><span class="si">}</span><span class="se">\n</span><span class="s2">q</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;make_ndx&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">tpr_name</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">ndxpath</span><span class="p">],</span> <span class="nb">input</span><span class="o">=</span><span class="n">echo_input</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">echo_input</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">g3_atom</span><span class="si">}</span><span class="se">\n</span><span class="s2">System&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-center&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-pbc&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;mol&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-n&quot;</span><span class="p">,</span>
+                <span class="n">ndxpath</span><span class="p">,</span>
+                <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+                <span class="n">xtcfoo</span><span class="p">,</span>
+                <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+                <span class="n">tpr_name</span><span class="p">,</span>
+                <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+                <span class="n">xtccentered</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">echo_input</span><span class="p">,</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Failed during centering on g3 carbons.&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xtcfoo</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ndxpath</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;A error occurred during removing temporary files </span><span class="si">{</span><span class="n">ndxpath</span><span class="si">}</span><span class="s2"> &amp; </span><span class="si">{</span><span class="n">xtcfoo</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">return</span> <span class="n">xtccentered</span></div>
+
+
+
+<div class="viewcode-block" id="NumpyArrayEncoder">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.NumpyArrayEncoder">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NumpyArrayEncoder</span><span class="p">(</span><span class="n">CompactJSONEncoder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Encoder for 2xN numpy arrays to be used with json.dump.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="NumpyArrayEncoder.encode">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.NumpyArrayEncoder.encode">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Encode numpy arrays as lists.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">CompactJSONEncoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">CompactJSONEncoder</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FormFactorPlanar">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.FormFactorPlanar">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FormFactorPlanar</span><span class="p">(</span><span class="n">ProfilePlanarBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Form factor of a planar system based on the linear electron density profile.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atomgroup</span><span class="p">:</span> <span class="n">mda</span><span class="o">.</span><span class="n">AtomGroup</span><span class="p">,</span>
+        <span class="n">unwrap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">zmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">zmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bin_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">refgroup</span><span class="p">:</span> <span class="n">mda</span><span class="o">.</span><span class="n">AtomGroup</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;form_factor.dat&quot;</span><span class="p">,</span>
+        <span class="n">concfreq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">jitter</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_locals</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">atomgroup</span><span class="o">=</span><span class="n">atomgroup</span><span class="p">,</span>
+            <span class="n">unwrap</span><span class="o">=</span><span class="n">unwrap</span><span class="p">,</span>
+            <span class="n">pack</span><span class="o">=</span><span class="n">pack</span><span class="p">,</span>
+            <span class="n">jitter</span><span class="o">=</span><span class="n">jitter</span><span class="p">,</span>
+            <span class="n">concfreq</span><span class="o">=</span><span class="n">concfreq</span><span class="p">,</span>
+            <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span>
+            <span class="n">zmin</span><span class="o">=</span><span class="n">zmin</span><span class="p">,</span>
+            <span class="n">zmax</span><span class="o">=</span><span class="n">zmax</span><span class="p">,</span>
+            <span class="n">bin_width</span><span class="o">=</span><span class="n">bin_width</span><span class="p">,</span>
+            <span class="n">refgroup</span><span class="o">=</span><span class="n">refgroup</span><span class="p">,</span>
+            <span class="n">sym</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">sym_odd</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">grouping</span><span class="o">=</span><span class="s2">&quot;atoms&quot;</span><span class="p">,</span>
+            <span class="n">bin_method</span><span class="o">=</span><span class="s2">&quot;com&quot;</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+            <span class="n">weighting_function</span><span class="o">=</span><span class="n">density_weights</span><span class="p">,</span>
+            <span class="n">weighting_function_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dens&quot;</span><span class="p">:</span> <span class="s2">&quot;electron&quot;</span><span class="p">},</span>
+            <span class="n">normalization</span><span class="o">=</span><span class="s2">&quot;volume&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">scattering_vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_single_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_single_frame</span><span class="p">()</span>
+
+        <span class="n">bin_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="o">.</span><span class="n">bin_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="o">.</span><span class="n">box_center</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">]</span>
+
+        <span class="c1"># Define bulk region as the first 3.3 Å (two water layers) from the box edges</span>
+        <span class="c1"># `bin_pos[-1]` is the bin corresponding to the box edge</span>
+        <span class="n">bulk_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">bin_pos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">bin_pos</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">3.3</span>
+        <span class="n">bulk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="o">.</span><span class="n">profile</span><span class="p">[</span><span class="n">bulk_mask</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="o">.</span><span class="n">profile</span> <span class="o">-</span> <span class="n">bulk</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">scattering_vectors</span> <span class="o">*</span> <span class="n">bin_pos</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+
+        <span class="c1"># Here delta is e/A^3 and _bin_width in A,</span>
+        <span class="c1"># so the result is 100 times lower than if we calculate in nm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="o">.</span><span class="n">ff_real</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">delta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bin_width</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="o">.</span><span class="n">ff_imag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">delta</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bin_width</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># This value at q=0 will be used for a correlation analysis and error estimate</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="o">.</span><span class="n">ff_real</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="o">.</span><span class="n">ff_imag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_conclude</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_conclude</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">form_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">means</span><span class="o">.</span><span class="n">ff_real</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">means</span><span class="o">.</span><span class="n">ff_imag</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># error from error propagation of the form factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">dform_factor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sems</span><span class="o">.</span><span class="n">ff_real</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">means</span><span class="o">.</span><span class="n">ff_real</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">form_factor</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sems</span><span class="o">.</span><span class="n">ff_imag</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">means</span><span class="o">.</span><span class="n">ff_imag</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">form_factor</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="FormFactorPlanar.save">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.FormFactorPlanar.save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save performing unit conversion from Å to nm.</span>
+
+<span class="sd">        NOTE: see comments in _single_frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">scattering_vectors</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">form_factor</span> <span class="o">*</span> <span class="mf">1e2</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">dform_factor</span> <span class="o">*</span> <span class="mf">1e2</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NumpyArrayEncoder</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DensityPlanar">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.DensityPlanar">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DensityPlanar</span><span class="p">(</span><span class="n">maicos</span><span class="o">.</span><span class="n">DensityPlanar</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Density profiler for planar system.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DensityPlanar.save">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.DensityPlanar.save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save performing unit conversion from Å to nm and e/Å^3 to e/nm^3&quot;&quot;&quot;</span>
+        <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">bin_pos</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">profile</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">dprofile</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">outdata</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NumpyArrayEncoder</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DielectricPlanar">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.DielectricPlanar">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DielectricPlanar</span><span class="p">(</span><span class="n">maicos</span><span class="o">.</span><span class="n">DielectricPlanar</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dielectric profile for planar system.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DielectricPlanar.save">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.DielectricPlanar.save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save performing unit conversion from Å to nm for the distance.&quot;&quot;&quot;</span>
+        <span class="n">outdata_perp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">bin_pos</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span>  <span class="c1"># Convert from Å to nm</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">eps_perp</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">deps_perp</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">_perp.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">outdata_perp</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NumpyArrayEncoder</span><span class="p">)</span>
+
+        <span class="n">outdata_par</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">bin_pos</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span>  <span class="c1"># Convert from Å to nm</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">eps_par</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">deps_par</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_prefix</span><span class="si">}</span><span class="s2">_par.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">outdata_par</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NumpyArrayEncoder</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DiporderPlanar">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.DiporderPlanar">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiporderPlanar</span><span class="p">(</span><span class="n">maicos</span><span class="o">.</span><span class="n">DiporderPlanar</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dipole order parameter profile for planar system.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DiporderPlanar.save">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.maicos.html#fairmd.lipids.maicos.DiporderPlanar.save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save performing unit conversion from Å to nm for the distance.&quot;&quot;&quot;</span>
+        <span class="n">outdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">bin_pos</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span>  <span class="c1"># Convert from Å to nm</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">profile</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">dprofile</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">outdata</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NumpyArrayEncoder</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

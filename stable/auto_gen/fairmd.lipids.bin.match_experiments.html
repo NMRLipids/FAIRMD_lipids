@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fairmd.lipids.bin.match_experiments module &mdash; FAIRMD Lipids v1.3.2 1.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8ca9e7a0"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="fairmd.lipids.settings" href="fairmd.lipids.settings.html" />
+    <link rel="prev" title="fairmd.lipids.bin.make_ranking module" href="fairmd.lipids.bin.make_ranking.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FAIRMD Lipids v1.3.2</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Overview.html">Project structure</a></li>
+          <li class="breadcrumb-item"><a href="fairmd.lipids.html">fairmd.lipids</a></li>
+          <li class="breadcrumb-item"><a href="fairmd.lipids.bin.html">fairmd.lipids.bin</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.bin.match_experiments module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_gen/fairmd.lipids.bin.match_experiments.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-fairmd.lipids.bin.match_experiments">
+<span id="fairmd-lipids-bin-match-experiments-module"></span><h1>fairmd.lipids.bin.match_experiments module<a class="headerlink" href="#module-fairmd.lipids.bin.match_experiments" title="Link to this heading"></a></h1>
+<p>Match simulations with experiments in the databank.</p>
+<p>Script goes through all simulations and experiments in the databank and finds
+pairs of simulations and experiments that match in composition, temperature and
+other conditions. The found pairs are written into the simulation <a class="reference internal" href="../schemas/simulation_metadata.html#readmesimu"><span class="std std-ref">README.yaml</span></a>
+files and into a log file.</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">fmdl_match_experiments</span>
+</pre></div>
+</div>
+<p>No arguments are needed.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.SearchSystem">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.match_experiments.</span></span><span class="sig-name descname"><span class="pre">SearchSystem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">readme</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#SearchSystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.SearchSystem" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.SearchSystem.system">
+<span class="sig-name descname"><span class="pre">system</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.SearchSystem.system" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.SearchSystem.idx_path">
+<span class="sig-name descname"><span class="pre">idx_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.SearchSystem.idx_path" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.SearchSystem.get_lipids">
+<span class="sig-name descname"><span class="pre">get_lipids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LipidSet[{'POPC',</span> <span class="pre">'POPE',</span> <span class="pre">'TOCL',</span> <span class="pre">'CHOL',</span> <span class="pre">'DPPC'}]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#SearchSystem.get_lipids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.SearchSystem.get_lipids" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.SearchSystem.get_ions">
+<span class="sig-name descname"><span class="pre">get_ions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#SearchSystem.get_ions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.SearchSystem.get_ions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.SearchSystem.molar_fraction">
+<span class="sig-name descname"><span class="pre">molar_fraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LipidSet[{'POPC',</span> <span class="pre">'POPE',</span> <span class="pre">'TOCL',</span> <span class="pre">'CHOL',</span> <span class="pre">'DPPC'}]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#SearchSystem.molar_fraction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.SearchSystem.molar_fraction" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.SearchSystem.ion_conc">
+<span class="sig-name descname"><span class="pre">ion_conc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_counter_ions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#SearchSystem.ion_conc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.SearchSystem.ion_conc" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.SearchSystem.total_lipid_conc">
+<span class="sig-name descname"><span class="pre">total_lipid_conc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#SearchSystem.total_lipid_conc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.SearchSystem.total_lipid_conc" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.Experiment">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.match_experiments.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">readme</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exptype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#Experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.Experiment" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.Experiment.get_lipids">
+<span class="sig-name descname"><span class="pre">get_lipids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LipidSet[{'POPC',</span> <span class="pre">'POPE',</span> <span class="pre">'TOCL',</span> <span class="pre">'CHOL',</span> <span class="pre">'DPPC'}]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#Experiment.get_lipids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.Experiment.get_lipids" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.Experiment.get_ions">
+<span class="sig-name descname"><span class="pre">get_ions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ions</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#Experiment.get_ions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.Experiment.get_ions" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.load_simulations">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.match_experiments.</span></span><span class="sig-name descname"><span class="pre">load_simulations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fairmd.lipids.bin.match_experiments.SearchSystem" title="fairmd.lipids.bin.match_experiments.SearchSystem"><span class="pre">SearchSystem</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#load_simulations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.load_simulations" title="Link to this definition"></a></dt>
+<dd><p>Generates the list of Simulation objects. Go through all README.yaml files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.load_experiments">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.match_experiments.</span></span><span class="sig-name descname"><span class="pre">load_experiments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fairmd.lipids.bin.match_experiments.Experiment" title="fairmd.lipids.bin.match_experiments.Experiment"><span class="pre">Experiment</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#load_experiments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.load_experiments" title="Link to this definition"></a></dt>
+<dd><p>Loops over the experiment entries in the experiment databank and read experiment
+readme and order parameter files into objects.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.find_pairs">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.match_experiments.</span></span><span class="sig-name descname"><span class="pre">find_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fairmd.lipids.bin.match_experiments.Experiment" title="fairmd.lipids.bin.match_experiments.Experiment"><span class="pre">Experiment</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fairmd.lipids.bin.match_experiments.SearchSystem" title="fairmd.lipids.bin.match_experiments.SearchSystem"><span class="pre">SearchSystem</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#find_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.find_pairs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.log_pairs">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.match_experiments.</span></span><span class="sig-name descname"><span class="pre">log_pairs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IO</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#log_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.log_pairs" title="Link to this definition"></a></dt>
+<dd><p>Write found correspondences into log file.</p>
+<p>pairs: [(Simulation, Experiment), …]
+fd: file descriptor for writting into</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.match_experiments.match_experiments">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.match_experiments.</span></span><span class="sig-name descname"><span class="pre">match_experiments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/bin/match_experiments.html#match_experiments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.match_experiments.match_experiments" title="Link to this definition"></a></dt>
+<dd><p>Main program function. Not for exporting.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="fairmd.lipids.bin.make_ranking.html" class="btn btn-neutral float-left" title="fairmd.lipids.bin.make_ranking module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fairmd.lipids.settings.html" class="btn btn-neutral float-right" title="fairmd.lipids.settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

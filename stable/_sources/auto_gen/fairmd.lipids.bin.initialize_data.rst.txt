@@ -1,0 +1,7 @@
+fairmd.lipids.bin.initialize\_data module
+=========================================
+
+.. automodule:: fairmd.lipids.bin.initialize_data
+   :members:
+   :show-inheritance:
+   :undoc-members:

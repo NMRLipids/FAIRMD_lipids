@@ -1,0 +1,7 @@
+fairmd.lipids.quality module
+============================
+
+.. automodule:: fairmd.lipids.quality
+   :members:
+   :show-inheritance:
+   :undoc-members:
