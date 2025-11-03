@@ -1,0 +1,7 @@
+fairmd.lipids.jpyroutines module
+================================
+
+.. automodule:: fairmd.lipids.jpyroutines
+   :members:
+   :show-inheritance:
+   :undoc-members:

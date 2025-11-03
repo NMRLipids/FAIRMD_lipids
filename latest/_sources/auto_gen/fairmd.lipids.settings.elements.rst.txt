@@ -1,0 +1,7 @@
+fairmd.lipids.settings.elements module
+======================================
+
+.. automodule:: fairmd.lipids.settings.elements
+   :members:
+   :show-inheritance:
+   :undoc-members:

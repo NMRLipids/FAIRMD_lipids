@@ -1,7 +1,0 @@
-DatabankLib.quality module
-==========================
-
-.. automodule:: DatabankLib.quality
-   :members:
-   :show-inheritance:
-   :undoc-members:

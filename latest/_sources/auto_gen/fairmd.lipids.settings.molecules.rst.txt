@@ -1,0 +1,7 @@
+fairmd.lipids.settings.molecules module
+=======================================
+
+.. automodule:: fairmd.lipids.settings.molecules
+   :members:
+   :show-inheritance:
+   :undoc-members:

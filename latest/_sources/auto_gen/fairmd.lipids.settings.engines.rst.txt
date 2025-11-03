@@ -1,0 +1,7 @@
+fairmd.lipids.settings.engines module
+=====================================
+
+.. automodule:: fairmd.lipids.settings.engines
+   :members:
+   :show-inheritance:
+   :undoc-members:

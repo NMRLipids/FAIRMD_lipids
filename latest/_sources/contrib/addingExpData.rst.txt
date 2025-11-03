@@ -42,9 +42,9 @@ The keys of these dictionaries are summarized in the :ref:`Experiment metadata d
 
    .. code-block:: bash
 
-      nml_match_experiments
-      nml_evaluate_quality
-      nml_make_ranking
+      fmdl_match_experiments
+      fmdl_evaluate_quality
+      fmdl_make_ranking
 
 #. Submit the files to your branch and make a pull-request.
 

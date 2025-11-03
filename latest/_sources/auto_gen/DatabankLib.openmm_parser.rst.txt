@@ -1,7 +1,0 @@
-DatabankLib.openmm\_parser module
-=================================
-
-.. automodule:: DatabankLib.openmm_parser
-   :members:
-   :show-inheritance:
-   :undoc-members:

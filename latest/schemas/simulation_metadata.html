@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulation metadata (README.yaml) &mdash; NMRlipids Databank v1.3.1.dev16+gd727ab680 1.3.1.dev16+gd727ab680 documentation</title>
+  <title>Simulation metadata (README.yaml) &mdash; FAIRMD Lipids v1.3.1.dev25+g1b0521d02 1.3.1.dev25+g1b0521d02 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=282b5654"></script>
+      <script src="../_static/documentation_options.js?v=a2d01d04"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            NMRlipids Databank v1.3.1.dev16+gd727ab680
+            FAIRMD Lipids v1.3.1.dev25+g1b0521d02
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -45,7 +45,7 @@
               <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">DatabankLib CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
@@ -69,7 +69,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">NMRlipids Databank v1.3.1.dev16+gd727ab680</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.1.dev25+g1b0521d02</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -91,9 +91,9 @@
              
   <section id="simulation-metadata-readme-yaml">
 <span id="readmesimu"></span><h1>Simulation metadata (README.yaml)<a class="headerlink" href="#simulation-metadata-readme-yaml" title="Link to this heading"></a></h1>
-<p>Each simulation in the NMRlipids databank is assigned with a <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> metadata file which contains all the essential information of the simulation. These files are created from the manually contributed <a class="reference internal" href="../dbstructure.html#info-files"><span class="std std-ref">info.yaml</span></a> files as described in <a class="reference internal" href="../contrib/addingSimulation.html#addsimulation"><span class="std std-ref">Adding simulations</span></a>. The <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> files are stored as described in <a class="reference internal" href="../dbstructure.html#dbstructure"><span class="std std-ref">Data organisation</span></a>.</p>
+<p>Each simulation in the FAIRMD Lipids is assigned with a <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> metadata file which contains all the essential information of the simulation. These files are created from the manually contributed <a class="reference internal" href="../dbstructure.html#info-files"><span class="std std-ref">info.yaml</span></a> files as described in <a class="reference internal" href="../contrib/addingSimulation.html#addsimulation"><span class="std std-ref">Adding simulations</span></a>. The <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> files are stored as described in <a class="reference internal" href="../dbstructure.html#dbstructure"><span class="std std-ref">Data organisation</span></a>.</p>
 <p>You can view examples in the <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/Simulations">BilayerData GitHub repository</a>.</p>
-<p>README files contain information that is manually entered into <a class="reference internal" href="../dbstructure.html#info-files"><span class="std std-ref">info.yaml</span></a> files and automatically exctracted information by the <a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">nml_add_simulation</span></a> program.
+<p>README files contain information that is manually entered into <a class="reference internal" href="../dbstructure.html#info-files"><span class="std std-ref">info.yaml</span></a> files and automatically exctracted information by the <a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a> program.
 Table below lists the manually entered compulsory and optional parameters, as well as automatically extracted information from simulation files.</p>
 <hr class="docutils" />
 <table class="docutils align-default">
@@ -286,7 +286,7 @@ For example, the COMPOSITION dictionary input for <a class="reference external" 
       <span class="n">MAPPING</span><span class="p">:</span> <span class="n">mappingCLA</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
-<p>When running <a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">nml_add_simulation</span></a>, the numbers of molecules are added in additional <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> keys into dictionaries of each molecule, see COMPOSITION (ouput) below.</p>
+<p>When running <a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a>, the numbers of molecules are added in additional <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> keys into dictionaries of each molecule, see COMPOSITION (ouput) below.</p>
 <ol class="arabic simple" start="8">
 <li><p><strong>DIR_WRK</strong> (deprecated)<br />
 Give the path of the working directory in your local computer. The trajectory and topology files will be downloaded to this trajectory, and temporary files created during processing will be stored here.</p></li>
@@ -339,7 +339,7 @@ Date when added into the databank.</p></li>
 <li><p><strong>EXPERIMENT</strong><br />
 Potentially connected experimental data.</p></li>
 <li><p><strong>COMPOSITION</strong> (output)<br />
-When adding a simulation into NMRlipids databank with the <a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">nml_add_simulation</span></a>, numbers of molecules are automatically calculated and stored into <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> keys for each molecule in the COMPOSITION dictionary. Number of lipids are calculated separately for both membrane leaflets. For example, the result for the simulation with COMPOSITION input exemplified above is:</p></li>
+When adding a simulation into FAIRMD Lipids with the <a class="reference internal" href="../dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a>, numbers of molecules are automatically calculated and stored into <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> keys for each molecule in the COMPOSITION dictionary. Number of lipids are calculated separately for both membrane leaflets. For example, the result for the simulation with COMPOSITION input exemplified above is:</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="n">COMPOSITION</span><span class="p">:</span>
          <span class="n">CHOL</span><span class="p">:</span>
@@ -385,7 +385,7 @@ Unique numeric identifier assigned to the simulation. It is generated by the CI/
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NMRlipids Open Collaboration
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -393,14 +393,14 @@ Unique numeric identifier assigned to the simulation. It is generated by the CI/
     (at your option) any later version
    .
         <p>
-            <a href="https://github.com/NMRLipids/Databank/blob/main/LICENSE.txt"
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
             target="_blank"
             rel="noopener">
             Link to GNU GPL v3 License
             </a>
         </p>
         <p>
-            <a href="https://github.com/NMRLipids/Databank"
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
             target="_blank"
             rel="noopener">
             Link to the GitHub repository

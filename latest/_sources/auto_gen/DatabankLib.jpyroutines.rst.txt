@@ -1,7 +1,0 @@
-DatabankLib.jpyroutines module
-==============================
-
-.. automodule:: DatabankLib.jpyroutines
-   :members:
-   :show-inheritance:
-   :undoc-members:

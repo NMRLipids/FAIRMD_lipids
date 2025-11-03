@@ -1,7 +1,0 @@
-DatabankLib.core module
-=======================
-
-.. automodule:: DatabankLib.core
-   :members:
-   :show-inheritance:
-   :undoc-members:

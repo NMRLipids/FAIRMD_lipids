@@ -1,11 +1,11 @@
 (readmesimu)=
 # Simulation metadata (README.yaml)
 
-Each simulation in the NMRlipids databank is assigned with a `README.yaml` metadata file which contains all the essential information of the simulation. These files are created from the manually contributed [info.yaml](info_files) files as described in [Adding simulations](addSimulation). The `README.yaml` files are stored as described in [Data organisation](dbstructure). 
+Each simulation in the FAIRMD Lipids is assigned with a `README.yaml` metadata file which contains all the essential information of the simulation. These files are created from the manually contributed [info.yaml](info_files) files as described in [Adding simulations](addSimulation). The `README.yaml` files are stored as described in [Data organisation](dbstructure). 
 
 You can view examples in the [BilayerData GitHub repository](https://github.com/NMRLipids/BilayerData/tree/main/Simulations). 
 
-README files contain information that is manually entered into [info.yaml](info_files) files and automatically exctracted information by the [nml_add_simulation](add_simulation_py) program. 
+README files contain information that is manually entered into [info.yaml](info_files) files and automatically exctracted information by the [fmdl_add_simulation](add_simulation_py) program. 
 Table below lists the manually entered compulsory and optional parameters, as well as automatically extracted information from simulation files.  
 
 --------------------
@@ -98,7 +98,7 @@ For example, the COMPOSITION dictionary input for [a system](https://doi.org/10.
       MAPPING: mappingCLA.txt
 ```
 
-When running [nml_add_simulation](add_simulation_py), the numbers of molecules are added in additional ``COUNT`` keys into dictionaries of each molecule, see COMPOSITION (ouput) below. 
+When running [fmdl_add_simulation](add_simulation_py), the numbers of molecules are added in additional ``COUNT`` keys into dictionaries of each molecule, see COMPOSITION (ouput) below. 
 
 8. **DIR\_WRK** (deprecated)  
 Give the path of the working directory in your local computer. The trajectory and topology files will be downloaded to this trajectory, and temporary files created during processing will be stored here. 
@@ -173,7 +173,7 @@ Date when added into the databank.
 Potentially connected experimental data.
 
 30. **COMPOSITION** (output)  
-When adding a simulation into NMRlipids databank with the [nml_add_simulation](add_simulation_py), numbers of molecules are automatically calculated and stored into ``COUNT`` keys for each molecule in the COMPOSITION dictionary. Number of lipids are calculated separately for both membrane leaflets. For example, the result for the simulation with COMPOSITION input exemplified above is:
+When adding a simulation into FAIRMD Lipids with the [fmdl_add_simulation](add_simulation_py), numbers of molecules are automatically calculated and stored into ``COUNT`` keys for each molecule in the COMPOSITION dictionary. Number of lipids are calculated separately for both membrane leaflets. For example, the result for the simulation with COMPOSITION input exemplified above is:
 
 ```
         COMPOSITION:

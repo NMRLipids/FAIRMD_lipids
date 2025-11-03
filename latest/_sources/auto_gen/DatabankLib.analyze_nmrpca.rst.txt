@@ -1,7 +1,0 @@
-DatabankLib.analyze\_nmrpca module
-==================================
-
-.. automodule:: DatabankLib.analyze_nmrpca
-   :members:
-   :show-inheritance:
-   :undoc-members:

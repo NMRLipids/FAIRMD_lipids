@@ -1,7 +1,0 @@
-DatabankLib.plottings module
-============================
-
-.. automodule:: DatabankLib.plottings
-   :members:
-   :show-inheritance:
-   :undoc-members:

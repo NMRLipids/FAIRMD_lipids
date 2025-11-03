@@ -1,7 +1,0 @@
-DatabankLib.databankLibrary module
-==================================
-
-.. automodule:: DatabankLib.databankLibrary
-   :members:
-   :show-inheritance:
-   :undoc-members:

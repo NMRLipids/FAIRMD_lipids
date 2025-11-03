@@ -1,0 +1,7 @@
+fairmd.lipids.settings.dic\_lipids\_UA module
+=============================================
+
+.. automodule:: fairmd.lipids.settings.dic_lipids_UA
+   :members:
+   :show-inheritance:
+   :undoc-members:

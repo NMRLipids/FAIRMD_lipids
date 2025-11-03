@@ -1,0 +1,22 @@
+
+
+fairmd.lipids.settings
+======================
+Python files
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   fairmd.lipids.settings.dic_lipids_UA
+   fairmd.lipids.settings.elements
+   fairmd.lipids.settings.engines
+   fairmd.lipids.settings.molecules
+
+Module contents
+---------------
+
+.. automodule:: fairmd.lipids.settings
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,186 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fairmd.lipids.bin.initialize_data module &mdash; FAIRMD Lipids v1.3.1.dev25+g1b0521d02 1.3.1.dev25+g1b0521d02 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=a2d01d04"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="fairmd.lipids.bin.make_ranking module" href="fairmd.lipids.bin.make_ranking.html" />
+    <link rel="prev" title="fairmd.lipids.bin.evaluate_quality module" href="fairmd.lipids.bin.evaluate_quality.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.1.dev25+g1b0521d02
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FAIRMD Lipids v1.3.1.dev25+g1b0521d02</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Overview.html">Project structure</a></li>
+          <li class="breadcrumb-item"><a href="fairmd.lipids.html">fairmd.lipids</a></li>
+          <li class="breadcrumb-item"><a href="fairmd.lipids.bin.html">fairmd.lipids.bin</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.bin.initialize_data module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_gen/fairmd.lipids.bin.initialize_data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-fairmd.lipids.bin.initialize_data">
+<span id="fairmd-lipids-bin-initialize-data-module"></span><h1>fairmd.lipids.bin.initialize_data module<a class="headerlink" href="#module-fairmd.lipids.bin.initialize_data" title="Link to this heading"></a></h1>
+<p>Initializes FAIRMD Lipids data folder for further work and creates <cite>databank_env.rc</cite> file.</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">fmdl_initialize_data [toy|stable|dev|-h]</span>
+<span class="go">source databank_env.rc</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">toy</span></code>: copies ToyData from the package data. This Databank contains only 4 very small systems</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stable</span></code>: download stable release from github.com/NMRlipids/BilayerData (even without git)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: clone NMRlipids/BilayerData (requires git)</p></li>
+</ul>
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.initialize_data.git_exists">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.initialize_data.</span></span><span class="sig-name descname"><span class="pre">git_exists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/initialize_data.html#git_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.initialize_data.git_exists" title="Link to this definition"></a></dt>
+<dd><p>Check if git is installed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.initialize_data.get_latest_release_tag">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.initialize_data.</span></span><span class="sig-name descname"><span class="pre">get_latest_release_tag</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/initialize_data.html#get_latest_release_tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.initialize_data.get_latest_release_tag" title="Link to this definition"></a></dt>
+<dd><p>Fetch the latest release tag from the GitHub API.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.initialize_data.clone_repo">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.initialize_data.</span></span><span class="sig-name descname"><span class="pre">clone_repo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/initialize_data.html#clone_repo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.initialize_data.clone_repo" title="Link to this definition"></a></dt>
+<dd><p>Clone the repository at the specified tag.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.initialize_data.download_and_extract_zip">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.initialize_data.</span></span><span class="sig-name descname"><span class="pre">download_and_extract_zip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/initialize_data.html#download_and_extract_zip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.initialize_data.download_and_extract_zip" title="Link to this definition"></a></dt>
+<dd><p>Download and extract the ZIP file of the specified tag (release).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.initialize_data.download_toy_folder">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.initialize_data.</span></span><span class="sig-name descname"><span class="pre">download_toy_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ToyData'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/initialize_data.html#download_toy_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.initialize_data.download_toy_folder" title="Link to this definition"></a></dt>
+<dd><p>Download a folder from a package data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.bin.initialize_data.initialize_data">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.initialize_data.</span></span><span class="sig-name descname"><span class="pre">initialize_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/bin/initialize_data.html#initialize_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.initialize_data.initialize_data" title="Link to this definition"></a></dt>
+<dd><p>Code program logic.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="fairmd.lipids.bin.evaluate_quality.html" class="btn btn-neutral float-left" title="fairmd.lipids.bin.evaluate_quality module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fairmd.lipids.bin.make_ranking.html" class="btn btn-neutral float-right" title="fairmd.lipids.bin.make_ranking module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

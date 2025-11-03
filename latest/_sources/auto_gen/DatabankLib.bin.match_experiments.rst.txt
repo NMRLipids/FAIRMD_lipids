@@ -1,7 +1,0 @@
-DatabankLib.bin.match\_experiments module
-=========================================
-
-.. automodule:: DatabankLib.bin.match_experiments
-   :members:
-   :show-inheritance:
-   :undoc-members:

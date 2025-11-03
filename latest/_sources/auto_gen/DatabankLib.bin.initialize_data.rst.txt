@@ -1,7 +1,0 @@
-DatabankLib.bin.initialize\_data module
-=======================================
-
-.. automodule:: DatabankLib.bin.initialize_data
-   :members:
-   :show-inheritance:
-   :undoc-members:

@@ -1,7 +1,0 @@
-DatabankLib.SchemaValidation.ValidateYAML module
-================================================
-
-.. automodule:: DatabankLib.SchemaValidation.ValidateYAML
-   :members:
-   :show-inheritance:
-   :undoc-members:

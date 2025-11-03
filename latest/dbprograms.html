@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DatabankLib CLI &mdash; NMRlipids Databank v1.3.1.dev16+gd727ab680 1.3.1.dev16+gd727ab680 documentation</title>
+  <title>fairmd-lipids CLI &mdash; FAIRMD Lipids v1.3.1.dev25+g1b0521d02 1.3.1.dev25+g1b0521d02 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=282b5654"></script>
+      <script src="_static/documentation_options.js?v=a2d01d04"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            NMRlipids Databank v1.3.1.dev16+gd727ab680
+            FAIRMD Lipids v1.3.1.dev25+g1b0521d02
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -45,13 +45,13 @@
               <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">DatabankLib CLI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-DatabankLib.bin.initialize_data">nml_initialize_data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-DatabankLib.bin.add_simulation">nml_add_simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-DatabankLib.bin.compute_databank">nml_compute_databank</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-DatabankLib.bin.match_experiments">nml_match_experiments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-DatabankLib.bin.evaluate_quality">nml_evaluate_quality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-DatabankLib.bin.make_ranking">nml_make_ranking</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">fairmd-lipids CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-fairmd.lipids.bin.initialize_data">fmdl_initialize_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fairmd.lipids.bin.add_simulation">fmdl_add_simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fairmd.lipids.bin.compute_databank">fmdl_compute_databank</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fairmd.lipids.bin.match_experiments">fmdl_match_experiments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fairmd.lipids.bin.evaluate_quality">fmdl_evaluate_quality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-fairmd.lipids.bin.make_ranking">fmdl_make_ranking</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Overview.html">Project structure</a></li>
@@ -68,7 +68,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">NMRlipids Databank v1.3.1.dev16+gd727ab680</a>
+          <a href="index.html">FAIRMD Lipids v1.3.1.dev25+g1b0521d02</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -76,7 +76,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">DatabankLib CLI</li>
+      <li class="breadcrumb-item active">fairmd-lipids CLI</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/dbprograms.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -86,16 +86,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="databanklib-cli">
-<span id="dbprograms"></span><h1>DatabankLib CLI<a class="headerlink" href="#databanklib-cli" title="Link to this heading"></a></h1>
-<p>The NMRlipids Databank includes several standalone programs that are used to add simulation, pair them with experiments, evaluate quality and process ranking.</p>
+  <section id="fairmd-lipids-cli">
+<span id="dbprograms"></span><h1>fairmd-lipids CLI<a class="headerlink" href="#fairmd-lipids-cli" title="Link to this heading"></a></h1>
+<p>The FAIRMD Lipids includes several standalone programs that are used to add simulation, pair them with experiments, evaluate quality and process ranking.</p>
 <blockquote>
 <div></div></blockquote>
-<section id="module-DatabankLib.bin.initialize_data">
-<span id="nml-initialize-data"></span><span id="initialize-data-py"></span><h2>nml_initialize_data<a class="headerlink" href="#module-DatabankLib.bin.initialize_data" title="Link to this heading"></a></h2>
-<p>Initializes NMRlipids Databank data folder for further work and creates <cite>databank_env.rc</cite> file.</p>
+<section id="module-fairmd.lipids.bin.initialize_data">
+<span id="fmdl-initialize-data"></span><span id="initialize-data-py"></span><h2>fmdl_initialize_data<a class="headerlink" href="#module-fairmd.lipids.bin.initialize_data" title="Link to this heading"></a></h2>
+<p>Initializes FAIRMD Lipids data folder for further work and creates <cite>databank_env.rc</cite> file.</p>
 <p><strong>Usage:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nml_initialize_data [toy|stable|dev|-h]</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">fmdl_initialize_data [toy|stable|dev|-h]</span>
 <span class="go">source databank_env.rc</span>
 </pre></div>
 </div>
@@ -105,12 +105,12 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">dev</span></code>: clone NMRlipids/BilayerData (requires git)</p></li>
 </ul>
 </section>
-<section id="module-DatabankLib.bin.add_simulation">
-<span id="nml-add-simulation"></span><span id="add-simulation-py"></span><h2>nml_add_simulation<a class="headerlink" href="#module-DatabankLib.bin.add_simulation" title="Link to this heading"></a></h2>
-<p>Add new simulation into the NMRlipids Databank.</p>
+<section id="module-fairmd.lipids.bin.add_simulation">
+<span id="fmdl-add-simulation"></span><span id="add-simulation-py"></span><h2>fmdl_add_simulation<a class="headerlink" href="#module-fairmd.lipids.bin.add_simulation" title="Link to this heading"></a></h2>
+<p>Add new simulation into the FAIRMD Lipids.</p>
 <p>The script adds a simulation into the Databank based on <code class="docutils literal notranslate"><span class="pre">info.yaml</span></code> file.</p>
 <dl class="simple">
-<dt><strong>Usage:</strong></dt><dd><p>nml_add_simulation [-h] [-f FILE] [-d] [-n] [-w WORK_DIR] [–dry-run]</p>
+<dt><strong>Usage:</strong></dt><dd><p>fmdl_add_simulation [-h] [-f FILE] [-d] [-n] [-w WORK_DIR] [–dry-run]</p>
 </dd>
 </dl>
 <dl class="option-list">
@@ -138,14 +138,14 @@
 <li><p>3 - network accessing errors</p></li>
 </ul>
 </section>
-<section id="module-DatabankLib.bin.compute_databank">
-<span id="nml-compute-databank"></span><span id="compute-databank-py"></span><h2>nml_compute_databank<a class="headerlink" href="#module-DatabankLib.bin.compute_databank" title="Link to this heading"></a></h2>
+<section id="module-fairmd.lipids.bin.compute_databank">
+<span id="fmdl-compute-databank"></span><span id="compute-databank-py"></span><h2>fmdl_compute_databank<a class="headerlink" href="#module-fairmd.lipids.bin.compute_databank" title="Link to this heading"></a></h2>
 <p>Compute properties for systems of the databank.</p>
 <p>Script can compute selected set of properties for selected range of systems of the databank.
 Properties available: APL, thickness, PCA relaxation times, MAICOS (density profiles,
 water orientation, dielectric profiles, X-ray form factor).</p>
 <p><strong>Usage:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nml_compute_databank [--apl] [--nmrpca] [--maicos] [--thickness] \</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">fmdl_compute_databank [--apl] [--nmrpca] [--maicos] [--thickness] \</span>
 <span class="go">    [--OP] [--range 0-1000] [--debug] [-h]</span>
 </pre></div>
 </div>
@@ -180,38 +180,38 @@ water orientation, dielectric profiles, X-ray form factor).</p>
 </dd>
 </dl>
 </section>
-<section id="module-DatabankLib.bin.match_experiments">
-<span id="nml-match-experiments"></span><span id="match-experiments-py"></span><h2>nml_match_experiments<a class="headerlink" href="#module-DatabankLib.bin.match_experiments" title="Link to this heading"></a></h2>
+<section id="module-fairmd.lipids.bin.match_experiments">
+<span id="fmdl-match-experiments"></span><span id="match-experiments-py"></span><h2>fmdl_match_experiments<a class="headerlink" href="#module-fairmd.lipids.bin.match_experiments" title="Link to this heading"></a></h2>
 <p>Match simulations with experiments in the databank.</p>
 <p>Script goes through all simulations and experiments in the databank and finds
 pairs of simulations and experiments that match in composition, temperature and
 other conditions. The found pairs are written into the simulation <a class="reference internal" href="schemas/simulation_metadata.html#readmesimu"><span class="std std-ref">README.yaml</span></a>
 files and into a log file.</p>
 <p><strong>Usage:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nml_match_experiments</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">fmdl_match_experiments</span>
 </pre></div>
 </div>
 <p>No arguments are needed.</p>
 </section>
-<section id="module-DatabankLib.bin.evaluate_quality">
-<span id="nml-evaluate-quality"></span><span id="quality-evaluation-py"></span><h2>nml_evaluate_quality<a class="headerlink" href="#module-DatabankLib.bin.evaluate_quality" title="Link to this heading"></a></h2>
+<section id="module-fairmd.lipids.bin.evaluate_quality">
+<span id="fmdl-evaluate-quality"></span><span id="quality-evaluation-py"></span><h2>fmdl_evaluate_quality<a class="headerlink" href="#module-fairmd.lipids.bin.evaluate_quality" title="Link to this heading"></a></h2>
 <p>Perform comparison of experiments and simulations.</p>
 <p>The script compares according to <strong>EXPERIMENT</strong> field inside <a class="reference internal" href="schemas/simulation_metadata.html#readmesimu"><span class="std std-ref">the simulation README.yaml file</span></a>.
-In the standard protocol, it should be run <em>after</em> <a class="reference internal" href="#match-experiments-py"><span class="std std-ref">nml_match_experiments</span></a>.</p>
+In the standard protocol, it should be run <em>after</em> <a class="reference internal" href="#match-experiments-py"><span class="std std-ref">fmdl_match_experiments</span></a>.</p>
 <p><strong>Usage:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nml_evaluate_quality</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">fmdl_evaluate_quality</span>
 </pre></div>
 </div>
 <p>No arguments are needed.</p>
 </section>
-<section id="module-DatabankLib.bin.make_ranking">
-<span id="nml-make-ranking"></span><span id="make-ranking-py"></span><h2>nml_make_ranking<a class="headerlink" href="#module-DatabankLib.bin.make_ranking" title="Link to this heading"></a></h2>
+<section id="module-fairmd.lipids.bin.make_ranking">
+<span id="fmdl-make-ranking"></span><span id="make-ranking-py"></span><h2>fmdl_make_ranking<a class="headerlink" href="#module-fairmd.lipids.bin.make_ranking" title="Link to this heading"></a></h2>
 <p>Creates different types of ranking lists inside the Databank.</p>
 <p>It ranks simulations based on their quality against experiments. The ranking lists are stored in
-<code class="docutils literal notranslate"><span class="pre">{NMLDB_DATA_PATH}/Ranking/</span></code> folder in JSON format.
-The lists can be shown with the <code class="docutils literal notranslate"><span class="pre">DatabankLib.plottings</span></code> module.</p>
+<code class="docutils literal notranslate"><span class="pre">{FMDL_DATA_PATH}/Ranking/</span></code> folder in JSON format.
+The lists can be shown with the <code class="docutils literal notranslate"><span class="pre">fairmd.lipids.plottings</span></code> module.</p>
 <p><strong>Usage:</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">nml_make_ranking</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">fmdl_make_ranking</span>
 </pre></div>
 </div>
 <p>No arguments are needed.</p>
@@ -229,7 +229,7 @@ The lists can be shown with the <code class="docutils literal notranslate"><span
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NMRlipids Open Collaboration
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -237,14 +237,14 @@ The lists can be shown with the <code class="docutils literal notranslate"><span
     (at your option) any later version
    .
         <p>
-            <a href="https://github.com/NMRLipids/Databank/blob/main/LICENSE.txt"
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
             target="_blank"
             rel="noopener">
             Link to GNU GPL v3 License
             </a>
         </p>
         <p>
-            <a href="https://github.com/NMRLipids/Databank"
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
             target="_blank"
             rel="noopener">
             Link to the GitHub repository

@@ -1,7 +1,0 @@
-DatabankLib.bin.compute\_databank module
-========================================
-
-.. automodule:: DatabankLib.bin.compute_databank
-   :members:
-   :show-inheritance:
-   :undoc-members:

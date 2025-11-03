@@ -1,0 +1,19 @@
+
+
+fairmd
+======
+Subfolders
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
+   fairmd.lipids
+
+Module contents
+---------------
+
+.. automodule:: fairmd
+   :members:
+   :show-inheritance:
+   :undoc-members:

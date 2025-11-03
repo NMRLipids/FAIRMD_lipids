@@ -1,7 +1,0 @@
-DatabankLib.jsonEncoders module
-===============================
-
-.. automodule:: DatabankLib.jsonEncoders
-   :members:
-   :show-inheritance:
-   :undoc-members:

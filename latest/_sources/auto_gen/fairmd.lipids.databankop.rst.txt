@@ -1,0 +1,7 @@
+fairmd.lipids.databankop module
+===============================
+
+.. automodule:: fairmd.lipids.databankop
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,7 @@
+fairmd.lipids.bin.compute\_databank module
+==========================================
+
+.. automodule:: fairmd.lipids.bin.compute_databank
+   :members:
+   :show-inheritance:
+   :undoc-members:

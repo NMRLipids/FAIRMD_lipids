@@ -1,7 +1,0 @@
-DatabankLib.bin.make\_ranking module
-====================================
-
-.. automodule:: DatabankLib.bin.make_ranking
-   :members:
-   :show-inheritance:
-   :undoc-members:

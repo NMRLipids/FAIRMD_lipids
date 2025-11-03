@@ -1,0 +1,19 @@
+
+
+fairmd.lipids.SchemaValidation
+==============================
+Python files
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   fairmd.lipids.SchemaValidation.ValidateYAML
+
+Module contents
+---------------
+
+.. automodule:: fairmd.lipids.SchemaValidation
+   :members:
+   :show-inheritance:
+   :undoc-members:

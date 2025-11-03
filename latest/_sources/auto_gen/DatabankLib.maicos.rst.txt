@@ -1,7 +1,0 @@
-DatabankLib.maicos module
-=========================
-
-.. automodule:: DatabankLib.maicos
-   :members:
-   :show-inheritance:
-   :undoc-members:

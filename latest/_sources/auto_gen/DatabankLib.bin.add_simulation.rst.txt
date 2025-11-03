@@ -1,7 +1,0 @@
-DatabankLib.bin.add\_simulation module
-======================================
-
-.. automodule:: DatabankLib.bin.add_simulation
-   :members:
-   :show-inheritance:
-   :undoc-members:
