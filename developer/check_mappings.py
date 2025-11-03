@@ -13,7 +13,7 @@ import traceback
 import MDAnalysis as mda
 from tqdm import tqdm
 
-from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids import FMDL_SIMU_PATH
 from fairmd.lipids.core import initialize_databank, lipids_set
 
 if __name__ == "__main__":
@@ -24,7 +24,7 @@ if __name__ == "__main__":
             if "TPR" not in system.readme.keys():
                 sys.stderr.write(f"Skipping {system['SYSTEM']} because there is no TPR\n")
                 continue
-            tpr_name = os.path.join(NMLDB_SIMU_PATH, system["path"], system["TPR"][0][0])
+            tpr_name = os.path.join(FMDL_SIMU_PATH, system["path"], system["TPR"][0][0])
             if not os.path.exists(tpr_name):
                 sys.stderr.write(f"""
         Skipping {system["SYSTEM"]} because TPR is not downloaded

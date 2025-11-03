@@ -15,7 +15,7 @@ from typing import Any
 
 import yaml
 
-from fairmd.lipids import NMLDB_MOL_PATH
+from fairmd.lipids import FMDL_MOL_PATH
 
 
 class Molecule(ABC):
@@ -124,7 +124,7 @@ class Lipid(Molecule):
     which belongs to the bilayer.
     """
 
-    _lipids_dir: str = os.path.join(NMLDB_MOL_PATH, "membrane")
+    _lipids_dir: str = os.path.join(FMDL_MOL_PATH, "membrane")
     """Directory containing all lipid-subdirs"""
 
     def _get_path(self) -> str:
@@ -165,7 +165,7 @@ class Lipid(Molecule):
 class NonLipid(Molecule):
     """Class for non-bilayer molecules: solvent, ions, etc."""
 
-    _nonlipids_dir: str = os.path.join(NMLDB_MOL_PATH, "solution")
+    _nonlipids_dir: str = os.path.join(FMDL_MOL_PATH, "solution")
     """Directory containing all lipid-subdirs"""
 
     def _get_path(self) -> str:

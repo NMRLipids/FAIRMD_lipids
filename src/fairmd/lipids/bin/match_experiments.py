@@ -23,7 +23,7 @@ from typing import IO
 import yaml
 from tqdm import tqdm
 
-from fairmd.lipids import NMLDB_EXP_PATH, NMLDB_SIMU_PATH
+from fairmd.lipids import FMDL_EXP_PATH, FMDL_SIMU_PATH
 from fairmd.lipids.core import System, initialize_databank
 from fairmd.lipids.databankLibrary import lipids_set
 
@@ -170,7 +170,7 @@ def load_experiments(exp_type: str) -> list[Experiment]:
     print("Build experiments [%s] index..." % exp_type, end="")
     rm_idx = []
 
-    path = os.path.join(NMLDB_EXP_PATH, exp_type)
+    path = os.path.join(FMDL_EXP_PATH, exp_type)
     for subdir, _, files in os.walk(path):
         for fn in files:
             if fn == "README.yaml":
@@ -277,7 +277,7 @@ def find_pairs(experiments: list[Experiment], simulations: list[SearchSystem]):
                         exp_doi = experiment.readme["DOI"]
                         exp_path = os.path.relpath(
                             experiment.dataPath,
-                            start=os.path.join(NMLDB_EXP_PATH, experiment.exptype),
+                            start=os.path.join(FMDL_EXP_PATH, experiment.exptype),
                         )
                         if experiment.exptype == "OrderParameters":
                             lipid = experiment.molname
@@ -296,7 +296,7 @@ def find_pairs(experiments: list[Experiment], simulations: list[SearchSystem]):
             sort_dict = dict(sorted(unsort_dict.items()))
             cur_exp["ORDERPARAMETER"][_lipid] = sort_dict.copy()
 
-        outfile_dict = os.path.join(NMLDB_SIMU_PATH, simulation.idx_path, "README.yaml")
+        outfile_dict = os.path.join(FMDL_SIMU_PATH, simulation.idx_path, "README.yaml")
         with open(outfile_dict, "w") as f:
             if "path" in simulation.system.keys():
                 del simulation.system["path"]
@@ -351,7 +351,7 @@ def match_experiments():
         for lipid in simulation.get_lipids():
             simulation.system["EXPERIMENT"]["ORDERPARAMETER"][lipid] = {}
 
-        readme_path = os.path.join(NMLDB_SIMU_PATH, simulation.idx_path, "README.yaml")
+        readme_path = os.path.join(FMDL_SIMU_PATH, simulation.idx_path, "README.yaml")
         with open(readme_path, "w") as f:
             yaml.dump(simulation.system.readme, f, sort_keys=False, allow_unicode=True)
 

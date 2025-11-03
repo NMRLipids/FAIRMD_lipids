@@ -125,9 +125,9 @@ dev - clone NMRlipids/BilayerData (requires git).
 
     # Write environment setup file
     with open("databank_env.rc", "w") as f:
-        f.write(f"export NMLDB_DATA_PATH={data_path}\n")
+        f.write(f"export FMDL_DATA_PATH={data_path}\n")
         if sim_path is not None:
-            f.write(f"export NMLDB_SIMU_PATH={sim_path}\n")
+            f.write(f"export FMDL_SIMU_PATH={sim_path}\n")
 
     print(f""""Data initialized into {data_path}. Please do
 

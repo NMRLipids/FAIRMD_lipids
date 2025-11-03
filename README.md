@@ -39,7 +39,7 @@ pip install fairmd-lipids
 Note that the data is stored as a separated repository and should be loaded after
 cloning. Default data storage is
 [BilayerData](https://github.com/NMRLipids/BilayerData). You **MUST** specify
-`NMLDB_DATA_PATH` before start working. The easiest way to start is to use
+`FMDL_DATA_PATH` before start working. The easiest way to start is to use
 `fmdl_initialize_data` script provided with the package:
 
 ```bash

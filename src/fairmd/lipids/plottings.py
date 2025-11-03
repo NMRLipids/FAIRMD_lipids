@@ -9,7 +9,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-from fairmd.lipids import NMLDB_EXP_PATH, NMLDB_SIMU_PATH
+from fairmd.lipids import FMDL_EXP_PATH, FMDL_SIMU_PATH
 
 
 def plotFormFactor(  # noqa: N802
@@ -264,7 +264,7 @@ def plotSimulation(system, lipid: str):  # noqa: N802
     :param lipid: universal molecul name of the lipid
 
     """
-    path = os.path.join(NMLDB_SIMU_PATH, system["path"])
+    path = os.path.join(FMDL_SIMU_PATH, system["path"])
     ff_path_sim = os.path.join(path, "FormFactor.json")
     op_path_sim = os.path.join(path, lipid + "OrderParameters.json")
     ffqual_fpath = os.path.join(path, "FormFactorQuality.json")
@@ -275,7 +275,7 @@ def plotSimulation(system, lipid: str):  # noqa: N802
         with open(ffqual_fpath) as json_file:
             ff_quality = json.load(json_file)
         print("Form factor quality: ", ff_quality[0])
-        ffdir = os.path.join(NMLDB_EXP_PATH, "FormFactors", system["EXPERIMENT"]["FORMFACTOR"])
+        ffdir = os.path.join(FMDL_EXP_PATH, "FormFactors", system["EXPERIMENT"]["FORMFACTOR"])
         for subdir, _, files in os.walk(ffdir):
             for filename in files:
                 if filename.endswith("_FormFactor.json"):
@@ -290,7 +290,7 @@ def plotSimulation(system, lipid: str):  # noqa: N802
 
     op_exp = {}
     for exp_op_folder in list(system["EXPERIMENT"]["ORDERPARAMETER"][lipid].values()):
-        op_path_exp = os.path.join(NMLDB_EXP_PATH, "OrderParameters", exp_op_folder, lipid + "_Order_Parameters.json")
+        op_path_exp = os.path.join(FMDL_EXP_PATH, "OrderParameters", exp_op_folder, lipid + "_Order_Parameters.json")
         with open(op_path_exp) as json_file:
             op_exp.update(json.load(json_file))
 

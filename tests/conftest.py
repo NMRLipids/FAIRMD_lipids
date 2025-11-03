@@ -44,15 +44,15 @@ def header_module_scope(request):
         sim_key = cmdopt if cmdopt in SIM_MAP else "nodata"
 
     data_root = os.path.join(os.path.dirname(__file__), "ToyData")
-    os.environ["NMLDB_DATA_PATH"] = data_root
+    os.environ["FMDL_DATA_PATH"] = data_root
     sim_dir = SIM_MAP[sim_key]
     if sim_dir:
-        os.environ["NMLDB_SIMU_PATH"] = os.path.join(data_root, sim_dir)
+        os.environ["FMDL_SIMU_PATH"] = os.path.join(data_root, sim_dir)
     else:
-        os.environ.pop("NMLDB_SIMU_PATH", None)
+        os.environ.pop("FMDL_SIMU_PATH", None)
 
-    print("DBG env -> NMLDB_DATA_PATH:", os.getenv("NMLDB_DATA_PATH"))
-    print("DBG env -> NMLDB_SIMU_PATH:", os.getenv("NMLDB_SIMU_PATH"))
+    print("DBG env -> FMDL_DATA_PATH:", os.getenv("FMDL_DATA_PATH"))
+    print("DBG env -> FMDL_SIMU_PATH:", os.getenv("FMDL_SIMU_PATH"))
 
     yield
     # Teardown:

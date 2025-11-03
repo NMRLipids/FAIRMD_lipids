@@ -16,7 +16,7 @@ import MDAnalysis as mda
 import numpy as np
 from deprecated import deprecated
 
-from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids import FMDL_SIMU_PATH
 from fairmd.lipids.core import System
 from fairmd.lipids.databankio import download_resource_from_uri, resolve_download_file_url
 from fairmd.lipids.settings.engines import get_struc_top_traj_fnames, software_dict
@@ -35,7 +35,7 @@ def CalcAreaPerMolecule(system):  # noqa: N802 (API name)
 
     :return: area per lipid (Å^2)
     """
-    path = os.path.join(NMLDB_SIMU_PATH, system["path"], "apl.json")
+    path = os.path.join(FMDL_SIMU_PATH, system["path"], "apl.json")
     try:
         with open(path) as f:
             data = json.load(f)
@@ -58,7 +58,7 @@ def GetThickness(system):  # noqa: N802 (API name)
 
     :return: membrane thickess (nm) or None
     """
-    thickness_path = os.path.join(NMLDB_SIMU_PATH, system["path"], "thickness.json")
+    thickness_path = os.path.join(FMDL_SIMU_PATH, system["path"], "thickness.json")
     try:
         with open(thickness_path) as f:
             thickness = json.load(f)
@@ -80,7 +80,7 @@ def ShowEquilibrationTimes(system: System):  # noqa: N802 (API name)
         DeprecationWarning,
         stacklevel=2,
     )
-    eq_times_path = os.path.join(NMLDB_SIMU_PATH, system["path"], "eq_times.json")
+    eq_times_path = os.path.join(FMDL_SIMU_PATH, system["path"], "eq_times.json")
 
     try:
         with open(eq_times_path) as f:
@@ -102,7 +102,7 @@ def GetEquilibrationTimes(system: System):  # noqa: N802 (API name)
 
     :return: dictionary of relative equilibration times for each lipid
     """
-    eq_times_path = os.path.join(NMLDB_SIMU_PATH, system["path"], "eq_times.json")
+    eq_times_path = os.path.join(FMDL_SIMU_PATH, system["path"], "eq_times.json")
 
     try:
         with open(eq_times_path) as f:
@@ -284,7 +284,7 @@ def system2MDanalysisUniverse(system):  # noqa: N802 (API name)
 
     :return: MDAnalysis universe
     """
-    system_path = os.path.join(NMLDB_SIMU_PATH, system["path"])
+    system_path = os.path.join(FMDL_SIMU_PATH, system["path"])
     doi = system.get("DOI")
     skip_downloading: bool = doi == "localhost"
     if skip_downloading:
@@ -622,7 +622,7 @@ def GetFormFactorMin(system):  # noqa: N802 (API name)
 
     :return: list of form factor minima
     """
-    form_factor_path = os.path.join(NMLDB_SIMU_PATH, system["path"], "FormFactor.json")
+    form_factor_path = os.path.join(FMDL_SIMU_PATH, system["path"], "FormFactor.json")
     with open(form_factor_path) as f:
         form_factor = json.load(f)
     iprev = form_factor[0][1]
@@ -648,7 +648,7 @@ def averageOrderParameters(system):  # noqa: N802 (API name)
 
     :return: average of *sn*-1 and *sn*-2 order parameters
     """
-    path = os.path.join(NMLDB_SIMU_PATH, system["path"])
+    path = os.path.join(FMDL_SIMU_PATH, system["path"])
 
     sn1sum = 0
     sn1count = 0

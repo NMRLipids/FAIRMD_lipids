@@ -30,12 +30,12 @@ class TestAddData:
     def setup_class(cls):
         from fairmd import lipids
 
-        if os.path.isfile(os.path.join(lipids.NMLDB_DATA_PATH, ".notest")):
+        if os.path.isfile(os.path.join(lipids.FMDL_DATA_PATH, ".notest")):
             pytest.exit("Test are corrupted. I see '.notest' file in the data folder.")
         cls.exe = os.path.join(
             os.path.dirname(os.path.dirname(__file__)), "src", "fairmd", "lipids", "bin", "add_simulation.py"
         )
-        cls.out_dir = lipids.NMLDB_SIMU_PATH
+        cls.out_dir = lipids.FMDL_SIMU_PATH
         os.mkdir(cls.out_dir)
 
     @classmethod

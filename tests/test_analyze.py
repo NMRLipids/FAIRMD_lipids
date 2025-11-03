@@ -47,7 +47,7 @@ def systems():
     from fairmd.lipids.core import initialize_databank
 
     logger.info("Starting systems fixture initialization")
-    if os.path.isfile(os.path.join(fmdl.NMLDB_DATA_PATH, ".notest")):
+    if os.path.isfile(os.path.join(fmdl.FMDL_DATA_PATH, ".notest")):
         pytest.exit("Test are corrupted. I see '.notest' file in the data folder.")
     s = initialize_databank()
     logger.info(f"Loaded: {len(s)} systems")
@@ -57,10 +57,10 @@ def systems():
     for _s in s:
 
         def gbGen(x):
-            return glob.glob(os.path.join(fmdl.NMLDB_SIMU_PATH, _s["path"], x))
+            return glob.glob(os.path.join(fmdl.FMDL_SIMU_PATH, _s["path"], x))
 
         clear_list = []
-        if "NMLDB_TEST_NOWIPE" in os.environ:
+        if "FMDL_TEST_NOWIPE" in os.environ:
             # leave JSONs
             pass
         else:
@@ -95,7 +95,7 @@ def systemLoadTraj(systems):
         del u
     yield
     # TEARDOWN SYSTEM-LOADING
-    if "NMLDB_TEST_NOWIPE" in os.environ:
+    if "FMDL_TEST_NOWIPE" in os.environ:
         logger.info("DBG: Skipping trajectory data wipe.")
     else:
         print("DBG: Wiping trajectory data.")
@@ -109,7 +109,7 @@ def systemLoadTraj(systems):
                 except (KeyError, TypeError):
                     logger.warning(f"No {wp} file found for system")
                     continue
-                file_ = os.path.join(fmdl.NMLDB_SIMU_PATH, s["path"], file_)
+                file_ = os.path.join(fmdl.FMDL_SIMU_PATH, s["path"], file_)
                 logger.debug(f"Checking file: {file_}")
                 if os.path.exists(file_):
                     os.remove(file_)
@@ -131,12 +131,12 @@ def compareJSONsBtwSD(jsfn: str):
     """
     import json
     import numpy as np
-    from fairmd.lipids import NMLDB_DATA_PATH
+    from fairmd.lipids import FMDL_DATA_PATH
 
     logger.info(f"Comparing JSON files for: {jsfn}")
 
-    _p1 = os.path.join(NMLDB_DATA_PATH, "Simulations.1")
-    _p2 = os.path.join(NMLDB_DATA_PATH, "Simulations.2")
+    _p1 = os.path.join(FMDL_DATA_PATH, "Simulations.1")
+    _p2 = os.path.join(FMDL_DATA_PATH, "Simulations.2")
     jsf1 = os.path.join(_p1, jsfn)
     jsf2 = os.path.join(_p2, jsfn)
 
@@ -176,10 +176,10 @@ def test_analyze_apl(systems, systemLoadTraj, systemid, logger):
     rCode = computeAPL(s, logger)
     assert rCode == fmdl.RCODE_COMPUTED
 
-    cFile = os.path.join(fmdl.NMLDB_SIMU_PATH, s["path"], "apl.json")
+    cFile = os.path.join(fmdl.FMDL_SIMU_PATH, s["path"], "apl.json")
     assert os.path.isfile(cFile)
     assert os.path.getsize(cFile) > 1e3
-    compareJSONsBtwSD(os.path.relpath(cFile, fmdl.NMLDB_SIMU_PATH))
+    compareJSONsBtwSD(os.path.relpath(cFile, fmdl.FMDL_SIMU_PATH))
 
 
 @pytest.mark.parametrize(
@@ -199,13 +199,13 @@ def test_analyze_op(systems, systemLoadTraj, systemid, rcodex, logger):
 
     for lip in set(s["COMPOSITION"].keys()).intersection(set(lipids_set.names)):
         cFile = os.path.join(
-            fmdl.NMLDB_SIMU_PATH,
+            fmdl.FMDL_SIMU_PATH,
             s["path"],
             lip + "OrderParameters.json",
         )
         assert os.path.isfile(cFile), f"File {cFile} wasn't created for {lip}!"
         assert os.path.getsize(cFile) > 1e3, f"File {cFile} for {lip} is less than 1K!"
-        compareJSONsBtwSD(os.path.relpath(cFile, fmdl.NMLDB_SIMU_PATH))
+        compareJSONsBtwSD(os.path.relpath(cFile, fmdl.FMDL_SIMU_PATH))
 
 
 @pytest.mark.parametrize("systemid, rcodex", [(281, 1), (566, 1), (787, 2), (243, 1), (86, 1)])
@@ -220,12 +220,12 @@ def test_analyze_maicos(systems, systemLoadTraj, systemid, rcodex, logger):
         return
 
     for fn in ["WaterDensity.json", "LipidDensity.json", "TotalDensity.json", "FormFactor.json"]:
-        cFile = os.path.join(fmdl.NMLDB_SIMU_PATH, s["path"], fn)
+        cFile = os.path.join(fmdl.FMDL_SIMU_PATH, s["path"], fn)
         check.is_true(os.path.isfile(cFile))
         check.is_true(os.path.getsize(cFile) > 1e3)
         try:
             compareJSONsBtwSD(
-                os.path.relpath(cFile, fmdl.NMLDB_SIMU_PATH),
+                os.path.relpath(cFile, fmdl.FMDL_SIMU_PATH),
             )
         except AssertionError as e:
             check.is_true(False, msg=str(e))
@@ -247,7 +247,7 @@ def test_analyze_nmrpca(systems, systemLoadTraj, systemid, rcodex, logger):
     if rCode == fmdl.RCODE_ERROR:
         return
 
-    cFile = os.path.join(fmdl.NMLDB_SIMU_PATH, s["path"], "eq_times.json")
+    cFile = os.path.join(fmdl.FMDL_SIMU_PATH, s["path"], "eq_times.json")
     assert os.path.isfile(cFile)
     assert os.path.getsize(cFile) > 10
-    compareJSONsBtwSD(os.path.relpath(cFile, fmdl.NMLDB_SIMU_PATH))
+    compareJSONsBtwSD(os.path.relpath(cFile, fmdl.FMDL_SIMU_PATH))

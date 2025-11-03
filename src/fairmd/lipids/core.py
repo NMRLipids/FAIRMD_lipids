@@ -11,7 +11,7 @@ from collections.abc import Iterable, Iterator, Mapping, MutableMapping, Sequenc
 
 import yaml
 
-from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids import FMDL_SIMU_PATH
 from fairmd.lipids.settings.molecules import Lipid, Molecule, NonLipid, lipids_set, molecules_set
 
 
@@ -117,7 +117,7 @@ class Databank:
     """
     Representation of all simulation in the NMR lipids databank.
 
-    `path` should be the local location of `{NMLDB_DATA_PATH}/Simulations/` in
+    `path` should be the local location of `{FMDL_DATA_PATH}/Simulations/` in
     the FAIRMD Lipids folder. Example usage to loop over systems:
 
     .. code-block:: python
@@ -131,7 +131,7 @@ class Databank:
     """
 
     def __init__(self) -> None:
-        self.path = NMLDB_SIMU_PATH
+        self.path = FMDL_SIMU_PATH
         __systems = self.__load_systems__()
         self._systems: SystemsCollection = SystemsCollection(__systems)
         print("Databank initialized from the folder:", os.path.realpath(self.path))

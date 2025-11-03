@@ -62,7 +62,7 @@ Simulation record
 Simulation metadata README.yaml
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 A file containing all the relevant information of each simulation entry. These files are
-stored at :py:data:`fairmd.lipids.NMLDB_SIMU_PATH`.
+stored at :py:data:`fairmd.lipids.FMDL_SIMU_PATH`.
 
 For more information see :doc:`schemas/simulation_metadata`.
 
@@ -182,7 +182,7 @@ all non-recomputable fields of simulation ``README.yaml``. This file is given as
 input to :ref:`_add_simulation_py` to create ``README.yaml`` files:
 :code:`fmdl_add_simulation -f info.yaml`. These files are not required but currently are
 stored historically in ``info_files`` subfolder of
-:py:data:`fairmd.lipids.NMLDB_DATA_PATH`.
+:py:data:`fairmd.lipids.FMDL_DATA_PATH`.
 
 For more information see :ref:`readmesimu` and :ref:`addSimulation`.
 

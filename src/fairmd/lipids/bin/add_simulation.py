@@ -42,7 +42,7 @@ import yaml
 from MDAnalysis import Universe
 
 # import databank dictionaries
-from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids import FMDL_SIMU_PATH
 from fairmd.lipids.core import System, initialize_databank
 
 # helpers
@@ -614,7 +614,7 @@ Returns error codes:
         directory_path = create_databank_directories(
             sim,
             sim_hashes,
-            NMLDB_SIMU_PATH,
+            FMDL_SIMU_PATH,
             dry_run_mode=args.dry_run,
         )
     except NotImplementedError:

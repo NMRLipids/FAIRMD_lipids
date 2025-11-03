@@ -114,9 +114,9 @@ def test_missing_tpr_gromacs(valid_instance):
 
 
 def test_valid_info_file():
-    from fairmd.lipids import NMLDB_DATA_PATH
+    from fairmd.lipids import FMDL_DATA_PATH
     from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_file
 
-    valid_info_path = os.path.join(NMLDB_DATA_PATH, "info", "info566.yaml")
+    valid_info_path = os.path.join(FMDL_DATA_PATH, "info", "info566.yaml")
     errors = validate_info_file(valid_info_path)
     assert len(errors) == 0

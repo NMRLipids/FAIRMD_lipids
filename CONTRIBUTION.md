@@ -33,9 +33,9 @@ We are using automatic testing with `pytest` please consult (test-README)[Script
 As the code operates with an over-filesystem database, universal path handling is crucial. To construct paths, we use global variables of the type NMLDB\_**XXXX**\_PATH, where **XXXX** could be:
 
 - DATA points by default to `./BilayerData` folder. Can be used to point to somewhere inside the Database but not for molecules, simulations, and experiments. Currently is used for Rankings as well.
-- MOL points by default to `{NMLDB_DATA_PATH}/Molecules` folder, from where molecule lists are initialized. Is used to get access to something in molecule-folders.
-- SIMU points by default to `{NMLDB_DATA_PATH}/Simulations` folder. Is used to get access to a certain simulation.
-- EXP points by default to `{NMLDB_DATA_PATH}/Experiments` folder. Is used to get access to a certain experiment.
+- MOL points by default to `{FMDL_DATA_PATH}/Molecules` folder, from where molecule lists are initialized. Is used to get access to something in molecule-folders.
+- SIMU points by default to `{FMDL_DATA_PATH}/Simulations` folder. Is used to get access to a certain simulation.
+- EXP points by default to `{FMDL_DATA_PATH}/Experiments` folder. Is used to get access to a certain experiment.
 
 We currently construct paths using `os.path.join(a,b)`.
 

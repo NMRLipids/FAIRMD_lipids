@@ -22,7 +22,7 @@ if os.getenv("READTHEDOCS") == "True":
         if repo_root not in sys.path:
             sys.path.insert(0, repo_root)
         data_path = os.path.join(repo_root, "src", "fairmd", "lipids", "data", "ToyData")
-        os.environ.setdefault("NMLDB_DATA_PATH", data_path)
+        os.environ.setdefault("FMDL_DATA_PATH", data_path)
 
 import fairmd.lipids as dbl
 

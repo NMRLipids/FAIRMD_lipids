@@ -23,22 +23,22 @@ __url__ = _mtd.json["project_url"][2].split(", ")[1]  # url nr 3
 # Global Paths
 
 
-NMLDB_DATA_PATH: str = os.environ.get(
-    "NMLDB_DATA_PATH",
+FMDL_DATA_PATH: str = os.environ.get(
+    "FMDL_DATA_PATH",
     os.path.join(os.getcwd(), "BilayerData"),
 )
 """ Path to the Databank Data folder """
 
-NMLDB_SIMU_PATH: str = os.environ.get(
-    "NMLDB_SIMU_PATH",
-    os.path.join(NMLDB_DATA_PATH, "Simulations"),
+FMDL_SIMU_PATH: str = os.environ.get(
+    "FMDL_SIMU_PATH",
+    os.path.join(FMDL_DATA_PATH, "Simulations"),
 )
 """ Path to the project simulations folder"""
 
-NMLDB_MOL_PATH: str = os.path.join(NMLDB_DATA_PATH, "Molecules")
+FMDL_MOL_PATH: str = os.path.join(FMDL_DATA_PATH, "Molecules")
 """ Path to the project molecules folder """
 
-NMLDB_EXP_PATH: str = os.path.join(NMLDB_DATA_PATH, "experiments")
+FMDL_EXP_PATH: str = os.path.join(FMDL_DATA_PATH, "experiments")
 """ Path to the project experiments folder """
 
 # Universal return codes
@@ -57,7 +57,7 @@ print(
     f"fairmd-lipids {__version__} by {__author__} - {__license__}",
 )
 
-if os.path.isdir(NMLDB_DATA_PATH):
+if os.path.isdir(FMDL_DATA_PATH):
 
     def raise_if_subpath_of_dblspec(p: str) -> None:
         """Raise if p is a subpath of the package path."""
@@ -70,14 +70,14 @@ if os.path.isdir(NMLDB_DATA_PATH):
             )
             raise RuntimeError(msg)
 
-    for p in [NMLDB_DATA_PATH, NMLDB_EXP_PATH, NMLDB_MOL_PATH, NMLDB_SIMU_PATH]:
+    for p in [FMDL_DATA_PATH, FMDL_EXP_PATH, FMDL_MOL_PATH, FMDL_SIMU_PATH]:
         raise_if_subpath_of_dblspec(p)
 
     from fairmd.lipids.settings import molecules
 
     _ = len(molecules.lipids_set)
     print(
-        f"FAIRMD Lipids is initialized from the folder: {NMLDB_DATA_PATH}\n"
+        f"FAIRMD Lipids is initialized from the folder: {FMDL_DATA_PATH}\n"
         "---------------------------------------------------------------",
     )
 elif "fmdl_initialize_data" in sys.argv[0]:
@@ -86,20 +86,20 @@ elif "fmdl_initialize_data" in sys.argv[0]:
     pass
 else:
     msg = f"""
-Error: no data folder {NMLDB_DATA_PATH}.
+Error: no data folder {FMDL_DATA_PATH}.
 If Data folder was not created, please create it by using
  $ fmdl_initialize_data.py toy
           OR
  $ fmdl_initialize_data.py stable
-and then specify by NMLDB_DATA_PATH environment variable."""
+and then specify by FMDL_DATA_PATH environment variable."""
     raise RuntimeError(msg)
 
 
 __all__ = [
-    "NMLDB_DATA_PATH",
-    "NMLDB_EXP_PATH",
-    "NMLDB_MOL_PATH",
-    "NMLDB_SIMU_PATH",
+    "FMDL_DATA_PATH",
+    "FMDL_EXP_PATH",
+    "FMDL_MOL_PATH",
+    "FMDL_SIMU_PATH",
     "RCODE_COMPUTED",
     "RCODE_ERROR",
     "RCODE_SKIPPED",

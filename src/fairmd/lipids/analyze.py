@@ -23,8 +23,8 @@ from maicos.core.base import AnalysisCollection
 from tqdm import tqdm
 
 from fairmd.lipids import (
-    NMLDB_DATA_PATH,
-    NMLDB_SIMU_PATH,
+    FMDL_DATA_PATH,
+    FMDL_SIMU_PATH,
     RCODE_COMPUTED,
     RCODE_ERROR,
     RCODE_SKIPPED,
@@ -66,7 +66,7 @@ def computeNMRPCA(  # noqa: N802 (API)
     """
     # getting data from databank and preprocessing them
     # Start Parser
-    # TODO: 2test|    parser = Parser(NMLDB_SIMU_PATH, readme, eq_time_fname, testTraj)
+    # TODO: 2test|    parser = Parser(FMDL_SIMU_PATH, readme, eq_time_fname, testTraj)
     try:
         parser = nmrpca.Parser(system, "eq_times.json")
         # Check trajectory
@@ -155,7 +155,7 @@ def computeAPL(  # noqa: N802 (API)
     path = system["path"]
 
     # this is checking if area per lipid is already calculated for the systems
-    outfilename = os.path.join(NMLDB_SIMU_PATH, path, "apl.json")
+    outfilename = os.path.join(FMDL_SIMU_PATH, path, "apl.json")
     if os.path.isfile(outfilename):
         if recompute:
             os.unlink(outfilename)
@@ -201,12 +201,12 @@ def computeTH(  # noqa: N802 (API)
     *,
     recompute: bool = False,
 ) -> int:
-    thick_fn = os.path.join(NMLDB_SIMU_PATH, system["path"], "thickness.json")
+    thick_fn = os.path.join(FMDL_SIMU_PATH, system["path"], "thickness.json")
     if os.path.isfile(thick_fn) and not recompute:
         return RCODE_SKIPPED
 
-    wat_dens_name = os.path.join(NMLDB_SIMU_PATH, system["path"], "WaterDensity.json")
-    lip_dens_name = os.path.join(NMLDB_SIMU_PATH, system["path"], "LipidDensity.json")
+    wat_dens_name = os.path.join(FMDL_SIMU_PATH, system["path"], "WaterDensity.json")
+    lip_dens_name = os.path.join(FMDL_SIMU_PATH, system["path"], "LipidDensity.json")
     print(lip_dens_name)
     try:
         with open(wat_dens_name) as f:
@@ -254,7 +254,7 @@ def computeOP(  # noqa: N802 (API)
     # Check if order parameters are calculated or something in the system prevents
     # order parameter calculation
     for key in system["COMPOSITION"]:
-        outfilename = os.path.join(NMLDB_SIMU_PATH, path, key + "OrderParameters.json")
+        outfilename = os.path.join(FMDL_SIMU_PATH, path, key + "OrderParameters.json")
         if os.path.isfile(outfilename) or (
             "WARNINGS" in system
             and type(system["WARNINGS"]) is dict
@@ -295,7 +295,7 @@ def computeOP(  # noqa: N802 (API)
         and system["WARNINGS"]["GROMACS_VERSION"] == "gromacs3"
     )
 
-    cur_path = os.path.join(NMLDB_SIMU_PATH, path)
+    cur_path = os.path.join(FMDL_SIMU_PATH, path)
 
     try:
         struc_fname, top_fname, trj_fname = get_struc_top_traj_fnames(
@@ -311,7 +311,7 @@ def computeOP(  # noqa: N802 (API)
         if "gromacs" in software:
             if top_fname is None:
                 raise ValueError("TPR is required for OP calculations!")
-            xtcwhole = os.path.join(NMLDB_SIMU_PATH, path, "whole.xtc")
+            xtcwhole = os.path.join(FMDL_SIMU_PATH, path, "whole.xtc")
             if not os.path.isfile(xtcwhole):
                 try:
                     echo_proc = b"System\n"
@@ -366,7 +366,7 @@ def computeOP(  # noqa: N802 (API)
         if united_atom:
             if "gromacs" not in software:
                 raise ValueError("UNITED_ATOMS is supported only for GROMACS engine!")
-            frame0struc = os.path.join(NMLDB_SIMU_PATH, path, "frame0.gro")
+            frame0struc = os.path.join(FMDL_SIMU_PATH, path, "frame0.gro")
 
             if g3switch:
                 try:
@@ -397,7 +397,7 @@ def computeOP(  # noqa: N802 (API)
                 # mapping file
                 mapping_dict = system.content[key].mapping_dict
 
-                def_fname = os.path.join(NMLDB_SIMU_PATH, path, key + ".def")
+                def_fname = os.path.join(FMDL_SIMU_PATH, path, key + ".def")
                 with open(def_fname, "w") as def_file:
                     previous_line = ""
 
@@ -429,14 +429,14 @@ def computeOP(  # noqa: N802 (API)
 
                 # Add hydrogens to trajectory and calculate order parameters with buildH
                 op_filepath = os.path.join(
-                    NMLDB_SIMU_PATH,
+                    FMDL_SIMU_PATH,
                     path,
                     key + "OrderParameters.dat",
                 )
 
                 lipid_json_file = [
                     os.path.join(
-                        NMLDB_DATA_PATH,
+                        FMDL_DATA_PATH,
                         "lipid_json_buildH",
                         system["UNITEDATOM_DICT"][key] + ".json",
                     ),
@@ -492,7 +492,7 @@ def computeOP(  # noqa: N802 (API)
 
                 # write json
                 outfile2 = os.path.join(
-                    NMLDB_SIMU_PATH,
+                    FMDL_SIMU_PATH,
                     path,
                     key + "OrderParameters.json",
                 )
@@ -502,7 +502,7 @@ def computeOP(  # noqa: N802 (API)
         # not united-atom cases
         else:
             if "gromacs" in software:
-                gro = os.path.join(NMLDB_SIMU_PATH, path, "conf.gro")
+                gro = os.path.join(FMDL_SIMU_PATH, path, "conf.gro")
 
                 print("\n Making gro file")
                 if g3switch:
@@ -537,12 +537,12 @@ def computeOP(  # noqa: N802 (API)
                     print("Calculating ", key, " order parameters")
                     resname = system["COMPOSITION"][key]["NAME"]
                     outfilename = os.path.join(
-                        NMLDB_SIMU_PATH,
+                        FMDL_SIMU_PATH,
                         path,
                         key + "OrderParameters.dat",
                     )
                     outfilename2 = os.path.join(
-                        NMLDB_SIMU_PATH,
+                        FMDL_SIMU_PATH,
                         path,
                         key + "OrderParameters.json",
                     )
@@ -613,7 +613,7 @@ def computeMAICOS(  # noqa: N802 (API)
     # otherwise continue
     software = system["SOFTWARE"]
     # download trajectory and gro files
-    system_path = os.path.join(NMLDB_SIMU_PATH, system["path"])
+    system_path = os.path.join(FMDL_SIMU_PATH, system["path"])
     doi = system.get("DOI")
     skip_downloading: bool = doi == "localhost"
     if skip_downloading:
@@ -751,7 +751,7 @@ def computeMAICOS(  # noqa: N802 (API)
         zlim = {"zmin": -L_min / 2, "zmax": L_min / 2}
         dens_options = {**zlim, **base_options}
 
-        spath = os.path.join(NMLDB_SIMU_PATH, system["path"])
+        spath = os.path.join(FMDL_SIMU_PATH, system["path"])
 
         request_analysis = {}
 

@@ -49,7 +49,7 @@ from deprecated import deprecated
 from MDAnalysis.analysis.base import AnalysisFromFunction
 from scipy import signal
 
-from fairmd.lipids import NMLDB_SIMU_PATH
+from fairmd.lipids import FMDL_SIMU_PATH
 from fairmd.lipids.core import System
 from fairmd.lipids.databankio import download_resource_from_uri, resolve_download_file_url
 from fairmd.lipids.databankLibrary import lipids_set
@@ -129,7 +129,7 @@ class Parser:
         self.error = 0
 
         # Path
-        self.root = NMLDB_SIMU_PATH
+        self.root = FMDL_SIMU_PATH
         self.eq_time_fname = eq_time_fname
 
         # Extracting data from readme

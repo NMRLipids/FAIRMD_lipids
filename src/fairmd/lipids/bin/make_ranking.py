@@ -3,7 +3,7 @@
 Creates different types of ranking lists inside the Databank.
 
 It ranks simulations based on their quality against experiments. The ranking lists are stored in
-``{NMLDB_DATA_PATH}/Ranking/`` folder in JSON format.
+``{FMDL_DATA_PATH}/Ranking/`` folder in JSON format.
 The lists can be shown with the ``fairmd.lipids.plottings`` module.
 
 **Usage:**
@@ -18,7 +18,7 @@ No arguments are needed.
 import json
 import os
 
-from fairmd.lipids import NMLDB_DATA_PATH, NMLDB_SIMU_PATH
+from fairmd.lipids import FMDL_DATA_PATH, FMDL_SIMU_PATH
 from fairmd.lipids.core import initialize_databank
 from fairmd.lipids.databankLibrary import lipids_set
 from fairmd.lipids.jsonEncoders import CompactJSONEncoder
@@ -30,7 +30,7 @@ def make_ranking():
     # ---- Making list of qualities
     qualities = []
     for system in systems:
-        path = os.path.join(NMLDB_SIMU_PATH, system["path"])
+        path = os.path.join(FMDL_SIMU_PATH, system["path"])
 
         total_quality_file_path = os.path.join(path, "SYSTEM_quality.json")
 
@@ -78,7 +78,7 @@ def make_ranking():
 
         sorted_qualities = sorted(new_qualities, key=lambda i: i["TotalQuality"][sort_based_on], reverse=True)
 
-        outputfile = os.path.join(NMLDB_DATA_PATH, "Ranking", "SYSTEM_" + sort_based_on + "_Ranking.json")
+        outputfile = os.path.join(FMDL_DATA_PATH, "Ranking", "SYSTEM_" + sort_based_on + "_Ranking.json")
         with open(outputfile, "w") as fp:
             json.dump(sorted_qualities, fp, default=str, cls=CompactJSONEncoder)
         print(f"Sorted based on {sort_based_on} quality and saved to {outputfile}")
@@ -93,7 +93,7 @@ def make_ranking():
 
     sorted_qualities = sorted(new_qualities, key=lambda i: i["TotalQuality"]["FFQuality"])
 
-    outputfile = os.path.join(NMLDB_DATA_PATH, "Ranking", "SYSTEM_FormFactor_Ranking.json")
+    outputfile = os.path.join(FMDL_DATA_PATH, "Ranking", "SYSTEM_FormFactor_Ranking.json")
     with open(outputfile, "w") as fp:
         json.dump(sorted_qualities, fp, default=str, cls=CompactJSONEncoder)
     print("Sorted based on form factor quality and saved to", outputfile)
@@ -114,7 +114,7 @@ def make_ranking():
             sorted_qualities = sorted(new_qualities, key=lambda i: i[lipid][sort_based_on], reverse=True)
 
             if sorted_qualities:
-                outputfile = os.path.join(NMLDB_DATA_PATH, "Ranking", lipid + "_" + sort_based_on + "_Ranking.json")
+                outputfile = os.path.join(FMDL_DATA_PATH, "Ranking", lipid + "_" + sort_based_on + "_Ranking.json")
                 with open(outputfile, "w") as fp:
                     json.dump(sorted_qualities, fp, default=str, cls=CompactJSONEncoder)
                 print(f"Quality of {sort_based_on} of {lipid} sorted and saved to {outputfile}")

@@ -8,7 +8,7 @@ issues](https://github.com/NMRlipids/BilayerData/issues).
 
 If you are adding data into the databank and your molecule(s) ``YOURMOL`` do not exist,
 you need to create a new one by adding a folder :file:`membrane/YOURMOL/` inside
-:py:data:`NMLDB_MOL_PATH` folder. When contributing to the standard NMRlipids Data
+:py:data:`FMDL_MOL_PATH` folder. When contributing to the standard NMRlipids Data
 repository, `BilayerData <https://github.com/NMRlipids/BilayerData>`_, you are adding
 into :file:`Molecules/membrane` folder.
 

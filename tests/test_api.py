@@ -30,10 +30,10 @@ N_SYSTEMS_IN_TESTSET = 5
 @pytest.fixture(scope="module")
 def systems():
     """Fixture for loading the toy databank once per module."""
-    from fairmd.lipids import NMLDB_DATA_PATH
+    from fairmd.lipids import FMDL_DATA_PATH
     from fairmd.lipids.core import initialize_databank
 
-    if os.path.isfile(os.path.join(NMLDB_DATA_PATH, ".notest")):
+    if os.path.isfile(os.path.join(FMDL_DATA_PATH, ".notest")):
         pytest.exit("Test are corrupted. I see '.notest' file in the data folder.")
     s = initialize_databank()
     print(f"Loaded: {len(s)} systems")
@@ -308,14 +308,14 @@ def test_getLipids(systems, systemid, result):
 
 @pytest.fixture(scope="function")
 def wipeth(systems):
-    from fairmd.lipids import NMLDB_SIMU_PATH
+    from fairmd.lipids import FMDL_SIMU_PATH
 
     # TD-FIXTURE FOR REMOVING THICKNESS AFTER TEST CALCULATIONS
     yield
     # TEARDOWN
     for sid in [243, 281]:
         sys0 = systems.loc(sid)
-        fn = os.path.join(NMLDB_SIMU_PATH, sys0["path"], "thickness.json")
+        fn = os.path.join(FMDL_SIMU_PATH, sys0["path"], "thickness.json")
         try:
             os.remove(fn)
         except FileNotFoundError:
@@ -327,13 +327,13 @@ def wipeth(systems):
 
 @pytest.mark.parametrize("systemid, result, thickres", [(281, 1, 4.19996), (243, 1, 4.25947)])
 def test_analyze_th(systems, systemid, result, wipeth, thickres, logger):
-    from fairmd.lipids import NMLDB_SIMU_PATH
+    from fairmd.lipids import FMDL_SIMU_PATH
     from fairmd.lipids.analyze import computeTH
 
     sys0 = systems.loc(systemid)
     rc = computeTH(sys0, logger)
     assert rc == result
-    fn = os.path.join(NMLDB_SIMU_PATH, sys0["path"], "thickness.json")
+    fn = os.path.join(FMDL_SIMU_PATH, sys0["path"], "thickness.json")
     assert os.path.isfile(fn)
     with open(fn) as file:
         data = float(file.read().rstrip())
