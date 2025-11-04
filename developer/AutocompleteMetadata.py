@@ -1,7 +1,22 @@
+"""
+Script for membrane metadata autocomplete
+
+This script will try to fill further attributes in a membrane metadata.yaml file based information queried with the inchikey from:
+* UniChem
+* ChEMBL
+* ChEBI
+* PubChem 
+
+"""
+
+
 import os
 import sys
 import requests
 import yaml
+
+
+
 
 def check_api(url):
     try:
