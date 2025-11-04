@@ -1,7 +1,7 @@
 """
 `test_loads` tests ONLY functions related to downloading files and/or resolving links.
 
-NOTE: globally import of DatabankLib is **STRICTLY FORBIDDEN** because it
+NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
       breaks the substitution of global path folders
 """
 
@@ -22,7 +22,7 @@ class TestDownloadResourceFromUri:
 
     def test_justdl__download_resource_from_uri(self, monkeypatch, tmp_path):
         monkeypatch.chdir(tmp_path)
-        import DatabankLib.databankio as dio
+        import fairmd.lipids.databankio as dio
 
         if os.path.exists(self.TESTFILENAME):
             os.remove(self.TESTFILENAME)  # just for sure
@@ -46,7 +46,7 @@ class TestDownloadResourceFromUri:
 
     def test_corrupted__download_resource_from_uri(self, monkeypatch, tmp_path):
         monkeypatch.chdir(tmp_path)
-        import DatabankLib.databankio as dio
+        import fairmd.lipids.databankio as dio
 
         # redownload corrupted file
         with open(self.TESTFILENAME, "w") as f:
@@ -73,7 +73,7 @@ class TestDownloadResourceFromUri:
         d = tmp_path / "sub"
         d.mkdir()
 
-        import DatabankLib.databankio as dio
+        import fairmd.lipids.databankio as dio
 
         # put directory instead of filename
         with pytest.raises(IsADirectoryError) as _:
@@ -92,7 +92,7 @@ class TestDownloadResourceFromUri:
 # resolve_doi_url
 class TestResolveDoiUrl:
     def test_badDOI__resolve_doi_url(self):
-        import DatabankLib.databankio as dio
+        import fairmd.lipids.databankio as dio
 
         # test if bad DOI fails
         with pytest.raises(HTTPError, match="404") as _:
@@ -101,7 +101,7 @@ class TestResolveDoiUrl:
         assert dio.resolve_doi_url("10.5281/zenodo.8435a", False) == "https://doi.org/10.5281/zenodo.8435a"
 
     def test_goodDOI__resolve_doi_url(self):
-        import DatabankLib.databankio as dio
+        import fairmd.lipids.databankio as dio
 
         # good DOI works properly
         assert dio.resolve_doi_url("10.5281/zenodo.8435138", True) == "https://doi.org/10.5281/zenodo.8435138"
@@ -162,14 +162,14 @@ class TestResolveDoiUrl:
         expected_call_count,
         mocker,
     ):
-        import DatabankLib.databankio as dio
+        import fairmd.lipids.databankio as dio
 
         mocker.patch("time.sleep", return_value=None)
 
         side_effects = side_effects_func(mocker)
 
         mock_urlopen = mocker.patch(
-            "DatabankLib.databankio.urllib.request.urlopen",
+            "fairmd.lipids.databankio.urllib.request.urlopen",
             side_effect=side_effects,
         )
 

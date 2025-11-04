@@ -20,9 +20,9 @@ import numpy as np
 from maicos.core import ProfilePlanarBase
 from maicos.lib.weights import density_weights
 
-from DatabankLib.core import System
-from DatabankLib.jsonEncoders import CompactJSONEncoder
-from DatabankLib.settings.molecules import lipids_set
+from fairmd.lipids.core import System
+from fairmd.lipids.jsonEncoders import CompactJSONEncoder
+from fairmd.lipids.settings.molecules import lipids_set
 
 
 def is_system_suitable_4_maicos(system: System) -> bool:

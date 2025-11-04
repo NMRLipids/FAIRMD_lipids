@@ -30,7 +30,7 @@ SIM_MAP = {
 
 @pytest.fixture(autouse=True, scope="module")
 def header_module_scope(request):
-    """Set env vars depending on data required, remove DatabankLib on teardown."""
+    """Set env vars depending on data required, remove fairmd-lipids on teardown."""
     # Find pytest marker:
     sim_key = None
     for key in ("sim1", "sim2", "adddata", "nodata"):
@@ -44,15 +44,15 @@ def header_module_scope(request):
         sim_key = cmdopt if cmdopt in SIM_MAP else "nodata"
 
     data_root = os.path.join(os.path.dirname(__file__), "ToyData")
-    os.environ["NMLDB_DATA_PATH"] = data_root
+    os.environ["FMDL_DATA_PATH"] = data_root
     sim_dir = SIM_MAP[sim_key]
     if sim_dir:
-        os.environ["NMLDB_SIMU_PATH"] = os.path.join(data_root, sim_dir)
+        os.environ["FMDL_SIMU_PATH"] = os.path.join(data_root, sim_dir)
     else:
-        os.environ.pop("NMLDB_SIMU_PATH", None)
+        os.environ.pop("FMDL_SIMU_PATH", None)
 
-    print("DBG env -> NMLDB_DATA_PATH:", os.getenv("NMLDB_DATA_PATH"))
-    print("DBG env -> NMLDB_SIMU_PATH:", os.getenv("NMLDB_SIMU_PATH"))
+    print("DBG env -> FMDL_DATA_PATH:", os.getenv("FMDL_DATA_PATH"))
+    print("DBG env -> FMDL_SIMU_PATH:", os.getenv("FMDL_SIMU_PATH"))
 
     yield
     # Teardown:
@@ -79,7 +79,7 @@ def logger():
 
 
 def remove_databank_import() -> None:
-    """Delete DatabankLib module from sys.modules, resets future imports"""
+    """Delete fairmd.lipids module from sys.modules, resets future imports"""
     for name in list(sys.modules):
-        if name.startswith("DatabankLib"):
+        if name.startswith("fairmd.lipids"):
             del sys.modules[name]

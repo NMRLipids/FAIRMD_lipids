@@ -4,7 +4,7 @@ NMRlipids project is run by [NMRlipids research collaboration](https://nmrlipids
 
 # Contributors
 
-Since June 2025 (v.1.1.0), NMRlipids Databank separates codespace from [Data](https://github.com/NMRLipids/BilayerData). Below we list contributors of the code part only; contributors of the bilayer-data part are listed at [BilayerData/AUTHORS.md](https://github.com/NMRLipids/BilayerData/blob/main/AUTHORS.md).
+Since June 2025 (v.1.1.0), FAIRMD Lipids separates codespace from [Data](https://github.com/NMRLipids/BilayerData). Below we list contributors of the code part only; contributors of the bilayer-data part are listed at [BilayerData/AUTHORS.md](https://github.com/NMRLipids/BilayerData/blob/main/AUTHORS.md).
 
  Alphabetical list of contributors:
 

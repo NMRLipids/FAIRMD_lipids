@@ -33,7 +33,7 @@ Engine-specific dictionaries have a fixed subfield types:
 import os.path
 from collections.abc import Sequence
 
-from DatabankLib.core import System
+from fairmd.lipids.core import System
 
 # GROMACS
 gromacs_dict = {

@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 def main() -> None:
     """Run analysis CLIs in sequence."""
     try:
-        subprocess.run(["nml_match_experiments"], check=True)
-        subprocess.run(["nml_evaluate_quality"], check=True)
-        subprocess.run(["nml_make_ranking"], check=True)
+        subprocess.run(["fmdl_match_experiments"], check=True)
+        subprocess.run(["fmdl_evaluate_quality"], check=True)
+        subprocess.run(["fmdl_make_ranking"], check=True)
     except subprocess.CalledProcessError:
         logger.exception("Run analysis failed")
         sys.exit(1)

@@ -33,9 +33,9 @@ We are using automatic testing with `pytest` please consult (test-README)[Script
 As the code operates with an over-filesystem database, universal path handling is crucial. To construct paths, we use global variables of the type NMLDB\_**XXXX**\_PATH, where **XXXX** could be:
 
 - DATA points by default to `./BilayerData` folder. Can be used to point to somewhere inside the Database but not for molecules, simulations, and experiments. Currently is used for Rankings as well.
-- MOL points by default to `{NMLDB_DATA_PATH}/Molecules` folder, from where molecule lists are initialized. Is used to get access to something in molecule-folders.
-- SIMU points by default to `{NMLDB_DATA_PATH}/Simulations` folder. Is used to get access to a certain simulation.
-- EXP points by default to `{NMLDB_DATA_PATH}/Experiments` folder. Is used to get access to a certain experiment.
+- MOL points by default to `{FMDL_DATA_PATH}/Molecules` folder, from where molecule lists are initialized. Is used to get access to something in molecule-folders.
+- SIMU points by default to `{FMDL_DATA_PATH}/Simulations` folder. Is used to get access to a certain simulation.
+- EXP points by default to `{FMDL_DATA_PATH}/Experiments` folder. Is used to get access to a certain experiment.
 
 We currently construct paths using `os.path.join(a,b)`.
 
@@ -51,17 +51,17 @@ need to install `tox` first
     conda install -c conda-forge tox
 ```
 
-Then go to the [develop project](https://github.com/NMRLipids/Databank/) page, hit the
+Then go to the [develop project](https://github.com/NMRLipids/FAIRMD_lipids/) page, hit the
 ``Fork`` button and clone your forked branch to your machine.
 
 ```bash
-  git clone git@github.com:your-user-name/Databank.git
+  git clone git@github.com:your-user-name/fairmd-lipids.git
 ```
 
 Now you have a local version on your machine which you can install by
 
 ```bash
-  cd Databank
+  cd fairmd-lipids
   pip install -e .
 ```
 
@@ -122,6 +122,6 @@ following command (or open the :file:`docs/build/html/index.html` file manually)
 
 # Data handling
 
-NMRlipids Databank separates codespace from
+FAIRMD Lipids separates codespace from
 [the Database](https://github.com/NMRLipids/BilayerData) since June 2025 (v.1.1.0). 
 Data contribution rules are moved there accordingly.

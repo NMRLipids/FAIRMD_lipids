@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build:
-    if: github.repository == 'NMRlipids/Databank'
+    if: github.repository == 'NMRLipids/FAIRMD_lipids'
     runs-on: ubuntu-latest
 
     steps:
@@ -38,14 +38,14 @@ jobs:
         run: tox -e docs   
 
       - name: Upload site artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: site
           path: docs/build/html
           if-no-files-found: error
 
   deploy:
-    if: github.event_name == 'push' && github.repository == 'NMRlipids/Databank'
+    if: github.event_name == 'push' && github.repository == 'NMRLipids/FAIRMD_lipids'
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -53,7 +53,7 @@ jobs:
 
     steps:
       - name: Download site artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: site
           path: ./public

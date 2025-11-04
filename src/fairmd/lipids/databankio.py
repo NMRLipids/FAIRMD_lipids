@@ -1,5 +1,5 @@
 """
-Inut/Output auxilary module **DatabankLib.databankio**.
+Input/Output auxilary module **fairmd.lipids.databankio**.
 
 Input/Output auxilary module with some small usefull functions. It includes:
 - Network communication.

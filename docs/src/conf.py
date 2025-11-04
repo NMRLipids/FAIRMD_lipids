@@ -21,10 +21,10 @@ if os.getenv("READTHEDOCS") == "True":
         # make package importable if autodoc needs it
         if repo_root not in sys.path:
             sys.path.insert(0, repo_root)
-        data_path = os.path.join(repo_root, "src", "DatabankLib", "data", "ToyData")
-        os.environ.setdefault("NMLDB_DATA_PATH", data_path)
+        data_path = os.path.join(repo_root, "src", "fairmd", "lipids", "data", "ToyData")
+        os.environ.setdefault("FMDL_DATA_PATH", data_path)
 
-import DatabankLib as dbl
+import fairmd.lipids as fmdl
 
 # Directory containing this conf.py
 here = os.path.dirname(__file__)
@@ -37,8 +37,8 @@ year = datetime.now().year
 
 # -- Project information -----------------------------------------------------
 
-project = f"NMRlipids Databank v{dbl.__version__}"
-author = dbl.__author__
+project = f"FAIRMD Lipids v{fmdl.__version__}"
+author = fmdl.__author_email__
 copyright = f"""{year}, {author}
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
@@ -49,10 +49,10 @@ copyright = f"""{year}, {author}
 
 
 # The full version, including alpha/beta/rc tags
-release = dbl.__version__
+release = fmdl.__version__
 html_context = {
-    "copyright_link": dbl.__url__ + "/blob/main/LICENSE.txt",
-    "repo_link": dbl.__url__,
+    "copyright_link": fmdl.__url__ + "/blob/main/LICENSE.txt",
+    "repo_link": fmdl.__url__,
 }
 
 # -- General configuration ---------------------------------------------------
@@ -88,7 +88,7 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 
 source_suffix = {
     ".rst": "restructuredtext",

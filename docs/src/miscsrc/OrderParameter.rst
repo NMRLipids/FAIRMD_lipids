@@ -1,7 +1,7 @@
 OrderParameter module
 =====================
 
-.. automodule:: DatabankLib.databankop
+.. automodule:: fairmd.lipids.databankop
    :members:
    :undoc-members:
    :show-inheritance:

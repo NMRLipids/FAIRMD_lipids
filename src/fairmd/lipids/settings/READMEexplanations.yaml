@@ -55,7 +55,7 @@ EXPERIMENT:
 WARNINGS:
  Warnings related to potential issues with the simulation (eg. non-standar orientation of membrane or old Gromacs version)
 ID:
- NMRlipids databank ID number of the simulation.
+ FAIRMD Lipids ID number of the simulation.
 
 
 

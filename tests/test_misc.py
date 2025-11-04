@@ -4,7 +4,7 @@
 Test data is stored in `./ToyData/Simulations.2`
 
 -------------------------------------------------------------------------------
-NOTE: globally import of DatabankLib is **STRICTLY FORBIDDEN** because it
+NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
       breaks the substitution of global path folders
 """
 
@@ -19,7 +19,7 @@ pytestmark = [pytest.mark.nodata, pytest.mark.min]
 
 def test_uname2element():
     """Test uname2element function."""
-    from DatabankLib.settings.elements import uname2element
+    from fairmd.lipids.settings.elements import uname2element
 
     check.equal(uname2element("M_C1_M"), "C")
     check.equal(uname2element("M_G1_M"), "C")
@@ -78,7 +78,7 @@ END
 
 
 def test_maicos_interface(tip4p_trajectory):
-    from DatabankLib.maicos import DensityPlanar
+    from fairmd.lipids.maicos import DensityPlanar
 
     u, folder = tip4p_trajectory
 
@@ -108,9 +108,9 @@ def test_maicos_interface(tip4p_trajectory):
 def test_maicos_what_to_compute(caplog, logger):
     import logging
 
-    from DatabankLib import RCODE_ERROR
-    from DatabankLib.analyze import computeMAICOS
-    from DatabankLib.core import System
+    from fairmd.lipids import RCODE_ERROR
+    from fairmd.lipids.analyze import computeMAICOS
+    from fairmd.lipids.core import System
 
     s = System(
         data={

@@ -3,13 +3,13 @@
 Perform comparison of experiments and simulations.
 
 The script compares according to **EXPERIMENT** field inside :ref:`the simulation README.yaml file <readmesimu>`.
-In the standard protocol, it should be run *after* :ref:`nml_match_experiments <match_experiments_py>`.
+In the standard protocol, it should be run *after* :ref:`fmdl_match_experiments <match_experiments_py>`.
 
 **Usage:**
 
 .. code-block:: console
 
-    nml_evaluate_quality
+    fmdl_evaluate_quality
 
 No arguments are needed.
 """
@@ -20,9 +20,9 @@ import os
 import numpy as np
 import yaml
 
-import DatabankLib.quality as qq
-from DatabankLib import NMLDB_EXP_PATH, NMLDB_SIMU_PATH
-from DatabankLib.jsonEncoders import CompactJSONEncoder
+import fairmd.lipids.quality as qq
+from fairmd.lipids import FMDL_EXP_PATH, FMDL_SIMU_PATH
+from fairmd.lipids.jsonEncoders import CompactJSONEncoder
 
 
 def evaluate_quality():
@@ -33,7 +33,7 @@ def evaluate_quality():
 
     for simulation in simulations:
         # save OP quality and FF quality here
-        DATAdir = os.path.join(NMLDB_SIMU_PATH, simulation.idx_path)
+        DATAdir = os.path.join(FMDL_SIMU_PATH, simulation.idx_path)
         print("Analyzing: ", DATAdir)
 
         # Order Parameters
@@ -57,13 +57,13 @@ def evaluate_quality():
             for doi, path in simulation.system["EXPERIMENT"]["ORDERPARAMETER"][lipid1].items():
                 print(
                     f"Evaluating {lipid1} lipid using experimental data from"
-                    f"{doi} in {NMLDB_EXP_PATH}/OrderParameters/{path}",
+                    f"{doi} in {FMDL_EXP_PATH}/OrderParameters/{path}",
                 )
 
                 print(doi)
                 OP_qual_data = {}
                 # get readme file of the experiment
-                exp_fpath = os.path.join(NMLDB_EXP_PATH, "OrderParameters", path)
+                exp_fpath = os.path.join(FMDL_EXP_PATH, "OrderParameters", path)
                 print("Experimental data available at " + exp_fpath)
 
                 READMEfilepathExperiment = os.path.join(exp_fpath, "README.yaml")
@@ -165,7 +165,7 @@ def evaluate_quality():
         expFFpath = simulation.system["EXPERIMENT"]["FORMFACTOR"]
         expFFdata = {}
         if len(expFFpath) > 0:
-            expFFpath_full = os.path.join(NMLDB_EXP_PATH, "FormFactors", expFFpath)
+            expFFpath_full = os.path.join(FMDL_EXP_PATH, "FormFactors", expFFpath)
             for _, _, files in os.walk(expFFpath_full):
                 for filename in files:
                     filepath = os.path.join(expFFpath_full, filename)

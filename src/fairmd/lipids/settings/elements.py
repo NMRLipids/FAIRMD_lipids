@@ -11,8 +11,8 @@ import re
 import MDAnalysis as mda
 import periodictable
 
-from DatabankLib import NMLDB_DATA_PATH
-from DatabankLib.core import System
+from fairmd.lipids import FMDL_DATA_PATH
+from fairmd.lipids.core import System
 
 
 def uname2element(mapping_name: str) -> str:
@@ -59,7 +59,7 @@ def guess_elements(system: System, u: mda.Universe) -> None:
         _moltype = f"moltype {comp['MOLTYPE']} and " if "MOLTYPE" in comp else ""
 
         try:
-            ua_dict_f = os.path.join(NMLDB_DATA_PATH, "lipid_json_buildH", system["UNITEDATOM_DICT"][_mol] + ".json")
+            ua_dict_f = os.path.join(FMDL_DATA_PATH, "lipid_json_buildH", system["UNITEDATOM_DICT"][_mol] + ".json")
             with open(ua_dict_f) as f:
                 ua_dict = json.load(f)
         except (KeyError, TypeError):

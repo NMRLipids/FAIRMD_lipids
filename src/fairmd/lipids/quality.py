@@ -13,8 +13,8 @@ import numpy as np
 import scipy.signal
 import scipy.stats
 
-from DatabankLib import NMLDB_SIMU_PATH
-from DatabankLib.core import System, initialize_databank, lipids_set
+from fairmd.lipids import FMDL_SIMU_PATH
+from fairmd.lipids.core import System, initialize_databank, lipids_set
 
 
 # TODO: inherit from System
@@ -415,7 +415,7 @@ def loadSimulations() -> list[QualSimulation]:
                     if lipMol not in lipids_set:
                         continue
                     filename2 = os.path.join(
-                        NMLDB_SIMU_PATH,
+                        FMDL_SIMU_PATH,
                         system["path"],
                         lipMol + "OrderParameters.json",
                     )
@@ -430,7 +430,7 @@ def loadSimulations() -> list[QualSimulation]:
 
                 simFFdata = {}  # form factor data
                 filename2 = os.path.join(
-                    NMLDB_SIMU_PATH,
+                    FMDL_SIMU_PATH,
                     system["path"],
                     "FormFactor.json",
                 )

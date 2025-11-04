@@ -3,7 +3,7 @@ Executes standard pipeline of processing for an info file.
 
 .. note::
    This file is only meant to be used by automated workflows.
-   Users of the Databank repository can safely ignore it.
+   Users of the fairmd-lipids repository can safely ignore it.
 """
 
 import argparse
@@ -25,11 +25,11 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 def run_analysis(info_file_path: str) -> None:
     """Run full analysis of info-file"""
     work_directory_real, _ = setup_folders()
-    subprocess.run(["nml_add_simulation", "-f", info_file_path, "-w", work_directory_real], check=True)
+    subprocess.run(["fmdl_add_simulation", "-f", info_file_path, "-w", work_directory_real], check=True)
 
     subprocess.run(
         [
-            "nml_compute_databank",
+            "fmdl_compute_databank",
             "--nmrpca",
             "--ff",
             "--op",
@@ -46,7 +46,7 @@ def run_analysis(info_file_path: str) -> None:
 def run_dry_run(info_file_path: str) -> None:
     """Run AddData dry-run for pre-analysis of info file to rule out errors"""
     _, work_directory_dry = setup_folders()
-    subprocess.run(["nml_add_simulation", "-f", info_file_path, "-w", work_directory_dry, "--dry-run"], check=True)
+    subprocess.run(["fmdl_add_simulation", "-f", info_file_path, "-w", work_directory_dry, "--dry-run"], check=True)
 
 
 def setup_folders() -> tuple[str, str]:

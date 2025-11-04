@@ -1,5 +1,5 @@
 # This is the template. Please refer the documentation page for the details
-# https://nmrlipids.github.io/Databank/latest/schemas/simulation_metadata.html
+# https://nmrlipids.github.io/FAIRMD_lipids/latest/schemas/simulation_metadata.html
 # ----------------------------------------------------------------------------
 
 SYSTEM: UNIQUE_SYSTEM_NAME
