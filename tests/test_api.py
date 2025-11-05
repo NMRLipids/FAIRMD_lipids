@@ -14,7 +14,7 @@ NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
 
 import os
 import sys
-
+import warnings
 import pytest
 import pytest_check as check
 
@@ -396,3 +396,24 @@ def test_GetOP_reads_valid_json(systems, systemid, lipid):
     resdic = GetOP(sys0)
 
     assert lipid in resdic
+
+
+@pytest.mark.parametrize(
+    "systemid, testmol ,result",
+    [
+        (787, "TOCL", None),
+    ],
+)
+def test_GetOP_missing_file_warns(systems, systemid, testmol, result):
+    from fairmd.lipids.databankLibrary import GetOP
+
+    sys0 = systems.loc(systemid)
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        resdic = GetOP(sys0)
+        # Check the result is None for missing file
+        assert testmol in resdic
+        assert resdic[testmol] is result
+        # Check a warning was raised containing the molecule name
+        assert any(f"{testmol}OrderParameters.json not found" in str(wi.message) for wi in w)
