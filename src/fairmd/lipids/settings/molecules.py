@@ -62,9 +62,9 @@ class Molecule(ABC):
         res_set.add(name)
         res_atoms = u.select_atoms("resname " + " ".join(res_set))
         for a in res_atoms:
-            _ = self.md2nml(a.name)
+            _ = self.md2uan(a.name)
         for unm in self.mapping_dict:
-            sel_str = self.nml2selection(unm, name)
+            sel_str = self.uan2selection(unm, name)
             ats: mda.AtomGroup = u.select_atoms(sel_str)
             if ats.n_atoms == 0:
                 msg = f"Atom {unm} was not found in the universe using selection '{sel_str}'."
@@ -80,8 +80,8 @@ class Molecule(ABC):
                 self._mapping_dict = yaml.safe_load(yaml_file)  # yaml.load(yaml_file, Loader=yaml.FullLoader)
         return self._mapping_dict
 
-    def md2nml(self, mdatomname: str, mdresname: str | None = None) -> str:
-        """Convert MD atom name to NMLDB Universal Atom Name."""
+    def md2uan(self, mdatomname: str, mdresname: str | None = None) -> str:
+        """Convert MD atom name to the Universal Atom Name."""
         for universal_name in self.mapping_dict:
             mapping_aname = self.mapping_dict[universal_name]["ATOMNAME"]
             # MDAnalysis uses fnmatch patterns for selection language
@@ -95,8 +95,8 @@ class Molecule(ABC):
         emsg = f"Atom {mdatomname} is not found in {self}"
         raise KeyError(emsg)
 
-    def nml2selection(self, uname: str, resname: str) -> str:
-        """Convert NMLDB Universal Atom Name to MD atom name."""
+    def uan2selection(self, uname: str, resname: str) -> str:
+        """Convert the Universal Atom Name to MD atom name."""
         anm = self.mapping_dict[uname]["ATOMNAME"]
         selstr = f"name {anm}"
         if "RESIDUE" in self.mapping_dict[uname]:
