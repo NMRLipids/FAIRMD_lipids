@@ -10,6 +10,7 @@ pytestmark = [pytest.mark.sim2, pytest.mark.min]
 LIPIDS_SET_LENGTH = 5
 POPE_MOLECULAR_WEIGHT = 718
 
+
 @pytest.fixture(scope="module")
 def toy_mols() -> dict:
     from fairmd.lipids import FMDL_MOL_PATH
@@ -26,8 +27,10 @@ def toy_mols() -> dict:
 
     return {"pope/charmm": mol1, "popc/amber": mol2}
 
+
 def test_check_mapping_amber(toy_mols):
     import MDAnalysis as mda
+
     popc2_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc2.gro")
     popc1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc1.gro")
 
@@ -57,6 +60,7 @@ def test_check_mapping_amber(toy_mols):
 
 def test_check_mapping(toy_mols):
     import MDAnalysis as mda
+
     pope1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "pope1.gro")
     popc1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc1.gro")
 

@@ -25,9 +25,10 @@ from fairmd.lipids.settings.molecules import lipids_set, molecule_ff_set, molecu
 logger = logging.getLogger(__name__)
 
 
-def CalcAreaPerMolecule(system):  # noqa: N802 (API name)
+def CalcAreaPerMolecule(system) -> None | float:  # noqa: N802 (API name)
     """
-    Calculates average area per lipid for a simulation defined with ``system``.
+    Calculate average area per lipid for a system.
+
     It is using the ``apl.json`` file where area per lipid as a function of time
     calculated by the ``calcAPL.py`` is stored.
 
@@ -39,14 +40,15 @@ def CalcAreaPerMolecule(system):  # noqa: N802 (API name)
     try:
         with open(path) as f:
             data = json.load(f)
-        sum_APL = 0  # noqa: N806
-        sum_ind = 0
-        for _, j in data.items():
-            sum_APL += j
-            sum_ind += 1
-        return sum_APL / sum_ind
     except Exception:
         print("apl.json not found from" + path)
+        return None
+    sum_apl = 0
+    sum_ind = 0
+    for j in data.values():
+        sum_apl += j
+        sum_ind += 1
+    return sum_apl / sum_ind
 
 
 def GetThickness(system):  # noqa: N802 (API name)
@@ -430,7 +432,7 @@ def read_trj_PN_angles(  # noqa: N802 (API name)
     mda_universe: mda.Universe,
 ):
     """
-    Calculates the P-N vector angles with respect to membrane normal from the
+    Calculate the P-N vector angles with respect to membrane normal from the
     simulation defined by the MDAnalysis universe.
 
     :param molname: residue name of the molecule for which the P-N vector angle will
@@ -630,9 +632,9 @@ def parse_valid_config_settings(info_yaml: dict) -> tuple[dict, list[str]]:
     return sim, files_tbd
 
 
-def calcArea(system):  # noqa: N802 (API name)
+def calcArea(system) -> float:  # noqa: N802 (API name)
     """
-    Returns area of the calculated based on the area per lipid stored in the databank.
+    Return area of the calculated based on the area per lipid stored in the databank.
 
     :param system: a system dictionary
 
@@ -710,7 +712,7 @@ def averageOrderParameters(system):  # noqa: N802 (API name)
 
 def calcLipidFraction(system, lipid):  # noqa: N802 (API name)
     """
-    Returns the number fraction of ``lipid`` with respect to total number of lipids.
+    Return the number fraction of ``lipid`` with respect to total number of lipids.
 
     :param system: a system dictionary
     :param lipid: universal molecule name of lipid
@@ -730,10 +732,11 @@ def calcLipidFraction(system, lipid):  # noqa: N802 (API name)
     return n_lipid / n_lipid_tot
 
 
-def getHydrationLevel(system):  # noqa: N802 (API name)
+def getHydrationLevel(system) -> float:  # noqa: N802 (API name)
     """
-    Returns hydration level of the system, i.e., number of water molecules divided
-    by number of lipid molecules.
+    Return hydration level of the system.
+
+    Hydration level is defined as the number of water molecules divided by number of lipid molecules.
 
     :param system: a system dictionary
 

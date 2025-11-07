@@ -446,16 +446,9 @@ Returns error codes:
             lip = Lipid(key_mol)
             m_file = sim["COMPOSITION"][key_mol]["MAPPING"]
             lip.register_mapping(m_file)
-            key = lip.mapping_dict.keys()[0]
-            if "RESIDUE" in lip.mapping_dict[key]:
-                selection = (
-                    selection
-                    + "resname "
-                    + lip.mapping_dict[key]["RESIDUE"]
-                    + " and name "
-                    + lip.mapping_dict[key]["ATOMNAME"]
-                    + " or "
-                )
+            val = next(iter(lip.mapping_dict.values()))
+            if "RESIDUE" in val:
+                selection = selection + "resname " + val["RESIDUE"] + " and name " + val["ATOMNAME"] + " or "
             else:
                 selection = "resname " + sim["COMPOSITION"][key_mol]["NAME"]
 

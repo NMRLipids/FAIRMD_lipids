@@ -72,13 +72,12 @@ class Molecule(ABC):
                     msg += f" Could be mapping error or incorrect residue name '{name}'."
                 raise KeyError(msg)
 
-
     @property
     def mapping_dict(self) -> dict:
         """Return mapping dictionary (load on first call)"""
         if self._mapping_dict is None:
             with open(self._mapping_fpath) as yaml_file:
-                self._mapping_dict = yaml.load(yaml_file, Loader=yaml.FullLoader)
+                self._mapping_dict = yaml.safe_load(yaml_file)  # yaml.load(yaml_file, Loader=yaml.FullLoader)
         return self._mapping_dict
 
     def md2nml(self, mdatomname: str, mdresname: str | None = None) -> str:
@@ -162,10 +161,10 @@ class Molecule(ABC):
     def __eq__(self, other) -> bool:
         return isinstance(other, type(self)) and self.name.upper() == other.name.upper()
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.name.upper())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}({self.name})"
 
 
@@ -260,7 +259,7 @@ class MoleculeSet(MutableSet[Molecule], ABC):
         :return: constructed Molecule
         """
 
-    def __contains__(self, item: Molecule):
+    def __contains__(self, item: Molecule) -> bool:
         """Check if a lipid is in the set."""
         return (self._test_item_type(item) and item in self._items) or (
             isinstance(item, str) and item.upper() in self._names
@@ -269,10 +268,10 @@ class MoleculeSet(MutableSet[Molecule], ABC):
     def __iter__(self):
         return iter(self._items)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._items)
 
-    def add(self, item: Molecule):
+    def add(self, item) -> None:
         """
         Add a lipid to the set.
 
@@ -286,12 +285,11 @@ class MoleculeSet(MutableSet[Molecule], ABC):
             self._items.add(self._create_item(item))  # here we call Lipid constructor
             self._names.add(item.upper())
         else:
-            raise TypeError(f"Only proper instances can be added to {type(self).__name__}.")
+            msg = f"Only proper instances can be added to {type(self).__name__}."
+            raise TypeError(msg)
 
-    def discard(self, item):
-        """
-        Remove a lipid from the set without raising an error if it does not exist.
-        """
+    def discard(self, item) -> None:
+        """Remove a lipid from the set without raising an error if it does not exist."""
         if self._test_item_type(item):
             self._items.discard(item)
             self._names.discard(item.name.toupper())
@@ -303,13 +301,16 @@ class MoleculeSet(MutableSet[Molecule], ABC):
                 if i.name.upper() == item.upper():
                     ifound = i
                     break
-            assert ifound is not None
+            if ifound is None:
+                msg = f"Item '{item}' not found in the set."
+                raise KeyError(msg)
             self._items.discard(ifound)
             self._names.discard(item.upper())
 
     def get(self, key: str, default=None) -> Molecule | None:
         """
         Get a molecule by its name.
+
         :param key: The name of the molecule to retrieve.
         :param default: The value to return if the molecule is not found.
         """
@@ -319,11 +320,12 @@ class MoleculeSet(MutableSet[Molecule], ABC):
                     return item
         return default
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}[{self._names}]"
 
     @property
     def names(self) -> set[str]:
+        """Set of molecule names in the set."""
         return self._names
 
 
@@ -333,13 +335,13 @@ class LipidSet(MoleculeSet):
     def _test_item_type(self, item: Any) -> bool:
         return isinstance(item, Lipid)
 
-    def _create_item(self, name):
+    def _create_item(self, name: str) -> Molecule:
         return Lipid(name)
 
     @staticmethod
-    def load_from_data():
+    def load_from_data() -> "LipidSet":
         """
-        Loads lipid data from the designated directory and returns a set of lipids.
+        Load lipid data from the designated directory and returns a set of lipids.
 
         :rtype: LipidSet
         :return: An instance of loaded `LipidSet`.
@@ -353,20 +355,18 @@ class LipidSet(MoleculeSet):
 
 
 class NonLipidSet(MoleculeSet):
-    """
-    MoleculeSet specialization for NonLipid.
-    """
+    """MoleculeSet specialization for NonLipid."""
 
     def _test_item_type(self, item: Any) -> bool:
         return isinstance(item, NonLipid)
 
-    def _create_item(self, name):
+    def _create_item(self, name: str) -> Molecule:
         return NonLipid(name)
 
     @staticmethod
-    def load_from_data():
+    def load_from_data() -> "NonLipidSet":
         """
-        Loads Nonlipid data from the designated directory and returns a set of lipids.
+        Load Nonlipid data from the designated directory and returns a set of lipids.
 
         :rtype: NonLipidSet
         :return: An instance of loaded `NonLipidSet`.
