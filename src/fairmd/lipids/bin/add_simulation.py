@@ -17,7 +17,7 @@ The script adds a simulation into the Databank based on ``info.yaml`` file.
 **Returns** error codes:
 
 - 0 - success
-- 1 - input YAML parsing errors
+- 1 - input errors (YAML parsing, mapping files, etc.)
 - 2 - filesystem writting errors
 - 3 - network accessing errors
 
@@ -257,10 +257,9 @@ Returns error codes:
         except KeyError:
             if key_sim in ["SOFTWARE", "ID"]:
                 continue
-            else:
-                # That shouldn't happen! Unexpected YAML-keys were checked by
-                # parse_valid_config_settings before
-                raise
+            # That shouldn't happen! Unexpected YAML-keys were checked by
+            # parse_valid_config_settings before
+            raise
 
         if "file" in entry_type:
             files_list = []
@@ -370,8 +369,8 @@ Returns error codes:
         try:
             subprocess.run(command, input="System\n", text=True, check=True, capture_output=True)
         except subprocess.CalledProcessError as e:
-            FAIL_MSG = f"Command 'echo System | {' '.join(command)}' failed with error: {e.stderr}"
-            raise RuntimeError(FAIL_MSG) from e
+            msg = f"Command 'echo System | {' '.join(command)}' failed with error: {e.stderr}"
+            raise RuntimeError(msg) from e
         try:
             u = Universe(gro, traj)
             # write first frame into gro file
@@ -418,7 +417,8 @@ Returns error codes:
             lipids.append(u0.select_atoms(selection))
 
     if not lipids:
-        raise RuntimeError("No lipids were found in the composition!")
+        msg = "No lipids were found in the composition!"
+        raise RuntimeError(msg)
     # join all the selected the lipids together to make a selection of the entire
     # membrane and calculate the z component of the centre of mass of
     # the membrane
@@ -441,20 +441,18 @@ Returns error codes:
             lip = Lipid(key_mol)
             m_file = sim["COMPOSITION"][key_mol]["MAPPING"]
             lip.register_mapping(m_file)
-            for key in lip.mapping_dict:
-                if "RESIDUE" in lip.mapping_dict[key]:
-                    selection = (
-                        selection
-                        + "resname "
-                        + lip.mapping_dict[key]["RESIDUE"]
-                        + " and name "
-                        + lip.mapping_dict[key]["ATOMNAME"]
-                        + " or "
-                    )
-                    break
-                else:
-                    selection = "resname " + sim["COMPOSITION"][key_mol]["NAME"]
-                    break
+            key = lip.mapping_dict.keys()[0]
+            if "RESIDUE" in lip.mapping_dict[key]:
+                selection = (
+                    selection
+                    + "resname "
+                    + lip.mapping_dict[key]["RESIDUE"]
+                    + " and name "
+                    + lip.mapping_dict[key]["ATOMNAME"]
+                    + " or "
+                )
+            else:
+                selection = "resname " + sim["COMPOSITION"][key_mol]["NAME"]
 
         # if lipid was found then selection is not empty
         if selection != "":
@@ -524,21 +522,21 @@ Returns error codes:
             and sim["WARNINGS"]["GROMACS_VERSION"] == "gromacs3"
         ):
             command = ["gmxdump", "-s", top]
-            TemperatureKey = "ref_t"
+            temperature_key = "ref_t"
         else:
             command = ["gmx", "dump", "-s", top]
-            TemperatureKey = "ref-t"
+            temperature_key = "ref-t"
         try:
             result = subprocess.run(command, input="System\n", text=True, check=True, capture_output=True)
             with open(file1, "w") as f:
                 f.write(result.stdout)
         except subprocess.CalledProcessError as e:
-            FAIL_MSG = f"Command 'echo System | {' '.join(command)}' failed with error: {e.stderr}"
-            raise RuntimeError(FAIL_MSG) from e
+            msg = f"Command 'echo System | {' '.join(command)}' failed with error: {e.stderr}"
+            raise RuntimeError(msg) from e
 
         with open(file1) as tpr_info:
             for line in tpr_info:
-                if TemperatureKey in line:
+                if temperature_key in line:
                     sim["TEMPERATURE"] = float(line.split()[1])
 
     logger.info("Parameters read from input files:")
@@ -560,8 +558,7 @@ Returns error codes:
             for key in mol.mapping_dict:
                 if "H" in key:
                     continue
-                else:
-                    mapping_file_length += 1
+                mapping_file_length += 1
 
         else:
             mapping_file_length = len(mol.mapping_dict)
@@ -576,7 +573,7 @@ Returns error codes:
             "continue the running the script. Do you want to (y/n)?",
         )
         if stop == "n":
-            os._exit("Interrupted because atomnumbers did not match")
+            os.exit(1)
         if stop == "y":
             logger.warning(
                 "Progressed even thought that atom numbers did not match. CHECK RESULTS MANUALLY!",
