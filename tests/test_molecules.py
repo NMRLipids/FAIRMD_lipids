@@ -27,6 +27,7 @@ def toy_mols() -> dict:
 
     return {"pope/charmm": mol1, "popc/amber": mol2}
 
+
 def test_uan2selection(toy_mols):
     toy_pope = toy_mols["pope/charmm"]
     selstr = toy_pope.uan2selection("M_G1C2_M", "POPE")
@@ -40,8 +41,10 @@ def test_uan2selection(toy_mols):
     with check.raises(KeyError):
         toy_pope.uan2selection("NON_EXISTENT_UAN", "POPC")
 
+
 def test_md2uan(toy_mols):
     import MDAnalysis as mda
+
     popc2_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc2.gro")
     u_popc2 = mda.Universe(popc2_fp)
     toy_popc = toy_mols["popc/amber"]
@@ -53,6 +56,7 @@ def test_md2uan(toy_mols):
         toy_popc.md2uan("NON_EXISTENT_MD_NAME", "PA")
     with check.raises(KeyError):
         toy_popc.md2uan("H5R", "NON_EXISTENT_RESNAME")
+
 
 def test_check_mapping_amber(toy_mols):
     import MDAnalysis as mda
