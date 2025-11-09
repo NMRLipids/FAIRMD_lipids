@@ -42,6 +42,7 @@ dependencies = [
     "Deprecated",
     "scipy",
     "jsonschema",
+    "requests",
 ]
 
 [project.urls]
