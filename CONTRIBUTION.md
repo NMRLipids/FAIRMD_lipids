@@ -125,3 +125,7 @@ following command (or open the :file:`docs/build/html/index.html` file manually)
 FAIRMD Lipids separates codespace from
 [the Database](https://github.com/NMRLipids/BilayerData) since June 2025 (v.1.1.0). 
 Data contribution rules are moved there accordingly.
+
+# Contributing data
+
+If you would like to contribute simulations or experiments, please consult instructions for [Data Contribution](https://nmrlipids.github.io/FAIRMD_lipids/stable/dbcontribute.html).

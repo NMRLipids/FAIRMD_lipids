@@ -97,7 +97,7 @@ The Web-UI is being developed in the repository
 
 The project is open for contributions! 
 
-Please consult [CONTRIBUTION.md](./CONTRIBUTION.md) for further information.
+Please consult [CONTRIBUTION.md](./CONTRIBUTION.md) and [Data Contribution](https://nmrlipids.github.io/FAIRMD_lipids/stable/dbcontribute.html) for further information.
 
 Do not hesitate contacting us via [databank@nmrlipids.fi](email:databank@nmrlipids.fi) if 
 you have any questions or inquiries!
