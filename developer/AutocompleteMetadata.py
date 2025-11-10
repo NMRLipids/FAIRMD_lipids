@@ -9,27 +9,27 @@ This script will try to fill further attributes in a membrane metadata.yaml file
 
 """
 
-
 import os
 import sys
-import requests
+import urllib.request
+import json
 import yaml
-
-
-
 
 def check_api(url):
     try:
-        resp = requests.get(url, timeout=5)
-        return resp.status_code == 200
-    except requests.RequestException:
+        with urllib.request.urlopen(url, timeout=5) as response:
+            return response.status == 200
+    except Exception:
         return False
 
 def get_chembl(inchikey):
     url = f"https://www.ebi.ac.uk/chembl/api/data/molecule?standard_inchi_key={inchikey}&format=json"
     if check_api(url):
-        resp = requests.get(url)
-        return resp.json() if resp.status_code == 200 else {}
+        try:
+            with urllib.request.urlopen(url) as response:
+                return json.loads(response.read().decode('utf-8')) if response.status == 200 else {}
+        except Exception:
+            return {}
     return {}
 
 def get_pubchem(inchikey):
@@ -38,17 +38,23 @@ def get_pubchem(inchikey):
         f"{inchikey}/property/IUPACName,SMILES,InChI,InChIKey,MolecularFormula,MolecularWeight/JSON"
     )
     if check_api(url):
-        resp = requests.get(url)
-        if resp.status_code == 200:
-            return resp.json()["PropertyTable"]["Properties"][0]
+        try:
+            with urllib.request.urlopen(url) as response:
+                if response.status == 200:
+                    return json.loads(response.read().decode('utf-8'))["PropertyTable"]["Properties"][0]
+        except Exception:
+            pass
     return {}
 
 def get_pubchem_synonyms(cid):
     url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/synonyms/JSON"
     if check_api(url):
-        resp = requests.get(url)
-        if resp.status_code == 200:
-            return resp.json().get("InformationList", {}).get("Information", [{}])[0].get("Synonym", [])
+        try:
+            with urllib.request.urlopen(url) as response:
+                if response.status == 200:
+                    return json.loads(response.read().decode('utf-8')).get("InformationList", {}).get("Information", [{}])[0].get("Synonym", [])
+        except Exception:
+            pass
     return []
 
 def get_chebi(chebi_id):
@@ -59,10 +65,10 @@ def get_chebi(chebi_id):
     
     try:
         if check_api(url):
-            resp = requests.get(url)
-            if resp.status_code == 200:
-                return resp.json()
-    except requests.RequestException:
+            with urllib.request.urlopen(url) as response:
+                if response.status == 200:
+                    return json.loads(response.read().decode('utf-8'))
+    except Exception:
         pass
     
     return {}
@@ -70,13 +76,18 @@ def get_chebi(chebi_id):
 def get_unichem(inchikey):
     url = "https://www.ebi.ac.uk/unichem/api/v1/compounds"
     if check_api("https://www.ebi.ac.uk/unichem/api/v1/sources"):
-        headers = {'Content-Type': 'application/json'}
-        data = {"type": "inchikey", "compound": inchikey}
-        resp = requests.post(url, headers=headers, json=data)
-        if resp.status_code == 200:
-            compounds = resp.json().get("compounds", [])
-            if compounds and "sources" in compounds[0]:
-                return compounds[0]["sources"]
+        try:
+            data = json.dumps({"type": "inchikey", "compound": inchikey}).encode('utf-8')
+            headers = {'Content-Type': 'application/json'}
+            req = urllib.request.Request(url, data=data, headers=headers, method='POST')
+            
+            with urllib.request.urlopen(req) as response:
+                if response.status == 200:
+                    compounds = json.loads(response.read().decode('utf-8')).get("compounds", [])
+                    if compounds and "sources" in compounds[0]:
+                        return compounds[0]["sources"]
+        except Exception:
+            pass
     return []
 
 def extract_sameas(sources):
