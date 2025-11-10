@@ -20,6 +20,33 @@ import yaml
 from fairmd.lipids import FMDL_MOL_PATH
 
 
+class MoleculeError(Exception):
+    """
+    Custom exception for molecule-related errors.
+
+    @param message: Error message describing the issue.
+    @param mol: Optional Molecule object related to the error.
+    """
+
+    def __init__(self, message: str, mol=None) -> None:
+        msg = f"From molecule {mol}: {message}" if mol is not None else message
+        self._mol = mol
+        super().__init__(msg)
+
+
+class MoleculeMappingError(MoleculeError):
+    """Custom exception for molecule mapping errors."""
+
+    def __init__(self, message: str, mol=None, *args, **kwargs) -> None:
+        if mol is None:
+            msg = message
+        elif mol.mapping_file is None:
+            msg = f"From {mol}: {message}"
+        else:
+            msg = f"From {mol}[{mol.mapping_file}]: {message}" if mol is not None else message
+        super().__init__(msg)
+
+
 class Molecule(ABC):
     """
     Abstract base class representing a molecule and its related operations.
@@ -47,6 +74,7 @@ class Molecule(ABC):
         :param fname: mapping filename (without path)
         :return:
         """
+        self._disp_mapping = fname
         self._mapping_fpath = os.path.join(self._get_path(), fname)
         if not os.path.isfile(self._mapping_fpath):
             msg = f"Cannot find '{self._mapping_fpath}' mapping for molecule {self.name}"
@@ -70,7 +98,7 @@ class Molecule(ABC):
                 msg = f"Atom {unm} was not found in the universe using selection '{sel_str}'."
                 if name in sel_str:
                     msg += f" Could be mapping error or incorrect residue name '{name}'."
-                raise KeyError(msg)
+                raise MoleculeMappingError(msg, mol=self)
 
     @property
     def mapping_dict(self) -> dict:
@@ -92,8 +120,8 @@ class Molecule(ABC):
                     continue
             if fnmatch.fnmatch(mapping_aname, mdatomname):
                 return universal_name
-        emsg = f"Atom {mdatomname} is not found in {self}"
-        raise KeyError(emsg)
+        emsg = f"Atom {mdatomname} is not found."
+        raise MoleculeMappingError(emsg, mol=self)
 
     def uan2selection(self, uname: str, resname: str) -> str:
         """Convert the Universal Atom Name to MD atom name."""
@@ -114,6 +142,7 @@ class Molecule(ABC):
         """
         self.__check_name(name)
         self._molname = name
+        self._disp_mapping = None
         self._mapping_fpath = None
         self._mapping_dict = None
 
@@ -129,12 +158,12 @@ class Molecule(ABC):
 
         :param name: A string representing the name to validate.
 
-        :raises ValueError: If the name contains characters outside of the allowed set.
+        :raises MoleculeError: If the name contains characters outside of the allowed set.
         """
         pat = r"[A-Za-z0-9_]+"
         if not re.match(pat, name):
             msg = f"Only {pat} symbols are allowed in Molecule name."
-            raise ValueError(msg)
+            raise MoleculeError(msg)
 
     @abstractmethod
     def _populate_meta_data(self) -> None:
@@ -154,6 +183,11 @@ class Molecule(ABC):
     def name(self) -> str:
         """Molecule name"""
         return self._molname
+
+    @property
+    def mapping_file(self) -> str:
+        """Mapping file name"""
+        return self._disp_mapping
 
     # comparison by name to behave in a set
     # It's case-insesitive as folder structure should work on mac/win
@@ -303,7 +337,7 @@ class MoleculeSet(MutableSet[Molecule], ABC):
                     break
             if ifound is None:
                 msg = f"Item '{item}' not found in the set."
-                raise KeyError(msg)
+                raise MoleculeError(msg)
             self._items.discard(ifound)
             self._names.discard(item.upper())
 
