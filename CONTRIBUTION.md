@@ -73,6 +73,17 @@ supported tox environments please use
   tox list
 ```
 
+To import the data and set the paths you can do 
+
+```bash
+fmdl_initialize_data toy
+source databank_env.rc
+```
+which will import the toy dataset. For the full dataset replace 'toy' with 'stable'. 
+Note that the data folder created using the above commands will have to be outside code repository,
+othervise errors will occur.
+
+
 # Running the tests
 
 The testsuite is implemented using the [pytest](https://docs.pytest.org/en/stable/)
