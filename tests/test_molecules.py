@@ -44,6 +44,7 @@ def test_uan2selection(toy_mols):
 
 def test_md2uan(toy_mols):
     import MDAnalysis as mda
+    from fairmd.lipids.settings.molecules import MoleculeMappingError
 
     popc2_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc2.gro")
     u_popc2 = mda.Universe(popc2_fp)
@@ -52,14 +53,15 @@ def test_md2uan(toy_mols):
     check.equal(uan, "M_G1C6H1_M", "Universal Atom Name should match expected value (lipid14)")
     uan = toy_popc.md2uan("H5R", "OL")
     check.equal(uan, "M_G2C6H1_M", "Universal Atom Name should match expected value (lipid14)")
-    with check.raises(KeyError):
+    with check.raises(MoleculeMappingError):
         toy_popc.md2uan("NON_EXISTENT_MD_NAME", "PA")
-    with check.raises(KeyError):
+    with check.raises(MoleculeMappingError):
         toy_popc.md2uan("H5R", "NON_EXISTENT_RESNAME")
 
 
 def test_check_mapping_amber(toy_mols):
     import MDAnalysis as mda
+    from fairmd.lipids.settings.molecules import MoleculeMappingError
 
     popc2_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc2.gro")
     popc1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc1.gro")
@@ -79,17 +81,18 @@ def test_check_mapping_amber(toy_mols):
 
     # mapping is OK but one atom in the mol is missing
     u_popc2_minus_atom = mda.Merge(u_popc2.select_atoms("id 2:1000"))
-    with check.raises(KeyError):
+    with check.raises(MoleculeMappingError):
         toy_popc.check_mapping(u_popc2_minus_atom, "")
 
     # incorrect residue name in MD
     u_popc2.select_atoms("resname PA").residues.resnames = "PAA"
-    with check.raises(KeyError):
+    with check.raises(MoleculeMappingError):
         toy_popc.check_mapping(u_popc2, "")
 
 
 def test_check_mapping(toy_mols):
     import MDAnalysis as mda
+    from fairmd.lipids.settings.molecules import MoleculeMappingError
 
     pope1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "pope1.gro")
     popc1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc1.gro")
@@ -104,16 +107,16 @@ def test_check_mapping(toy_mols):
         toy_pope.check_mapping(u_pope, "POPE")
 
     # correct mapping, incorrect resname
-    with check.raises(KeyError):
+    with check.raises(MoleculeMappingError):
         toy_pope.check_mapping(u_pope, "BUBA")
 
     # correct resname, incorrect mapping
-    with check.raises(KeyError):
+    with check.raises(MoleculeMappingError):
         toy_pope.check_mapping(u_popc, "POPC")
 
     # mapping is OK but one atom in the mol is missing
     u_pope_minus_atom = mda.Merge(u_pope.select_atoms("id 2:1000"))
-    with check.raises(KeyError):
+    with check.raises(MoleculeMappingError):
         toy_pope.check_mapping(u_pope_minus_atom, "POPE")
 
 

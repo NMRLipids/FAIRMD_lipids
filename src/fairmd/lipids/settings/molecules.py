@@ -37,14 +37,14 @@ class MoleculeError(Exception):
 class MoleculeMappingError(MoleculeError):
     """Custom exception for molecule mapping errors."""
 
-    def __init__(self, message: str, mol=None, *args, **kwargs) -> None:
+    def __init__(self, message: str, mol=None) -> None:
         if mol is None:
             msg = message
         elif mol.mapping_file is None:
             msg = f"From {mol}: {message}"
         else:
             msg = f"From {mol}[{mol.mapping_file}]: {message}" if mol is not None else message
-        super().__init__(msg)
+        super().__init__(msg, mol=mol)
 
 
 class Molecule(ABC):
@@ -85,6 +85,8 @@ class Molecule(ABC):
 
         :param u: MDAnalysis Universe
         :param name: string standing for residue name if it is not in the mapping file
+
+        :raises MoleculeMappingError: if mapping is inconsistent
         """
         res_set = {v["RESIDUE"] for _, v in self.mapping_dict.items() if v.get("RESIDUE") is not None}
         res_set.add(name)
@@ -109,13 +111,18 @@ class Molecule(ABC):
         return self._mapping_dict
 
     def md2uan(self, mdatomname: str, mdresname: str | None = None) -> str:
-        """Convert MD atom name to the Universal Atom Name."""
-        for universal_name in self.mapping_dict:
-            mapping_aname = self.mapping_dict[universal_name]["ATOMNAME"]
+        """
+        Convert MD atom name to the Universal Atom Name.
+
+        :raises MoleculeMappingError: if the md atom name is not found in the mapping.
+        :return: Universal Atom Name (str)
+        """
+        for universal_name, mrecord in self.mapping_dict.items():
+            mapping_aname = mrecord["ATOMNAME"]
             # MDAnalysis uses fnmatch patterns for selection language
             # https://userguide.mdanalysis.org/stable/selections.html
-            if "RESIDUE" in self.mapping_dict[universal_name] and mdresname is not None:
-                mapping_rname = self.mapping_dict[universal_name]["RESIDUE"]
+            if "RESIDUE" in mrecord and mdresname is not None:
+                mapping_rname = mrecord["RESIDUE"]
                 if not fnmatch.fnmatch(mapping_rname, mdresname):
                     continue
             if fnmatch.fnmatch(mapping_aname, mdatomname):
@@ -124,7 +131,12 @@ class Molecule(ABC):
         raise MoleculeMappingError(emsg, mol=self)
 
     def uan2selection(self, uname: str, resname: str) -> str:
-        """Convert the Universal Atom Name to MD atom name."""
+        """
+        Convert the Universal Atom Name to MD atom name.
+
+        :raises KeyError: if the universal name is not found in the mapping.
+        :return: selection string for MDAnalysis
+        """
         anm = self.mapping_dict[uname]["ATOMNAME"]
         selstr = f"name {anm}"
         if "RESIDUE" in self.mapping_dict[uname]:

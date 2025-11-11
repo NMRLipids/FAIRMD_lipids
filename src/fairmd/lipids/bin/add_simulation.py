@@ -59,7 +59,7 @@ from fairmd.lipids.databankio import (
 from fairmd.lipids.databankLibrary import lipids_set, molecules_set, parse_valid_config_settings
 from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
 from fairmd.lipids.settings.engines import get_struc_top_traj_fnames, software_dict
-from fairmd.lipids.settings.molecules import Lipid, NonLipid
+from fairmd.lipids.settings.molecules import Lipid, MoleculeMappingError, NonLipid
 
 pd.set_option("display.max_rows", 500)
 pd.set_option("display.max_columns", 500)
@@ -552,8 +552,11 @@ Returns error codes:
         mol.register_mapping(map_file)
         try:
             mol.check_mapping(u, comp_mol["NAME"])
-        except KeyError as e:
+        except MoleculeMappingError as e:
             msg = f"Your mapping file '{map_file}' contains mistakes."
+            raise RuntimeError(msg) from e
+        except Exception as e:
+            msg = f"Unknown exception during mapping-file checking '{map_file}'."
             raise RuntimeError(msg) from e
 
         if sim.get("UNITEDATOM_DICT") and "SOL" not in key_mol:
