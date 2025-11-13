@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.settings.molecules &mdash; FAIRMD Lipids v1.3.2a1.dev11+gf2bea9351 1.3.2a1.dev11+gf2bea9351 documentation</title>
+  <title>fairmd.lipids.settings.molecules &mdash; FAIRMD Lipids v1.3.2a1.dev21+g963d0f896 1.3.2a1.dev21+g963d0f896 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=1590b452"></script>
+      <script src="../../../../_static/documentation_options.js?v=7e46ce82"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a1.dev11+gf2bea9351
+            FAIRMD Lipids v1.3.2a1.dev21+g963d0f896
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.2a1.dev11+gf2bea9351</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.2a1.dev21+g963d0f896</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -85,15 +85,50 @@
 <span class="sd">in the databank, you have to add it here!</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">fnmatch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableSet</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_MOL_PATH</span>
+
+
+<div class="viewcode-block" id="MoleculeError">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.MoleculeError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MoleculeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom exception for molecule-related errors.</span>
+
+<span class="sd">    @param message: Error message describing the issue.</span>
+<span class="sd">    @param mol: Optional Molecule object related to the error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;From molecule </span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mol</span> <span class="o">=</span> <span class="n">mol</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MoleculeMappingError">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.MoleculeMappingError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MoleculeMappingError</span><span class="p">(</span><span class="n">MoleculeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom exception for molecule mapping errors.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="k">elif</span> <span class="n">mol</span><span class="o">.</span><span class="n">mapping_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;From </span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;From </span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">mol</span><span class="o">.</span><span class="n">mapping_file</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="n">mol</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="Molecule">
@@ -127,17 +162,86 @@
 <span class="sd">        :param fname: mapping filename (without path)</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disp_mapping</span> <span class="o">=</span> <span class="n">fname</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path</span><span class="p">(),</span> <span class="n">fname</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Cannot find &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="si">}</span><span class="s2">&#39; mapping for molecule </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Molecule.check_mapping">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.Molecule.check_mapping">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">:</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check consistency of mapping file against Universe.</span>
+
+<span class="sd">        :param u: MDAnalysis Universe</span>
+<span class="sd">        :param name: string standing for residue name if it is not in the mapping file</span>
+
+<span class="sd">        :raises MoleculeMappingError: if mapping is inconsistent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="n">res_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">res_atoms</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s2">&quot;resname &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">res_set</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">res_atoms</span><span class="p">:</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md2uan</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">unm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">:</span>
+            <span class="n">sel_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uan2selection</span><span class="p">(</span><span class="n">unm</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="n">ats</span><span class="p">:</span> <span class="n">mda</span><span class="o">.</span><span class="n">AtomGroup</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">sel_str</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ats</span><span class="o">.</span><span class="n">n_atoms</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Atom </span><span class="si">{</span><span class="n">unm</span><span class="si">}</span><span class="s2"> was not found in the universe using selection &#39;</span><span class="si">{</span><span class="n">sel_str</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sel_str</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; Could be mapping error or incorrect residue name &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="k">raise</span> <span class="n">MoleculeMappingError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mapping_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="c1"># preload on first call</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return mapping dictionary (load on first call)&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span>  <span class="c1"># yaml.load(yaml_file, Loader=yaml.FullLoader)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span>
+
+<div class="viewcode-block" id="Molecule.md2uan">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.Molecule.md2uan">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">md2uan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mdatomname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mdresname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert MD atom name to the Universal Atom Name.</span>
+
+<span class="sd">        :raises MoleculeMappingError: if the md atom name is not found in the mapping.</span>
+<span class="sd">        :return: Universal Atom Name (str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">universal_name</span><span class="p">,</span> <span class="n">mrecord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">mapping_aname</span> <span class="o">=</span> <span class="n">mrecord</span><span class="p">[</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
+            <span class="c1"># MDAnalysis uses fnmatch patterns for selection language</span>
+            <span class="c1"># https://userguide.mdanalysis.org/stable/selections.html</span>
+            <span class="k">if</span> <span class="s2">&quot;RESIDUE&quot;</span> <span class="ow">in</span> <span class="n">mrecord</span> <span class="ow">and</span> <span class="n">mdresname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mapping_rname</span> <span class="o">=</span> <span class="n">mrecord</span><span class="p">[</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">mapping_rname</span><span class="p">,</span> <span class="n">mdresname</span><span class="p">):</span>
+                    <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">mapping_aname</span><span class="p">,</span> <span class="n">mdatomname</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">universal_name</span>
+        <span class="n">emsg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Atom </span><span class="si">{</span><span class="n">mdatomname</span><span class="si">}</span><span class="s2"> is not found.&quot;</span>
+        <span class="k">raise</span> <span class="n">MoleculeMappingError</span><span class="p">(</span><span class="n">emsg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Molecule.uan2selection">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.Molecule.uan2selection">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">uan2selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the Universal Atom Name to MD atom name.</span>
+
+<span class="sd">        :raises KeyError: if the universal name is not found in the mapping.</span>
+<span class="sd">        :return: selection string for MDAnalysis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">anm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">uname</span><span class="p">][</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
+        <span class="n">selstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;name </span><span class="si">{</span><span class="n">anm</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;RESIDUE&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">uname</span><span class="p">]:</span>
+            <span class="n">selstr</span> <span class="o">+=</span> <span class="s2">&quot; and resname &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">uname</span><span class="p">][</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">selstr</span> <span class="o">+=</span> <span class="s2">&quot; and resname &quot;</span> <span class="o">+</span> <span class="n">resname</span>
+        <span class="k">return</span> <span class="n">selstr</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -148,6 +252,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__check_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_molname</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disp_mapping</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -163,11 +268,12 @@
 
 <span class="sd">        :param name: A string representing the name to validate.</span>
 
-<span class="sd">        :raises ValueError: If the name contains characters outside of the allowed set.</span>
+<span class="sd">        :raises MoleculeError: If the name contains characters outside of the allowed set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;[A-Za-z0-9_]+&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Only </span><span class="si">{</span><span class="n">pat</span><span class="si">}</span><span class="s2"> symbols are allowed in Molecule name.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Only </span><span class="si">{</span><span class="n">pat</span><span class="si">}</span><span class="s2"> symbols are allowed in Molecule name.&quot;</span>
+            <span class="k">raise</span> <span class="n">MoleculeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_populate_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -188,16 +294,21 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Molecule name&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molname</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mapping_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mapping file name&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disp_mapping</span>
+
     <span class="c1"># comparison by name to behave in a set</span>
     <span class="c1"># It&#39;s case-insesitive as folder structure should work on mac/win</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
 
@@ -206,8 +317,9 @@
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.Lipid">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Lipid</span><span class="p">(</span><span class="n">Molecule</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Lipid class inherited from Molecule base. Contains all the molecules</span>
-<span class="sd">    which belongs to the bilayer.</span>
+<span class="sd">    Lipid class inherited from :class:`Molecule` base.</span>
+
+<span class="sd">    Is used for all the molecules located in the bilayer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_lipids_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_MOL_PATH</span><span class="p">,</span> <span class="s2">&quot;membrane&quot;</span><span class="p">)</span>
@@ -224,7 +336,8 @@
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">meta_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Metadata file not found for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Metadata file not found for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -299,7 +412,7 @@
 <span class="sd">        :return: constructed Molecule</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a lipid is in the set.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_item_type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names</span>
@@ -308,12 +421,12 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MoleculeSet.add">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.MoleculeSet.add">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a lipid to the set.</span>
 
@@ -327,15 +440,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_item</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>  <span class="c1"># here we call Lipid constructor</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Only proper instances can be added to </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Only proper instances can be added to </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MoleculeSet.discard">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.MoleculeSet.discard">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">discard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove a lipid from the set without raising an error if it does not exist.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">discard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a lipid from the set without raising an error if it does not exist.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_item_type</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">toupper</span><span class="p">())</span>
@@ -347,7 +459,9 @@
                 <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">item</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
                     <span class="n">ifound</span> <span class="o">=</span> <span class="n">i</span>
                     <span class="k">break</span>
-            <span class="k">assert</span> <span class="n">ifound</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">ifound</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s2">&#39; not found in the set.&quot;</span>
+                <span class="k">raise</span> <span class="n">MoleculeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">ifound</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span></div>
 
@@ -357,6 +471,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Molecule</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a molecule by its name.</span>
+
 <span class="sd">        :param key: The name of the molecule to retrieve.</span>
 <span class="sd">        :param default: The value to return if the molecule is not found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -367,11 +482,12 @@
         <span class="k">return</span> <span class="n">default</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="si">}</span><span class="s2">]&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set of molecule names in the set.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names</span></div>
 
 
@@ -384,15 +500,15 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_test_item_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Lipid</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Molecule</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Lipid</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LipidSet.load_from_data">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.LipidSet.load_from_data">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_from_data</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_from_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;LipidSet&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Loads lipid data from the designated directory and returns a set of lipids.</span>
+<span class="sd">        Load lipid data from the designated directory and returns a set of lipids.</span>
 
 <span class="sd">        :rtype: LipidSet</span>
 <span class="sd">        :return: An instance of loaded `LipidSet`.</span>
@@ -410,22 +526,20 @@
 <div class="viewcode-block" id="NonLipidSet">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.NonLipidSet">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">NonLipidSet</span><span class="p">(</span><span class="n">MoleculeSet</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    MoleculeSet specialization for NonLipid.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;MoleculeSet specialization for NonLipid.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_test_item_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">NonLipid</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Molecule</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">NonLipid</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NonLipidSet.load_from_data">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.NonLipidSet.load_from_data">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_from_data</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_from_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;NonLipidSet&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Loads Nonlipid data from the designated directory and returns a set of lipids.</span>
+<span class="sd">        Load Nonlipid data from the designated directory and returns a set of lipids.</span>
 
 <span class="sd">        :rtype: NonLipidSet</span>
 <span class="sd">        :return: An instance of loaded `NonLipidSet`.</span>

@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.settings.molecules module &mdash; FAIRMD Lipids v1.3.2a1.dev11+gf2bea9351 1.3.2a1.dev11+gf2bea9351 documentation</title>
+  <title>fairmd.lipids.settings.molecules module &mdash; FAIRMD Lipids v1.3.2a1.dev21+g963d0f896 1.3.2a1.dev21+g963d0f896 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=1590b452"></script>
+      <script src="../_static/documentation_options.js?v=7e46ce82"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a1.dev11+gf2bea9351
+            FAIRMD Lipids v1.3.2a1.dev21+g963d0f896
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.2a1.dev11+gf2bea9351</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.2a1.dev21+g963d0f896</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -93,6 +93,22 @@
 </dl>
 <p>There is a dictionary of lipids, ions, etc. If you add a lipid which is not yet
 in the databank, you have to add it here!</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.MoleculeError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">MoleculeError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#MoleculeError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.MoleculeError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Custom exception for molecule-related errors.</p>
+<p>&#64;param message: Error message describing the issue.
+&#64;param mol: Optional Molecule object related to the error.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.MoleculeMappingError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">MoleculeMappingError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#MoleculeMappingError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.MoleculeMappingError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#fairmd.lipids.settings.molecules.MoleculeError" title="fairmd.lipids.settings.molecules.MoleculeError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MoleculeError</span></code></a></p>
+<p>Custom exception for molecule mapping errors.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.Molecule">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">Molecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#Molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.Molecule" title="Link to this definition"></a></dt>
@@ -116,10 +132,56 @@ specific operations for handling molecule data.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.Molecule.check_mapping">
+<span class="sig-name descname"><span class="pre">check_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Universe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#Molecule.check_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.Molecule.check_mapping" title="Link to this definition"></a></dt>
+<dd><p>Check consistency of mapping file against Universe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> – MDAnalysis Universe</p></li>
+<li><p><strong>name</strong> – string standing for residue name if it is not in the mapping file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#fairmd.lipids.settings.molecules.MoleculeMappingError" title="fairmd.lipids.settings.molecules.MoleculeMappingError"><strong>MoleculeMappingError</strong></a> – if mapping is inconsistent</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.Molecule.mapping_dict">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mapping_dict</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.Molecule.mapping_dict" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Return mapping dictionary (load on first call)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.Molecule.md2uan">
+<span class="sig-name descname"><span class="pre">md2uan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mdatomname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdresname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#Molecule.md2uan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.Molecule.md2uan" title="Link to this definition"></a></dt>
+<dd><p>Convert MD atom name to the Universal Atom Name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#fairmd.lipids.settings.molecules.MoleculeMappingError" title="fairmd.lipids.settings.molecules.MoleculeMappingError"><strong>MoleculeMappingError</strong></a> – if the md atom name is not found in the mapping.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Universal Atom Name (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.Molecule.uan2selection">
+<span class="sig-name descname"><span class="pre">uan2selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#Molecule.uan2selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.Molecule.uan2selection" title="Link to this definition"></a></dt>
+<dd><p>Convert the Universal Atom Name to MD atom name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>KeyError</strong> – if the universal name is not found in the mapping.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>selection string for MDAnalysis</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.Molecule.metadata">
@@ -133,14 +195,20 @@ specific operations for handling molecule data.</p>
 <dd><p>Molecule name</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.Molecule.mapping_file">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mapping_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.Molecule.mapping_file" title="Link to this definition"></a></dt>
+<dd><p>Mapping file name</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.Lipid">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">Lipid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#Lipid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.Lipid" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#fairmd.lipids.settings.molecules.Molecule" title="fairmd.lipids.settings.molecules.Molecule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Molecule</span></code></a></p>
-<p>Lipid class inherited from Molecule base. Contains all the molecules
-which belongs to the bilayer.</p>
+<p>Lipid class inherited from <a class="reference internal" href="#fairmd.lipids.settings.molecules.Molecule" title="fairmd.lipids.settings.molecules.Molecule"><code class="xref py py-class docutils literal notranslate"><span class="pre">Molecule</span></code></a> base.</p>
+<p>Is used for all the molecules located in the bilayer.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.Lipid.metadata">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.Lipid.metadata" title="Link to this definition"></a></dt>
@@ -174,7 +242,7 @@ which belongs to the bilayer.</p>
 <p>Set repeating normal set functionality with some additional molecule-specific things.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.MoleculeSet.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#fairmd.lipids.settings.molecules.Molecule" title="fairmd.lipids.settings.molecules.Molecule"><span class="pre">Molecule</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#MoleculeSet.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.MoleculeSet.add" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#MoleculeSet.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.MoleculeSet.add" title="Link to this definition"></a></dt>
 <dd><p>Add a lipid to the set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -186,22 +254,29 @@ will be called)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.MoleculeSet.discard">
-<span class="sig-name descname"><span class="pre">discard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#MoleculeSet.discard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.MoleculeSet.discard" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">discard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#MoleculeSet.discard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.MoleculeSet.discard" title="Link to this definition"></a></dt>
 <dd><p>Remove a lipid from the set without raising an error if it does not exist.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.MoleculeSet.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#fairmd.lipids.settings.molecules.Molecule" title="fairmd.lipids.settings.molecules.Molecule"><span class="pre">Molecule</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#MoleculeSet.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.MoleculeSet.get" title="Link to this definition"></a></dt>
-<dd><p>Get a molecule by its name.
-:param key: The name of the molecule to retrieve.
-:param default: The value to return if the molecule is not found.</p>
+<dd><p>Get a molecule by its name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The name of the molecule to retrieve.</p></li>
+<li><p><strong>default</strong> – The value to return if the molecule is not found.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.MoleculeSet.names">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.MoleculeSet.names" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set of molecule names in the set.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -212,8 +287,8 @@ will be called)</p>
 <p>MoleculeSet specialization for Lipid.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.LipidSet.load_from_data">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#LipidSet.load_from_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.LipidSet.load_from_data" title="Link to this definition"></a></dt>
-<dd><p>Loads lipid data from the designated directory and returns a set of lipids.</p>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#fairmd.lipids.settings.molecules.LipidSet" title="fairmd.lipids.settings.molecules.LipidSet"><span class="pre">LipidSet</span></a></span></span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#LipidSet.load_from_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.LipidSet.load_from_data" title="Link to this definition"></a></dt>
+<dd><p>Load lipid data from the designated directory and returns a set of lipids.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#fairmd.lipids.settings.molecules.LipidSet" title="fairmd.lipids.settings.molecules.LipidSet">LipidSet</a></p>
@@ -233,8 +308,8 @@ will be called)</p>
 <p>MoleculeSet specialization for NonLipid.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.NonLipidSet.load_from_data">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#NonLipidSet.load_from_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.NonLipidSet.load_from_data" title="Link to this definition"></a></dt>
-<dd><p>Loads Nonlipid data from the designated directory and returns a set of lipids.</p>
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#fairmd.lipids.settings.molecules.NonLipidSet" title="fairmd.lipids.settings.molecules.NonLipidSet"><span class="pre">NonLipidSet</span></a></span></span><a class="reference internal" href="../_modules/fairmd/lipids/settings/molecules.html#NonLipidSet.load_from_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.settings.molecules.NonLipidSet.load_from_data" title="Link to this definition"></a></dt>
+<dd><p>Load Nonlipid data from the designated directory and returns a set of lipids.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#fairmd.lipids.settings.molecules.NonLipidSet" title="fairmd.lipids.settings.molecules.NonLipidSet">NonLipidSet</a></p>
@@ -249,13 +324,13 @@ will be called)</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.lipids_set">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">lipids_set</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fairmd.lipids.settings.molecules.LipidSet" title="fairmd.lipids.settings.molecules.LipidSet"><span class="pre">LipidSet</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">LipidSet[{'CHOL',</span> <span class="pre">'DPPC',</span> <span class="pre">'POPE',</span> <span class="pre">'POPC',</span> <span class="pre">'TOCL'}]</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.lipids_set" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">lipids_set</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fairmd.lipids.settings.molecules.LipidSet" title="fairmd.lipids.settings.molecules.LipidSet"><span class="pre">LipidSet</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">LipidSet[{'POPE',</span> <span class="pre">'DPPC',</span> <span class="pre">'TOCL',</span> <span class="pre">'CHOL',</span> <span class="pre">'POPC'}]</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.lipids_set" title="Link to this definition"></a></dt>
 <dd><p>MutableSet of possible lipids</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.lipids_dict">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">lipids_dict</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">LipidSet[{'CHOL',</span> <span class="pre">'DPPC',</span> <span class="pre">'POPE',</span> <span class="pre">'POPC',</span> <span class="pre">'TOCL'}]</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.lipids_dict" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">lipids_dict</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">LipidSet[{'POPE',</span> <span class="pre">'DPPC',</span> <span class="pre">'TOCL',</span> <span class="pre">'CHOL',</span> <span class="pre">'POPC'}]</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.lipids_dict" title="Link to this definition"></a></dt>
 <dd><p>Use lipids_set instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -266,13 +341,13 @@ will be called)</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.molecules_set">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">molecules_set</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fairmd.lipids.settings.molecules.NonLipidSet" title="fairmd.lipids.settings.molecules.NonLipidSet"><span class="pre">NonLipidSet</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">NonLipidSet[{'CLA',</span> <span class="pre">'SOD',</span> <span class="pre">'SOL'}]</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.molecules_set" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">molecules_set</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fairmd.lipids.settings.molecules.NonLipidSet" title="fairmd.lipids.settings.molecules.NonLipidSet"><span class="pre">NonLipidSet</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">NonLipidSet[{'SOL',</span> <span class="pre">'CLA',</span> <span class="pre">'SOD'}]</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.molecules_set" title="Link to this definition"></a></dt>
 <dd><p>Dictionary of other than lipid molecules.</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="fairmd.lipids.settings.molecules.molecules_dict">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">molecules_dict</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">NonLipidSet[{'CLA',</span> <span class="pre">'SOD',</span> <span class="pre">'SOL'}]</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.molecules_dict" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.settings.molecules.</span></span><span class="sig-name descname"><span class="pre">molecules_dict</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">NonLipidSet[{'SOL',</span> <span class="pre">'CLA',</span> <span class="pre">'SOD'}]</span></em><a class="headerlink" href="#fairmd.lipids.settings.molecules.molecules_dict" title="Link to this definition"></a></dt>
 <dd><p>Use molecules_set instead</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>

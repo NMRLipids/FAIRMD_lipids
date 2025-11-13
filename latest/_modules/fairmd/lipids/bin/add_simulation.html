@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.bin.add_simulation &mdash; FAIRMD Lipids v1.3.2a1.dev11+gf2bea9351 1.3.2a1.dev11+gf2bea9351 documentation</title>
+  <title>fairmd.lipids.bin.add_simulation &mdash; FAIRMD Lipids v1.3.2a1.dev21+g963d0f896 1.3.2a1.dev21+g963d0f896 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=1590b452"></script>
+      <script src="../../../../_static/documentation_options.js?v=7e46ce82"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a1.dev11+gf2bea9351
+            FAIRMD Lipids v1.3.2a1.dev21+g963d0f896
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.2a1.dev11+gf2bea9351</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.2a1.dev21+g963d0f896</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -89,13 +89,17 @@
 <span class="sd">-f FILE, --file=FILE   Input config file in yaml format.</span>
 <span class="sd">-d, --debug            Enable debug logging output</span>
 <span class="sd">-n, --no-cache         Always redownload repository files</span>
-<span class="sd">-w WORK_DIR, --work-dir=WORK_DIR  Set custom temporary working directory \</span>
-<span class="sd">        [not set = read from YAML]</span>
+<span class="sd">-w WORK_DIR, --work-dir=WORK_DIR  Set custom temporary working directory</span>
+<span class="sd">                                  [not set = read from YAML]</span>
+<span class="sd">--dru-run              Download only 50MB of big files. Very usefull when</span>
+<span class="sd">                       user is testing the addition.</span>
+<span class="sd">--non-interactive      Answer N to all interactive questions. Exit if meet</span>
+<span class="sd">                       any uncertainty</span>
 
 <span class="sd">**Returns** error codes:</span>
 
 <span class="sd">- 0 - success</span>
-<span class="sd">- 1 - input YAML parsing errors</span>
+<span class="sd">- 1 - input errors (YAML parsing, mapping files, etc.)</span>
 <span class="sd">- 2 - filesystem writting errors</span>
 <span class="sd">- 3 - network accessing errors</span>
 
@@ -133,7 +137,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankLibrary</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span><span class="p">,</span> <span class="n">molecules_set</span><span class="p">,</span> <span class="n">parse_valid_config_settings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.SchemaValidation.ValidateYAML</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_info_dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.settings.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_struc_top_traj_fnames</span><span class="p">,</span> <span class="n">software_dict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.settings.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lipid</span><span class="p">,</span> <span class="n">NonLipid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.settings.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lipid</span><span class="p">,</span> <span class="n">MoleculeMappingError</span><span class="p">,</span> <span class="n">NonLipid</span>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_rows&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">&quot;display.max_columns&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
@@ -196,6 +200,7 @@
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;perform a dry-run download of the files with 50MB limit&quot;</span><span class="p">,</span>
         <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--non-interactive&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;answer N automatically to console questions&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
@@ -337,10 +342,9 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key_sim</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">,</span> <span class="s2">&quot;ID&quot;</span><span class="p">]:</span>
                 <span class="k">continue</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># That shouldn&#39;t happen! Unexpected YAML-keys were checked by</span>
-                <span class="c1"># parse_valid_config_settings before</span>
-                <span class="k">raise</span>
+            <span class="c1"># That shouldn&#39;t happen! Unexpected YAML-keys were checked by</span>
+            <span class="c1"># parse_valid_config_settings before</span>
+            <span class="k">raise</span>
 
         <span class="k">if</span> <span class="s2">&quot;file&quot;</span> <span class="ow">in</span> <span class="n">entry_type</span><span class="p">:</span>
             <span class="n">files_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -450,8 +454,8 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;System</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">FAIL_MSG</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Command &#39;echo System | </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; failed with error: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">FAIL_MSG</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Command &#39;echo System | </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; failed with error: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">u</span> <span class="o">=</span> <span class="n">Universe</span><span class="p">(</span><span class="n">gro</span><span class="p">,</span> <span class="n">traj</span><span class="p">)</span>
             <span class="c1"># write first frame into gro file</span>
@@ -498,7 +502,8 @@
             <span class="n">lipids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u0</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">selection</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">lipids</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No lipids were found in the composition!&quot;</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;No lipids were found in the composition!&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="c1"># join all the selected the lipids together to make a selection of the entire</span>
     <span class="c1"># membrane and calculate the z component of the centre of mass of</span>
     <span class="c1"># the membrane</span>
@@ -521,20 +526,11 @@
             <span class="n">lip</span> <span class="o">=</span> <span class="n">Lipid</span><span class="p">(</span><span class="n">key_mol</span><span class="p">)</span>
             <span class="n">m_file</span> <span class="o">=</span> <span class="n">sim</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">][</span><span class="n">key_mol</span><span class="p">][</span><span class="s2">&quot;MAPPING&quot;</span><span class="p">]</span>
             <span class="n">lip</span><span class="o">.</span><span class="n">register_mapping</span><span class="p">(</span><span class="n">m_file</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">lip</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;RESIDUE&quot;</span> <span class="ow">in</span> <span class="n">lip</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
-                    <span class="n">selection</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">selection</span>
-                        <span class="o">+</span> <span class="s2">&quot;resname &quot;</span>
-                        <span class="o">+</span> <span class="n">lip</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">]</span>
-                        <span class="o">+</span> <span class="s2">&quot; and name &quot;</span>
-                        <span class="o">+</span> <span class="n">lip</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
-                        <span class="o">+</span> <span class="s2">&quot; or &quot;</span>
-                    <span class="p">)</span>
-                    <span class="k">break</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">selection</span> <span class="o">=</span> <span class="s2">&quot;resname &quot;</span> <span class="o">+</span> <span class="n">sim</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">][</span><span class="n">key_mol</span><span class="p">][</span><span class="s2">&quot;NAME&quot;</span><span class="p">]</span>
-                    <span class="k">break</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">lip</span><span class="o">.</span><span class="n">mapping_dict</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+            <span class="k">if</span> <span class="s2">&quot;RESIDUE&quot;</span> <span class="ow">in</span> <span class="n">val</span><span class="p">:</span>
+                <span class="n">selection</span> <span class="o">=</span> <span class="n">selection</span> <span class="o">+</span> <span class="s2">&quot;resname &quot;</span> <span class="o">+</span> <span class="n">val</span><span class="p">[</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; and name &quot;</span> <span class="o">+</span> <span class="n">val</span><span class="p">[</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; or &quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">selection</span> <span class="o">=</span> <span class="s2">&quot;resname &quot;</span> <span class="o">+</span> <span class="n">sim</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">][</span><span class="n">key_mol</span><span class="p">][</span><span class="s2">&quot;NAME&quot;</span><span class="p">]</span>
 
         <span class="c1"># if lipid was found then selection is not empty</span>
         <span class="k">if</span> <span class="n">selection</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
@@ -604,21 +600,21 @@
             <span class="ow">and</span> <span class="n">sim</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">][</span><span class="s2">&quot;GROMACS_VERSION&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;gromacs3&quot;</span>
         <span class="p">):</span>
             <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gmxdump&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">top</span><span class="p">]</span>
-            <span class="n">TemperatureKey</span> <span class="o">=</span> <span class="s2">&quot;ref_t&quot;</span>
+            <span class="n">temperature_key</span> <span class="o">=</span> <span class="s2">&quot;ref_t&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;dump&quot;</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">top</span><span class="p">]</span>
-            <span class="n">TemperatureKey</span> <span class="o">=</span> <span class="s2">&quot;ref-t&quot;</span>
+            <span class="n">temperature_key</span> <span class="o">=</span> <span class="s2">&quot;ref-t&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;System</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file1</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">FAIL_MSG</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Command &#39;echo System | </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; failed with error: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">FAIL_MSG</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Command &#39;echo System | </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; failed with error: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file1</span><span class="p">)</span> <span class="k">as</span> <span class="n">tpr_info</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">tpr_info</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">TemperatureKey</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">temperature_key</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                     <span class="n">sim</span><span class="p">[</span><span class="s2">&quot;TEMPERATURE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Parameters read from input files:&quot;</span><span class="p">)</span>
@@ -630,9 +626,18 @@
     <span class="n">natoms_trj</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">n_atoms</span>
 
     <span class="n">number_of_atoms</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">key_mol</span> <span class="ow">in</span> <span class="n">sim</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">key_mol</span><span class="p">,</span> <span class="n">comp_mol</span> <span class="ow">in</span> <span class="n">sim</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="n">Lipid</span><span class="p">(</span><span class="n">key_mol</span><span class="p">)</span> <span class="k">if</span> <span class="n">key_mol</span> <span class="ow">in</span> <span class="n">lipids_set</span> <span class="k">else</span> <span class="n">NonLipid</span><span class="p">(</span><span class="n">key_mol</span><span class="p">)</span>
-        <span class="n">mol</span><span class="o">.</span><span class="n">register_mapping</span><span class="p">(</span><span class="n">sim</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">][</span><span class="n">key_mol</span><span class="p">][</span><span class="s2">&quot;MAPPING&quot;</span><span class="p">])</span>
+        <span class="n">map_file</span> <span class="o">=</span> <span class="n">comp_mol</span><span class="p">[</span><span class="s2">&quot;MAPPING&quot;</span><span class="p">]</span>
+        <span class="n">mol</span><span class="o">.</span><span class="n">register_mapping</span><span class="p">(</span><span class="n">map_file</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mol</span><span class="o">.</span><span class="n">check_mapping</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">comp_mol</span><span class="p">[</span><span class="s2">&quot;NAME&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="n">MoleculeMappingError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Your mapping file &#39;</span><span class="si">{</span><span class="n">map_file</span><span class="si">}</span><span class="s2">&#39; contains mistakes.&quot;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Unknown exception during mapping-file checking &#39;</span><span class="si">{</span><span class="n">map_file</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
         <span class="k">if</span> <span class="n">sim</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;UNITEDATOM_DICT&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;SOL&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">key_mol</span><span class="p">:</span>
             <span class="n">mapping_file_length</span> <span class="o">=</span> <span class="mi">0</span>
@@ -640,8 +645,7 @@
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">:</span>
                 <span class="k">if</span> <span class="s2">&quot;H&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
                     <span class="k">continue</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">mapping_file_length</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">mapping_file_length</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mapping_file_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">)</span>
@@ -649,14 +653,22 @@
         <span class="n">number_of_atoms</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sim</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">][</span><span class="n">key_mol</span><span class="p">][</span><span class="s2">&quot;COUNT&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="n">mapping_file_length</span>
 
     <span class="k">if</span> <span class="n">number_of_atoms</span> <span class="o">!=</span> <span class="n">natoms_trj</span><span class="p">:</span>
-        <span class="n">stop</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Number of atoms in trajectory </span><span class="si">{</span><span class="n">natoms_trj</span><span class="si">}</span><span class="s2"> and README.yaml &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">number_of_atoms</span><span class="si">}</span><span class="s2"> do no match. Check the mapping files and molecule&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot; names. </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="si">}</span><span class="s2"> If you know what you are doing, you can still &quot;</span>
-            <span class="s2">&quot;continue the running the script. Do you want to (y/n)?&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot; names.&quot;</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">non_interactive</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="s2">&quot;n&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="s2">&quot;If you know what you are doing, you can still continue the running the script. Do you want to (y/n)? &quot;</span>
+            <span class="p">)</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="s2">&quot;Interrupted because atomnumbers did not match&quot;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Number of atoms do not match&quot;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Progressed even thought that atom numbers did not match. CHECK RESULTS MANUALLY!&quot;</span><span class="p">,</span>
