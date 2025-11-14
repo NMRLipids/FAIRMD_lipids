@@ -50,6 +50,7 @@ MOLAR_FRACTIONS:
   POPC: 0.93
   CHOL: 0.07
 ```
+All the molecules should be registered in the [molecular inventory](molecule_record) in the ``membrane`` subfolder.
 
 6. **SOLUTION_COMPOSITION**  
 Dictionary of solution composition of the system (mass %):
@@ -59,6 +60,7 @@ ION_CONCENTRATIONS:
   CLA: 0.24
   GLUCOSE: 0.1
 ```
+All the molecules should be registered in the [molecular inventory](molecule_record) in the ``solution`` subfolder.
 Do not provide whole salts! Only separated ions. Remember that the counterions of charged lipids are also part of the solution.
 
 7. **ADDITIONAL_MOLECULES**
