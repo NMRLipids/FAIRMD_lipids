@@ -93,6 +93,10 @@ as graphical comparison between simulation and experimental data.
 The Web-UI is being developed in the repository
 [BilayerGUI_laravel](https://github.com/NMRlipids/BilayerGUI_laravel).
 
+# Upload Portal
+
+The [FAIRMD Upload-Portal](https://upload-portal.nmrlipids.fi) enables researchers to easily contribute new simulation metadata to the [BilayerData Repository](https://github.com/NMRLipids/BilayerData). Users can upload simulation metadata, which is automatically validated and processed through workflows within the data repository. 
+
 # Contribution
 
 The project is open for contributions! 

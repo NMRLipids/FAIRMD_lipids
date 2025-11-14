@@ -20,8 +20,7 @@ RUN apt-get update && \
 # Create python virtual environment and set permissions    
 RUN python3.11 -m venv /opt/venv && \
     export PATH=/opt/venv/bin:$PATH && \
-    pip install --upgrade pip && \
-    pip install --no-cache-dir -r /tmp/requirements-dev.txt && \
+    pip install git+https://github.com/NMRLipids/FAIRMD_lipids.git && \
     chmod -R 777 /opt/venv
 
 # Create runner group & user
