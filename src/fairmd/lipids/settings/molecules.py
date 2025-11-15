@@ -123,9 +123,9 @@ class Molecule(ABC):
             # https://userguide.mdanalysis.org/stable/selections.html
             if "RESIDUE" in mrecord and mdresname is not None:
                 mapping_rname = mrecord["RESIDUE"]
-                if not fnmatch.fnmatch(mapping_rname, mdresname):
+                if not fnmatch.fnmatch(mdresname, mapping_rname):
                     continue
-            if fnmatch.fnmatch(mapping_aname, mdatomname):
+            if fnmatch.fnmatch(mdatomname, mapping_aname):
                 return universal_name
         emsg = f"Atom {mdatomname} is not found."
         raise MoleculeMappingError(emsg, mol=self)

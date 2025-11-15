@@ -44,7 +44,7 @@ def test_uan2selection(toy_mols):
 
 def test_md2uan(toy_mols):
     import MDAnalysis as mda
-    from fairmd.lipids.settings.molecules import MoleculeMappingError
+    from fairmd.lipids.settings.molecules import NonLipid, MoleculeMappingError
 
     popc2_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc2.gro")
     u_popc2 = mda.Universe(popc2_fp)
@@ -57,6 +57,13 @@ def test_md2uan(toy_mols):
         toy_popc.md2uan("NON_EXISTENT_MD_NAME", "PA")
     with check.raises(MoleculeMappingError):
         toy_popc.md2uan("H5R", "NON_EXISTENT_RESNAME")
+
+    cl_mol = NonLipid("CLA")
+    cl_mol.register_mapping("mappingCL.yaml")
+    check.equal(cl_mol.md2uan("CL"), "M_Cl_M")
+    check.equal(cl_mol.md2uan("Cl"), "M_Cl_M")
+    with check.raises(MoleculeMappingError):
+        cl_mol.md2uan("cL")
 
 
 def test_check_mapping_amber(toy_mols):
