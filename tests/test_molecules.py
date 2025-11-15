@@ -63,7 +63,7 @@ def test_md2uan(toy_mols):
     check.equal(cl_mol.md2uan("CL"), "M_Cl_M")
     check.equal(cl_mol.md2uan("Cl"), "M_Cl_M")
     with check.raises(MoleculeMappingError):
-        cl_mol.md2uan("cL")
+        cl_mol.md2uan("Cl-")
 
 
 def test_check_mapping_amber(toy_mols):
