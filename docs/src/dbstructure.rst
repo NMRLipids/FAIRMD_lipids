@@ -138,7 +138,7 @@ describing the experimental conditions.
 
 Solid-state NMR experiment metadata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Order parameter (OP) values are measured by ssNMR, and the experiment folder contains 
+Order parameter (OP) values are measured by ssNMR, and the experiment folder contains
 metadata file and measured OP values for each measured lipid.
 
 1. :file:`README.yaml` contains metadata of the experiment, such as DOI, lamellar phase
