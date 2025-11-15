@@ -18,7 +18,7 @@ def main():
 
     runs = [
         (scripts_dir, "fairmd"),
-        (developer_dir, "Developer"),
+        (developer_dir, "developer"),
     ]
 
     for path, tocname in runs:

@@ -9,7 +9,9 @@ functions, first set up the package and initialize the databank:
 
 .. code-block:: bash
 
-   pip install nmrlipids_databank fmdl_initialize_data toy source databank_env.rc
+   pip install fairmd-lipids
+   fmdl_initialize_data toy
+   source databank_env.rc
 
 "Toy" is a small test databank which is useful for testing and learning the package. You
 can then start to work with the `template
