@@ -131,17 +131,19 @@ Experiment record
 The data is located in subfolders named after the DOI of the original source publication
 of the data. Because a publication can contain more than one experimental data set, each
 data set is stored in a subfolder with integer name, for example,
-[experiments/OrderParameters/10.1039/c2cp42738a/2](https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters/10.1039/c2cp42738a/2).
+`experiments/OrderParameters/10.1039/c2cp42738a/2
+<https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters/10.1039/c2cp42738a/2>`_.
 Each of such folders then contain the experimental data and ``README.yaml`` files
 describing the experimental conditions.
 
-Order parameter NMR experiment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-TODO: write the block
+Solid-state NMR experiment metadata
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Order parameter (OP) values are measured by ssNMR, and the experiment folder contains 
+metadata file and measured OP values for each measured lipid.
 
 1. :file:`README.yaml` contains metadata of the experiment, such as DOI, lamellar phase
    preparation protocol, temperature, B0 field, ions concentration and other relevant
-   information.
+   information (`explore all ssNMR metadata <readmeexp>`_).
 
 2. :file:`POPC_OrderParameters.json` contains C-H bond order parameters and their
    experimental uncertainties defined for universal atom names.

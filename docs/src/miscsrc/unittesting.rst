@@ -7,7 +7,7 @@ Testing strategy
 ----------------
 
 Test function requiring ``Simulation.1`` and ``Simulation.2`` path plugged in as
-:var:`fairmd.lipids.FMDL_SIMU_PATH` must be groupped in different test_* files. Enviromental variable
+:py:data:`fairmd.lipids.FMDL_SIMU_PATH` must be groupped in different test_* files. Enviromental variable
 selection is performed in ``conftest.py::header_module_scope`` fixture at the
 test-module level.
 

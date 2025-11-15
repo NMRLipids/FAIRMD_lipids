@@ -1,7 +1,7 @@
 check\_mappings module
 ======================
 
-.. automodule:: BuildDatabank.check_mappings
+.. automodule:: developer.check_mappings
    :members:
    :undoc-members:
    :show-inheritance:
