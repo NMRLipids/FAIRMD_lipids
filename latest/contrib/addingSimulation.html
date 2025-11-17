@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adding simulations &mdash; FAIRMD Lipids v1.3.2a1.dev22+gbe47fd3b8 1.3.2a1.dev22+gbe47fd3b8 documentation</title>
+  <title>Adding simulations &mdash; FAIRMD Lipids v1.3.2a1.dev23+g13ac73f98 1.3.2a1.dev23+g13ac73f98 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=2a6e7b85"></script>
+      <script src="../_static/documentation_options.js?v=2fecf94e"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a1.dev22+gbe47fd3b8
+            FAIRMD Lipids v1.3.2a1.dev23+g13ac73f98
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -69,7 +69,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.2a1.dev22+gbe47fd3b8</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.2a1.dev23+g13ac73f98</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -90,6 +90,24 @@
              
   <section id="adding-simulations">
 <span id="addsimulation"></span><h1>Adding simulations<a class="headerlink" href="#adding-simulations" title="Link to this heading"></a></h1>
+<p>The recommended way to contribute new simulation data is to use the
+<a class="reference external" href="https://upload-portal.nmrlipids.fi">FAIRMD Upload-Portal</a>.
+The portal provides a simple form where you supply the essential details of your
+simulation. After submission, the information is automatically sent to the
+<a class="reference external" href="https://github.com/NMRLipids/BilayerData">BilayerData</a> repository, where a pull
+request is created. A link to this pull request is shown in the portal once the
+submission completes.</p>
+<p>The information provided in the form corresponds to the fields normally contained in
+an <code class="docutils literal notranslate"><span class="pre">info.yaml</span></code> file, so the guidance linked below regarding the structure and meaning
+of these fields remains relevant even when using the Upload Portal. Minor issues in the
+submitted details are typically easy to correct during the review process, so perfect
+accuracy is not required at the time of submission.</p>
+<p>The submitted data is validated through the BilayerData workflows. After verification, the simulation is
+processed and incorporated into the databank.</p>
+<p>If you use the Upload Portal, only <strong>Step 1</strong> below (uploading your files to Zenodo)
+remains relevant. All handling of metadata and processing is performed automatically.</p>
+<p>The steps below describe the manual procedure, which is only needed if you prefer to
+add simulations without using the Upload Portal.</p>
 <p>Stepwise instructions to add simulation into the FAIRMD Lipids, run the basic analyses
 and perform automatic quality evaluation are given here. The first three steps are a
 minimum requirements to add a simulation. The first three steps can be performed using
