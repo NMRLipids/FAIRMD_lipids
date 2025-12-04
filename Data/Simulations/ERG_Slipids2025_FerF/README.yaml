@@ -1,0 +1,54 @@
+AUTHORS_CONTACT: Favela-Rosales, Fernando
+FF_DATE: 2013
+SYSTEM: 408POPC_408_SM16_35840SOL_295K
+TYPEOFSYSTEM: lipid bilayer
+TEMPERATURE: 295.0
+PUBLICATION: null
+NUMBER_OF_ATOMS: 229192 
+EXPERIMENT:
+  ORDERPARAMETER:
+    POPC: {}
+  FORMFACTOR: {}
+FF_SOURCE: http://mmkluster.fos.su.se/slipids/ 
+COMPOSITION:
+  ERGO:
+    NAME: ERG 
+    COUNT: 
+    - 104
+    - 104
+    MAPPING: mappingERGOSTEROLslipid.yaml  
+  POPC:
+    NAME: POPC
+    COUNT:
+    - 204
+    - 204
+    MAPPING: mappingPOPCslipids.yaml
+  SM16:
+    NAME: SM16
+    COUNT:
+    - 204
+    - 204
+    MAPPING: mappingSM16slipids.yaml
+  SOL:
+    NAME: SOL
+    COUNT: 35840
+    MAPPING: mappingTIP3PwaterSlipids.yaml
+TIMELEFTOUT: 6400000
+CPT: null
+TRJLENGTH: 100000.0
+TRAJECTORY_SIZE: null
+SOFTWARE_VERSION: 2019.6
+FF: Slipids for lipids, Lindahl for Ergosterol
+TOP:
+- - 1k_pop40prc+psm40prc+erg20prc+wat.top
+PREEQTIME: 100000
+DOI: 10.5281/zenodo.17730114
+DATEOFRUNNING: null
+TPR:
+- - md50ns_chunk01.tpr
+TRJ:
+- - 100ns_c.xtc
+LOG: null
+SOFTWARE: gromacs
+DIR_WRK: null 
+ID:  
