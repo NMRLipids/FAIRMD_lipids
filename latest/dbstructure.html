@@ -6,20 +6,20 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data Organization &mdash; FAIRMD Lipids v1.3.2a1.dev27+g98f769746 1.3.2a1.dev27+g98f769746 documentation</title>
+  <title>Data Organization &mdash; FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a 1.3.2a1.dev28+gc47269d3a documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=57d72d88"></script>
+      <script src="_static/documentation_options.js?v=bbdb72dd"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Data Contribution" href="dbcontribute.html" />
+    <link rel="next" title="Molecule metadata schema" href="schemas/molecule_metadata.html" />
     <link rel="prev" title="Project testing" href="miscsrc/unittesting.html" /> 
 </head>
 
@@ -32,7 +32,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a1.dev27+g98f769746
+            FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -58,12 +58,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#experiment-record">Experiment record</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#order-parameter-nmr-experiment">Order parameter NMR experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#solid-state-nmr-experiment-metadata">Solid-state NMR experiment metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#form-factor-x-ray-experiment-metadata">Form factor X-ray experiment metadata</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#molecule-record">Molecule record</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#molecule-metadata">Molecule metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#molecule-metadata">Molecule metadata</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="schemas/molecule_metadata.html">Molecule metadata schema</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#mapping-files">Mapping files</a></li>
 </ul>
 </li>
@@ -83,7 +86,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">FAIRMD Lipids v1.3.2a1.dev27+g98f769746</a>
+          <a href="index.html">FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -210,16 +213,17 @@ coefficient for experimental intensities (Eq. (6) in the <a class="reference ext
 <p>The data is located in subfolders named after the DOI of the original source publication
 of the data. Because a publication can contain more than one experimental data set, each
 data set is stored in a subfolder with integer name, for example,
-[experiments/OrderParameters/10.1039/c2cp42738a/2](<a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters/10.1039/c2cp42738a/2">https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters/10.1039/c2cp42738a/2</a>).
+<a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters/10.1039/c2cp42738a/2">experiments/OrderParameters/10.1039/c2cp42738a/2</a>.
 Each of such folders then contain the experimental data and <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> files
 describing the experimental conditions.</p>
-<section id="order-parameter-nmr-experiment">
-<h3>Order parameter NMR experiment<a class="headerlink" href="#order-parameter-nmr-experiment" title="Link to this heading"></a></h3>
-<p>TODO: write the block</p>
+<section id="solid-state-nmr-experiment-metadata">
+<h3>Solid-state NMR experiment metadata<a class="headerlink" href="#solid-state-nmr-experiment-metadata" title="Link to this heading"></a></h3>
+<p>Order parameter (OP) values are measured by ssNMR, and the experiment folder contains
+metadata file and measured OP values for each measured lipid.</p>
 <ol class="arabic simple">
 <li><p><code class="file docutils literal notranslate"><span class="pre">README.yaml</span></code> contains metadata of the experiment, such as DOI, lamellar phase
 preparation protocol, temperature, B0 field, ions concentration and other relevant
-information.</p></li>
+information (<a class="reference internal" href="schemas/experiment_metadata.html#readmeexp"><span class="std std-ref">explore all ssNMR metadata</span></a>).</p></li>
 <li><p><code class="file docutils literal notranslate"><span class="pre">POPC_OrderParameters.json</span></code> contains C-H bond order parameters and their
 experimental uncertainties defined for universal atom names.</p></li>
 </ol>
@@ -238,7 +242,10 @@ the source, type of liposome suspension, and other relevant information.</p></li
 <span id="id5"></span><h2>Molecule record<a class="headerlink" href="#molecule-record" title="Link to this heading"></a></h2>
 <section id="molecule-metadata">
 <h3>Molecule metadata<a class="headerlink" href="#molecule-metadata" title="Link to this heading"></a></h3>
-<p>TODO: write the block</p>
+<p>Molecular metadata is stored in <code class="file docutils literal notranslate"><span class="pre">metadata.yaml</span></code> file, and its structure
+is described in <a class="reference internal" href="schemas/molecule_metadata.html#molmetadata-schema"><span class="std std-ref">Molecule metadata schema</span></a>.</p>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 <section id="mapping-files">
 <h3>Mapping files<a class="headerlink" href="#mapping-files" title="Link to this heading"></a></h3>
@@ -253,7 +260,7 @@ more information, see <a class="reference internal" href="schemas/moleculesAndMa
 <span id="info-files"></span><h3>info.yaml<a class="headerlink" href="#info-yaml" title="Link to this heading"></a></h3>
 <p>Contains information given by contributor when adding data into the FAIRMD Lipids, i.e.
 all non-recomputable fields of simulation <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code>. This file is given as an
-input to <span class="xref std std-ref">_add_simulation_py</span> to create <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> files:
+input to <a class="reference internal" href="dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a> to create <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> files:
 <code class="code docutils literal notranslate"><span class="pre">fmdl_add_simulation</span> <span class="pre">-f</span> <span class="pre">info.yaml</span></code>. These files are not required but currently are
 stored historically in <code class="docutils literal notranslate"><span class="pre">info_files</span></code> subfolder of
 <a class="reference internal" href="auto_gen/fairmd.lipids.html#fairmd.lipids.FMDL_DATA_PATH" title="fairmd.lipids.FMDL_DATA_PATH"><code class="xref py py-data docutils literal notranslate"><span class="pre">fairmd.lipids.FMDL_DATA_PATH</span></code></a>.</p>
@@ -271,7 +278,7 @@ stored historically in <code class="docutils literal notranslate"><span class="p
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="miscsrc/unittesting.html" class="btn btn-neutral float-left" title="Project testing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dbcontribute.html" class="btn btn-neutral float-right" title="Data Contribution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="schemas/molecule_metadata.html" class="btn btn-neutral float-right" title="Molecule metadata schema" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

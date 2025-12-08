@@ -36,8 +36,8 @@ ranked based on the simulation quality as evaluated against experimental data wh
 available. Web-UI provides basic graphical reports for the computed properties as well
 as graphical comparison between simulation and experimental data.
 
-The Web-UI is being developed in the repository `BilayerGUI_laravel
-<https://github.com/NMRlipids/BilayerGUI_laravel>`_.
+The Web-UI is being developed in the repository `BilayerUI_laravel
+<https://github.com/NMRlipids/BilayerUI_laravel>`_.
 
 FAIRMD Lipids-API
 ----------------------

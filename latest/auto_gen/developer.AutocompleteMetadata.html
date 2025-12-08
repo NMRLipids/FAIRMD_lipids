@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>developer.AutocompleteMetadata module &mdash; FAIRMD Lipids v1.3.2a1.dev27+g98f769746 1.3.2a1.dev27+g98f769746 documentation</title>
+  <title>developer.AutocompleteMetadata module &mdash; FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a 1.3.2a1.dev28+gc47269d3a documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=57d72d88"></script>
+      <script src="../_static/documentation_options.js?v=bbdb72dd"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a1.dev27+g98f769746
+            FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -43,10 +43,25 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Overview.html">Project structure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fairmd.lipids.html">fairmd.lipids</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="developer.html">developer</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="developer.html#python-files">Python files</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">developer.AutocompleteMetadata module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.ProcessInfoFile.html">developer.ProcessInfoFile module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.RunAnalysis.html">developer.RunAnalysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.ValidateData.html">developer.ValidateData module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.align_mapping.html">developer.align_mapping module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../miscsrc/unittesting.html">Project testing</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
 <ul>
@@ -60,7 +75,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.2a1.dev27+g98f769746</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -80,8 +95,75 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="developer-autocompletemetadata-module">
-<h1>developer.AutocompleteMetadata module<a class="headerlink" href="#developer-autocompletemetadata-module" title="Link to this heading"></a></h1>
+  <section id="module-developer.AutocompleteMetadata">
+<span id="developer-autocompletemetadata-module"></span><h1>developer.AutocompleteMetadata module<a class="headerlink" href="#module-developer.AutocompleteMetadata" title="Link to this heading"></a></h1>
+<p>Script for membrane metadata autocomplete.</p>
+<p>This script will try to fill further attributes in a
+<a class="reference internal" href="../contrib/addingMolecule.html#addnewmol"><span class="std std-ref">membrane metadata file</span></a> based on the information
+queried with the inchikey from:
+- UniChem
+- ChEMBL
+- ChEBI
+- PubChem</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This file is meant to be used by automated workflows.</p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.check_api">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">check_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#check_api"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.check_api" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.get_chembl">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">get_chembl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchikey</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#get_chembl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.get_chembl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.get_pubchem">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">get_pubchem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchikey</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#get_pubchem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.get_pubchem" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.get_pubchem_synonyms">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">get_pubchem_synonyms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#get_pubchem_synonyms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.get_pubchem_synonyms" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.get_chebi">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">get_chebi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chebi_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#get_chebi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.get_chebi" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.get_unichem">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">get_unichem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inchikey</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#get_unichem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.get_unichem" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.extract_sameas">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">extract_sameas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sources</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#extract_sameas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.extract_sameas" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.get_chembl_id_from_unichem">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">get_chembl_id_from_unichem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sources</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#get_chembl_id_from_unichem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.get_chembl_id_from_unichem" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.load_existing_metadata">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">load_existing_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#load_existing_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.load_existing_metadata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.update_metadata">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">update_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">existing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#update_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.update_metadata" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.AutocompleteMetadata.main">
+<span class="sig-prename descclassname"><span class="pre">developer.AutocompleteMetadata.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/AutocompleteMetadata.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.AutocompleteMetadata.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 
 

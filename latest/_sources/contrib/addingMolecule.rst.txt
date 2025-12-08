@@ -3,8 +3,8 @@
 Adding new molecule
 ===================
 
-First, please do not hesitate to ask assistance via [BilayerData GitHub
-issues](https://github.com/NMRlipids/BilayerData/issues).
+First, please do not hesitate to ask assistance via
+`BilayerData GitHub issues <https://github.com/NMRlipids/BilayerData/issues>`_.
 
 If you are adding data into the databank and your molecule(s) ``YOURMOL`` do not exist,
 you need to create a new one by adding a folder :file:`membrane/YOURMOL/` inside
@@ -12,24 +12,31 @@ you need to create a new one by adding a folder :file:`membrane/YOURMOL/` inside
 repository, `BilayerData <https://github.com/NMRlipids/BilayerData>`_, you are adding
 into :file:`Molecules/membrane` folder.
 
-The folder should contain at least two files: metadata file :file:`metadata.yaml` and
-mapping file :file:`yourmol-forcefieldname-mapping.yaml` (this name is arbitrary, but
+The folder should contain at least two files: metadata file :file:`metadata.yaml`
+(see :ref:`molmetadata_schema`)
+and mapping file :file:`yourmol-forcefieldname-mapping.yaml` (this name is arbitrary, but
 you should make it clear).
 
 .. code-block:: console
 
-   ./ ├── Simulations/ ├── experiments/ ├── info_files/ ├── lipid_json_buildH/ ├──
-   Ranking/ └── Molecules/
-       └── membrane/
-           └── YOURMOL/
-               ├── yourmol-forcefield2-mapping.yaml └── metadata.yaml
+   ./ ├── Simulations/
+      ├── experiments/
+      ├── info_files/
+      ├── lipid_json_buildH/
+      ├── Ranking/
+      └── Molecules/
+          └── membrane/
+              └── YOURMOL/
+                  ├── yourmol-forcefield2-mapping.yaml
+                  └── metadata.yaml
 
 Metadata file creation
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Please provide metadata about the molecule in a :file:`metadata.yaml` in the same
-subfolder of :file:`Molecules/membrane/YOURMOLECULE`. You can find the template in
-``Molecules/metadata-example.yaml``. TODO: metadata-example doesn't exist!
+subfolder of :file:`Molecules/membrane/YOURMOLECULE`. You can find
+:ref:`the metadata template <molmetadata_schema>` in
+:file:`SchemaValidation/Schema/metadata_template.yaml` inside the package directory.
 
 The recommended workflow is to start from the `InChI
 <https://en.wikipedia.org/wiki/International_Chemical_Identifier>`_. You can obtain the
@@ -57,9 +64,11 @@ atoms in a lipid belong to different residues, which is typical situation in Amb
 fields, for example see `here
 <https://github.com/NMRLipids/BilayerData/blob/main/Molecules/membrane/POPC/mappingPOPClipid17.yaml>`_,
 add the residue name to ``RESIDUE`` key of each atom in the mapping file. In this case,
-give the name of the head group residue in the ``COMPOSITION`` dictionary in :ref:`the
-README.yaml file <readmesimu>`.
+give the name of the head group residue in the ``COMPOSITION`` dictionary in
+:ref:`the README.yaml file <readmesimu>`.
 
 The mapping file should contain all the atoms of the molecules.
 
-Specific cases: - TODO: mapping for UA
+Specific cases:
+- TODO: mapping for UA
+

@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.jpyroutines module &mdash; FAIRMD Lipids v1.3.2a1.dev27+g98f769746 1.3.2a1.dev27+g98f769746 documentation</title>
+  <title>fairmd.lipids.jpyroutines module &mdash; FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a 1.3.2a1.dev28+gc47269d3a documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=57d72d88"></script>
+      <script src="../_static/documentation_options.js?v=bbdb72dd"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a1.dev27+g98f769746
+            FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.2a1.dev27+g98f769746</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -80,8 +80,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="fairmd-lipids-jpyroutines-module">
-<h1>fairmd.lipids.jpyroutines module<a class="headerlink" href="#fairmd-lipids-jpyroutines-module" title="Link to this heading"></a></h1>
+  <section id="module-fairmd.lipids.jpyroutines">
+<span id="fairmd-lipids-jpyroutines-module"></span><h1>fairmd.lipids.jpyroutines module<a class="headerlink" href="#module-fairmd.lipids.jpyroutines" title="Link to this heading"></a></h1>
+<p>Databank routines designed for calling from inside jupyter notebooks.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.jpyroutines.showTable">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.jpyroutines.</span></span><span class="sig-name descname"><span class="pre">showTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sorted_qualities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quality</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/jpyroutines.html#showTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.jpyroutines.showTable" title="Link to this definition"></a></dt>
+<dd><p>Shows a table of simulation qualities against experimental data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sorted_qualities</strong> – list of dictionaries to be shown, available
+in folder <code class="docutils literal notranslate"><span class="pre">Data/Ranking/</span></code></p></li>
+<li><p><strong>quality</strong> – should be either <code class="docutils literal notranslate"><span class="pre">TotalQuality</span></code> or universal lipid name.
+First one shows the system total quality.
+Latter shows the individual lipid quality.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 

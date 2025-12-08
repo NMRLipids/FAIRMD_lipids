@@ -1,0 +1,192 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>developer.align_mapping module &mdash; FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a 1.3.2a1.dev28+gc47269d3a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=bbdb72dd"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Project testing" href="../miscsrc/unittesting.html" />
+    <link rel="prev" title="developer.ValidateData module" href="developer.ValidateData.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Overview.html">Project structure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fairmd.lipids.html">fairmd.lipids</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="developer.html">developer</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="developer.html#python-files">Python files</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="developer.AutocompleteMetadata.html">developer.AutocompleteMetadata module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.ProcessInfoFile.html">developer.ProcessInfoFile module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.RunAnalysis.html">developer.RunAnalysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.ValidateData.html">developer.ValidateData module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">developer.align_mapping module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../miscsrc/unittesting.html">Project testing</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FAIRMD Lipids v1.3.2a1.dev28+gc47269d3a</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Overview.html">Project structure</a></li>
+          <li class="breadcrumb-item"><a href="developer.html">developer</a></li>
+      <li class="breadcrumb-item active">developer.align_mapping module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_gen/developer.align_mapping.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-developer.align_mapping">
+<span id="developer-align-mapping-module"></span><h1>developer.align_mapping module<a class="headerlink" href="#module-developer.align_mapping" title="Link to this heading"></a></h1>
+<p>A helper program to add SMILEIDX to mapping files.</p>
+<p>This program align MD molecules from the Universe to an rdkit molecule
+created by SMILES. Can be used with a care to semi-manualy curate mapping
+files, SMILES, and add the alignments for only heavy atoms. Further should
+be converted into a mature CI/CD script.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.align_mapping.mk_universe_compact">
+<span class="sig-prename descclassname"><span class="pre">developer.align_mapping.</span></span><span class="sig-name descname"><span class="pre">mk_universe_compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Universe</span></span></span><a class="reference internal" href="../_modules/developer/align_mapping.html#mk_universe_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.align_mapping.mk_universe_compact" title="Link to this definition"></a></dt>
+<dd><p>Make universe based on just TPR and GRO records</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.align_mapping.get_1mol_selstr">
+<span class="sig-prename descclassname"><span class="pre">developer.align_mapping.</span></span><span class="sig-name descname"><span class="pre">get_1mol_selstr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comp_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.settings.molecules.html#fairmd.lipids.settings.molecules.Molecule" title="fairmd.lipids.settings.molecules.Molecule"><span class="pre">Molecule</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/developer/align_mapping.html#get_1mol_selstr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.align_mapping.get_1mol_selstr" title="Link to this definition"></a></dt>
+<dd><p>Return selection string for a single molecule</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.align_mapping.get_brutto_formula">
+<span class="sig-prename descclassname"><span class="pre">developer.align_mapping.</span></span><span class="sig-name descname"><span class="pre">get_brutto_formula</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eorder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agrp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AtomGroup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/developer/align_mapping.html#get_brutto_formula"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.align_mapping.get_brutto_formula" title="Link to this definition"></a></dt>
+<dd><p>Get brutto formula (according to element order) of neutralized form</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.align_mapping.compare_neutralized">
+<span class="sig-prename descclassname"><span class="pre">developer.align_mapping.</span></span><span class="sig-name descname"><span class="pre">compare_neutralized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/align_mapping.html#compare_neutralized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.align_mapping.compare_neutralized" title="Link to this definition"></a></dt>
+<dd><p>Compare neutralized forms of molecules</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.align_mapping.find_uname">
+<span class="sig-prename descclassname"><span class="pre">developer.align_mapping.</span></span><span class="sig-name descname"><span class="pre">find_uname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res_name</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/developer/align_mapping.html#find_uname"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.align_mapping.find_uname" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="developer.align_mapping.main">
+<span class="sig-prename descclassname"><span class="pre">developer.align_mapping.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/developer/align_mapping.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#developer.align_mapping.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="developer.ValidateData.html" class="btn btn-neutral float-left" title="developer.ValidateData module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../miscsrc/unittesting.html" class="btn btn-neutral float-right" title="Project testing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
