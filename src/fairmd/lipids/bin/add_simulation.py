@@ -389,10 +389,6 @@ Returns error codes:
     if not fail_from_top and struc is None:
         struc = gro
 
-    # At last, we create universe from just a structure!
-    logger.info(f"Making Universe from {struc}..")
-    u0 = Universe(struc)
-
     lipids = []
 
     # select lipids
@@ -417,9 +413,9 @@ Returns error codes:
                     selection = "resname " + sim["COMPOSITION"][key_mol]["NAME"]
                     break
         selection = selection.removesuffix(" or ")
-        molecules = u0.select_atoms(selection)
+        molecules = u.select_atoms(selection)
         if molecules.n_residues > 0:
-            lipids.append(u0.select_atoms(selection))
+            lipids.append(u.select_atoms(selection))
 
     if not lipids:
         msg = "No lipids were found in the composition!"
@@ -427,7 +423,7 @@ Returns error codes:
     # join all the selected the lipids together to make a selection of the entire
     # membrane and calculate the z component of the centre of mass of
     # the membrane
-    membrane = u0.select_atoms("")
+    membrane = u.select_atoms("")
     R_membrane_z = 0
     if lipids:
         for i in range(len(lipids)):
@@ -456,7 +452,7 @@ Returns error codes:
         if selection != "":
             selection = selection.removesuffix(" or ")
             logger.debug(f"Selection: `{selection}`")
-            molecules = u0.select_atoms(selection)
+            molecules = u.select_atoms(selection)
             logger.debug(
                 "Resnames: %s | ResIDs: %s",
                 ", ".join(molecules.residues.resnames),
@@ -488,7 +484,7 @@ Returns error codes:
         except KeyError:
             continue
         else:
-            mol_number = u0.select_atoms("resname " + mol_name).n_residues
+            mol_number = u.select_atoms("resname " + mol_name).n_residues
             sim["COMPOSITION"][key_mol]["COUNT"] = mol_number
             logger.info(
                 f"Number of '{key_mol}': {sim['COMPOSITION'][key_mol]['COUNT']!s}",
