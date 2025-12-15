@@ -20,8 +20,8 @@ import numpy as np
 from maicos.core import ProfilePlanarBase
 from maicos.lib.weights import density_weights
 
+from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
 from fairmd.lipids.core import System
-from fairmd.lipids.jsonEncoders import CompactJSONEncoder
 from fairmd.lipids.molecules import lipids_set
 
 

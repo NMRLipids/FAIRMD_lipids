@@ -19,9 +19,9 @@ import json
 import os
 
 from fairmd.lipids import FMDL_DATA_PATH, FMDL_SIMU_PATH
+from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
 from fairmd.lipids.core import initialize_databank
 from fairmd.lipids.databankLibrary import lipids_set
-from fairmd.lipids.jsonEncoders import CompactJSONEncoder
 
 
 def make_ranking():

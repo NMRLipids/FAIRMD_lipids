@@ -19,7 +19,7 @@ pytestmark = [pytest.mark.nodata, pytest.mark.min]
 
 def test_uname2element():
     """Test uname2element function."""
-    from fairmd.lipids.settings.elements import uname2element
+    from fairmd.lipids.auxiliary.elements import uname2element
 
     check.equal(uname2element("M_C1_M"), "C")
     check.equal(uname2element("M_G1_M"), "C")
