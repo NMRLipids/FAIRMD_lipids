@@ -190,7 +190,7 @@ def print_README(system: str | Mapping) -> None:  # noqa: N802
     """
     if system == "example":
         current_folder = os.path.dirname(os.path.realpath(__file__))
-        readme_path = os.path.join(current_folder, "settings", "READMEexplanations.yaml")
+        readme_path = os.path.join(current_folder, "SchemaValidation", "Schema", "READMEexplanations.yaml")
         with open(readme_path) as file:
             readme_file = yaml.safe_load(file)
     else:

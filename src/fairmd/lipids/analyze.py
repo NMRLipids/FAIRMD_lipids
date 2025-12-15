@@ -44,8 +44,8 @@ from fairmd.lipids.maicos import (
     is_system_suitable_4_maicos,
     traj_centering_for_maicos,
 )
+from fairmd.lipids.SchemaValidation.engines import get_struc_top_traj_fnames
 from fairmd.lipids.settings import elements
-from fairmd.lipids.settings.engines import get_struc_top_traj_fnames
 from fairmd.lipids.settings.molecules import lipids_set
 
 
