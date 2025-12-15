@@ -14,7 +14,7 @@ POPE_MOLECULAR_WEIGHT = 718
 @pytest.fixture(scope="module")
 def toy_mols() -> dict:
     from fairmd.lipids import FMDL_MOL_PATH
-    from fairmd.lipids.settings.molecules import lipids_set
+    from fairmd.lipids.molecules import lipids_set
 
     print(FMDL_MOL_PATH)
     print(lipids_set)
@@ -44,7 +44,7 @@ def test_uan2selection(toy_mols):
 
 def test_md2uan(toy_mols):
     import MDAnalysis as mda
-    from fairmd.lipids.settings.molecules import NonLipid, MoleculeMappingError
+    from fairmd.lipids.molecules import NonLipid, MoleculeMappingError
 
     popc2_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc2.gro")
     u_popc2 = mda.Universe(popc2_fp)
@@ -68,7 +68,7 @@ def test_md2uan(toy_mols):
 
 def test_check_mapping_amber(toy_mols):
     import MDAnalysis as mda
-    from fairmd.lipids.settings.molecules import MoleculeMappingError
+    from fairmd.lipids.molecules import MoleculeMappingError
 
     popc2_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc2.gro")
     popc1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc1.gro")
@@ -99,7 +99,7 @@ def test_check_mapping_amber(toy_mols):
 
 def test_check_mapping(toy_mols):
     import MDAnalysis as mda
-    from fairmd.lipids.settings.molecules import MoleculeMappingError
+    from fairmd.lipids.molecules import MoleculeMappingError
 
     pope1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "pope1.gro")
     popc1_fp = os.path.join(os.path.dirname(__file__), "misc_data", "popc1.gro")
@@ -130,7 +130,7 @@ def test_check_mapping(toy_mols):
 def test_lipids_metadata():
     """Test metadata of lipids_set, especially for POPE."""
     from fairmd.lipids import FMDL_MOL_PATH
-    from fairmd.lipids.settings.molecules import lipids_set
+    from fairmd.lipids.molecules import lipids_set
 
     print(FMDL_MOL_PATH)
     print(lipids_set)

@@ -57,9 +57,9 @@ from fairmd.lipids.databankio import (
     resolve_download_file_url,
 )
 from fairmd.lipids.databankLibrary import lipids_set, molecules_set, parse_valid_config_settings
+from fairmd.lipids.molecules import Lipid, MoleculeMappingError, NonLipid
 from fairmd.lipids.SchemaValidation.engines import get_struc_top_traj_fnames, software_dict
 from fairmd.lipids.SchemaValidation.ValidateYAML import validate_info_dict
-from fairmd.lipids.settings.molecules import Lipid, MoleculeMappingError, NonLipid
 
 pd.set_option("display.max_rows", 500)
 pd.set_option("display.max_columns", 500)

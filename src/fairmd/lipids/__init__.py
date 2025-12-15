@@ -74,7 +74,7 @@ if os.path.isdir(FMDL_DATA_PATH):
     for p in [FMDL_DATA_PATH, FMDL_EXP_PATH, FMDL_MOL_PATH, FMDL_SIMU_PATH]:
         raise_if_subpath_of_dblspec(p)
 
-    from fairmd.lipids.settings import molecules
+    from fairmd.lipids import molecules
 
     _ = len(molecules.lipids_set)
     print(

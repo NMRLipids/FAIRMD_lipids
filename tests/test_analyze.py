@@ -189,7 +189,7 @@ def test_analyze_apl(systems, systemLoadTraj, systemid, logger):
 def test_analyze_op(systems, systemLoadTraj, systemid, rcodex, logger):
     import fairmd.lipids as fmdl
     from fairmd.lipids.analyze import computeOP
-    from fairmd.lipids.settings.molecules import lipids_set
+    from fairmd.lipids.molecules import lipids_set
 
     s = systems.loc(systemid)
     rCode = computeOP(s, logger)

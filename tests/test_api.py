@@ -271,7 +271,7 @@ def test_GetThickness(systems, systemid, result):
 )
 def test_GetEquilibrationTimes(systems, systemid, result):
     from fairmd.lipids.databankLibrary import GetEquilibrationTimes
-    from fairmd.lipids.settings.molecules import lipids_set
+    from fairmd.lipids.molecules import lipids_set
 
     sys0 = systems.loc(systemid)
     eq_times = GetEquilibrationTimes(sys0)

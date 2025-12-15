@@ -12,7 +12,7 @@ from collections.abc import Iterable, Iterator, Mapping, MutableMapping, Sequenc
 import yaml
 
 from fairmd.lipids import FMDL_SIMU_PATH
-from fairmd.lipids.settings.molecules import Lipid, Molecule, NonLipid, lipids_set, molecules_set
+from fairmd.lipids.molecules import Lipid, Molecule, NonLipid, lipids_set, molecules_set
 
 
 class System(MutableMapping):
