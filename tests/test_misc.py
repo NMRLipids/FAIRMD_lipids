@@ -78,7 +78,7 @@ END
 
 
 def test_maicos_interface(tip4p_trajectory):
-    from fairmd.lipids.maicos import DensityPlanar
+    from fairmd.lipids.analib.maicos import DensityPlanar
 
     u, folder = tip4p_trajectory
 

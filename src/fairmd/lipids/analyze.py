@@ -29,14 +29,9 @@ from fairmd.lipids import (
     RCODE_ERROR,
     RCODE_SKIPPED,
 )
-from fairmd.lipids import analyze_nmrpca as nmrpca
-from fairmd.lipids.auxiliary import elements
-from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
-from fairmd.lipids.core import System
-from fairmd.lipids.databankio import download_resource_from_uri, resolve_download_file_url
-from fairmd.lipids.databankLibrary import GetNlipids, getLipids, system2MDanalysisUniverse
-from fairmd.lipids.databankop import find_OP
-from fairmd.lipids.maicos import (
+from fairmd.lipids.analib import analyze_nmrpca as nmrpca
+from fairmd.lipids.analib.databankop import find_OP
+from fairmd.lipids.analib.maicos import (
     DensityPlanar,
     DielectricPlanar,
     DiporderPlanar,
@@ -45,6 +40,11 @@ from fairmd.lipids.maicos import (
     is_system_suitable_4_maicos,
     traj_centering_for_maicos,
 )
+from fairmd.lipids.auxiliary import elements
+from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
+from fairmd.lipids.core import System
+from fairmd.lipids.databankio import download_resource_from_uri, resolve_download_file_url
+from fairmd.lipids.databankLibrary import GetNlipids, getLipids, system2MDanalysisUniverse
 from fairmd.lipids.molecules import lipids_set
 from fairmd.lipids.SchemaValidation.engines import get_struc_top_traj_fnames
 

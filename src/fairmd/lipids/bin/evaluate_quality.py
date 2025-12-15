@@ -22,7 +22,7 @@ import yaml
 
 import fairmd.lipids.quality as qq
 from fairmd.lipids import FMDL_EXP_PATH, FMDL_SIMU_PATH
-from fairmd.lipids.jsonEncoders import CompactJSONEncoder
+from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
 
 
 def evaluate_quality():
