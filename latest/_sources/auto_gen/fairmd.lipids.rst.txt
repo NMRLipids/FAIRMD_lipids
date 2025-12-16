@@ -9,8 +9,10 @@ Subfolders
    :maxdepth: 1
 
    fairmd.lipids.SchemaValidation
+   fairmd.lipids.analib
+   fairmd.lipids.auxiliary
    fairmd.lipids.bin
-   fairmd.lipids.settings
+   fairmd.lipids.ipylib
 
 Python files
 ----------
@@ -19,16 +21,10 @@ Python files
    :maxdepth: 1
 
    fairmd.lipids.analyze
-   fairmd.lipids.analyze_nmrpca
    fairmd.lipids.core
    fairmd.lipids.databankLibrary
    fairmd.lipids.databankio
-   fairmd.lipids.databankop
-   fairmd.lipids.jpyroutines
-   fairmd.lipids.jsonEncoders
-   fairmd.lipids.maicos
-   fairmd.lipids.openmm_parser
-   fairmd.lipids.plottings
+   fairmd.lipids.molecules
    fairmd.lipids.quality
    fairmd.lipids.utils
 

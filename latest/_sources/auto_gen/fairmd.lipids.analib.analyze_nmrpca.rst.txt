@@ -1,0 +1,7 @@
+fairmd.lipids.analib.analyze\_nmrpca module
+===========================================
+
+.. automodule:: fairmd.lipids.analib.analyze_nmrpca
+   :members:
+   :show-inheritance:
+   :undoc-members:
