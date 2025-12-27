@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.bin.evaluate_quality &mdash; FAIRMD Lipids v1.3.2a1.dev41+g42916f772 1.3.2a1.dev41+g42916f772 documentation</title>
+  <title>fairmd.lipids.bin.evaluate_quality &mdash; FAIRMD Lipids v1.3.2a1.dev47+g338c9370f 1.3.2a1.dev47+g338c9370f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=e17e3214"></script>
+      <script src="../../../../_static/documentation_options.js?v=0c549eb5"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a1.dev41+g42916f772
+            FAIRMD Lipids v1.3.2a1.dev47+g338c9370f
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.2a1.dev41+g42916f772</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.2a1.dev47+g338c9370f</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -106,10 +106,10 @@
 <div class="viewcode-block" id="evaluate_quality">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.evaluate_quality.html#fairmd.lipids.bin.evaluate_quality.evaluate_quality">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_quality</span><span class="p">():</span>
-    <span class="n">simulations</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">loadSimulations</span><span class="p">()</span>
+    <span class="n">simulations</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">load_simulation_qe</span><span class="p">()</span>
 
-    <span class="n">EvaluatedOPs</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">EvaluatedFFs</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">evaluated_op_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">evaluated_ff_counter</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">for</span> <span class="n">simulation</span> <span class="ow">in</span> <span class="n">simulations</span><span class="p">:</span>
         <span class="c1"># save OP quality and FF quality here</span>
@@ -134,13 +134,10 @@
             <span class="n">fragment_qual_dict</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
-            <span class="k">for</span> <span class="n">doi</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">lipid1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">lipid1</span><span class="p">]:</span>
                 <span class="nb">print</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Evaluating </span><span class="si">{</span><span class="n">lipid1</span><span class="si">}</span><span class="s2"> lipid using experimental data from&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">doi</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="n">FMDL_EXP_PATH</span><span class="si">}</span><span class="s2">/OrderParameters/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Evaluating </span><span class="si">{</span><span class="n">lipid1</span><span class="si">}</span><span class="s2"> lipid using experimental data from </span><span class="si">{</span><span class="n">FMDL_EXP_PATH</span><span class="si">}</span><span class="s2">/OrderParameters/</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
-
-                <span class="nb">print</span><span class="p">(</span><span class="n">doi</span><span class="p">)</span>
                 <span class="n">OP_qual_data</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="c1"># get readme file of the experiment</span>
                 <span class="n">exp_fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_EXP_PATH</span><span class="p">,</span> <span class="s2">&quot;OrderParameters&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
@@ -165,8 +162,8 @@
 
                 <span class="n">exp_error</span> <span class="o">=</span> <span class="mf">0.02</span>
 
-                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">OP_data_lipid</span><span class="p">:</span>
-                    <span class="n">OP_array</span> <span class="o">=</span> <span class="n">OP_data_lipid</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">op_array_</span> <span class="ow">in</span> <span class="n">OP_data_lipid</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">OP_array</span> <span class="o">=</span> <span class="n">op_array_</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">OP_exp</span> <span class="o">=</span> <span class="n">exp_op_data</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
                     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -184,11 +181,11 @@
                     <span class="n">OP_qual_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">OP_array</span>
 
                 <span class="c1"># save qualities of simulation-vs-experiment into a dictionary</span>
-                <span class="n">data_dict</span><span class="p">[</span><span class="n">doi</span><span class="p">]</span> <span class="o">=</span> <span class="n">OP_qual_data</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">OP_qual_data</span>
 
                 <span class="c1"># calculate quality for molecule fragments headgroup, sn-1, sn-2</span>
                 <span class="n">fragments</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">get_fragments</span><span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">lipid1</span><span class="p">]</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">)</span>
-                <span class="n">fragment_qual_dict</span><span class="p">[</span><span class="n">doi</span><span class="p">]</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">fragmentQuality</span><span class="p">(</span><span class="n">fragments</span><span class="p">,</span> <span class="n">exp_op_data</span><span class="p">,</span> <span class="n">OP_data_lipid</span><span class="p">)</span>
+                <span class="n">fragment_qual_dict</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">fragmentQuality</span><span class="p">(</span><span class="n">fragments</span><span class="p">,</span> <span class="n">exp_op_data</span><span class="p">,</span> <span class="n">OP_data_lipid</span><span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">fragment_quality_output</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">fragmentQualityAvg</span><span class="p">(</span><span class="n">lipid1</span><span class="p">,</span> <span class="n">fragment_qual_dict</span><span class="p">,</span> <span class="n">fragments</span><span class="p">)</span>
@@ -236,37 +233,47 @@
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile2</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">system_qual_output</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Order parameter quality evaluated for &quot;</span> <span class="o">+</span> <span class="n">simulation</span><span class="o">.</span><span class="n">idx_path</span><span class="p">)</span>
-            <span class="n">EvaluatedOPs</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">evaluated_op_counter</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="nb">print</span><span class="p">()</span>
 
         <span class="c1">###############################################################################</span>
         <span class="c1"># Form factor quality</span>
+        <span class="n">results_ff</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">exp_ff_path</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;FORMFACTOR&quot;</span><span class="p">]:</span>
+            <span class="n">exp_ff_data</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">exp_ff_path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">exp_ff_path_full</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_EXP_PATH</span><span class="p">,</span> <span class="s2">&quot;FormFactors&quot;</span><span class="p">,</span> <span class="n">exp_ff_path</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">exp_ff_path_full</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exp_ff_path_full</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+                            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                                <span class="n">exp_ff_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
 
-        <span class="n">expFFpath</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;FORMFACTOR&quot;</span><span class="p">]</span>
-        <span class="n">expFFdata</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expFFpath</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">expFFpath_full</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_EXP_PATH</span><span class="p">,</span> <span class="s2">&quot;FormFactors&quot;</span><span class="p">,</span> <span class="n">expFFpath</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">expFFpath_full</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-                    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expFFpath_full</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
-                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
-                            <span class="n">expFFdata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">exp_ff_path</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">ff_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">results_ff</span><span class="p">[</span><span class="n">exp_ff_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">get_ffq_scaling</span><span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">ff_data</span><span class="p">,</span> <span class="n">exp_ff_data</span><span class="p">)</span>
+        <span class="c1"># end cycle over FF experiments</span>
 
-        <span class="n">simFFdata</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">ff_data</span>
+        <span class="c1"># TODO: handle multiple FF experiments better</span>
+        <span class="c1"># currently, just pick the best one</span>
+        <span class="n">best_ep</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">exp_path</span><span class="p">,</span> <span class="n">ffq_scf</span> <span class="ow">in</span> <span class="n">results_ff</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">ffq_scf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">best_ep</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ffq_scf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">results_ff</span><span class="p">[</span><span class="n">best_ep</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">best_ep</span> <span class="o">=</span> <span class="n">exp_path</span>
+        <span class="k">if</span> <span class="n">best_ep</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Form factor quality for experiment data from </span><span class="si">{</span><span class="n">best_ep</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distance =&quot;</span><span class="p">,</span> <span class="n">results_ff</span><span class="p">[</span><span class="n">best_ep</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;; scaling factor =&quot;</span><span class="p">,</span> <span class="n">results_ff</span><span class="p">[</span><span class="n">best_ep</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expFFpath</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">simFFdata</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">ffQuality</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">formfactorQuality</span><span class="p">(</span><span class="n">simFFdata</span><span class="p">,</span> <span class="n">expFFdata</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Form factor quality evaluated for &quot;</span><span class="p">,</span> <span class="n">DATAdir</span><span class="p">)</span>
             <span class="n">outfile3</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DATAdir</span><span class="p">,</span> <span class="s2">&quot;FormFactorQuality.json&quot;</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile3</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ffQuality</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-            <span class="n">EvaluatedFFs</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Form factor quality evaluated for &quot;</span><span class="p">,</span> <span class="n">DATAdir</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">ffQuality</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">results_ff</span><span class="p">[</span><span class="n">best_ep</span><span class="p">],</span> <span class="n">f</span><span class="p">)</span>
+            <span class="n">evaluated_ff_counter</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The number of systems with evaluated order parameters:&quot;</span><span class="p">,</span> <span class="n">EvaluatedOPs</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The number of systems with evaluated form factors:&quot;</span><span class="p">,</span> <span class="n">EvaluatedFFs</span><span class="p">)</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The number of systems with evaluated order parameters:&quot;</span><span class="p">,</span> <span class="n">evaluated_op_counter</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The number of systems with evaluated form factors:&quot;</span><span class="p">,</span> <span class="n">evaluated_ff_counter</span><span class="p">)</span></div>
 
 
 
