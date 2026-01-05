@@ -1,0 +1,372 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>developer.align_mapping &mdash; FAIRMD Lipids v1.3.3a0 1.3.3a0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=4e66fd49"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.3a0
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">FAIRMD Lipids v1.3.3a0</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">developer.align_mapping</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for developer.align_mapping</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A helper program to add SMILEIDX to mapping files.</span>
+
+<span class="sd">This program align MD molecules from the Universe to an rdkit molecule</span>
+<span class="sd">created by SMILES. Can be used with a care to semi-manualy curate mapping</span>
+<span class="sd">files, SMILES, and add the alignments for only heavy atoms. Further should</span>
+<span class="sd">be converted into a mature CI/CD script.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chem</span><span class="p">,</span> <span class="n">RDLogger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdkit.Chem</span><span class="w"> </span><span class="kn">import</span> <span class="n">MolStandardize</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dlb</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dlc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">fairmd.lipids.databankio</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dbio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary</span><span class="w"> </span><span class="kn">import</span> <span class="n">elements</span>
+
+<span class="n">lg</span> <span class="o">=</span> <span class="n">RDLogger</span><span class="o">.</span><span class="n">logger</span><span class="p">()</span>
+<span class="n">lg</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">RDLogger</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="mk_universe_compact">
+<a class="viewcode-back" href="../../auto_gen/developer.align_mapping.html#developer.align_mapping.mk_universe_compact">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mk_universe_compact</span><span class="p">(</span><span class="n">s</span><span class="p">:</span> <span class="n">dlc</span><span class="o">.</span><span class="n">System</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Make universe based on just TPR and GRO records&quot;&quot;&quot;</span>
+    <span class="n">tpr_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="s2">&quot;TPR&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;TPR&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tpr</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;TPR&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tpr_url</span> <span class="o">=</span> <span class="n">dbio</span><span class="o">.</span><span class="n">resolve_download_file_url</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s2">&quot;DOI&quot;</span><span class="p">],</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">validate_uri</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">tpr_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dlb</span><span class="o">.</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="n">tpr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">tpr_path</span><span class="p">):</span>
+            <span class="n">dbio</span><span class="o">.</span><span class="n">download_resource_from_uri</span><span class="p">(</span><span class="n">tpr_url</span><span class="p">,</span> <span class="n">tpr_path</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;PDB&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;PDB&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;PDB is not implemented yet&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;System without topology.&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;GRO&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">and</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;GRO&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gro</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;GRO&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">gro_url</span> <span class="o">=</span> <span class="n">dbio</span><span class="o">.</span><span class="n">resolve_download_file_url</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s2">&quot;DOI&quot;</span><span class="p">],</span> <span class="n">gro</span><span class="p">,</span> <span class="n">validate_uri</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">gro_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dlb</span><span class="o">.</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="n">gro</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">gro_path</span><span class="p">):</span>
+            <span class="n">dbio</span><span class="o">.</span><span class="n">download_resource_from_uri</span><span class="p">(</span><span class="n">gro_url</span><span class="p">,</span> <span class="n">gro_path</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">tpr_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gro_path</span> <span class="o">=</span> <span class="n">tpr_path</span> <span class="o">+</span> <span class="s2">&quot;.gro&quot;</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;editconf&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">tpr_path</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">gro_path</span><span class="p">,</span> <span class="s2">&quot;-pbc&quot;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Cannot generate GRO file&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">tpr_path</span><span class="p">,</span> <span class="n">gro_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">tpr_path</span><span class="p">,</span> <span class="n">gro_path</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_1mol_selstr">
+<a class="viewcode-back" href="../../auto_gen/developer.align_mapping.html#developer.align_mapping.get_1mol_selstr">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_1mol_selstr</span><span class="p">(</span><span class="n">comp_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mol_obj</span><span class="p">:</span> <span class="n">dlc</span><span class="o">.</span><span class="n">Molecule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return selection string for a single molecule&quot;&quot;&quot;</span>
+    <span class="n">res_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">mol_obj</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">:</span>
+            <span class="n">res_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mol_obj</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">atom</span><span class="p">][</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">res_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">comp_name</span><span class="p">}</span>
+    <span class="k">return</span> <span class="s2">&quot;resname &quot;</span> <span class="o">+</span> <span class="s2">&quot; or resname &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">res_set</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="get_brutto_formula">
+<a class="viewcode-back" href="../../auto_gen/developer.align_mapping.html#developer.align_mapping.get_brutto_formula">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_brutto_formula</span><span class="p">(</span><span class="n">eorder</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">agrp</span><span class="p">:</span> <span class="n">mda</span><span class="o">.</span><span class="n">AtomGroup</span><span class="p">,</span> <span class="n">charge</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get brutto formula (according to element order) of neutralized form&quot;&quot;&quot;</span>
+    <span class="n">ans</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">eorder</span><span class="p">:</span>
+        <span class="n">ans</span> <span class="o">+=</span> <span class="n">e</span>
+        <span class="n">n_</span> <span class="o">=</span> <span class="p">(</span><span class="n">agrp</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">elements</span> <span class="o">==</span> <span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span> <span class="ow">and</span> <span class="n">charge</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">n_</span> <span class="o">-=</span> <span class="nb">int</span><span class="p">(</span><span class="n">charge</span><span class="p">)</span>
+        <span class="n">ans</span> <span class="o">+=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">n_</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">n_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ans</span></div>
+
+
+
+<div class="viewcode-block" id="compare_neutralized">
+<a class="viewcode-back" href="../../auto_gen/developer.align_mapping.html#developer.align_mapping.compare_neutralized">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compare_neutralized</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compare neutralized forms of molecules&quot;&quot;&quot;</span>
+    <span class="n">a_</span> <span class="o">=</span> <span class="n">MolStandardize</span><span class="o">.</span><span class="n">rdMolStandardize</span><span class="o">.</span><span class="n">ChargeParent</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">b_</span> <span class="o">=</span> <span class="n">MolStandardize</span><span class="o">.</span><span class="n">rdMolStandardize</span><span class="o">.</span><span class="n">ChargeParent</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">aib</span> <span class="o">=</span> <span class="n">a_</span><span class="o">.</span><span class="n">HasSubstructMatch</span><span class="p">(</span><span class="n">b_</span><span class="p">)</span>
+    <span class="n">bia</span> <span class="o">=</span> <span class="n">b_</span><span class="o">.</span><span class="n">HasSubstructMatch</span><span class="p">(</span><span class="n">a_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">aib</span> <span class="ow">and</span> <span class="n">bia</span></div>
+
+
+
+<div class="viewcode-block" id="find_uname">
+<a class="viewcode-back" href="../../auto_gen/developer.align_mapping.html#developer.align_mapping.find_uname">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_uname</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">atom_name</span><span class="p">,</span> <span class="n">res_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">mapping_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">atom_name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;RESIDUE&quot;</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">res_name</span> <span class="o">!=</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="k">return</span> <span class="n">k</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Atom </span><span class="si">{</span><span class="n">atom_name</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">res_name</span><span class="si">}</span><span class="s2"> not found&quot;</span>
+    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../auto_gen/developer.align_mapping.html#developer.align_mapping.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">ss</span> <span class="o">=</span> <span class="n">dlc</span><span class="o">.</span><span class="n">initialize_databank</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;done.txt&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+        <span class="n">done_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()))</span>
+
+    <span class="c1"># list of deeply defective systems</span>
+    <span class="n">done_ids</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">151</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading current state..&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">done_ids</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ss</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">done_ids</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; -- Already done. Skipping.&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="s2">&quot;TPR&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;TPR&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; -- non-TPR currently not implemented. Skipping.&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;UNITEDATOM_DICT&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; -- Cannot work with UA&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">lip_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">dlb</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">lipids_set</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LIPID COMPOSITION: &quot;</span><span class="p">,</span> <span class="n">lip_names</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="n">lip_names</span><span class="p">:</span>
+            <span class="n">cur_lip</span> <span class="o">=</span> <span class="n">lip_names</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current lipids &quot;</span><span class="p">,</span> <span class="n">cur_lip</span><span class="p">)</span>
+            <span class="n">mol_obj</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">cur_lip</span><span class="p">]</span>
+            <span class="c1"># head dict</span>
+            <span class="nb">print</span><span class="p">({</span><span class="n">x</span><span class="p">:</span> <span class="n">mol_obj</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">mol_obj</span><span class="o">.</span><span class="n">mapping_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span><span class="mi">5</span><span class="p">]})</span>
+
+            <span class="n">u</span> <span class="o">=</span> <span class="n">mk_universe_compact</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+            <span class="c1"># use internal element guesser</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">guess_TopologyAttrs</span><span class="p">(</span><span class="n">force_guess</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;elements&quot;</span><span class="p">])</span>
+            <span class="n">elements</span><span class="o">.</span><span class="n">guess_elements</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+
+            <span class="c1"># select all molecules in the system</span>
+            <span class="n">sel_str</span> <span class="o">=</span> <span class="n">get_1mol_selstr</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">][</span><span class="n">cur_lip</span><span class="p">][</span><span class="s2">&quot;NAME&quot;</span><span class="p">],</span> <span class="n">mol_obj</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">sel_str</span><span class="p">)</span>
+            <span class="n">all_atoms_of_mol</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">sel_str</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">all_atoms_of_mol</span><span class="p">)</span>
+
+            <span class="c1"># start checking the consistency</span>
+            <span class="n">metadata_bformula</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">mol_obj</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;bioschema_properties&quot;</span><span class="p">][</span><span class="s2">&quot;molecularFormula&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">eorder</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">metadata_bformula</span><span class="p">)</span>
+            <span class="n">metadata_charge</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mol_obj</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;NMRlipids&quot;</span><span class="p">][</span><span class="s2">&quot;charge&quot;</span><span class="p">])</span>
+            <span class="n">metadata_mweight</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mol_obj</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;bioschema_properties&quot;</span><span class="p">][</span><span class="s2">&quot;molecularWeight&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">metadata_charge</span>
+            <span class="n">smiles</span> <span class="o">=</span> <span class="n">mol_obj</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;bioschema_properties&quot;</span><span class="p">][</span><span class="s2">&quot;smiles&quot;</span><span class="p">]</span>
+            <span class="n">mol_from_smiles</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
+
+            <span class="n">molecules</span> <span class="o">=</span> <span class="n">all_atoms_of_mol</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;molnums&quot;</span><span class="p">)</span>
+            <span class="n">last_good_mol</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">mol_</span> <span class="ow">in</span> <span class="n">molecules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;molnum </span><span class="si">{</span><span class="n">_</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">mol_</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">mol_from_md</span> <span class="o">=</span> <span class="n">mol_</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">convert_to</span><span class="p">(</span><span class="s2">&quot;rdkit&quot;</span><span class="p">)</span>
+                    <span class="n">last_good_mol</span> <span class="o">=</span> <span class="n">mol_</span>
+                <span class="k">except</span> <span class="n">Chem</span><span class="o">.</span><span class="n">AtomValenceException</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Molecule </span><span class="si">{</span><span class="n">_</span><span class="si">}</span><span class="s2"> has bad conformation. Trying another one.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                    <span class="n">last_good_mol</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">continue</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">mass_close</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">mol_</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">metadata_mweight</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">mass_close</span><span class="p">:</span>
+                    <span class="c1"># it can be because of incorrect average isotopic mass</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Masses do not correspond to each other: </span><span class="si">{</span><span class="n">_</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">mol_</span><span class="o">.</span><span class="n">masses</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">metadata_mweight</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+                        <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="n">cur_brutto</span> <span class="o">=</span> <span class="n">get_brutto_formula</span><span class="p">(</span><span class="n">eorder</span><span class="p">,</span> <span class="n">mol_</span><span class="p">,</span> <span class="n">metadata_charge</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">cur_brutto</span> <span class="o">==</span> <span class="n">metadata_bformula</span><span class="p">,</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Brutto formulas do not correspond to each other </span><span class="si">{</span><span class="n">cur_brutto</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">metadata_bformula</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="k">assert</span> <span class="n">compare_neutralized</span><span class="p">(</span><span class="n">mol_from_smiles</span><span class="p">,</span> <span class="n">mol_from_md</span><span class="p">),</span> <span class="s2">&quot;SMILES != MD&quot;</span>
+            <span class="c1"># check-ups are done</span>
+
+            <span class="c1"># new mapping</span>
+            <span class="n">new_mapping_dict</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">mol_obj</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">)</span>
+            <span class="c1"># make no-explicit-H-mol and check match-to-smiles</span>
+            <span class="n">mm</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">RemoveHs</span><span class="p">(</span><span class="n">mol_from_md</span><span class="p">)</span>
+            <span class="n">mtch</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">mol_from_smiles</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">mol_from_smiles</span><span class="o">.</span><span class="n">GetNumHeavyAtoms</span><span class="p">()))</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">mtch</span><span class="p">)),</span> <span class="p">(</span>
+                <span class="s2">&quot;Match string should be a permutation of [1,...,N] where N is the number of heavy atoms&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">rdatit</span> <span class="o">=</span> <span class="n">mol_from_md</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()</span>
+            <span class="n">rdatit2</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()</span>
+            <span class="n">mtch_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">mtch</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">mdat</span> <span class="ow">in</span> <span class="n">last_good_mol</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">rdatit</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">GetAtomicNum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetAtomicNum</span><span class="p">(),</span> <span class="n">mdat</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">b</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">rdatit2</span><span class="p">)</span>
+                    <span class="n">match_in_smile</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">mtch_iter</span><span class="p">)</span>
+                    <span class="n">un</span> <span class="o">=</span> <span class="n">find_uname</span><span class="p">(</span><span class="n">mol_obj</span><span class="p">,</span> <span class="n">mdat</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mdat</span><span class="o">.</span><span class="n">resname</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">][</span><span class="n">cur_lip</span><span class="p">][</span><span class="s2">&quot;NAME&quot;</span><span class="p">])</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">un</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">GetAtomicNum</span><span class="p">(),</span> <span class="n">mdat</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">GetAtomicNum</span><span class="p">(),</span> <span class="n">match_in_smile</span><span class="p">)</span>
+                    <span class="n">new_mapping_dict</span><span class="p">[</span><span class="n">un</span><span class="p">][</span><span class="s2">&quot;SMILEIDX&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match_in_smile</span><span class="p">)</span>
+
+            <span class="n">we_have_idx</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_mapping_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="s2">&quot;SMILEIDX&quot;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">we_have_idx</span> <span class="ow">and</span> <span class="s2">&quot;SMILEIDX&quot;</span> <span class="ow">in</span> <span class="n">mol_obj</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                        <span class="n">we_have_idx</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">if</span> <span class="n">we_have_idx</span><span class="p">:</span>
+                        <span class="k">assert</span> <span class="s2">&quot;SMILEIDX&quot;</span> <span class="ow">in</span> <span class="n">mol_obj</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="s2">&quot;SMILEIDX is set, but not for this atom!&quot;</span>
+                        <span class="k">assert</span> <span class="n">mol_obj</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;SMILEIDX&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;SMILEIDX&quot;</span><span class="p">],</span> <span class="s2">&quot;SMILEIDX is wrong!!&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">we_have_idx</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving mapping with SMILE indexes for the first time!&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mol_obj</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                    <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">safe_dump</span><span class="p">(</span><span class="n">new_mapping_dict</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;done.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">s</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">])</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

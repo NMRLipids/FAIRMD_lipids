@@ -9,6 +9,7 @@ Python files
    :maxdepth: 1
 
    fairmd.lipids.SchemaValidation.ValidateYAML
+   fairmd.lipids.SchemaValidation.engines
 
 Module contents
 ---------------

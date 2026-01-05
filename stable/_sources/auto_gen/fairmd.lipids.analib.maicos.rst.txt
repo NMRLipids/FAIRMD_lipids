@@ -1,0 +1,7 @@
+fairmd.lipids.analib.maicos module
+==================================
+
+.. automodule:: fairmd.lipids.analib.maicos
+   :members:
+   :show-inheritance:
+   :undoc-members:

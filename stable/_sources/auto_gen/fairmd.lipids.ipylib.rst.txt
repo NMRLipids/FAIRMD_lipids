@@ -1,0 +1,20 @@
+
+
+fairmd.lipids.ipylib
+====================
+Python files
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   fairmd.lipids.ipylib.jpyroutines
+   fairmd.lipids.ipylib.plottings
+
+Module contents
+---------------
+
+.. automodule:: fairmd.lipids.ipylib
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.databankLibrary module &mdash; FAIRMD Lipids v1.3.2a0 1.3.2a0 documentation</title>
+  <title>fairmd.lipids.databankLibrary module &mdash; FAIRMD Lipids v1.3.3a0 1.3.3a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=3fb3b710"></script>
+      <script src="../_static/documentation_options.js?v=4e66fd49"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a0
+            FAIRMD Lipids v1.3.3a0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.2a0</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.3a0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -86,9 +86,9 @@
 analyzing the FAIRMD Lipids</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.CalcAreaPerMolecule">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">CalcAreaPerMolecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#CalcAreaPerMolecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.CalcAreaPerMolecule" title="Link to this definition"></a></dt>
-<dd><p>Calculates average area per lipid for a simulation defined with <code class="docutils literal notranslate"><span class="pre">system</span></code>.
-It is using the <code class="docutils literal notranslate"><span class="pre">apl.json</span></code> file where area per lipid as a function of time
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">CalcAreaPerMolecule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#CalcAreaPerMolecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.CalcAreaPerMolecule" title="Link to this definition"></a></dt>
+<dd><p>Calculate average area per lipid for a system.</p>
+<p>It is using the <code class="docutils literal notranslate"><span class="pre">apl.json</span></code> file where area per lipid as a function of time
 calculated by the <code class="docutils literal notranslate"><span class="pre">calcAPL.py</span></code> is stored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -145,6 +145,22 @@ by <code class="docutils literal notranslate"><span class="pre">system</span></c
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.GetOP">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">GetOP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#GetOP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.GetOP" title="Link to this definition"></a></dt>
+<dd><p>Returns a dictionary containing the order parameter data time for each lipid in the
+<code class="docutils literal notranslate"><span class="pre">system</span></code>, stored in <code class="docutils literal notranslate"><span class="pre">LipidNameOrderParameters.json</span></code> files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> – NMRlipids databank dictionary defining a simulation.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary contaning, for each lipid, the order parameter data: average OP, standard deviation,
+and standard error of mean. Contains None if <code class="docutils literal notranslate"><span class="pre">LipidNameOrderParameters.json</span></code> missing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.GetNlipids">
 <span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">GetNlipids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#GetNlipids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.GetNlipids" title="Link to this definition"></a></dt>
 <dd><p>Returns the total number of lipids in a simulation defined by <code class="docutils literal notranslate"><span class="pre">system</span></code>.</p>
@@ -160,7 +176,7 @@ by <code class="docutils literal notranslate"><span class="pre">system</span></c
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.getLipids">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">getLipids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LipidSet[{'CHOL',</span> <span class="pre">'POPE',</span> <span class="pre">'POPC',</span> <span class="pre">'DPPC',</span> <span class="pre">'TOCL'}]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#getLipids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.getLipids" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">getLipids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LipidSet[{'POPC',</span> <span class="pre">'CHOL',</span> <span class="pre">'DPPC',</span> <span class="pre">'POPE',</span> <span class="pre">'TOCL'}]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#getLipids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.getLipids" title="Link to this definition"></a></dt>
 <dd><p>Returns a string using MDAnalysis notation that can used to select all lipids from
 the <code class="docutils literal notranslate"><span class="pre">system</span></code>.</p>
 <dl class="field-list simple">
@@ -172,33 +188,6 @@ the <code class="docutils literal notranslate"><span class="pre">system</span></
 the <code class="docutils literal notranslate"><span class="pre">system</span></code>.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.simulation2universal_atomnames">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">simulation2universal_atomnames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">molname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#simulation2universal_atomnames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.simulation2universal_atomnames" title="Link to this definition"></a></dt>
-<dd><p>Maps an atomic name from the simulation system to the corresponding universal
-atomic name based on the provided molecule and atom. This function attempts to
-retrieve the atomic name using the mapping dictionary or None.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>system</strong> – The simulation system object</p></li>
-<li><p><strong>molname</strong> – The name of the molecule</p></li>
-<li><p><strong>atom</strong> – The specific atom name</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The universal atomic name or None (if not found)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.loadMappingFile">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">loadMappingFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#loadMappingFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.loadMappingFile" title="Link to this definition"></a></dt>
-<dd><p>This function is deprecated. Use Molecule.register_mapping() from
-DatbankLib.settings.molecules instead.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -214,25 +203,6 @@ DatbankLib.settings.molecules instead.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>string of system specific atom names</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.getUniversalAtomName">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">getUniversalAtomName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#getUniversalAtomName"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.getUniversalAtomName" title="Link to this definition"></a></dt>
-<dd><p>Returns the universal atom name corresponding the simulation specific <code class="docutils literal notranslate"><span class="pre">atomName</span></code>
-of a <code class="docutils literal notranslate"><span class="pre">lipid</span></code> in a simulation defined by the <code class="docutils literal notranslate"><span class="pre">system</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>system</strong> – system dictionary</p></li>
-<li><p><strong>atom_name</strong> – simulation specific atomname</p></li>
-<li><p><strong>molname</strong> – universal lipid name</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>universal atomname (string) or None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -256,7 +226,7 @@ the <code class="docutils literal notranslate"><span class="pre">system</span></
 <dl class="py function">
 <dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.read_trj_PN_angles">
 <span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">read_trj_PN_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mda_universe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Universe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#read_trj_PN_angles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.read_trj_PN_angles" title="Link to this definition"></a></dt>
-<dd><p>Calculates the P-N vector angles with respect to membrane normal from the
+<dd><p>Calculate the P-N vector angles with respect to membrane normal from the
 simulation defined by the MDAnalysis universe.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -279,8 +249,8 @@ the error of the mean calculated over molecules)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.calcArea">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">calcArea</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#calcArea"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.calcArea" title="Link to this definition"></a></dt>
-<dd><p>Returns area of the calculated based on the area per lipid stored in the databank.</p>
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">calcArea</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#calcArea"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.calcArea" title="Link to this definition"></a></dt>
+<dd><p>Return area of the calculated based on the area per lipid stored in the databank.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>system</strong> – a system dictionary</p>
@@ -324,7 +294,7 @@ starting M_G2C to <em>sn</em>-2.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.calcLipidFraction">
 <span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">calcLipidFraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lipid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#calcLipidFraction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.calcLipidFraction" title="Link to this definition"></a></dt>
-<dd><p>Returns the number fraction of <code class="docutils literal notranslate"><span class="pre">lipid</span></code> with respect to total number of lipids.</p>
+<dd><p>Return the number fraction of <code class="docutils literal notranslate"><span class="pre">lipid</span></code> with respect to total number of lipids.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -340,9 +310,9 @@ starting M_G2C to <em>sn</em>-2.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fairmd.lipids.databankLibrary.getHydrationLevel">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">getHydrationLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#getHydrationLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.getHydrationLevel" title="Link to this definition"></a></dt>
-<dd><p>Returns hydration level of the system, i.e., number of water molecules divided
-by number of lipid molecules.</p>
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankLibrary.</span></span><span class="sig-name descname"><span class="pre">getHydrationLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankLibrary.html#getHydrationLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankLibrary.getHydrationLevel" title="Link to this definition"></a></dt>
+<dd><p>Return hydration level of the system.</p>
+<p>Hydration level is defined as the number of water molecules divided by number of lipid molecules.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>system</strong> – a system dictionary</p>
@@ -366,7 +336,7 @@ by number of lipid molecules.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Experiment metadata &mdash; FAIRMD Lipids v1.3.2a0 1.3.2a0 documentation</title>
+  <title>Experiment metadata &mdash; FAIRMD Lipids v1.3.3a0 1.3.3a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=3fb3b710"></script>
+      <script src="../_static/documentation_options.js?v=4e66fd49"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a0
+            FAIRMD Lipids v1.3.3a0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -54,7 +54,12 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../dbcontribute.html">Data Contribution</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../contrib/addingSimulation.html">Adding simulations</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../contrib/addingExpData.html">Adding experimental data</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Experiment metadata</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Experiment metadata</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#general-fields">General fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#nmr-specific-fields">NMR-specific fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scattering-specific-fields">Scattering-specific fields</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../contrib/addingMolecule.html">Adding new molecule</a></li>
@@ -69,7 +74,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.2a0</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.3a0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -91,6 +96,7 @@
              
   <section id="experiment-metadata">
 <span id="readmeexp"></span><h1>Experiment metadata<a class="headerlink" href="#experiment-metadata" title="Link to this heading"></a></h1>
+<p><strong>Global metadata table</strong></p>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>key</p></th>
@@ -98,57 +104,225 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>DOI</p></td>
+<tr class="row-even"><td><p>ARTICLE_DOI</p></td>
 <td><p>DOI of the of the original publication of the experimental data</p></td>
 </tr>
+<tr class="row-odd"><td><p>DATA_DOI</p></td>
+<td><p>DOI of the dataset deposition with raw NMR data</p></td>
+</tr>
+<tr class="row-even"><td><p>DATA_REF</p></td>
+<td><p>Reference to deposited dataset</p></td>
+</tr>
 <tr class="row-odd"><td><p>TEMPERATURE</p></td>
-<td><p>Temperature of the experiment</p></td>
+<td><p>Temperature (K) of the experiment</p></td>
 </tr>
-<tr class="row-even"><td><p>MOLAR_FRACTIONS</p></td>
-<td><p>Dictionary of molar fractions of bilayer components</p></td>
+<tr class="row-even"><td><p>MEMBRANE_COMPOSITION</p></td>
+<td><p>Dictionary of molar fractions of membrane phase</p></td>
 </tr>
-<tr class="row-odd"><td><p>ION_CONCENTRATIONS</p></td>
+<tr class="row-odd"><td><p>SOLUTION_COMPOSITION</p></td>
 <td><p>Dictionary of ion concentrations in the system</p></td>
 </tr>
-<tr class="row-even"><td><p>TOTAL_LIPID_CONCENTRATION</p></td>
-<td><p>Total concentration of lipid components</p></td>
+<tr class="row-even"><td><p>ADDITIONAL_MOLECULES</p></td>
+<td><p>Dictionary of molecules which are not in the databank</p></td>
 </tr>
-<tr class="row-odd"><td><p>COUNTER_IONS</p></td>
-<td><p>Type of counter ions if present</p></td>
+<tr class="row-odd"><td><p>TOTAL_HYDRATION</p></td>
+<td><p>Total hydration of the system (water mass %)</p></td>
+</tr>
+<tr class="row-even"><td><p>PH</p></td>
+<td><p>pH of the system</p></td>
+</tr>
+<tr class="row-odd"><td><p>PH_METHOD</p></td>
+<td><p>Method of pH setting or measurement (buffer / measurement)</p></td>
+</tr>
+<tr class="row-even"><td><p>REAGENT_SOURCES</p></td>
+<td><p>Description of lipid reagents. Source, purity, etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p>SAMPLE_PROTOCOL</p></td>
+<td><p>Protocol for sample preparation (in free format, references are welcome).</p></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Field descriptions</strong></p>
+<p><strong>NMR specific metadata</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>T_RF_HEATING</p></td>
+<td><p>Correction of the temperature according to RF heating</p></td>
+</tr>
+<tr class="row-odd"><td><p>INSTRUMENT</p></td>
+<td><p>Instrument name (including field)</p></td>
+</tr>
+<tr class="row-even"><td><p>METHOD</p></td>
+<td><p>Method of OP measurement “abbr1:abbr2” (see detailed explaining below)</p></td>
+</tr>
+<tr class="row-odd"><td><p>SIGN_MEASURED</p></td>
+<td><p>NONE or S-DROSS</p></td>
+</tr>
+<tr class="row-even"><td><p>DETAILS</p></td>
+<td><p>Description of NMR experiment type</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>X-ray specific metadata</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>key</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SOURCE</p></td>
+<td><p>Source name</p></td>
+</tr>
+<tr class="row-odd"><td><p>LAMBDA</p></td>
+<td><p>Source wavelength or range</p></td>
+</tr>
+<tr class="row-even"><td><p>QRANGE</p></td>
+<td><p>Scattering detection range (Q-range)</p></td>
+</tr>
+<tr class="row-odd"><td><p>DETECTOR</p></td>
+<td><p>Detector type</p></td>
+</tr>
+<tr class="row-even"><td><p>DISTANCE</p></td>
+<td><p>Distance to detector (m)</p></td>
+</tr>
+<tr class="row-odd"><td><p>DATATYPE</p></td>
+<td><p>Data type (batch or SEC)</p></td>
+</tr>
+<tr class="row-even"><td><p>EXPOSURE</p></td>
+<td><p>Exposure time per frame (s)</p></td>
+</tr>
+<tr class="row-odd"><td><p>FRAMES</p></td>
+<td><p>Number of frames</p></td>
+</tr>
+<tr class="row-even"><td><p>SAMPLE_TYPE</p></td>
+<td><p>‘MLV’, ‘SUV’, ‘GUV’, ‘OS’ (oriented sample), ‘BIC’</p></td>
+</tr>
+</tbody>
+</table>
+<section id="general-fields">
+<h2>General fields<a class="headerlink" href="#general-fields" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
-<li><p><strong>DOI</strong><br />
+<li><p><strong>ARTICLE_DOI</strong><br />
 DOI of the original publication where the experimental data originates.</p></li>
+<li><p><strong>DATA_DOI</strong><br />
+DOI of the dataset deposition with raw NMR data (e.g., nmrXive).</p></li>
+<li><p><strong>DATA_REF</strong>
+If the dataset doesn’t have DOI, we engage to add some persistent identifier or even URL if the first doesn’t exist.</p></li>
 <li><p><strong>TEMPERATURE</strong><br />
-Temperature of the experiment.</p></li>
-<li><p><strong>MOLAR_FRACTIONS</strong><br />
+Temperature (K) of the experiment. For NMR experiment, if <code class="docutils literal notranslate"><span class="pre">NMR:T_RF_HEATING</span></code> is ‘unknown’ (or not given), the reported temperature from the probe is settet here. Otherwise, please insert RF-corrected temperature.</p></li>
+<li><p><strong>MEMBRANE_COMPOSITION</strong><br />
 Dictionary of molar fractions of bilayer components. For example:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MOLAR_FRACTIONS</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MEMBRANE_COMPOSITION</span><span class="p">:</span>
   <span class="n">POPC</span><span class="p">:</span> <span class="mf">0.93</span>
   <span class="n">CHOL</span><span class="p">:</span> <span class="mf">0.07</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="4">
-<li><p><strong>ION_CONCENTRATIONS</strong><br />
-Dictionary of ion concentrations of the system ([ion]= N<sub>ion</sub>*[water]/N<sub>water</sub>, where [water] = 55.5 M). For example:</p></li>
+<p>All the molecules should be registered in the <a class="reference internal" href="../dbstructure.html#molecule-record"><span class="std std-ref">molecular inventory</span></a> in the <code class="docutils literal notranslate"><span class="pre">membrane</span></code> subfolder.</p>
+<ol class="arabic simple" start="6">
+<li><p><strong>SOLUTION_COMPOSITION</strong><br />
+Dictionary of solution composition of the system (mass %), main solvent is not listed:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ION_CONCENTRATIONS</span><span class="p">:</span>
-  <span class="n">POT</span><span class="p">:</span> <span class="mi">0</span>
-  <span class="n">SOD</span><span class="p">:</span> <span class="mf">0.1</span>
-  <span class="n">CLA</span><span class="p">:</span> <span class="mf">0.1</span>
-  <span class="n">CAL</span><span class="p">:</span> <span class="mi">0</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SOLUTION_COMPOSITION</span><span class="p">:</span>
+  <span class="n">SOD</span><span class="p">:</span> <span class="mf">0.5</span>
+  <span class="n">CLA</span><span class="p">:</span> <span class="mf">0.24</span>
+  <span class="n">GLUCOSE</span><span class="p">:</span> <span class="mf">0.1</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="5">
-<li><p><strong>TOTAL_LIPID_CONCENTRATION</strong><br />
-Total concentration of lipid components ([lipid]= N<sub>lipid</sub>*[water]/N<sub>water</sub>, where [water] = 55.5 M). If exact concentration is not known, but experiments are performed in excess water, ’full hydration’ can be given.</p></li>
-<li><p><strong>COUNTER_IONS</strong><br />
-Type of counter ions if present.</p></li>
+<p>All the molecules should be registered in the <a class="reference internal" href="../dbstructure.html#molecule-record"><span class="std std-ref">molecular inventory</span></a> in the <code class="docutils literal notranslate"><span class="pre">solution</span></code> subfolder.
+Do not provide whole salts! Only separated ions. Remember that the counterions of charged lipids are also part of the solution.</p>
+<ol class="arabic simple" start="7">
+<li><p><strong>ADDITIONAL_MOLECULES</strong>
+Dictionary of additional molecules in the format:</p></li>
 </ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ADDITIONAL_MOLECULES</span><span class="p">:</span>
+    <span class="n">TFA</span><span class="p">:</span> <span class="n">trifluoroacetic</span> <span class="n">acid</span><span class="p">,</span> <span class="mf">0.1</span><span class="o">%</span>
+    <span class="n">DMSO</span><span class="p">:</span> <span class="n">dimethylsulfoxide</span><span class="p">,</span> <span class="mf">0.1</span><span class="o">%</span>
+    <span class="n">DSS</span><span class="p">:</span> <span class="n">sodium</span> <span class="n">trimethylsilylpropanesulfonate</span><span class="p">,</span> <span class="mf">0.01</span><span class="o">%</span>
+    <span class="n">EDTA</span><span class="p">:</span> <span class="n">ethylenediaminetetraacetic</span> <span class="n">acid</span><span class="p">,</span> <span class="mf">0.1</span> <span class="n">mM</span>
+</pre></div>
+</div>
+<p>we can use INCHI-key, CAS number or just IUPAC name. If molecule is important for
+the composition, it should get the metadata inside the databank and be mentioned under
+<code class="docutils literal notranslate"><span class="pre">SOLUTION_COMPOSITION</span></code> instead.</p>
+<ol class="arabic simple" start="8">
+<li><p><strong>TOTAL_HYDRATION</strong><br />
+Mass % of water in the sample. For NMR experiment, it is better if measured by <sup>1</sup>H MAS NMR.</p></li>
+<li><p><strong>PH</strong><br />
+pH of the system (number or UNKNOWN)</p></li>
+<li><p><strong>PH_METHOD</strong><br />
+How the pH value is got: measured by pH electrode or indicator paper, measured by NMR, set by buffer.</p></li>
+<li><p><strong>REAGENT_SOURCES</strong><br />
+Which reagents are used for lipids – should be specified for every lipid.</p></li>
+<li><p><strong>SAMPLE_PROTOCOL</strong>
+Protocol of liposome (or OS) preparation. A description of the preparation steps and
+conditions used to obtain the sample, such as lipid composition, hydration method, extrusion,
+alignment procedures, and any buffers used.
+For NMR sample, it is important to mention how the targeted hydration level is reached:
+lyophilised powder is hydrated, liposome suspension is dehydrated, or liposome suspension
+is ultracentrifugated to get lipid-rich phase.</p></li>
+</ol>
+</section>
+<section id="nmr-specific-fields">
+<h2>NMR-specific fields<a class="headerlink" href="#nmr-specific-fields" title="Link to this heading"></a></h2>
+<p>All the following fields are subfields of <code class="docutils literal notranslate"><span class="pre">NMR:</span></code> block.</p>
+<ol class="arabic simple">
+<li><p><strong>INSTRUMENT</strong><br />
+Name of the instrument and field strength.</p></li>
+<li><p><strong>METHOD</strong><br />
+A field identifying the NMR method used (string formed as METHOD:SUBMETHOD, e.g., “2H:QE”).</p>
+<ul class="simple">
+<li><p>Variants for METHOD: <em>“2H”, “CDLF”, “PDLF”</em><br />
+Two main methods are <sup>2</sup>H-NMR and <sup>1</sup>H-<sup>13</sup>C SLF (separate local field)
+NMR experiments which can be either CDLF (Carbon-detected local field) or PDLF (Proton-DLF).</p></li>
+<li><p>Sub-Method for “2H”: <em>“SP” | “QE” | “see_comments”</em><br />
+For <sup>2</sup>H NMR, the submethod used is either “single pulse” or “quadrupolar echo”.</p></li>
+<li><p>Sub-Method for “CDLF”: <em>“REDOR” | “DIPSHIFT” | “recDIPSHIFT” | “see_comments”</em><br />
+For CDLF method, the variants could be Rotational-Echo Double-Resonance (REDOR),
+Dipolar-Coupling chemical shift correlation (DIPSHIFT), or recoupled DIPSHIFT (recDIPSHIFT).</p></li>
+<li><p>Sub-Method for “PDLF”: <em>“DROSS” | “R18_1^7” (or other numbers characterizing R-type sequence) | “see_comments”</em><br />
+For PDLF method, subvariants could use dipolar recoupling on-axis with scaling and shape preservation (DROSS),
+or R-type recoupling (recoupling using symmetry-based pulse sequences)</p></li>
+</ul>
+</li>
+<li><p><strong>SIGN_MEASURED</strong><br />
+Method name  (e.g. S-DROSS) if order parameter sign was measured, NONE otherwise.</p></li>
+<li><p><strong>T_RF_HEATING</strong><br />
+How RF heating is dealt (UNKNOWN / measured / guessed)</p></li>
+<li><p><strong>DETAILS</strong><br />
+Links to the pulse sequence, corresponding paper and precise parameters if important.
+Obligatory explanation if <strong>NMR:METHOD</strong> uses “see_comments” for SUBMETHOD.</p></li>
+</ol>
+</section>
+<section id="scattering-specific-fields">
+<h2>Scattering-specific fields<a class="headerlink" href="#scattering-specific-fields" title="Link to this heading"></a></h2>
+<p>All the following fields are subfields of <code class="docutils literal notranslate"><span class="pre">XRAY:</span></code> block.</p>
+<ol class="arabic simple">
+<li><p><strong>SOURCE</strong>
+X-ray source description. Name of the core facilities or instrument name if laboratory source was used. Name of beamline and source if synchrotron data (e.g. EMBL P12, PETRA III).</p></li>
+<li><p><strong>LAMBDA</strong>
+Source wavelength or range. Wavelength (and/or range) of the X-ray beam used, with units (e.g., Ångstroms).</p></li>
+<li><p><strong>QRANGE</strong>
+Scattering detection range (Q-range). The accessible scattering vector range, typically given in 1/Å.</p></li>
+<li><p><strong>DETECTOR</strong>
+Detector type (e.g., CCD camera, PILATUS, or other detector model).</p></li>
+<li><p><strong>DISTANCE</strong>
+Distance to detector (m). The separation between the sample and the detector, in meters.</p></li>
+<li><p><strong>DATATYPE</strong>
+Measurement data type. Batch mode or size-exclusion chromatography (SEC) mode.</p></li>
+<li><p><strong>EXPOSURE</strong>
+Exposure time per frame. The total data acquisition time per measurement frame, usually given in seconds.</p></li>
+<li><p><strong>FRAMES</strong>
+Number of frames collected for dataset.</p></li>
+<li><p><strong>SAMPLE_TYPE</strong>
+‘MLV’, ‘SUV’, ‘GUV’, ‘OS’ (oriented sample), ‘BIC’. The type of sample used, with definitions: MLV (multilamellar vesicles), SUV (small unilamellar vesicles), GUV (giant unilamellar vesicles), OS (oriented sample), BIC (bicelles).</p></li>
+</ol>
+</section>
 </section>
 
 
@@ -162,7 +336,7 @@ Type of counter ions if present.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

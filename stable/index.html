@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FAIRMD Lipids Project &mdash; FAIRMD Lipids v1.3.2a0 1.3.2a0 documentation</title>
+  <title>FAIRMD Lipids Project &mdash; FAIRMD Lipids v1.3.3a0 1.3.3a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=3fb3b710"></script>
+      <script src="_static/documentation_options.js?v=4e66fd49"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -31,7 +31,7 @@
           
           
           <a href="#" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a0
+            FAIRMD Lipids v1.3.3a0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,7 +59,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">FAIRMD Lipids v1.3.2a0</a>
+          <a href="#">FAIRMD Lipids v1.3.3a0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -79,12 +79,10 @@
              
   <section id="fairmd-lipids-project">
 <span id="index"></span><h1>FAIRMD Lipids Project<a class="headerlink" href="#fairmd-lipids-project" title="Link to this heading"></a></h1>
-<p>FAIRMD Lipids is a community-driven catalogue of biologically relevant lipid membranes
-emerging from the <a class="reference external" href="http://nmrlipids.blogspot.com/">NMRlipids Open Collaboration</a>. It
-gathers atomistic MD simulations, X-ray scattering experiments, and NMR experiments on
-C-H bond order parameters in one place.</p>
-<p><em>FAIRMD Lipids is an overlay databank.</em> Each databank entry (molecule, simulation or
-experiment) contains the metadata YAML-file, which stores all the essential information
+<p>FAIRMD Lipids is a community-driven databank for exploring biologically relevant lipid membranes emerging from the <a class="reference external" href="http://nmrlipids.blogspot.com/">NMRlipids Open Collaboration</a>. The databank is an open collection of atomistic molecular dynamics (MD) simulations, comprising already a massive number of lipid membrane trajectories generated using distinct force fields (e.g. CHARMM, Amber, GROMOS and Slipids), and of lipid membrane experimental data mainly from X-ray scattering and NMR experiments. The data can be easily accessed by the web graphical interface <a class="reference external" href="https://databank.nmrlipids.fi/">FAIRMD Lipids-webUI</a>. The FAIRMD Lipids-API provides programmatic access to the entire data, enabling automatic analysis of all simulations in the Databank. This enables a wide range of novel data-driven applications, from MD model benchmarking against experimental data, to the construction of machine learning models that predict membrane properties.</p>
+<section id="fairmd-lipids-is-an-overlay-databank">
+<h2>FAIRMD Lipids is an overlay databank<a class="headerlink" href="#fairmd-lipids-is-an-overlay-databank" title="Link to this heading"></a></h2>
+<p>Each databank entry (molecule, simulation or experiment) contains the metadata YAML-file, which stores all the essential information
 for the data upcycling and reuse. This includes, for example, the information about
 permanent location of each simulation file, but raw data is located in distributed
 locations outside the FAIRMD Lipids. The organisation of the data as well as description
@@ -92,6 +90,7 @@ of metadata schemas are described in <a class="reference internal" href="dbstruc
 located in <a class="reference external" href="https://github.com/NMRlipids/BilayerData">BilayerData GitHub repository</a>.</p>
 <p>The scientific background and initial motivation of the project is described in the
 <a class="reference external" href="https://doi.org/10.1038/s41467-024-45189-z">FAIRMD Lipids Manuscript (Nat.Comm., 2024)</a>.</p>
+</section>
 <section id="databank-nmrlipids-fi-web-ui">
 <h2>databank.nmrlipids.fi web-UI<a class="headerlink" href="#databank-nmrlipids-fi-web-ui" title="Link to this heading"></a></h2>
 <p><a class="reference external" href="https://databank.nmrlipids.fi/">FAIRMD Lipids-webUI</a> provides easy access to the
@@ -100,7 +99,7 @@ force field, temperature, membrane properties, and quality; the search results a
 ranked based on the simulation quality as evaluated against experimental data when
 available. Web-UI provides basic graphical reports for the computed properties as well
 as graphical comparison between simulation and experimental data.</p>
-<p>The Web-UI is being developed in the repository <a class="reference external" href="https://github.com/NMRlipids/BilayerGUI_laravel">BilayerGUI_laravel</a>.</p>
+<p>The Web-UI is being developed in the repository <a class="reference external" href="https://github.com/NMRlipids/BilayerUI_laravel">BilayerUI_laravel</a>.</p>
 </section>
 <section id="fairmd-lipids-api">
 <h2>FAIRMD Lipids-API<a class="headerlink" href="#fairmd-lipids-api" title="Link to this heading"></a></h2>
@@ -202,7 +201,7 @@ fmdl_initialize_data<span class="w"> </span>dev
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dbstructure.html#experiment-record">Experiment record</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#order-parameter-nmr-experiment">Order parameter NMR experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbstructure.html#solid-state-nmr-experiment-metadata">Solid-state NMR experiment metadata</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dbstructure.html#form-factor-x-ray-experiment-metadata">Form factor X-ray experiment metadata</a></li>
 </ul>
 </li>
@@ -263,7 +262,7 @@ fmdl_initialize_data<span class="w"> </span>dev
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

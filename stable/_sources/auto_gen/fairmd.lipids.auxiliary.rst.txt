@@ -1,0 +1,20 @@
+
+
+fairmd.lipids.auxiliary
+=======================
+Python files
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   fairmd.lipids.auxiliary.elements
+   fairmd.lipids.auxiliary.jsonEncoders
+
+Module contents
+---------------
+
+.. automodule:: fairmd.lipids.auxiliary
+   :members:
+   :show-inheritance:
+   :undoc-members:

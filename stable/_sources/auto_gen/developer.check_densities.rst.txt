@@ -1,7 +1,0 @@
-developer.check\_densities module
-=================================
-
-.. automodule:: developer.check_densities
-   :members:
-   :show-inheritance:
-   :undoc-members:

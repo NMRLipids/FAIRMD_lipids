@@ -3,6 +3,30 @@
 Adding simulations
 ==================
 
+The recommended way to contribute new simulation data is to use the
+`FAIRMD Upload-Portal <https://upload-portal.nmrlipids.fi>`_.
+The portal provides a simple form where you supply the essential details of your
+simulation. After submission, the information is automatically sent to the
+`BilayerData <https://github.com/NMRLipids/BilayerData>`_ repository, where a pull
+request is created. A link to this pull request is shown in the portal once the
+submission completes.
+
+The information provided in the form corresponds to the fields normally contained in
+an ``info.yaml`` file, so the guidance linked below regarding the structure and meaning
+of these fields remains relevant even when using the Upload Portal. Minor issues in the
+submitted details are typically easy to correct during the review process, so perfect
+accuracy is not required at the time of submission.
+
+The submitted data is validated through the BilayerData workflows. After verification, the simulation is
+processed and incorporated into the databank.
+
+If you use the Upload Portal, only **Step 1** below (uploading your files to Zenodo)
+remains relevant. All handling of metadata and processing is performed automatically.
+
+The steps below describe the manual procedure, which is only needed if you prefer to
+add simulations without using the Upload Portal.
+
+
 Stepwise instructions to add simulation into the FAIRMD Lipids, run the basic analyses
 and perform automatic quality evaluation are given here. The first three steps are a
 minimum requirements to add a simulation. The first three steps can be performed using

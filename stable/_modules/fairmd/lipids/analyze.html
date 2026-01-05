@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analyze &mdash; FAIRMD Lipids v1.3.2a0 1.3.2a0 documentation</title>
+  <title>fairmd.lipids.analyze &mdash; FAIRMD Lipids v1.3.3a0 1.3.3a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=3fb3b710"></script>
+      <script src="../../../_static/documentation_options.js?v=4e66fd49"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a0
+            FAIRMD Lipids v1.3.3a0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.3.2a0</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.3.3a0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -107,13 +107,9 @@
     <span class="n">RCODE_ERROR</span><span class="p">,</span>
     <span class="n">RCODE_SKIPPED</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze_nmrpca</span> <span class="k">as</span> <span class="n">nmrpca</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankio</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_resource_from_uri</span><span class="p">,</span> <span class="n">resolve_download_file_url</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankLibrary</span><span class="w"> </span><span class="kn">import</span> <span class="n">GetNlipids</span><span class="p">,</span> <span class="n">getLipids</span><span class="p">,</span> <span class="n">system2MDanalysisUniverse</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankop</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_OP</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.jsonEncoders</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompactJSONEncoder</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.maicos</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.analib</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze_nmrpca</span> <span class="k">as</span> <span class="n">nmrpca</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.analib.databankop</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_OP</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.analib.maicos</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DensityPlanar</span><span class="p">,</span>
     <span class="n">DielectricPlanar</span><span class="p">,</span>
     <span class="n">DiporderPlanar</span><span class="p">,</span>
@@ -122,9 +118,13 @@
     <span class="n">is_system_suitable_4_maicos</span><span class="p">,</span>
     <span class="n">traj_centering_for_maicos</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">elements</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.settings.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_struc_top_traj_fnames</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.settings.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary</span><span class="w"> </span><span class="kn">import</span> <span class="n">elements</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary.jsonEncoders</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompactJSONEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankio</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_resource_from_uri</span><span class="p">,</span> <span class="n">resolve_download_file_url</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankLibrary</span><span class="w"> </span><span class="kn">import</span> <span class="n">GetNlipids</span><span class="p">,</span> <span class="n">getLipids</span><span class="p">,</span> <span class="n">system2MDanalysisUniverse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.SchemaValidation.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_struc_top_traj_fnames</span>
 
 
 <div class="viewcode-block" id="computeNMRPCA">
@@ -1027,7 +1027,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

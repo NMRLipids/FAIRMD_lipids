@@ -1,7 +1,0 @@
-developer.check\_mappings module
-================================
-
-.. automodule:: developer.check_mappings
-   :members:
-   :show-inheritance:
-   :undoc-members:

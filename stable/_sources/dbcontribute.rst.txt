@@ -11,6 +11,9 @@ You can add new simulation data, experimental data, or update existing entries.
 Addition of new molecules is also very wellcome.
 It is also possible to make your own data repository and plug it into the FAIRMD Lipids instead of BilayerData.
 
+The `FAIRMD Upload-Portal <https://upload-portal.nmrlipids.fi>`_ provides an interface for submitting new simulation metadata to the `BilayerData Repository <https://github.com/NMRLipids/BilayerData>`_.
+Submitted metadata is automatically validated and processed through the repository workflows.
+
 .. toctree::
    :maxdepth: 2
 

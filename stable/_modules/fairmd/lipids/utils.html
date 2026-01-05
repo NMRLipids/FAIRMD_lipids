@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.utils &mdash; FAIRMD Lipids v1.3.2a0 1.3.2a0 documentation</title>
+  <title>fairmd.lipids.utils &mdash; FAIRMD Lipids v1.3.3a0 1.3.3a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=3fb3b710"></script>
+      <script src="../../../_static/documentation_options.js?v=4e66fd49"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a0
+            FAIRMD Lipids v1.3.3a0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.3.2a0</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.3.3a0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -94,20 +94,17 @@
 
 <div class="viewcode-block" id="run_analysis">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.utils.html#fairmd.lipids.utils.run_analysis">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">run_analysis</span><span class="p">(</span>
-    <span class="n">method</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span>
-    <span class="n">id_range</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_analysis</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">id_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">id_list</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply analysis ``method`` to the entire databank.</span>
 
 <span class="sd">    :param method: (Callable) will be called as ``fun(system, logger)``</span>
 <span class="sd">    :param logger: (Logger) reference to Logger initialized by the top script</span>
-<span class="sd">    :param id_range: (A,B) filter for systems to analyze, default is</span>
-<span class="sd">                     (None, None) which means all systems. Can be also (None, -1)</span>
-<span class="sd">                     which means all new systems, or (0, None) which means all</span>
-<span class="sd">                     old systems.</span>
+<span class="sd">    :param id_range: System IDs range to analyse. Input of list with length = 2,</span>
+<span class="sd">                     id_range = [start_ID, end_ID]. Can be [None, X] which means</span>
+<span class="sd">                     all systems with ids&lt;=X or [X, None] which runs ids&gt;=X.</span>
+<span class="sd">    :param id_list:  System ID list to analyse. Must provide either a id_list</span>
+<span class="sd">                     or id_range.</span>
 <span class="sd">    Environment variables:</span>
 <span class="sd">        - ``fmdl_STRICT_MODE``: if set to ``&quot;true&quot;`` or ``&quot;1&quot;`` (case-insensitive),</span>
 <span class="sd">          the function will exit with code ``RCODE_ERROR`` if one or more analyses</span>
@@ -116,16 +113,24 @@
 
 <span class="sd">    :return: None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">id_range</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">id_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You must provide either range of IDs or a list of IDs&quot;</span><span class="p">)</span>
     <span class="n">systems</span> <span class="o">=</span> <span class="n">initialize_databank</span><span class="p">()</span>
 
     <span class="n">list_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">systems</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">id_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">list_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">list_ids</span> <span class="k">if</span> <span class="n">s</span> <span class="o">&gt;=</span> <span class="n">id_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-    <span class="k">if</span> <span class="n">id_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">list_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">list_ids</span> <span class="k">if</span> <span class="n">s</span> <span class="o">&lt;=</span> <span class="n">id_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Filtering systems by range: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">id_range</span><span class="p">))</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of systems in databank: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_ids</span><span class="p">)))</span>
+    <span class="c1"># If input is a range (two elements)</span>
+    <span class="k">if</span> <span class="n">id_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">id_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">list_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">list_ids</span> <span class="k">if</span> <span class="n">s</span> <span class="o">&gt;=</span> <span class="n">id_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">id_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">list_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">list_ids</span> <span class="k">if</span> <span class="n">s</span> <span class="o">&lt;=</span> <span class="n">id_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Filtering systems by range: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">id_range</span><span class="p">))</span>
+    <span class="c1"># otherwise treat as a system list</span>
+    <span class="k">if</span> <span class="n">id_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">list_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">list_ids</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">id_list</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Filtering systems by inputted ID list&quot;</span><span class="p">)</span>
 
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of systems in databank: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_ids</span><span class="p">)))</span>
     <span class="n">result_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">RCODE_COMPUTED</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">RCODE_SKIPPED</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">RCODE_ERROR</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 
     <span class="k">for</span> <span class="n">sid</span> <span class="ow">in</span> <span class="n">list_ids</span><span class="p">:</span>
@@ -135,7 +140,7 @@
         <span class="n">res</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
         <span class="n">result_dict</span><span class="p">[</span><span class="n">res</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    COMPUTED: </span><span class="si">{</span><span class="n">result_dict</span><span class="p">[</span><span class="n">RCODE_COMPUTED</span><span class="p">]</span><span class="si">}</span>
 <span class="s2">    SKIPPED: </span><span class="si">{</span><span class="n">result_dict</span><span class="p">[</span><span class="n">RCODE_SKIPPED</span><span class="p">]</span><span class="si">}</span>
 <span class="s2">    ERROR: </span><span class="si">{</span><span class="n">result_dict</span><span class="p">[</span><span class="n">RCODE_ERROR</span><span class="p">]</span><span class="si">}</span>
@@ -158,7 +163,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -1,7 +1,0 @@
-fairmd.lipids.plottings module
-==============================
-
-.. automodule:: fairmd.lipids.plottings
-   :members:
-   :show-inheritance:
-   :undoc-members:

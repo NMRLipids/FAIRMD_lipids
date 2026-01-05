@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.databankLibrary &mdash; FAIRMD Lipids v1.3.2a0 1.3.2a0 documentation</title>
+  <title>fairmd.lipids.databankLibrary &mdash; FAIRMD Lipids v1.3.3a0 1.3.3a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=3fb3b710"></script>
+      <script src="../../../_static/documentation_options.js?v=4e66fd49"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.2a0
+            FAIRMD Lipids v1.3.3a0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.3.2a0</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.3.3a0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -87,27 +87,26 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">deprecated</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_SIMU_PATH</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankio</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_resource_from_uri</span><span class="p">,</span> <span class="n">resolve_download_file_url</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.settings.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_struc_top_traj_fnames</span><span class="p">,</span> <span class="n">software_dict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.settings.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span><span class="p">,</span> <span class="n">molecule_ff_set</span><span class="p">,</span> <span class="n">molecules_set</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span><span class="p">,</span> <span class="n">molecule_ff_set</span><span class="p">,</span> <span class="n">molecules_set</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.SchemaValidation.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_struc_top_traj_fnames</span><span class="p">,</span> <span class="n">software_dict</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="CalcAreaPerMolecule">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.CalcAreaPerMolecule">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">CalcAreaPerMolecule</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>  <span class="c1"># noqa: N802 (API name)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">CalcAreaPerMolecule</span><span class="p">(</span><span class="n">system</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">float</span><span class="p">:</span>  <span class="c1"># noqa: N802 (API name)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates average area per lipid for a simulation defined with ``system``.</span>
+<span class="sd">    Calculate average area per lipid for a system.</span>
+
 <span class="sd">    It is using the ``apl.json`` file where area per lipid as a function of time</span>
 <span class="sd">    calculated by the ``calcAPL.py`` is stored.</span>
 
@@ -119,14 +118,15 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="n">sum_APL</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># noqa: N806</span>
-        <span class="n">sum_ind</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">sum_APL</span> <span class="o">+=</span> <span class="n">j</span>
-            <span class="n">sum_ind</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">sum_APL</span> <span class="o">/</span> <span class="n">sum_ind</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;apl.json not found from&quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;apl.json not found from&quot;</span> <span class="o">+</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">sum_apl</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">sum_ind</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">sum_apl</span> <span class="o">+=</span> <span class="n">j</span>
+        <span class="n">sum_ind</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">sum_apl</span> <span class="o">/</span> <span class="n">sum_ind</span></div>
 
 
 
@@ -203,6 +203,42 @@
 
 
 
+<div class="viewcode-block" id="GetOP">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.GetOP">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">GetOP</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>  <span class="c1"># noqa: N802 (API name)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dictionary containing the order parameter data time for each lipid in the</span>
+<span class="sd">    ``system``, stored in ``LipidNameOrderParameters.json`` files.</span>
+
+<span class="sd">    :param system: NMRlipids databank dictionary defining a simulation.</span>
+
+<span class="sd">    :return: dictionary contaning, for each lipid, the order parameter data: average OP, standard deviation,</span>
+<span class="sd">     and standard error of mean. Contains None if ``LipidNameOrderParameters.json`` missing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">SimOPdata</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># order parameter data for each type of lipid</span>
+    <span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">mol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lipids_set</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">FMDL_SIMU_PATH</span><span class="p">,</span>
+            <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+            <span class="n">mol</span> <span class="o">+</span> <span class="s2">&quot;OrderParameters.json&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">OPdata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                <span class="n">OPdata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="n">missingName</span> <span class="o">=</span> <span class="n">mol</span> <span class="o">+</span> <span class="s2">&quot;OrderParameters.json&quot;</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">missingName</span><span class="si">}</span><span class="s2"> not found for </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="n">OPdata</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">SimOPdata</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span> <span class="o">=</span> <span class="n">OPdata</span>
+    <span class="k">return</span> <span class="n">SimOPdata</span></div>
+
+
+
 <div class="viewcode-block" id="GetNlipids">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.GetNlipids">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">GetNlipids</span><span class="p">(</span><span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">):</span>  <span class="c1"># noqa: N802 (API name)</span>
@@ -248,50 +284,6 @@
 
 
 
-<div class="viewcode-block" id="simulation2universal_atomnames">
-<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.simulation2universal_atomnames">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">simulation2universal_atomnames</span><span class="p">(</span><span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span> <span class="n">molname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">atom</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Maps an atomic name from the simulation system to the corresponding universal</span>
-<span class="sd">    atomic name based on the provided molecule and atom. This function attempts to</span>
-<span class="sd">    retrieve the atomic name using the mapping dictionary or None.</span>
-
-<span class="sd">    :param system: The simulation system object</span>
-<span class="sd">    :param molname: The name of the molecule</span>
-<span class="sd">    :param atom: The specific atom name</span>
-<span class="sd">    :return: The universal atomic name or None (if not found)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">mdict</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">molname</span><span class="p">]</span><span class="o">.</span><span class="n">mapping_dict</span>
-    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Molecule &#39;</span><span class="si">{</span><span class="n">molname</span><span class="si">}</span><span class="s2">&#39; was not found in the system!&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">m_atom1</span> <span class="o">=</span> <span class="n">mdict</span><span class="p">[</span><span class="n">atom</span><span class="p">][</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s2"> was not found from </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;COMPOSITION&#39;</span><span class="p">][</span><span class="n">molname</span><span class="p">][</span><span class="s1">&#39;MAPPING&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="k">return</span> <span class="n">m_atom1</span></div>
-
-
-
-<div class="viewcode-block" id="loadMappingFile">
-<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.loadMappingFile">[docs]</a>
-<span class="nd">@deprecated</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Mapping handling is completely refactored.&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">loadMappingFile</span><span class="p">(</span><span class="n">mapping_file</span><span class="p">):</span>  <span class="c1"># noqa: N802 (API name)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This function is deprecated. Use Molecule.register_mapping() from</span>
-<span class="sd">    DatbankLib.settings.molecules instead.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-        <span class="s2">&quot;This function is deprecated. Use Molecule.register_mapping() instead.&quot;</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="getAtoms">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.getAtoms">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">getAtoms</span><span class="p">(</span><span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span> <span class="n">lipid</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># noqa: N802 (API name)</span>
@@ -309,39 +301,6 @@
         <span class="n">atoms</span> <span class="o">=</span> <span class="n">atoms</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">mdict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">atoms</span></div>
-
-
-
-<div class="viewcode-block" id="getUniversalAtomName">
-<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.getUniversalAtomName">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">getUniversalAtomName</span><span class="p">(</span>  <span class="c1"># noqa: N802 (API name)</span>
-    <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span>
-    <span class="n">atom_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">molname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the universal atom name corresponding the simulation specific ``atomName``</span>
-<span class="sd">    of a ``lipid`` in a simulation defined by the ``system``.</span>
-
-<span class="sd">    :param system: system dictionary</span>
-<span class="sd">    :param atom_name: simulation specific atomname</span>
-<span class="sd">    :param molname: universal lipid name</span>
-
-<span class="sd">    :return: universal atomname (string) or None</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">mdict</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">molname</span><span class="p">]</span><span class="o">.</span><span class="n">mapping_dict</span>
-    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Molecule &#39;</span><span class="si">{</span><span class="n">molname</span><span class="si">}</span><span class="s2">&#39; was not found in the system!&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="k">for</span> <span class="n">universal_name</span> <span class="ow">in</span> <span class="n">mdict</span><span class="p">:</span>
-        <span class="n">sim_name</span> <span class="o">=</span> <span class="n">mdict</span><span class="p">[</span><span class="n">universal_name</span><span class="p">][</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">sim_name</span> <span class="o">==</span> <span class="n">atom_name</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">universal_name</span>
-
-    <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Atom was not found!</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="kc">None</span></div>
 
 
 
@@ -510,7 +469,7 @@
     <span class="n">mda_universe</span><span class="p">:</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the P-N vector angles with respect to membrane normal from the</span>
+<span class="sd">    Calculate the P-N vector angles with respect to membrane normal from the</span>
 <span class="sd">    simulation defined by the MDAnalysis universe.</span>
 
 <span class="sd">    :param molname: residue name of the molecule for which the P-N vector angle will</span>
@@ -713,9 +672,9 @@
 
 <div class="viewcode-block" id="calcArea">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.calcArea">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">calcArea</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>  <span class="c1"># noqa: N802 (API name)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calcArea</span><span class="p">(</span><span class="n">system</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>  <span class="c1"># noqa: N802 (API name)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns area of the calculated based on the area per lipid stored in the databank.</span>
+<span class="sd">    Return area of the calculated based on the area per lipid stored in the databank.</span>
 
 <span class="sd">    :param system: a system dictionary</span>
 
@@ -802,7 +761,7 @@
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.calcLipidFraction">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">calcLipidFraction</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">lipid</span><span class="p">):</span>  <span class="c1"># noqa: N802 (API name)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the number fraction of ``lipid`` with respect to total number of lipids.</span>
+<span class="sd">    Return the number fraction of ``lipid`` with respect to total number of lipids.</span>
 
 <span class="sd">    :param system: a system dictionary</span>
 <span class="sd">    :param lipid: universal molecule name of lipid</span>
@@ -825,10 +784,11 @@
 
 <div class="viewcode-block" id="getHydrationLevel">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankLibrary.html#fairmd.lipids.databankLibrary.getHydrationLevel">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">getHydrationLevel</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>  <span class="c1"># noqa: N802 (API name)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">getHydrationLevel</span><span class="p">(</span><span class="n">system</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>  <span class="c1"># noqa: N802 (API name)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns hydration level of the system, i.e., number of water molecules divided</span>
-<span class="sd">    by number of lipid molecules.</span>
+<span class="sd">    Return hydration level of the system.</span>
+
+<span class="sd">    Hydration level is defined as the number of water molecules divided by number of lipid molecules.</span>
 
 <span class="sd">    :param system: a system dictionary</span>
 
@@ -850,7 +810,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
     OSI Approved: GNU General Public License v3 (GPLv3)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
