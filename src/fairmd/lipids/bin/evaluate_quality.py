@@ -69,7 +69,7 @@ def evaluate_quality():
                     readme_exp = yaml.load(yaml_file_exp, Loader=yaml.FullLoader)
                     experiment.readme = readme_exp
 
-                exp_op_fpath = os.path.join(exp_fpath, lipid1 + "_Order_Parameters.json")
+                exp_op_fpath = os.path.join(exp_fpath, lipid1 + "_OrderParameters.json")
                 exp_op_data = {}
                 try:
                     with open(exp_op_fpath) as json_file:

@@ -290,7 +290,7 @@ def plotSimulation(system, lipid: str):  # noqa: N802
 
     op_exp = {}
     for exp_op_folder in list(system["EXPERIMENT"]["ORDERPARAMETER"][lipid].values()):
-        op_path_exp = os.path.join(FMDL_EXP_PATH, "OrderParameters", exp_op_folder, lipid + "_Order_Parameters.json")
+        op_path_exp = os.path.join(FMDL_EXP_PATH, "OrderParameters", exp_op_folder, lipid + "_OrderParameters.json")
         with open(op_path_exp) as json_file:
             op_exp.update(json.load(json_file))
 

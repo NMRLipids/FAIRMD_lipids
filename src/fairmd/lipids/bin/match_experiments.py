@@ -161,7 +161,7 @@ def load_experiments(exp_type: str) -> list[Experiment]:
     readme and order parameter files into objects.
     """
     if exp_type == "OrderParameters":
-        data_file = "_Order_Parameters.json"
+        data_file = "_OrderParameters.json"
     elif exp_type == "FormFactors":
         data_file = "_FormFactor.json"
     else:
