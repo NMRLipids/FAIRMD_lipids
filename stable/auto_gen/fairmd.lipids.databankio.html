@@ -6,21 +6,21 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.databankio module &mdash; FAIRMD Lipids v1.3.3a0 1.3.3a0 documentation</title>
+  <title>fairmd.lipids.databankio module &mdash; FAIRMD Lipids v1.3.4 1.3.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=4e66fd49"></script>
+      <script src="../_static/documentation_options.js?v=e358f374"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="fairmd.lipids.molecules module" href="fairmd.lipids.molecules.html" />
-    <link rel="prev" title="fairmd.lipids.databankLibrary module" href="fairmd.lipids.databankLibrary.html" /> 
+    <link rel="prev" title="fairmd.lipids.core module" href="fairmd.lipids.core.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.3a0
+            FAIRMD Lipids v1.3.4
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.3a0</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.4</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -82,154 +82,14 @@
              
   <section id="module-fairmd.lipids.databankio">
 <span id="fairmd-lipids-databankio-module"></span><h1>fairmd.lipids.databankio module<a class="headerlink" href="#module-fairmd.lipids.databankio" title="Link to this heading"></a></h1>
-<p>Input/Output auxilary module <strong>fairmd.lipids.databankio</strong>.</p>
-<p>Input/Output auxilary module with some small usefull functions. It includes:
-- Network communication.
+<p>Input/Output auxiliary functions.</p>
+<p>Input/Output module with some small usefull functions. It includes:
 - Downloading files.
-- Checking links.
-- Resolving DOIs.
-- Calculating file hashes.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankio.retry_with_exponential_backoff">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">retry_with_exponential_backoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_attempts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#retry_with_exponential_backoff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.retry_with_exponential_backoff" title="Link to this definition"></a></dt>
-<dd><p>Retry a function with exponential backoff.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>max_attempts</strong> – (int) The maximum number of attempts. Defaults to 3.</p></li>
-<li><p><strong>delay_seconds</strong> – (int) The initial delay between retries in seconds.
-The delay doubles after each failed attempt. Defaults to 1.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankio.get_file_size_with_retry">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">get_file_size_with_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#get_file_size_with_retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.get_file_size_with_retry" title="Link to this definition"></a></dt>
-<dd><p>Fetch the size of a file from a URI with retry logic.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>uri</strong> – (str) The URL of the file.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The size of the file in bytes, or 0 if the ‘Content-Length’
-header is not present (int).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankio.download_with_progress_with_retry">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">download_with_progress_with_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fi_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#download_with_progress_with_retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.download_with_progress_with_retry" title="Link to this definition"></a></dt>
-<dd><p>Download a file with a progress bar and retry logic.</p>
-<p>Uses tqdm to display a progress bar during the download.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uri</strong> (<em>str</em>) – The URL of the file to download.</p></li>
-<li><p><strong>dest</strong> (<em>str</em>) – The local destination path to save the file.</p></li>
-<li><p><strong>fi_name</strong> (<em>str</em>) – The name of the file, used for the progress bar
-description.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankio.download_resource_from_uri">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">download_resource_from_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#download_resource_from_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.download_resource_from_uri" title="Link to this definition"></a></dt>
-<dd><p>Download file resource from a URI to a local destination.</p>
-<p>Checks if the file already exists and has the same size before downloading.
-Can also perform a partial “dry-run” download.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>uri</strong> (<em>str</em>) – The URL of the file resource.</p></li>
-<li><p><strong>dest</strong> (<em>str</em>) – The local destination path to save the file.</p></li>
-<li><p><strong>override_if_exists</strong> (<em>bool</em>) – If True, the file will be re-downloaded
-even if it already exists. Defaults to False.</p></li>
-<li><p><strong>dry_run_mode</strong> (<em>bool</em>) – If True, only a partial download is performed
-(up to MAX_DRYRUN_SIZE). Defaults to False.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>int</strong> – 0: Download was successful.
-1: Download was skipped because the file already exists.
-2: File was re-downloaded due to a size mismatch.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A status code indicating the result.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ConnectionError</strong> – An error occurred after multiple download attempts.:</p></li>
-<li><p><strong>OSError</strong> – The downloaded file size does not match the expected size.:</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankio.resolve_doi_url">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">resolve_doi_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#resolve_doi_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.resolve_doi_url" title="Link to this definition"></a></dt>
-<dd><p>Resolve a DOI to a full URL and validates that it is reachable.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>doi</strong> (<em>str</em>) – The DOI identifier (e.g., “10.5281/zenodo.1234”).</p></li>
-<li><p><strong>validate_uri</strong> (<em>bool</em>) – If True, checks if the resolved URL is a valid
-and reachable address. Defaults to True.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>str</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The full, validated DOI link (e.g., “<a class="reference external" href="https://doi.org/">https://doi.org/</a>…”).</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>urllib.error.HTTPError</strong> – If the DOI resolves to a URL, but the server: returns an HTTP error code (e.g., 404 Not Found).</p></li>
-<li><p><strong>ConnectionError</strong> – If the server cannot be reached after multiple retries.:</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankio.resolve_download_file_url">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">resolve_download_file_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fi_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#resolve_download_file_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.resolve_download_file_url" title="Link to this definition"></a></dt>
-<dd><p>Resolve a download file URI from a supported DOI and filename.</p>
-<p>Currently supports Zenodo DOIs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>doi</strong> (<em>str</em>) – The DOI identifier for the repository (e.g.,
-“10.5281/zenodo.1234”).</p></li>
-<li><p><strong>fi_name</strong> (<em>str</em>) – The name of the file within the repository.</p></li>
-<li><p><strong>validate_uri</strong> (<em>bool</em>) – If True, checks if the resolved URL is a valid
-and reachable address. Defaults to True.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>str</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The full, direct download URL for the file.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – If the URL cannot be opened after multiple retries.:</p></li>
-<li><p><strong>NotImplementedError</strong> – If the DOI provider is not supported.:</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+- Resolving URLs.
+- Calculating file hash for fingerprinting.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="fairmd.lipids.databankio.calc_file_sha1_hash">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">calc_file_sha1_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">67108864</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#calc_file_sha1_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.calc_file_sha1_hash" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">calc_file_sha1_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">67108864</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#calc_file_sha1_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.calc_file_sha1_hash" title="Link to this definition"></a></dt>
 <dd><p>Calculate the SHA1 hash of a file.</p>
 <p>Reads the file in chunks to handle large files efficiently if specified.</p>
 <dl class="field-list simple">
@@ -253,16 +113,15 @@ Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.databankio.create_databank_directories">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">create_databank_directories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_hashes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#create_databank_directories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.create_databank_directories" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="fairmd.lipids.databankio.create_simulation_directories">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">create_simulation_directories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">software</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_hashes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#create_simulation_directories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.create_simulation_directories" title="Link to this definition"></a></dt>
 <dd><p>Create a nested output directory structure to save simulation results.</p>
 <p>The directory structure is generated based on the hashes of the simulation
 input files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sim</strong> (<em>Mapping</em>) – A dictionary containing simulation metadata, including
-the “SOFTWARE” key.</p></li>
+<li><p><strong>software</strong> – MD engine software (from simulation metadata)</p></li>
 <li><p><strong>sim_hashes</strong> (<em>Mapping</em>) – A dictionary mapping file types (e.g., “TPR”,
 “TRJ”) to their hash information. The structure is expected to be
 <cite>{‘TYPE’: [(‘filename’, ‘hash’)]}</cite>.</p></li>
@@ -288,13 +147,90 @@ not created. Defaults to False.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.databankio.download_resource_from_uri">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">download_resource_from_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">override_if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#download_resource_from_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.download_resource_from_uri" title="Link to this definition"></a></dt>
+<dd><p>Download file resource from a URI to a local destination.</p>
+<p>Checks if the file already exists and has the same size before downloading.
+Can also perform a partial “dry-run” download.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> (<em>str</em>) – The URL of the file resource.</p></li>
+<li><p><strong>dest</strong> (<em>str</em>) – The local destination path to save the file.</p></li>
+<li><p><strong>override_if_exists</strong> (<em>bool</em>) – If True, the file will be re-downloaded
+even if it already exists. Defaults to False.</p></li>
+<li><p><strong>max_bytes</strong> (<em>bool</em>) – If True, only a partial download is performed
+(up to MAX_DRYRUN_SIZE). Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>int</strong> – 0: Download was successful.
+1: Download was skipped because the file already exists.
+2: File was re-downloaded due to a size mismatch.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A status code indicating the result.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ConnectionError</strong> – An error occurred after multiple download attempts.:</p></li>
+<li><p><strong>OSError</strong> – The downloaded file size does not match the expected size.:</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.databankio.download_with_progress_with_retry">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">download_with_progress_with_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tqdm_title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Downloading'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_after</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#download_with_progress_with_retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.download_with_progress_with_retry" title="Link to this definition"></a></dt>
+<dd><p>Download a file with a progress bar and retry logic.</p>
+<p>Uses tqdm to display a progress bar during the download.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>uri</strong> (<em>str</em>) – The URL of the file to download.</p></li>
+<li><p><strong>dest</strong> (<em>str</em>) – The local destination path to save the file.</p></li>
+<li><p><strong>tqdm_title</strong> (<em>str</em>) – The title used for the progress bar description.</p></li>
+<li><p><strong>stop_after</strong> (<em>int</em>) – Download max num of bytes</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.databankio.resolve_file_url">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.databankio.</span></span><span class="sig-name descname"><span class="pre">resolve_file_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fi_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/databankio.html#resolve_file_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.databankio.resolve_file_url" title="Link to this definition"></a></dt>
+<dd><p>Resolve a download file URI from zenodo record’s DOI and filename.</p>
+<p>Currently supports Zenodo DOIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> (<em>fi_name</em>) – The DOI identifier for the repository (e.g., “10.5281/zenodo.1234”).</p></li>
+<li><p><strong>(</strong><strong>str</strong><strong>)</strong> – The name of the file within the repository.</p></li>
+<li><p><strong>(</strong><strong>bool</strong><strong>)</strong> (<em>validate_uri</em>) – If True, checks if the resolved URL is a valid and
+reachable address. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return str<span class="colon">:</span></dt>
+<dd class="field-even"><p>The full, direct download URL for the file.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>HTTPError</strong><strong> or </strong><strong>other connection errors</strong> – If the URL cannot be opened after multiple retries.</p></li>
+<li><p><strong>NotImplementedError</strong> – If the DOI provider is not supported.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="fairmd.lipids.databankLibrary.html" class="btn btn-neutral float-left" title="fairmd.lipids.databankLibrary module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fairmd.lipids.core.html" class="btn btn-neutral float-left" title="fairmd.lipids.core module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="fairmd.lipids.molecules.html" class="btn btn-neutral float-right" title="fairmd.lipids.molecules module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

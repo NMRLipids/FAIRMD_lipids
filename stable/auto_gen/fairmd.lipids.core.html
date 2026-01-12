@@ -6,21 +6,21 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.core module &mdash; FAIRMD Lipids v1.3.3a0 1.3.3a0 documentation</title>
+  <title>fairmd.lipids.core module &mdash; FAIRMD Lipids v1.3.4 1.3.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=4e66fd49"></script>
+      <script src="../_static/documentation_options.js?v=e358f374"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="fairmd.lipids.databankLibrary module" href="fairmd.lipids.databankLibrary.html" />
-    <link rel="prev" title="fairmd.lipids.analyze module" href="fairmd.lipids.analyze.html" /> 
+    <link rel="next" title="fairmd.lipids.databankio module" href="fairmd.lipids.databankio.html" />
+    <link rel="prev" title="fairmd.lipids.api module" href="fairmd.lipids.api.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.3a0
+            FAIRMD Lipids v1.3.4
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.3a0</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.4</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -83,7 +83,7 @@
   <section id="module-fairmd.lipids.core">
 <span id="fairmd-lipids-core-module"></span><h1>fairmd.lipids.core module<a class="headerlink" href="#module-fairmd.lipids.core" title="Link to this heading"></a></h1>
 <p>Core databank class and system initialization function.</p>
-<p>Imported by <a class="reference internal" href="fairmd.lipids.databankLibrary.html#module-fairmd.lipids.databankLibrary" title="fairmd.lipids.databankLibrary"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fairmd.lipids.databankLibrary</span></code></a> by default.
+<p>Imported by <code class="xref py py-mod docutils literal notranslate"><span class="pre">fairmd.lipids.databankLibrary</span></code> by default.
 Can be imported without additional libraries to scan Databank system file tree!</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="fairmd.lipids.core.System">
@@ -108,11 +108,45 @@ Can be imported without additional libraries to scan Databank system file tree!<
 <dd><p>Returns dictionary of molecule objects.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="fairmd.lipids.core.System.lipids">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lipids</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="fairmd.lipids.molecules.html#fairmd.lipids.molecules.Lipid" title="fairmd.lipids.molecules.Lipid"><span class="pre">Lipid</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fairmd.lipids.core.System.lipids" title="Link to this definition"></a></dt>
+<dd><p>Returns dictionary of lipid molecule objects.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="fairmd.lipids.core.System.n_lipids">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_lipids</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#fairmd.lipids.core.System.n_lipids" title="Link to this definition"></a></dt>
+<dd><p>Returns total number of lipid molecules in the system.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.core.System.membrane_composition">
+<span class="sig-name descname"><span class="pre">membrane_composition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'molar'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mass'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'molar'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/core.html#System.membrane_composition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.core.System.membrane_composition" title="Link to this definition"></a></dt>
+<dd><p>Return the composition of the membrane in system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>which</strong> – Type of composition to return. Options are:
+- “molar”: compute molar fraction
+- “mass”: compute mass fraction</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary (universal molecule name -&gt; value)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.core.System.get_hydration">
+<span class="sig-name descname"><span class="pre">get_hydration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'number'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'mass'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'number'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/core.html#System.get_hydration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.core.System.get_hydration" title="Link to this definition"></a></dt>
+<dd><p>Get system hydration.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="fairmd.lipids.core.SystemsCollection">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.core.</span></span><span class="sig-name descname"><span class="pre">SystemsCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/core.html#SystemsCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.core.SystemsCollection" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.core.</span></span><span class="sig-name descname"><span class="pre">SystemsCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/core.html#SystemsCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.core.SystemsCollection" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code>[<a class="reference internal" href="#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><code class="xref py py-class docutils literal notranslate"><span class="pre">System</span></code></a>]</p>
 <p>Immutable collection of system dicts. Can be accessed by ID using loc().</p>
 <dl class="py method">
@@ -183,8 +217,8 @@ each system.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="fairmd.lipids.analyze.html" class="btn btn-neutral float-left" title="fairmd.lipids.analyze module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="fairmd.lipids.databankLibrary.html" class="btn btn-neutral float-right" title="fairmd.lipids.databankLibrary module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fairmd.lipids.api.html" class="btn btn-neutral float-left" title="fairmd.lipids.api module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fairmd.lipids.databankio.html" class="btn btn-neutral float-right" title="fairmd.lipids.databankio module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

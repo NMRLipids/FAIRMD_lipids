@@ -10,6 +10,7 @@ Python files
 
    fairmd.lipids.analib.analyze_nmrpca
    fairmd.lipids.analib.databankop
+   fairmd.lipids.analib.formfactor
    fairmd.lipids.analib.maicos
 
 Module contents

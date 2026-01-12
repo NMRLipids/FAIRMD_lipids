@@ -27,7 +27,7 @@ Project has four sub-folders in the root directory:
    It is not distributed with the package.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 5
 
    auto_gen/fairmd.lipids
    auto_gen/developer

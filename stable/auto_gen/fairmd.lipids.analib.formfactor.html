@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.bin.add_simulation module &mdash; FAIRMD Lipids v1.3.4 1.3.4 documentation</title>
+  <title>fairmd.lipids.analib.formfactor module &mdash; FAIRMD Lipids v1.3.4 1.3.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="fairmd.lipids.bin.compute_databank module" href="fairmd.lipids.bin.compute_databank.html" />
-    <link rel="prev" title="fairmd.lipids.bin" href="fairmd.lipids.bin.html" /> 
+    <link rel="next" title="fairmd.lipids.analib.maicos module" href="fairmd.lipids.analib.maicos.html" />
+    <link rel="prev" title="fairmd.lipids.analib.databankop module" href="fairmd.lipids.analib.databankop.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -70,10 +70,10 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../Overview.html">Project structure</a></li>
           <li class="breadcrumb-item"><a href="fairmd.lipids.html">fairmd.lipids</a></li>
-          <li class="breadcrumb-item"><a href="fairmd.lipids.bin.html">fairmd.lipids.bin</a></li>
-      <li class="breadcrumb-item active">fairmd.lipids.bin.add_simulation module</li>
+          <li class="breadcrumb-item"><a href="fairmd.lipids.analib.html">fairmd.lipids.analib</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.analib.formfactor module</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/auto_gen/fairmd.lipids.bin.add_simulation.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/auto_gen/fairmd.lipids.analib.formfactor.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -81,51 +81,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-fairmd.lipids.bin.add_simulation">
-<span id="fairmd-lipids-bin-add-simulation-module"></span><h1>fairmd.lipids.bin.add_simulation module<a class="headerlink" href="#module-fairmd.lipids.bin.add_simulation" title="Link to this heading"></a></h1>
-<p>Add new simulation into the FAIRMD Lipids.</p>
-<p>The script adds a simulation into the Databank based on <code class="docutils literal notranslate"><span class="pre">info.yaml</span></code> file.</p>
-<dl class="simple">
-<dt><strong>Usage:</strong></dt><dd><p>fmdl_add_simulation [-h] [-f FILE] [-d] [-n] [-w WORK_DIR] [–dry-run]</p>
-</dd>
-</dl>
-<dl class="option-list">
-<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
-<dd><p>Show this help message and exit</p>
-</dd>
-<dt><kbd><span class="option">-f <var>FILE</var></span>, <span class="option">--file=<var>FILE</var></span></kbd></dt>
-<dd><p>Input config file in yaml format.</p>
-</dd>
-<dt><kbd><span class="option">-d</span>, <span class="option">--debug</span></kbd></dt>
-<dd><p>Enable debug logging output</p>
-</dd>
-<dt><kbd><span class="option">-n</span>, <span class="option">--no-cache</span></kbd></dt>
-<dd><p>Always redownload repository files</p>
-</dd>
-<dt><kbd><span class="option">-w <var>WORK_DIR</var></span>, <span class="option">--work-dir=<var>WORK_DIR</var></span></kbd></dt>
-<dd><p>Set custom temporary working directory
-[not set = read from YAML]</p>
-</dd>
-<dt><kbd><span class="option">--dru-run</span></kbd></dt>
-<dd><p>Download only 50MB of big files. Very usefull when
-user is testing the addition.</p>
-</dd>
-<dt><kbd><span class="option">--non-interactive</span></kbd></dt>
-<dd><p>Answer N to all interactive questions. Exit if meet
-any uncertainty</p>
-</dd>
-</dl>
-<p><strong>Returns</strong> error codes:</p>
-<ul class="simple">
-<li><p>0 - success</p></li>
-<li><p>1 - input errors (YAML parsing, mapping files, etc.)</p></li>
-<li><p>2 - filesystem writting errors</p></li>
-<li><p>3 - network accessing errors</p></li>
-</ul>
+  <section id="module-fairmd.lipids.analib.formfactor">
+<span id="fairmd-lipids-analib-formfactor-module"></span><h1>fairmd.lipids.analib.formfactor module<a class="headerlink" href="#module-fairmd.lipids.analib.formfactor" title="Link to this heading"></a></h1>
+<p>Analysis module for FormFactor curve.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.bin.add_simulation.add_simulation">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.bin.add_simulation.</span></span><span class="sig-name descname"><span class="pre">add_simulation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/bin/add_simulation.html#add_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.bin.add_simulation.add_simulation" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fairmd.lipids.analib.formfactor.get_mins_from_ffdata">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.formfactor.</span></span><span class="sig-name descname"><span class="pre">get_mins_from_ffdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ffdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/formfactor.html#get_mins_from_ffdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.formfactor.get_mins_from_ffdata" title="Link to this definition"></a></dt>
+<dd><p>Find the position of first minimum in form factor data.</p>
+</dd></dl>
 
 </section>
 
@@ -133,8 +96,8 @@ any uncertainty</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="fairmd.lipids.bin.html" class="btn btn-neutral float-left" title="fairmd.lipids.bin" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="fairmd.lipids.bin.compute_databank.html" class="btn btn-neutral float-right" title="fairmd.lipids.bin.compute_databank module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="fairmd.lipids.analib.databankop.html" class="btn btn-neutral float-left" title="fairmd.lipids.analib.databankop module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fairmd.lipids.analib.maicos.html" class="btn btn-neutral float-right" title="fairmd.lipids.analib.maicos module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
