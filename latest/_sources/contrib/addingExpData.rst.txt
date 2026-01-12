@@ -12,12 +12,12 @@ The keys of these dictionaries are summarized in the :ref:`Experiment metadata d
 
 #. Copy this README file data into a appropriate directory named as described above.
 
-#. If you have order parameter data, create a file named ``{lipidname}_Order_Parameters.dat``
+#. If you have order parameter data, create a file named ``{lipidname}_OrderParameters.json``
    where ``{lipidname}`` is the universal name of the lipid from which the data is measured
    from. The first two columns of this file should define the atom pair with universal
    atom names, third column has the experimental order parameter value, and fourth
    column has the experimental error. If the experimental error is not known, set it to 0.02.
-   Store the created ``{lipidname}_Order_Parameters.dat`` file into the appropriate folder
+   Store the created ``{lipidname}_OrderParameters.json`` file into the appropriate folder
    with the ``README.yaml`` file. Create ``json`` version from ``dat`` file by running
 
    .. code-block:: bash
