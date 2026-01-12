@@ -10,6 +10,7 @@ Python files
 
    fairmd.lipids.SchemaValidation.ValidateYAML
    fairmd.lipids.SchemaValidation.engines
+   fairmd.lipids.SchemaValidation.validate_info_dict
 
 Module contents
 ---------------

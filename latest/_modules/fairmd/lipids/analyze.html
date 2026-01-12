@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analyze &mdash; FAIRMD Lipids v1.3.3a1.dev4+g520de5171 1.3.3a1.dev4+g520de5171 documentation</title>
+  <title>fairmd.lipids.analyze &mdash; FAIRMD Lipids v1.3.3a1.dev36+g390458693 1.3.3a1.dev36+g390458693 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=43e4816d"></script>
+      <script src="../../../_static/documentation_options.js?v=f9b21c87"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.3a1.dev4+g520de5171
+            FAIRMD Lipids v1.3.3a1.dev36+g390458693
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.3.3a1.dev4+g520de5171</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.3.3a1.dev36+g390458693</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -91,7 +91,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">buildh</span>
@@ -118,13 +118,11 @@
     <span class="n">is_system_suitable_4_maicos</span><span class="p">,</span>
     <span class="n">traj_centering_for_maicos</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">UniverseConstructor</span><span class="p">,</span> <span class="n">mda_gen_selection_mols</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary</span><span class="w"> </span><span class="kn">import</span> <span class="n">elements</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary.jsonEncoders</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompactJSONEncoder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankio</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_resource_from_uri</span><span class="p">,</span> <span class="n">resolve_file_url</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankLibrary</span><span class="w"> </span><span class="kn">import</span> <span class="n">GetNlipids</span><span class="p">,</span> <span class="n">getLipids</span><span class="p">,</span> <span class="n">system2MDanalysisUniverse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.SchemaValidation.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_struc_top_traj_fnames</span>
 
 
 <div class="viewcode-block" id="computeNMRPCA">
@@ -177,7 +175,7 @@
         <span class="k">return</span> <span class="n">RCODE_ERROR</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># Download files</span>
+        <span class="c1"># TODO: REPLACE WTIH UNIVERSE_CONSTRUCTOR</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">download_traj</span><span class="p">()</span>
         <span class="c1"># Prepare trajectory</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">prepare_traj</span><span class="p">()</span>
@@ -249,24 +247,18 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Will write into: &quot;</span><span class="p">,</span> <span class="n">outfilename</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># calculates the total number of lipids</span>
-        <span class="n">n_lipid</span> <span class="o">=</span> <span class="n">GetNlipids</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
-
-        <span class="c1"># makes MDAnalysis universe from the system. This also downloads the data if not</span>
-        <span class="c1"># yet locally available</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="n">system2MDanalysisUniverse</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">u</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generation of MDAnalysis universe failed in folder&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">RCODE_ERROR</span>
+        <span class="n">uc</span> <span class="o">=</span> <span class="n">UniverseConstructor</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+        <span class="n">uc</span><span class="o">.</span><span class="n">download_mddata</span><span class="p">()</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">build_universe</span><span class="p">()</span>
 
         <span class="c1"># this calculates the area per lipid as a function of time and stores it</span>
         <span class="c1"># in the databank</span>
         <span class="n">apl</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">nlipids</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">n_lipids</span>
         <span class="k">for</span> <span class="n">_ts</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Scanning the trajectory&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">time</span> <span class="o">&gt;=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TIMELEFTOUT&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">:</span>
                 <span class="n">dims</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensions</span>
-                <span class="n">apl_frame</span> <span class="o">=</span> <span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">n_lipid</span>
+                <span class="n">apl_frame</span> <span class="o">=</span> <span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">nlipids</span>
                 <span class="n">apl</span><span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">apl_frame</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfilename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -361,90 +353,51 @@
     <span class="c1"># If order parameters are not calculated and system ok, then continue to</span>
     <span class="c1"># calculating order parameters</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Analyzing: &quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-
-    <span class="c1"># Download the simulations and create MDAnalysis universe (the universe is not used</span>
-    <span class="c1"># here but this script downloads the data)</span>
-    <span class="n">_</span> <span class="o">=</span> <span class="n">system2MDanalysisUniverse</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+    <span class="n">uc</span> <span class="o">=</span> <span class="n">UniverseConstructor</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+    <span class="n">uc</span><span class="o">.</span><span class="n">download_mddata</span><span class="p">()</span>
 
     <span class="c1"># Software and time for equilibration period</span>
     <span class="n">software</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">]</span>
     <span class="n">eq_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;TIMELEFTOUT&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="mi">1000</span>
 
     <span class="c1"># Check if all or united atom simulation</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">united_atom</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;UNITEDATOM_DICT&quot;</span><span class="p">]</span>
-    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-        <span class="n">united_atom</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="c1"># Check relevant warnings</span>
-    <span class="n">g3switch</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;WARNINGS&quot;</span> <span class="ow">in</span> <span class="n">system</span>
-        <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="nb">dict</span>
-        <span class="ow">and</span> <span class="s2">&quot;GROMACS_VERSION&quot;</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">]</span>
-        <span class="ow">and</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">][</span><span class="s2">&quot;GROMACS_VERSION&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;gromacs3&quot;</span>
-    <span class="p">)</span>
-
-    <span class="n">cur_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">struc_fname</span><span class="p">,</span> <span class="n">top_fname</span><span class="p">,</span> <span class="n">trj_fname</span> <span class="o">=</span> <span class="n">get_struc_top_traj_fnames</span><span class="p">(</span>
-            <span class="n">system</span><span class="p">,</span>
-            <span class="n">join_path</span><span class="o">=</span><span class="n">cur_path</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error reading filenames from system dictionary.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">RCODE_ERROR</span>
+    <span class="n">united_atom</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;UNITEDATOM_DICT&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># Set topology file names and make Gromacs trajectories whole</span>
         <span class="k">if</span> <span class="s2">&quot;gromacs&quot;</span> <span class="ow">in</span> <span class="n">software</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">top_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;TPR is required for OP calculations!&quot;</span><span class="p">)</span>
             <span class="n">xtcwhole</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;whole.xtc&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xtcwhole</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">echo_proc</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;System</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="k">if</span> <span class="n">g3switch</span><span class="p">:</span>
-                        <span class="n">cmd_args</span> <span class="o">=</span> <span class="p">[</span>
-                            <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
-                            <span class="n">trj_fname</span><span class="p">,</span>
-                            <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
-                            <span class="n">top_fname</span><span class="p">,</span>
-                            <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
-                            <span class="n">xtcwhole</span><span class="p">,</span>
-                            <span class="s2">&quot;-pbc&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;mol&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
-                            <span class="nb">str</span><span class="p">(</span><span class="n">eq_time</span><span class="p">),</span>
-                        <span class="p">]</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">cmd_args</span> <span class="o">=</span> <span class="p">[</span>
-                            <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
-                            <span class="n">trj_fname</span><span class="p">,</span>
-                            <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
-                            <span class="n">top_fname</span><span class="p">,</span>
-                            <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
-                            <span class="n">xtcwhole</span><span class="p">,</span>
-                            <span class="s2">&quot;-pbc&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;mol&quot;</span><span class="p">,</span>
-                            <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
-                            <span class="nb">str</span><span class="p">(</span><span class="n">eq_time</span><span class="p">),</span>
-                        <span class="p">]</span>
+                    <span class="n">cmd_args</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;-f&quot;</span><span class="p">,</span>
+                        <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;traj&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+                        <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
+                        <span class="n">xtcwhole</span><span class="p">,</span>
+                        <span class="s2">&quot;-pbc&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;mol&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">eq_time</span><span class="p">),</span>
+                    <span class="p">]</span>
                     <span class="k">if</span> <span class="n">united_atom</span> <span class="ow">and</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TRAJECTORY_SIZE&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">15e9</span><span class="p">:</span>
                         <span class="n">cmd_args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;-skip&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">])</span>
                     <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd_args</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">echo_proc</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;trjconv exited with error (see above)&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="k">elif</span> <span class="s2">&quot;openMM&quot;</span> <span class="ow">in</span> <span class="n">software</span> <span class="ow">or</span> <span class="s2">&quot;NAMD&quot;</span> <span class="ow">in</span> <span class="n">software</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">struc_fname</span><span class="p">):</span>
-                <span class="n">pdb_url</span> <span class="o">=</span> <span class="n">resolve_file_url</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DOI&quot;</span><span class="p">),</span> <span class="n">struc_fname</span><span class="p">)</span>
-                <span class="n">_</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">pdb_url</span><span class="p">,</span> <span class="n">struc_fname</span><span class="p">)</span>
+            <span class="c1"># we should do nothing here. uc.download should have already downloaded stuff</span>
+            <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
                 <span class="s2">&quot;Order parameter calculation for other than gromacs, openMM and NAMD are yet to be implemented.&quot;</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">RCODE_ERROR</span>
 
@@ -454,32 +407,17 @@
         <span class="n">echo_proc</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;System</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="n">united_atom</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;gromacs&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">software</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;UNITED_ATOMS is supported only for GROMACS engine!&quot;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;UNITED_ATOMS is supported only for GROMACS engine!&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">frame0struc</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;frame0.gro&quot;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">g3switch</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;editconf&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">top_fname</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">frame0struc</span><span class="p">],</span> <span class="nb">input</span><span class="o">=</span><span class="n">echo_proc</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;editconf exited with error (see above)&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">g3switch</span><span class="p">:</span>
-                        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                            <span class="p">[</span><span class="s2">&quot;trjconv&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">xtcwhole</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">top_fname</span><span class="p">,</span> <span class="s2">&quot;-dump&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">frame0struc</span><span class="p">],</span>
-                            <span class="nb">input</span><span class="o">=</span><span class="n">echo_proc</span><span class="p">,</span>
-                            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                            <span class="p">[</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">xtcwhole</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">top_fname</span><span class="p">,</span> <span class="s2">&quot;-dump&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">frame0struc</span><span class="p">],</span>
-                            <span class="nb">input</span><span class="o">=</span><span class="n">echo_proc</span><span class="p">,</span>
-                            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="p">)</span>
-                <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;trjconv (</span><span class="si">{</span><span class="s1">&#39;trjconv&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">g3switch</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;gmx trjconv&#39;</span><span class="si">}</span><span class="s2">) exited with error (see above)&quot;</span><span class="p">,</span>
-                    <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                    <span class="p">[</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">xtcwhole</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span> <span class="s2">&quot;-dump&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">frame0struc</span><span class="p">],</span>
+                    <span class="nb">input</span><span class="o">=</span><span class="n">echo_proc</span><span class="p">,</span>
+                    <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;trjconv exited with error (see above)&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;UNITEDATOM_DICT&quot;</span><span class="p">]:</span>
                 <span class="c1"># construct order parameter definition file for CH bonds from</span>
@@ -594,20 +532,14 @@
                 <span class="n">gro</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;conf.gro&quot;</span><span class="p">)</span>
 
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Making gro file&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">g3switch</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;editconf&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">top_fname</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">gro</span><span class="p">],</span> <span class="nb">input</span><span class="o">=</span><span class="n">echo_proc</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;editconf exited with error (see above)&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-                            <span class="p">[</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">trj_fname</span><span class="p">,</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">top_fname</span><span class="p">,</span> <span class="s2">&quot;-dump&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">gro</span><span class="p">],</span>
-                            <span class="nb">input</span><span class="o">=</span><span class="n">echo_proc</span><span class="p">,</span>
-                            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;trjconv exited with error (see above)&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                        <span class="p">[</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span> <span class="s2">&quot;trjconv&quot;</span><span class="p">,</span> <span class="s2">&quot;-f&quot;</span><span class="p">,</span> <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;traj&quot;</span><span class="p">],</span> <span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span> <span class="s2">&quot;-dump&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="n">gro</span><span class="p">],</span>
+                        <span class="nb">input</span><span class="o">=</span><span class="n">echo_proc</span><span class="p">,</span>
+                        <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;trjconv exited with error (see above)&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="p">(</span>
@@ -642,7 +574,7 @@
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">op_obj</span> <span class="o">=</span> <span class="n">find_OP</span><span class="p">(</span>
                                 <span class="n">system</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">,</span>
-                                <span class="n">top_fname</span><span class="p">,</span>
+                                <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span>
                                 <span class="n">xtcwhole</span><span class="p">,</span>
                                 <span class="n">resname</span><span class="p">,</span>
                             <span class="p">)</span>
@@ -661,8 +593,8 @@
                     <span class="k">if</span> <span class="s2">&quot;openMM&quot;</span> <span class="ow">in</span> <span class="n">software</span> <span class="ow">or</span> <span class="s2">&quot;NAMD&quot;</span> <span class="ow">in</span> <span class="n">software</span><span class="p">:</span>
                         <span class="n">op_obj</span> <span class="o">=</span> <span class="n">find_OP</span><span class="p">(</span>
                             <span class="n">system</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">,</span>
-                            <span class="n">struc_fname</span><span class="p">,</span>
-                            <span class="n">trj_fname</span><span class="p">,</span>
+                            <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;struc&quot;</span><span class="p">],</span>
+                            <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;traj&quot;</span><span class="p">],</span>
                             <span class="n">resname</span><span class="p">,</span>
                         <span class="p">)</span>
 
@@ -702,14 +634,7 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_system_suitable_4_maicos</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">RCODE_SKIPPED</span>
-    <span class="c1"># otherwise continue</span>
-    <span class="n">software</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">]</span>
-    <span class="c1"># download trajectory and gro files</span>
-    <span class="n">system_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
-    <span class="n">doi</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DOI&quot;</span><span class="p">)</span>
-    <span class="n">skip_downloading</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">doi</span> <span class="o">==</span> <span class="s2">&quot;localhost&quot;</span>
-    <span class="k">if</span> <span class="n">skip_downloading</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NOTE: The system with &#39;localhost&#39; DOI should be downloaded by the user.&quot;</span><span class="p">)</span>
+    <span class="n">spath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
 
     <span class="n">set_maicos_files</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;WaterDensity.json&quot;</span><span class="p">,</span>
@@ -736,24 +661,28 @@
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">set_maicos_files</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
         <span class="k">if</span> <span class="s2">&quot;Dielectric&quot;</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">file</span> <span class="o">+</span> <span class="s2">&quot;_par.json&quot;</span><span class="p">))</span>
-                <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">file</span> <span class="o">+</span> <span class="s2">&quot;_perp.json&quot;</span><span class="p">))</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spath</span><span class="p">,</span> <span class="n">file</span> <span class="o">+</span> <span class="s2">&quot;_par.json&quot;</span><span class="p">))</span>
+                <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spath</span><span class="p">,</span> <span class="n">file</span> <span class="o">+</span> <span class="s2">&quot;_perp.json&quot;</span><span class="p">))</span>
                 <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span>
             <span class="p">):</span>
                 <span class="n">set_maicos_files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spath</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">:</span>
             <span class="n">set_maicos_files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">set_maicos_files</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;All available MAICoS files are found. Skipping.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">RCODE_SKIPPED</span>
+
+    <span class="n">socket</span><span class="o">.</span><span class="n">setdefaulttimeout</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+
+    <span class="n">uc</span> <span class="o">=</span> <span class="n">UniverseConstructor</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">struc</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">trj</span> <span class="o">=</span> <span class="n">get_struc_top_traj_fnames</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
-        <span class="n">trj_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">trj</span><span class="p">)</span>
-        <span class="n">struc_name</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">struc</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">struc</span><span class="p">)</span>
-        <span class="n">top_name</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">top</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">top</span><span class="p">)</span>
+        <span class="n">uc</span><span class="o">.</span><span class="n">download_mddata</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error getting structure/topology/trajectory filenames.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem with downloading system </span><span class="si">{</span><span class="n">system</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;DOI&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">RCODE_ERROR</span>
 
-    <span class="k">if</span> <span class="n">top</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># No topology =&gt; no charge inforamtion</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Dielectric properties and charge densities are not accessible without topology.&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">set_maicos_files</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
@@ -763,61 +692,29 @@
                 <span class="c1"># TODO: impute charges!</span>
                 <span class="n">set_maicos_files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">set_maicos_files</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;All available MAICoS files are found. Skipping.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">RCODE_SKIPPED</span>
-
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Files to be computed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">set_maicos_files</span><span class="p">))</span>
-    <span class="n">socket</span><span class="o">.</span><span class="n">setdefaulttimeout</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_not_skip_dwnld</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">skip_downloading</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;File [</span><span class="si">{</span><span class="n">trj_name</span><span class="si">}</span><span class="s2">] should be downloaded by user&quot;</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="n">skip_downloading</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">_not_skip_dwnld</span><span class="p">(</span><span class="n">trj_name</span><span class="p">):</span>
-            <span class="n">trj_url</span> <span class="o">=</span> <span class="n">resolve_file_url</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">trj</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">trj_name</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Downloading trajectory with the size of &quot;</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TRAJECTORY_SIZE&quot;</span><span class="p">],</span> <span class="s2">&quot; to &quot;</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
-                <span class="n">_</span> <span class="o">=</span> <span class="n">download_resource_from_uri</span><span class="p">(</span><span class="n">trj_url</span><span class="p">,</span> <span class="n">trj_name</span><span class="p">)</span>
-
-        <span class="c1"># make a function like this</span>
-        <span class="c1"># TODO TPR should not be obligatory for GROMACS</span>
-        <span class="k">if</span> <span class="s2">&quot;gromacs&quot;</span> <span class="ow">in</span> <span class="n">software</span><span class="p">:</span>
-            <span class="n">tpr_name</span> <span class="o">=</span> <span class="n">top_name</span>
-            <span class="k">if</span> <span class="n">_not_skip_dwnld</span><span class="p">(</span><span class="n">tpr_name</span><span class="p">):</span>
-                <span class="n">tpr_url</span> <span class="o">=</span> <span class="n">resolve_file_url</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">top</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">tpr_name</span><span class="p">):</span>
-                    <span class="n">_</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">tpr_url</span><span class="p">,</span> <span class="n">tpr_name</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="s2">&quot;openMM&quot;</span> <span class="ow">in</span> <span class="n">software</span> <span class="ow">or</span> <span class="s2">&quot;NAMD&quot;</span> <span class="ow">in</span> <span class="n">software</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">_not_skip_dwnld</span><span class="p">(</span><span class="n">struc_name</span><span class="p">):</span>
-                <span class="n">pdb_url</span> <span class="o">=</span> <span class="n">resolve_file_url</span><span class="p">(</span><span class="n">doi</span><span class="p">,</span> <span class="n">struc</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">struc_name</span><span class="p">):</span>
-                    <span class="n">_</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">pdb_url</span><span class="p">,</span> <span class="n">struc_name</span><span class="p">)</span>
-
         <span class="n">eq_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;TIMELEFTOUT&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="mi">1000</span>
         <span class="n">last_atom</span><span class="p">,</span> <span class="n">g3_atom</span> <span class="o">=</span> <span class="n">first_last_carbon</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
 
         <span class="c1"># Center around one lipid tail CH3 to guarantee all lipids in the same box</span>
-        <span class="k">if</span> <span class="s2">&quot;gromacs&quot;</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="s2">&quot;gromacs&quot;</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># xtccentered</span>
             <span class="n">xtccentered</span> <span class="o">=</span> <span class="n">traj_centering_for_maicos</span><span class="p">(</span>
-                <span class="n">system_path</span><span class="p">,</span>
-                <span class="n">trj_name</span><span class="p">,</span>
-                <span class="n">tpr_name</span><span class="p">,</span>
+                <span class="n">spath</span><span class="p">,</span>
+                <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;traj&quot;</span><span class="p">],</span>
+                <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span>
                 <span class="n">last_atom</span><span class="p">,</span>
                 <span class="n">g3_atom</span><span class="p">,</span>
                 <span class="n">eq_time</span><span class="p">,</span>
                 <span class="n">recompute</span><span class="o">=</span><span class="n">recompute</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">tpr_name</span><span class="p">,</span> <span class="n">xtccentered</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span> <span class="n">xtccentered</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Centering for other than Gromacs is currently not implemented.&quot;</span><span class="p">)</span>
-            <span class="n">xtccentered</span> <span class="o">=</span> <span class="n">trj_name</span>
             <span class="c1"># it may not work w/o TPR if there are jumps over periodic boundary conditions in z-direction.</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">struc_name</span><span class="p">,</span> <span class="n">xtccentered</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">build_universe</span><span class="p">()</span>
 
         <span class="c1"># -- PHILIP code starts here --</span>
         <span class="c1"># We us a hardoced bin width</span>
@@ -830,7 +727,7 @@
 
         <span class="c1"># Adjust the group selection to be general for analysis</span>
         <span class="n">water</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;resname </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;COMPOSITION&#39;</span><span class="p">][</span><span class="s1">&#39;SOL&#39;</span><span class="p">][</span><span class="s1">&#39;NAME&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">lipid</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">getLipids</span><span class="p">(</span><span class="n">system</span><span class="p">))</span>
+        <span class="n">lipid</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">mda_gen_selection_mols</span><span class="p">(</span><span class="n">system</span><span class="p">))</span>
         <span class="c1"># TODO: Maybe add group for ions and compute densities for them as well?</span>
 
         <span class="c1"># fixed `zmin` and `zmax` for profiles are deduced from smallest box dimension</span>
@@ -842,8 +739,6 @@
         <span class="n">base_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;unwrap&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;bin_width&quot;</span><span class="p">:</span> <span class="n">bin_width</span><span class="p">,</span> <span class="s2">&quot;pack&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
         <span class="n">zlim</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;zmin&quot;</span><span class="p">:</span> <span class="o">-</span><span class="n">L_min</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;zmax&quot;</span><span class="p">:</span> <span class="n">L_min</span> <span class="o">/</span> <span class="mi">2</span><span class="p">}</span>
         <span class="n">dens_options</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">zlim</span><span class="p">,</span> <span class="o">**</span><span class="n">base_options</span><span class="p">}</span>
-
-        <span class="n">spath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
 
         <span class="n">request_analysis</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -996,9 +891,9 @@
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dielectric profiles not available for this system: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="c1"># create stub json-s to avoid recompute tries</span>
                 <span class="k">for</span> <span class="n">dfile</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;DielectricTotal&quot;</span><span class="p">,</span> <span class="s2">&quot;DielectricWater&quot;</span><span class="p">,</span> <span class="s2">&quot;DielectricLipid&quot;</span><span class="p">]:</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">dfile</span> <span class="o">+</span> <span class="s2">&quot;_per.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spath</span><span class="p">,</span> <span class="n">dfile</span> <span class="o">+</span> <span class="s2">&quot;_per.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="n">dfile</span> <span class="o">+</span> <span class="s2">&quot;_par.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spath</span><span class="p">,</span> <span class="n">dfile</span> <span class="o">+</span> <span class="s2">&quot;_par.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created empty dielectric profile JSONs for </span><span class="si">{</span><span class="n">dfile</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;DielectricTotal&quot;</span><span class="p">,</span> <span class="s2">&quot;DielectricWater&quot;</span><span class="p">,</span> <span class="s2">&quot;DielectricLipid&quot;</span><span class="p">]:</span>

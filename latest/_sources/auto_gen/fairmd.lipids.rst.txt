@@ -21,8 +21,8 @@ Python files
    :maxdepth: 1
 
    fairmd.lipids.analyze
+   fairmd.lipids.api
    fairmd.lipids.core
-   fairmd.lipids.databankLibrary
    fairmd.lipids.databankio
    fairmd.lipids.molecules
    fairmd.lipids.quality
