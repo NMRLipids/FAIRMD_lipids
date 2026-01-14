@@ -8,11 +8,11 @@ Subfolders
 .. toctree::
    :maxdepth: 1
 
-   fairmd.lipids.SchemaValidation
    fairmd.lipids.analib
    fairmd.lipids.auxiliary
    fairmd.lipids.bin
    fairmd.lipids.ipylib
+   fairmd.lipids.schema_validation
 
 Python files
 ----------

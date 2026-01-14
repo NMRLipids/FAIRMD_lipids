@@ -1,7 +1,0 @@
-fairmd.lipids.SchemaValidation.validate\_info\_dict module
-==========================================================
-
-.. automodule:: fairmd.lipids.SchemaValidation.validate_info_dict
-   :members:
-   :show-inheritance:
-   :undoc-members:

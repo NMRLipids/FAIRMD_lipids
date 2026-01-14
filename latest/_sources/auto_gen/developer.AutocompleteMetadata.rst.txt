@@ -1,7 +1,0 @@
-developer.AutocompleteMetadata module
-=====================================
-
-.. automodule:: developer.AutocompleteMetadata
-   :members:
-   :show-inheritance:
-   :undoc-members:

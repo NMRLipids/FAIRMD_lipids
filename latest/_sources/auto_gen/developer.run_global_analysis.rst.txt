@@ -1,0 +1,7 @@
+developer.run\_global\_analysis module
+======================================
+
+.. automodule:: developer.run_global_analysis
+   :members:
+   :show-inheritance:
+   :undoc-members:

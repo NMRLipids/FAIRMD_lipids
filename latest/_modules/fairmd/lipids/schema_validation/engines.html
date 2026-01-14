@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.SchemaValidation.engines &mdash; FAIRMD Lipids v1.3.5.dev1+g8f1d16b94 1.3.5.dev1+g8f1d16b94 documentation</title>
+  <title>fairmd.lipids.schema_validation.engines &mdash; FAIRMD Lipids v1.3.5.dev20+g6e116edd4 1.3.5.dev20+g6e116edd4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=1c3242d5"></script>
+      <script src="../../../../_static/documentation_options.js?v=1327155c"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev1+g8f1d16b94
+            FAIRMD Lipids v1.3.5.dev20+g6e116edd4
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev1+g8f1d16b94</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev20+g6e116edd4</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -66,7 +66,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">fairmd.lipids.SchemaValidation.engines</li>
+      <li class="breadcrumb-item active">fairmd.lipids.schema_validation.engines</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -75,7 +75,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for fairmd.lipids.SchemaValidation.engines</h1><div class="highlight"><pre>
+  <h1>Source code for fairmd.lipids.schema_validation.engines</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">The module defines dictionaries describing parsing of YAML depending on MD engine used.</span>
 
@@ -262,7 +262,7 @@
         <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;trajectory&quot;</span><span class="p">,</span>
         <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;nc&quot;</span><span class="p">,</span> <span class="s2">&quot;ncdf&quot;</span><span class="p">,</span> <span class="s2">&quot;trj&quot;</span><span class="p">,</span> <span class="s2">&quot;mdcrd&quot;</span><span class="p">),</span>
     <span class="p">},</span>
-    <span class="s2">&quot;TOP&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;AMBERTOP&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
         <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;topology&quot;</span><span class="p">,</span>
         <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
@@ -362,8 +362,8 @@
         <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">),</span>
         <span class="c1"># can be parsed to get software version etc.</span>
     <span class="p">},</span>
-    <span class="s2">&quot;TOP&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;PSF&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
         <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;topology&quot;</span><span class="p">,</span>
         <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
         <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;psf&quot;</span><span class="p">),</span>
@@ -459,7 +459,13 @@
         <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;structure&quot;</span><span class="p">,</span>
         <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">,),</span>
     <span class="p">},</span>
-    <span class="s2">&quot;TOP&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;AMBERTOP&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;topology&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EXTENSION&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;prmtop&quot;</span><span class="p">,</span> <span class="s2">&quot;top&quot;</span><span class="p">),</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;PSF&quot;</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;REQUIRED&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
         <span class="s2">&quot;CATEGORY&quot;</span><span class="p">:</span> <span class="s2">&quot;topology&quot;</span><span class="p">,</span>
         <span class="s2">&quot;TYPE&quot;</span><span class="p">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
@@ -567,7 +573,7 @@
 
 
 <div class="viewcode-block" id="get_struc_top_traj_fnames">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.SchemaValidation.engines.html#fairmd.lipids.SchemaValidation.engines.get_struc_top_traj_fnames">[docs]</a>
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.schema_validation.engines.html#fairmd.lipids.schema_validation.engines.get_struc_top_traj_fnames">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_struc_top_traj_fnames</span><span class="p">(</span>
     <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span>
     <span class="n">allow_structure</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>

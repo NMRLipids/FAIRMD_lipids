@@ -1,7 +1,0 @@
-developer.ValidateData module
-=============================
-
-.. automodule:: developer.ValidateData
-   :members:
-   :show-inheritance:
-   :undoc-members:

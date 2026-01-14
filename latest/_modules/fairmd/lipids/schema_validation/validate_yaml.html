@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fairmd.lipids.schema_validation.validate_yaml &mdash; FAIRMD Lipids v1.3.5.dev20+g6e116edd4 1.3.5.dev20+g6e116edd4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=1327155c"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.3.5.dev20+g6e116edd4
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev20+g6e116edd4</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.schema_validation.validate_yaml</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fairmd.lipids.schema_validation.validate_yaml</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jsonschema</span><span class="w"> </span><span class="kn">import</span> <span class="n">Draft7Validator</span><span class="p">,</span> <span class="n">FormatChecker</span><span class="p">,</span> <span class="n">SchemaError</span><span class="p">,</span> <span class="n">ValidationError</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tools for validating YAML files against predefined JSON Schemas.</span>
+
+<span class="sd">This module can be run either as a module or as a script.</span>
+
+<span class="sd">Module usage:</span>
+<span class="sd">    python -m fairmd.lipids.schema_validation.validate_yaml --schema readme README.yaml</span>
+
+<span class="sd">Script usage:</span>
+<span class="sd">    python validate_yaml.py --schema readme README.yaml</span>
+<span class="sd">    python validate_yaml.py --schema info info.yml</span>
+
+<span class="sd">Multiple files can be validated at once:</span>
+<span class="sd">    python validate_yaml.py README.yaml other/README.yaml</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">default_info_schema_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="s2">&quot;info_yml_schema.json&quot;</span><span class="p">)</span>
+<span class="n">default_readme_yaml_schema_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="s2">&quot;readme_yaml_schema.json&quot;</span><span class="p">)</span>
+
+
+<span class="n">schema_type_options</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="s2">&quot;readme&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_filter_yaml_date_string_type_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ValidationError</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ValidationError</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    PyYAML may parse unquoted ISO dates (e.g. 2021-02-23) into datetime.date.</span>
+<span class="sd">    JSON Schema expects a string (often with format: date).</span>
+<span class="sd">    This filters out only that specific type mismatch.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ValidationError</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">validator</span> <span class="o">==</span> <span class="s2">&quot;type&quot;</span> <span class="ow">and</span> <span class="s2">&quot;string&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">validator_value</span><span class="p">:</span>
+            <span class="n">inst</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inst</span><span class="p">,</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)):</span>
+                <span class="k">continue</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<div class="viewcode-block" id="validate_info_dict">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.schema_validation.validate_yaml.html#fairmd.lipids.schema_validation.validate_yaml.validate_info_dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_info_dict</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">default_info_schema_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate an info dict against a schema dict.</span>
+<span class="sd">    Returns a list of jsonschema.ValidationError objects which is empty with valid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">validator</span> <span class="o">=</span> <span class="n">Draft7Validator</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">format_checker</span><span class="o">=</span><span class="n">FormatChecker</span><span class="p">())</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">validator</span><span class="o">.</span><span class="n">iter_errors</span><span class="p">(</span><span class="n">instance</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">_filter_yaml_date_string_type_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="validate_info_file">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.schema_validation.validate_yaml.html#fairmd.lipids.schema_validation.validate_yaml.validate_info_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_info_file</span><span class="p">(</span><span class="n">info_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">default_info_schema_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate an info file (YML/YAML) on disk against a JSON schema file.</span>
+<span class="sd">    Returns a list of ValidationError objects (empty if valid).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">info_file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;YAML did not contain a non-empty mapping&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">validate_info_dict</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="validate_readme_dict">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.schema_validation.validate_yaml.html#fairmd.lipids.schema_validation.validate_yaml.validate_readme_dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_readme_dict</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">default_readme_yaml_schema_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate a README.yaml dict against the README JSON schema.</span>
+
+<span class="sd">    Returns a list of jsonschema.ValidationError objects (empty if valid).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">validator</span> <span class="o">=</span> <span class="n">Draft7Validator</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">format_checker</span><span class="o">=</span><span class="n">FormatChecker</span><span class="p">())</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">validator</span><span class="o">.</span><span class="n">iter_errors</span><span class="p">(</span><span class="n">instance</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">_filter_yaml_date_string_type_errors</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="validate_readme_file">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.schema_validation.validate_yaml.html#fairmd.lipids.schema_validation.validate_yaml.validate_readme_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_readme_file</span><span class="p">(</span><span class="n">readme_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">default_readme_yaml_schema_path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate a README.yaml file on disk against the README JSON schema.</span>
+
+<span class="sd">    Returns a list of ValidationError objects (empty if valid).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_file_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">instance</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;YAML did not contain a non-empty mapping&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">validate_readme_dict</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="run_file">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.schema_validation.validate_yaml.html#fairmd.lipids.schema_validation.validate_yaml.run_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">schema_type</span><span class="p">:</span> <span class="n">schema_type_options</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate a single YAML file against the selected schema.</span>
+
+<span class="sd">    On success, logs &quot;OK: &lt;path&gt;&quot; and returns normally.</span>
+
+<span class="sd">    On failure, logs detailed schema errors and raises an exception.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError:</span>
+<span class="sd">            If the file does not exist or is not a regular file.</span>
+
+<span class="sd">        RuntimeError:</span>
+<span class="sd">            If the file was successfully read but failed schema validation.</span>
+
+<span class="sd">        ValueError:</span>
+<span class="sd">            If the YAML does not contain a non-empty mapping (invalid structure).</span>
+
+<span class="sd">        OSError, yaml.YAMLError, json.JSONDecodeError, SchemaError:</span>
+<span class="sd">            For I/O errors, invalid YAML, invalid JSON schema, or other runtime failures.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">schema_type</span> <span class="o">==</span> <span class="s2">&quot;info&quot;</span><span class="p">:</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="n">validate_info_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="n">validate_readme_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;OK: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;INVALID: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errors</span><span class="p">:</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">err</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">path</span> <span class="k">else</span> <span class="s2">&quot;&lt;root&gt;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;  -&gt; </span><span class="si">%s</span><span class="s2"> (at </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Schema validation failed&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.schema_validation.validate_yaml.html#fairmd.lipids.schema_validation.validate_yaml.main">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Command-line entry point for YAML schema validation.</span>
+
+<span class="sd">    Validates one or more YAML files against either the FAIRMD</span>
+<span class="sd">    info.yml schema or the README.yaml schema.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Process exit code:</span>
+<span class="sd">            0 = all files valid</span>
+<span class="sd">            1 = at least one file failed schema validation</span>
+<span class="sd">            2 = at least one file was missing or not a regular file</span>
+<span class="sd">            3 = at least one file could not be read, parsed, or validated</span>
+<span class="sd">                due to YAML, JSON, or runtime errors</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(levelname)s</span><span class="s2">: </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Validate YAML files against FAIRMD info / README schemas.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--schema&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-s&quot;</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="s2">&quot;readme&quot;</span><span class="p">],</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;readme&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Schema to use: &#39;readme&#39; (default) or &#39;info&#39;.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;files&quot;</span><span class="p">,</span>
+        <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;YAML files to validate.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">run_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="n">exit_code</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">exit_code</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;File not found (or not a file): </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="n">exit_code</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">exit_code</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">,</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">,</span> <span class="n">SchemaError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ERROR: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;  -&gt; </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="n">exit_code</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">exit_code</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">exit_code</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

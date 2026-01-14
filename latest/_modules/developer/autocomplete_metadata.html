@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>developer.AutocompleteMetadata &mdash; FAIRMD Lipids v1.3.5.dev1+g8f1d16b94 1.3.5.dev1+g8f1d16b94 documentation</title>
+  <title>developer.autocomplete_metadata &mdash; FAIRMD Lipids v1.3.5.dev20+g6e116edd4 1.3.5.dev20+g6e116edd4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1c3242d5"></script>
+      <script src="../../_static/documentation_options.js?v=1327155c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev1+g8f1d16b94
+            FAIRMD Lipids v1.3.5.dev20+g6e116edd4
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">FAIRMD Lipids v1.3.5.dev1+g8f1d16b94</a>
+          <a href="../../index.html">FAIRMD Lipids v1.3.5.dev20+g6e116edd4</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -66,7 +66,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">developer.AutocompleteMetadata</li>
+      <li class="breadcrumb-item active">developer.autocomplete_metadata</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -75,7 +75,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for developer.AutocompleteMetadata</h1><div class="highlight"><pre>
+  <h1>Source code for developer.autocomplete_metadata</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Script for membrane metadata autocomplete.</span>
 
@@ -100,7 +100,7 @@
 
 
 <div class="viewcode-block" id="check_api">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.check_api">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.check_api">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">check_api</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
@@ -110,7 +110,7 @@
 
 
 <div class="viewcode-block" id="get_chembl">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.get_chembl">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.get_chembl">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_chembl</span><span class="p">(</span><span class="n">inchikey</span><span class="p">):</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://www.ebi.ac.uk/chembl/api/data/molecule?standard_inchi_key=</span><span class="si">{</span><span class="n">inchikey</span><span class="si">}</span><span class="s2">&amp;format=json&quot;</span>
     <span class="k">if</span> <span class="n">check_api</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
@@ -123,7 +123,7 @@
 
 
 <div class="viewcode-block" id="get_pubchem">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.get_pubchem">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.get_pubchem">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_pubchem</span><span class="p">(</span><span class="n">inchikey</span><span class="p">):</span>
     <span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/&quot;</span>
@@ -140,7 +140,7 @@
 
 
 <div class="viewcode-block" id="get_pubchem_synonyms">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.get_pubchem_synonyms">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.get_pubchem_synonyms">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_pubchem_synonyms</span><span class="p">(</span><span class="n">cid</span><span class="p">):</span>
     <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/</span><span class="si">{</span><span class="n">cid</span><span class="si">}</span><span class="s2">/synonyms/JSON&quot;</span>
     <span class="k">if</span> <span class="n">check_api</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
@@ -154,7 +154,7 @@
 
 
 <div class="viewcode-block" id="get_chebi">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.get_chebi">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.get_chebi">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_chebi</span><span class="p">(</span><span class="n">chebi_id</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">chebi_id</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{}</span>
@@ -173,7 +173,7 @@
 
 
 <div class="viewcode-block" id="get_unichem">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.get_unichem">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.get_unichem">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_unichem</span><span class="p">(</span><span class="n">inchikey</span><span class="p">):</span>
     <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.ebi.ac.uk/unichem/api/v1/compounds&quot;</span>
     <span class="k">if</span> <span class="n">check_api</span><span class="p">(</span><span class="s2">&quot;https://www.ebi.ac.uk/unichem/api/v1/sources&quot;</span><span class="p">):</span>
@@ -193,7 +193,7 @@
 
 
 <div class="viewcode-block" id="extract_sameas">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.extract_sameas">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.extract_sameas">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">extract_sameas</span><span class="p">(</span><span class="n">sources</span><span class="p">):</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;pubchem&quot;</span><span class="p">:</span> <span class="s2">&quot;pubchem.compound&quot;</span><span class="p">,</span>
@@ -223,7 +223,7 @@
 
 
 <div class="viewcode-block" id="get_chembl_id_from_unichem">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.get_chembl_id_from_unichem">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.get_chembl_id_from_unichem">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_chembl_id_from_unichem</span><span class="p">(</span><span class="n">sources</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">src</span><span class="p">[</span><span class="s2">&quot;shortName&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;chembl&quot;</span><span class="p">:</span>
@@ -232,7 +232,7 @@
 
 
 <div class="viewcode-block" id="load_existing_metadata">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.load_existing_metadata">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.load_existing_metadata">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_existing_metadata</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -241,7 +241,7 @@
 
 
 <div class="viewcode-block" id="update_metadata">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.update_metadata">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.update_metadata">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">update_metadata</span><span class="p">(</span><span class="n">existing</span><span class="p">,</span> <span class="n">new_data</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">new_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -258,7 +258,7 @@
 
 
 <div class="viewcode-block" id="main">
-<a class="viewcode-back" href="../../auto_gen/developer.AutocompleteMetadata.html#developer.AutocompleteMetadata.main">[docs]</a>
+<a class="viewcode-back" href="../../auto_gen/developer.autocomplete_metadata.html#developer.autocomplete_metadata.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Usage: python script.py &lt;metadata.yaml path&gt;&quot;</span><span class="p">)</span>

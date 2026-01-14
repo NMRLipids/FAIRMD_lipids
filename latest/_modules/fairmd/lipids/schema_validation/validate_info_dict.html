@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.SchemaValidation.validate_info_dict &mdash; FAIRMD Lipids v1.3.5.dev1+g8f1d16b94 1.3.5.dev1+g8f1d16b94 documentation</title>
+  <title>fairmd.lipids.schema_validation.validate_info_dict &mdash; FAIRMD Lipids v1.3.5.dev20+g6e116edd4 1.3.5.dev20+g6e116edd4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=1c3242d5"></script>
+      <script src="../../../../_static/documentation_options.js?v=1327155c"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev1+g8f1d16b94
+            FAIRMD Lipids v1.3.5.dev20+g6e116edd4
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev1+g8f1d16b94</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev20+g6e116edd4</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -66,7 +66,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">fairmd.lipids.SchemaValidation.validate_info_dict</li>
+      <li class="breadcrumb-item active">fairmd.lipids.schema_validation.validate_info_dict</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -75,22 +75,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for fairmd.lipids.SchemaValidation.validate_info_dict</h1><div class="highlight"><pre>
+  <h1>Source code for fairmd.lipids.schema_validation.validate_info_dict</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span><span class="p">,</span> <span class="n">molecule_ff_set</span><span class="p">,</span> <span class="n">molecules_set</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.SchemaValidation.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">software_dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.schema_validation.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">software_dict</span>
 
 
 <div class="viewcode-block" id="YamlBadConfigError">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.SchemaValidation.validate_info_dict.html#fairmd.lipids.SchemaValidation.validate_info_dict.YamlBadConfigError">[docs]</a>
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.schema_validation.validate_info_dict.html#fairmd.lipids.schema_validation.validate_info_dict.YamlBadConfigError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">YamlBadConfigError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom Exception class for parsing the yaml configuration&quot;&quot;&quot;</span></div>
 
 
 
 <div class="viewcode-block" id="parse_valid_config_settings">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.SchemaValidation.validate_info_dict.html#fairmd.lipids.SchemaValidation.validate_info_dict.parse_valid_config_settings">[docs]</a>
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.schema_validation.validate_info_dict.html#fairmd.lipids.schema_validation.validate_info_dict.parse_valid_config_settings">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">parse_valid_config_settings</span><span class="p">(</span><span class="n">info_yaml</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse, validate and update dict entries from yaml configuration file.</span>
