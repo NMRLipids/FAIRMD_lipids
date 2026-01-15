@@ -40,6 +40,7 @@ Alexander Kuzmin
 """
 
 import json
+import math
 import os
 import warnings
 
@@ -54,6 +55,7 @@ from fairmd.lipids.api import lipids_set
 from fairmd.lipids.core import System
 from fairmd.lipids.databankio import download_resource_from_uri, resolve_file_url
 from fairmd.lipids.molecules import Lipid
+from fairmd.lipids.schema_validation.engines import get_struc_top_traj_fnames
 
 # suppress some MDAnalysis warnings issued from mda.analysis.align
 warnings.filterwarnings("ignore")
@@ -101,21 +103,19 @@ trj_size_cutoff = (
 TAILSN1 = "sn-1"
 TAILSN2 = "sn-2"
 HEADGRP = "headgroup"
-
 # In case you want to test for a specific coordinate change the flag to yes
 TEST = False
 
 
 class Parser:
     """
-    Class Parser is a basic class to work with the trajectory. It has basic utility
-    for preparing trajectories:
+    A basic class to work with the trajectory.
 
-    1. Checking if simulation has a correct name
-    2. Checking if trajectory is downloaded. Downloading, if not.
-    3. Calling AmberMerger to merge head groups and tails for Amber
+    It has basic utility for preparing trajectories:
+
+    1. Calling AmberMerger to merge head groups and tails for Amber
        trajectories
-    4. Concatenate trajectories
+    2. Concatenate trajectories
 
     :param system: simulation data
     :param eq_time_fname: name of the output file
@@ -123,10 +123,8 @@ class Parser:
     :param v: verbosity for testing
     """
 
-    def __init__(self, system: System, eq_time_fname="eq_times.json", path=None, v=True):
-        # Technical
-        self.verbose = v
-        self.error = 0
+    def __init__(self, system: System, eq_time_fname="eq_times.json", path=None, *, verbose=True):
+        self.verbose = verbose
 
         # Path
         self.root = FMDL_SIMU_PATH
@@ -139,22 +137,7 @@ class Parser:
             print(f"Parser: Processing trajectory {self._path}")
         self.doi = system["DOI"]
         self.soft = system["SOFTWARE"]
-        if self.soft == "openMM" or self.soft == "NAMD":
-            try:
-                self.trj = system["TRJ"][0][0]
-                self.tpr = system["PDB"][0][0]
-            except Exception:
-                print("Parser: Did not find trajectory or pdb for openMM or NAMD")
-                self.error = 1
-        else:
-            try:
-                self.trj = system["TRJ"][0][0]
-                self.tpr = system["TPR"][0][0]
-            except Exception:
-                print("Parser: Did not find trajectory or tpr for GROMACS")
-                self.trj = ""
-                self.tpr = ""
-                self.error = 1
+        _, self.tpr, self.trj = get_struc_top_traj_fnames(system, allow_structure=False)
         self.trj_name = os.path.join(self._path, self.trj)
         self.tpr_name = os.path.join(self._path, self.tpr)
         self.trj_len = system["TRJLENGTH"] / 1000  # ns
@@ -165,59 +148,11 @@ class Parser:
         self.lipids: dict[str, Lipid] = {k: v for k, v in system.content.items() if k in lipids_set}
         self.path = path
 
-    @deprecated(reason="Downloading should happen somewhere else.Not in the analysis classes.")
-    def validate_path(self):
+    def _prepare_gmx_traj(self) -> None:
         """
-        Path validation. Behaviour depends on the input.
+        Prepare GROMACS trajectory.
 
-        1. If ther were any errors, validation fails. Currently the only
-           error tested is that .xtc and .tpr files are not present. This
-           is the case for non-GROMACS trajectories.
-        2. If path is not provided, parser is iterating over all trajectories.
-        3. If path is provided and current path is equal to the provided one,
-           parser reports that it finds the trajectory for the analysis.
-
-        TODO: must be removed. Substitute path-validation part.
-        """
-        if self.error > 0:
-            # This is an error message. Printing even in silent mode
-            print(f"Parser: Can't read TPR/PDB and TRJ from README for {self._path}")
-        if self.verbose and not self.path:
-            print(
-                f"Parser: Iterating over all trajectories. Current trajectory is {self._path}",
-            )
-            # return
-        # if self.path == self.indexingPath:
-        if os.path.isfile(os.path.join(self._path, self.eq_time_fname)):
-            if self.verbose:
-                print("Parser: Found file with equilibration data. \nNot processing the trajectory")
-                return -1
-        if self.verbose:
-            print(f"Parser: Found trajectory {self._path}")
-        return 0
-
-    @deprecated(reason="Downloading should happen somewhere else.Not in the analysis classes.")
-    def download_traj(self):
-        """
-        TODO: must be removed. We don't download trajectory in the analysis part
-
-        Basic trajectory and TPR download.
-        """
-        print("Downloading")
-        if not os.path.isfile(self.tpr_name):
-            self.tpr_url = resolve_file_url(self.doi, self.tpr)
-            # This is a log message. Printing even in silent mode
-            print("Parser: Downloading tpr ", self.doi)
-            download_resource_from_uri(self.tpr_url, self.tpr_name)
-        if not os.path.isfile(self.trj_name):
-            self.trj_url = resolve_file_url(self.doi, self.trj)
-            # This is a log message. Printing even in silent mode
-            print("Parser: Downloading trj ", self.doi)
-            download_resource_from_uri(self.trj_url, self.trj_name)
-
-    def prepare_gmx_traj(self):
-        """
-        Preparing trajectory. If centered trajectory is found, use it. If whole
+        If centered trajectory is found, use it. If whole
         trajectory is found, use it. Otherwise, call gmx trjconv to make whole
         trajectory. The selected trajectory is loaded into Universe.
         """
@@ -240,8 +175,6 @@ class Parser:
 
         # Skip frames for large trajectories
         if self.size > trj_size_cutoff:
-            import math
-
             _skip = math.ceil(1.1 * self.size / trj_size_cutoff)
             trj_out_name = os.path.join(self._path, "short.xtc")
             os.system(
@@ -259,18 +192,15 @@ class Parser:
                 f"echo System | gmx trjconv -s {self.tpr_name}  -f {self.trj_name} -dump 0 -o {self.gro_name}",
             )
 
-        # Loading trajectory
         try:
             self.traj = mda.Universe(self.tpr_name, self.trj_name)
         except Exception:
             self.traj = mda.Universe(self.gro_name, self.trj_name)
 
     # TODO: not tested!!
-    def prepare_OpenMM_traj(self):  # noqa: N802
+    def _prepare_OpenMM_traj(self):  # noqa: N802
         print("openMM or NAMD")
         if self.size > trj_size_cutoff:
-            import math
-
             _skip = math.ceil(1.1 * self.size / trj_size_cutoff)
             trj_out_name = os.path.join(self._path, "short.xtc")
             if os.path.isfile(trj_out_name):
@@ -288,19 +218,33 @@ class Parser:
 
     def prepare_traj(self):
         if self.soft == "openMM" or self.soft == "NAMD":
-            self.prepare_OpenMM_traj()
+            self._prepare_OpenMM_traj()
         else:
-            self.prepare_gmx_traj()
+            self._prepare_gmx_traj()
 
-    def concatenate_traj(self):
-        """
-        Create Concatenator and corresponding concatenated trajectories for
-        all lipids available for the trajectory.
+    @staticmethod
+    def verify_lipid(lipid: Lipid) -> bool:
+        """Verify that the lipid is supported by the method."""
+        __tailsn1_vars = ["sn-1", "sn1"]
+        __tailsn2_vars = ["sn-2", "sn2"]
+        has_sn1 = False
+        has_sn2 = False
+        for v in lipid.mapping_dict.values():
+            if v["FRAGMENT"] in __tailsn1_vars:
+                has_sn1 = True
+            if v["FRAGMENT"] in __tailsn2_vars:
+                has_sn2 = True
+        return (has_sn1 and has_sn2)
+
+    def concatenate_traj(self) -> None:
+        """Create Concatenator and corresponding concatenated trajectories.
+
+        Done for all lipids available in the trajectory.
         """
         self.concatenated_trajs = {}
         for lipid_name, lipid in self.lipids.items():
-            if lipid_name not in ALLOWLIPIDS:
-                # We do not treat cholesterols
+            if not Parser.verify_lipid(lipid):
+                # We do treat only lipids with sn-1 and sn-2 tails
                 continue
             topology = Topology(
                 self.traj,

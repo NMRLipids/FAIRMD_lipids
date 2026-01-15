@@ -97,8 +97,9 @@ def computeNMRPCA(  # noqa: N802 (API)
         return RCODE_ERROR
 
     try:
-        # TODO: REPLACE WTIH UNIVERSE_CONSTRUCTOR
-        parser.download_traj()
+        # Download md data
+        uc = UniverseConstructor(system)
+        uc.download_mddata()
         # Prepare trajectory
         parser.prepare_traj()
         # Concatenate trajectory
