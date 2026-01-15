@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.api &mdash; FAIRMD Lipids v1.3.5.dev20+g6e116edd4 1.3.5.dev20+g6e116edd4 documentation</title>
+  <title>fairmd.lipids.api &mdash; FAIRMD Lipids v1.3.5.dev25+gfc0f683f1 1.3.5.dev25+gfc0f683f1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=1327155c"></script>
+      <script src="../../../_static/documentation_options.js?v=caf5c580"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev20+g6e116edd4
+            FAIRMD Lipids v1.3.5.dev25+gfc0f683f1
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.3.5.dev20+g6e116edd4</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.3.5.dev25+gfc0f683f1</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -233,6 +233,65 @@
         <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;The form-factor data for system#</span><span class="si">{}</span><span class="s2"> is invalid.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">])</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sim_ff_data</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_quality">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.api.html#fairmd.lipids.api.get_quality">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_quality</span><span class="p">(</span>
+    <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">part</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;total&quot;</span><span class="p">,</span>
+    <span class="n">lipid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">experiment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;both&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return quality metrics for a given system.</span>
+
+<span class="sd">    :param system: Simulation system</span>
+<span class="sd">    :param part: Part of the system to evaluate quality for (total|tails|headgroup)&quot;.</span>
+<span class="sd">    :param lipid: Lipid name to evaluate quality for (if None, evaluates for all lipids).</span>
+<span class="sd">    :param experiment: Experiment type to evaluate quality against (XR|NMR|both).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">part</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">,</span> <span class="s2">&quot;headgroup&quot;</span><span class="p">,</span> <span class="s2">&quot;tails&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">experiment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;FF&quot;</span><span class="p">,</span> <span class="s2">&quot;OP&quot;</span><span class="p">,</span> <span class="s2">&quot;both&quot;</span><span class="p">]:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Invalid values for `part` or `experiment`!&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">part</span> <span class="o">!=</span> <span class="s2">&quot;total&quot;</span> <span class="ow">or</span> <span class="n">lipid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">experiment</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="s2">&quot;FF&quot;</span><span class="p">]:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Combined or form-factor qualities are available only for the entire system!&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">part</span> <span class="o">==</span> <span class="s2">&quot;total&quot;</span> <span class="ow">and</span> <span class="n">experiment</span> <span class="o">==</span> <span class="s2">&quot;both&quot;</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Quality for both experiments is not implemented!&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">q</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span>
+
+    <span class="k">if</span> <span class="n">experiment</span> <span class="o">==</span> <span class="s2">&quot;FF&quot;</span><span class="p">:</span>
+        <span class="n">spath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="s2">&quot;FormFactorQuality.json&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">spath</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">spath</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fd</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">experiment</span> <span class="o">==</span> <span class="s2">&quot;OP&quot;</span> <span class="ow">and</span> <span class="n">lipid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">spath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="s2">&quot;SYSTEM_quality.json&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">spath</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">spath</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">qdict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">qdict</span><span class="p">[</span><span class="n">part</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">experiment</span> <span class="o">==</span> <span class="s2">&quot;OP&quot;</span> <span class="ow">and</span> <span class="n">lipid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lipid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Lipid </span><span class="si">{</span><span class="n">lipid</span><span class="si">}</span><span class="s2"> is not in the system composition!&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">spath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="n">lipid</span> <span class="o">+</span> <span class="s2">&quot;_FragmentQuality.json&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">spath</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">spath</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+            <span class="n">qdict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">qdict</span><span class="p">[</span><span class="s2">&quot;sn-1&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">float</span><span class="p">(</span><span class="n">qdict</span><span class="p">[</span><span class="s2">&quot;sn-2&quot;</span><span class="p">]))</span> <span class="o">/</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">part</span> <span class="o">==</span> <span class="s2">&quot;tails&quot;</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">qdict</span><span class="p">[</span><span class="n">part</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">q</span></div>
 
 
 

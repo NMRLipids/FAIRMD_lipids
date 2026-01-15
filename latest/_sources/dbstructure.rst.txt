@@ -183,6 +183,26 @@ more information, see :ref:`molecule_names`
 Other files
 -----------
 
+.. _ranking_files:
+
+Ranking files
+~~~~~~~~~~~~~~~~~
+Contain tables where major conditions and quality scores are stored for each simulation in CSV format. These files are stored at ``Ranking`` subfolder of :py:data:`fairmd.lipids.FMDL_DATA_PATH` folder. We store:
+
+1. Form-factor ranking files named as ``FF_ranking.csv``.
+2. Order paparmeter ranking files named as ``OP_ranking.csv``.
+3. Individual lipid ranking files named as ``<lipid>_ranking.csv``.
+
+The difference between 2. and 3. is that 2. contains average quality scores over all lipids in the simulation, while 3. contains quality scores for only selected lipid.
+
+.. _uadic_files:
+
+Lipid united-atom dictionary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Contains information about guessing implicit hydrogens for united-atom force fields. See :ref:`NMRlipids/buildh <https://github.com/NMRlipids/buildh>`_ for more details.
+
+TODO: write the block
+
 .. _info_files:
 
 info.yaml
@@ -196,8 +216,3 @@ stored historically in ``info_files`` subfolder of
 
 For more information see :ref:`readmesimu` and :ref:`addSimulation`.
 
-.. _uadic_files:
-
-Lipid united-atom dictionary
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-TODO: write the block

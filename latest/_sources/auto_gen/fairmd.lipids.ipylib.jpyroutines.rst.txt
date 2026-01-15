@@ -1,7 +1,0 @@
-fairmd.lipids.ipylib.jpyroutines module
-=======================================
-
-.. automodule:: fairmd.lipids.ipylib.jpyroutines
-   :members:
-   :show-inheritance:
-   :undoc-members:
