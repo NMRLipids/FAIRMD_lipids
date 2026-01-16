@@ -69,32 +69,17 @@ def computeNMRPCA(  # noqa: N802 (API)
     # TODO: 2test|    parser = Parser(FMDL_SIMU_PATH, readme, eq_time_fname, testTraj)
     try:
         parser = nmrpca.Parser(system, "eq_times.json")
-        # Check trajectory
         print(parser._path)
-        vpcode = parser.validate_path()
-        print("ValidatePath code: ", vpcode)
     except Exception:
         logger.exception("Error initializing NMRPCA parser.")
         return RCODE_ERROR
 
-    if vpcode > 0:
-        logger.error("Some errors in analyze_nmrpca.py::Parser constructor.")
-        return RCODE_ERROR
-
     if (
-        (vpcode < 0 and not recompute)
+        (os.path.isfile(os.path.join(FMDL_SIMU_PATH, system["path"], "eq_times.json")) and not recompute)
         or ("WARNINGS" in system and system["WARNINGS"] is not None and "AMBIGUOUS_ATOMNAMES" in system["WARNINGS"])
         or ("WARNINGS" in system and system["WARNINGS"] is not None and "SKIP_EQTIMES" in system["WARNINGS"])
     ):
         return RCODE_SKIPPED
-
-    # Check if TPR is defined and non-null or ""
-    try:
-        __ = system["TPR"][0][0]
-        _ = __[0]
-    except (KeyError, TypeError):
-        logger.exception("TPR is required for NMRPCA analysis (%d})!", system["ID"])
-        return RCODE_ERROR
 
     try:
         # Download md data

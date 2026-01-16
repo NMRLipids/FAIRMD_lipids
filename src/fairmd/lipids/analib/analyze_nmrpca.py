@@ -46,14 +46,12 @@ import warnings
 
 import MDAnalysis as mda
 import numpy as np
-from deprecated import deprecated
 from MDAnalysis.analysis.base import AnalysisFromFunction
 from scipy import signal
 
 from fairmd.lipids import FMDL_SIMU_PATH
 from fairmd.lipids.api import lipids_set
 from fairmd.lipids.core import System
-from fairmd.lipids.databankio import download_resource_from_uri, resolve_file_url
 from fairmd.lipids.molecules import Lipid
 from fairmd.lipids.schema_validation.engines import get_struc_top_traj_fnames
 
@@ -234,7 +232,7 @@ class Parser:
                 has_sn1 = True
             if v["FRAGMENT"] in __tailsn2_vars:
                 has_sn2 = True
-        return (has_sn1 and has_sn2)
+        return has_sn1 and has_sn2
 
     def concatenate_traj(self) -> None:
         """Create Concatenator and corresponding concatenated trajectories.
