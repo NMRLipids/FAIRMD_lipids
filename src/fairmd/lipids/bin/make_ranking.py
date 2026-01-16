@@ -111,7 +111,7 @@ def make_ranking() -> None:
                 s["FF"],
                 _make_composition_string(s["COMPOSITION"]),
                 s["TEMPERATURE"],
-                _get_hydration_nan,
+                _get_hydration_nan(s),
                 np.round(get_quality(s, experiment="FF"), 4),
                 np.round(qq, 4),
                 np.round(tq, 4),
