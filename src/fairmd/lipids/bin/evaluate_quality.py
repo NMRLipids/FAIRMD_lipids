@@ -25,7 +25,7 @@ from fairmd.lipids import FMDL_EXP_PATH, FMDL_SIMU_PATH
 from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
 
 
-def _round_quality_values(obj : dict | list, ndigits : int =4) -> dict | list:
+def _round_quality_values(obj: dict | list, ndigits: int = 4) -> dict | list:
     """
     Round all floating-point values in a nested dict/list structure.
 
