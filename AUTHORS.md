@@ -20,7 +20,6 @@ Since June 2025 (v.1.1.0), FAIRMD Lipids separates codespace from [Data](https:/
 - Jagdeep Singh (@jagdep-singh)
 - Hanne Susanna Antila (@hsantila)
 - Hector Martinez-Seara Monne (@hseara)
-- Jagdeep Singh(@jagdep-singh)
 - Lara Dautzenberg (@larabort)
 - Magnus-Elias Sletten (@MagnusSletten)
 - Markus Miettinen (@markussmiettinen)
