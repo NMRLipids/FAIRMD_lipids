@@ -8,9 +8,7 @@ files, SMILES, and add the alignments for only heavy atoms. Further should
 be converted into a mature CI/CD script.
 """
 
-import os
 import re
-import subprocess
 import sys
 from copy import deepcopy
 
@@ -20,46 +18,12 @@ import yaml
 from rdkit import Chem, RDLogger
 from rdkit.Chem import MolStandardize
 
-import fairmd.lipids as dlb
+import fairmd.lipids.api as dlapi
 import fairmd.lipids.core as dlc
-import fairmd.lipids.databankio as dbio
 from fairmd.lipids.auxiliary import elements
 
 lg = RDLogger.logger()
 lg.setLevel(RDLogger.CRITICAL)
-
-
-def mk_universe_compact(s: dlc.System) -> mda.Universe:
-    """Make universe based on just TPR and GRO records"""
-    tpr_path = None
-    if "TPR" in s and s["TPR"] is not None:
-        tpr = s["TPR"][0][0]
-        tpr_url = dbio.resolve_file_url(s["DOI"], tpr, validate_uri=True)
-        tpr_path = os.path.join(dlb.FMDL_SIMU_PATH, s["path"], tpr)
-        if not os.path.isfile(tpr_path):
-            dbio.download_resource_from_uri(tpr_url, tpr_path)
-    elif "PDB" in s and s["PDB"] is not None:
-        msg = "PDB is not implemented yet"
-        raise NotImplementedError(msg)
-    else:
-        msg = "System without topology."
-        raise RuntimeError(msg)
-    if "GRO" in s and s["GRO"] is not None:
-        gro = s["GRO"][0][0]
-        gro_url = dbio.resolve_file_url(s["DOI"], gro, validate_uri=True)
-        gro_path = os.path.join(dlb.FMDL_SIMU_PATH, s["path"], gro)
-        if not os.path.isfile(gro_path):
-            dbio.download_resource_from_uri(gro_url, gro_path)
-    elif tpr_path is not None:
-        gro_path = tpr_path + ".gro"
-        subprocess.run(["gmx", "editconf", "-f", tpr_path, "-o", gro_path, "-pbc"])
-    else:
-        msg = "Cannot generate GRO file"
-        raise RuntimeError(msg)
-
-    print(tpr_path, gro_path)
-    return mda.Universe(tpr_path, gro_path)
-
 
 def get_1mol_selstr(comp_name: str, mol_obj: dlc.Molecule) -> str:
     """Return selection string for a single molecule"""
@@ -105,11 +69,10 @@ def find_uname(x, atom_name, res_name) -> str:
 def main():
     ss = dlc.initialize_databank()
 
-    with open("done.txt") as fd:
-        done_ids = list(map(int, fd.readlines()))
-
-    # list of deeply defective systems
-    done_ids += [151]
+    done_ids = []
+    # with open("done.txt") as fd:
+    #    done_ids = list(map(int, fd.readlines()))
+    done_ids += [151] # defective systems
 
     print("Loading current state..")
     print(done_ids)
@@ -125,17 +88,22 @@ def main():
         if s.get("UNITEDATOM_DICT", False):
             print(" -- Cannot work with UA")
             continue
-        lip_names = set(s.content.keys()).intersection(dlb.core.lipids_set.names)
-        print("LIPID COMPOSITION: ", lip_names)
+        print("LIPID COMPOSITION: ", s.lipids.keys())
 
-        while lip_names:
-            cur_lip = lip_names.pop()
+        u: mda.Universe|None = None
+
+        for cur_lip, mol_obj in s.lipids.items():
             print("Current lipids ", cur_lip)
-            mol_obj = s.content[cur_lip]
+            smileids = [x["SMILEIDX"] for x in mol_obj.mapping_dict.values() if "SMILEIDX" in x]
             # head dict
-            print({x: mol_obj.mapping_dict[x] for x in list(mol_obj.mapping_dict.keys())[:5]})
+            if smileids:
+                print(f" -- SMILEIDX already present ({len(smileids)}). Skipping.")
+                continue
 
-            u = mk_universe_compact(s)
+            if u is None:
+                uc = dlapi.UniverseConstructor(s)
+                uc.download_mddata(skip_traj=True)
+                u = uc.build_universe()
 
             # use internal element guesser
             u.guess_TopologyAttrs(force_guess=["elements"])
@@ -203,7 +171,7 @@ def main():
                 else:
                     b = next(rdatit2)
                     match_in_smile = next(mtch_iter)
-                    un = find_uname(mol_obj, mdat.name, mdat.resname, s["COMPOSITION"][cur_lip]["NAME"])
+                    un = find_uname(mol_obj, mdat.name, mdat.resname)
                     print(un, a.GetAtomicNum(), mdat.name, b.GetAtomicNum(), match_in_smile)
                     new_mapping_dict[un]["SMILEIDX"] = int(match_in_smile)
 
