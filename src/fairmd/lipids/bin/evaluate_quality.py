@@ -217,9 +217,13 @@ def evaluate_quality():
 
             print("Form factor quality evaluated for ", DATAdir)
             outfile3 = os.path.join(DATAdir, "FormFactorQuality.json")
-            _round_quality_values(results_ff[best_ep])
+
+            ff_quality = list(results_ff[best_ep])
+            _round_quality_values(ff_quality)
+
             with open(outfile3, "w") as f:
-                json.dump(results_ff[best_ep], f)
+                json.dump(ff_quality, f)
+
             evaluated_ff_counter += 1
 
     print("The number of systems with evaluated order parameters:", evaluated_op_counter)
