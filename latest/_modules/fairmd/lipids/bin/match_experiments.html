@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.bin.match_experiments &mdash; FAIRMD Lipids v1.3.5.dev43+g69bb2a7b7 1.3.5.dev43+g69bb2a7b7 documentation</title>
+  <title>fairmd.lipids.bin.match_experiments &mdash; FAIRMD Lipids v1.3.5.dev44+ga0a1dbe9c 1.3.5.dev44+ga0a1dbe9c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=7582abce"></script>
+      <script src="../../../../_static/documentation_options.js?v=5750932b"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev43+g69bb2a7b7
+            FAIRMD Lipids v1.3.5.dev44+ga0a1dbe9c
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev43+g69bb2a7b7</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev44+ga0a1dbe9c</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -92,6 +92,7 @@
 <span class="sd">    fmdl_match_experiments</span>
 
 <span class="sd">No arguments are needed.</span>
+<span class="sd">TODO: check if EXPERIMENT section changed and trigger the action!</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -101,20 +102,21 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_EXP_PATH</span><span class="p">,</span> <span class="n">FMDL_SIMU_PATH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_SIMU_PATH</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span><span class="p">,</span> <span class="n">initialize_databank</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">ExperimentCollection</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;__name__&quot;</span><span class="p">)</span>
 
-<span class="c1"># TODO: move ions list into Data</span>
+<span class="c1"># TODO: REMOVE IT COMPLETELY!!!</span>
 <span class="n">ions_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;POT&quot;</span><span class="p">,</span> <span class="s2">&quot;SOD&quot;</span><span class="p">,</span> <span class="s2">&quot;CLA&quot;</span><span class="p">,</span> <span class="s2">&quot;CAL&quot;</span><span class="p">]</span>  <span class="c1"># should contain names of all ions</span>
 
 <span class="n">LIP_CONC_REL_THRESHOLD</span> <span class="o">=</span> <span class="mf">0.15</span>  <span class="c1"># relative acceptable error for determination</span>
 <span class="c1"># of the hydration in ssNMR</span>
 
 
+<span class="c1"># TODO: derive from Simulation (if not to remove at all!)</span>
 <div class="viewcode-block" id="SearchSystem">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.SearchSystem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SearchSystem</span><span class="p">:</span>
@@ -128,6 +130,7 @@
 <div class="viewcode-block" id="SearchSystem.get_lipids">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.SearchSystem.get_lipids">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_lipids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="n">lipids_set</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return list of lipids&quot;&quot;&quot;</span>
         <span class="n">lipids</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">lipids</span></div>
 
@@ -135,6 +138,7 @@
 <div class="viewcode-block" id="SearchSystem.get_ions">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.SearchSystem.get_ions">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_ions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ions</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return list of non-zero ions&quot;&quot;&quot;</span>
         <span class="n">sim_ions</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;COMPOSITION&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ions</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">sim_ions</span></div>
 
@@ -207,9 +211,7 @@
 <div class="viewcode-block" id="load_simulations">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.load_simulations">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_simulations</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SearchSystem</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generates the list of Simulation objects. Go through all README.yaml files.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate the list of Simulation objects. Go through all README.yaml files.&quot;&quot;&quot;</span>
     <span class="n">systems</span> <span class="o">=</span> <span class="n">initialize_databank</span><span class="p">()</span>
     <span class="n">simulations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SearchSystem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -230,17 +232,15 @@
 <div class="viewcode-block" id="load_experiments">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.load_experiments">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_experiments</span><span class="p">(</span><span class="n">exp_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">all_experiments</span><span class="p">:</span> <span class="n">ExperimentCollection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Experiment</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Filters experiments from the collection by experiment type.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Filter experiments from the collection by experiment type.&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filtering for </span><span class="si">{</span><span class="n">exp_type</span><span class="si">}</span><span class="s2"> experiments...&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">exp</span> <span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="n">all_experiments</span> <span class="k">if</span> <span class="n">exp</span><span class="o">.</span><span class="n">exptype</span> <span class="o">==</span> <span class="n">exp_type</span><span class="p">]</span></div>
 
 
 
-<div class="viewcode-block" id="find_pairs">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.find_pairs">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">find_pairs</span><span class="p">(</span><span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Experiment</span><span class="p">],</span> <span class="n">simulations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SearchSystem</span><span class="p">]):</span>
+<div class="viewcode-block" id="find_pairs_and_change_sims">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.find_pairs_and_change_sims">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_pairs_and_change_sims</span><span class="p">(</span><span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Experiment</span><span class="p">],</span> <span class="n">simulations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SearchSystem</span><span class="p">]):</span>
     <span class="n">pairs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">simulation</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">simulations</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Simulation&quot;</span><span class="p">):</span>
         <span class="n">sim_lipids</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">get_lipids</span><span class="p">()</span>
@@ -317,17 +317,13 @@
 
                         <span class="c1"># Add path to experiment into simulation README.yaml</span>
                         <span class="c1"># many experiment entries can match to same simulation</span>
-                        <span class="n">exp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span>
-                            <span class="n">experiment</span><span class="o">.</span><span class="n">dataPath</span><span class="p">,</span>
-                            <span class="n">start</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_EXP_PATH</span><span class="p">,</span> <span class="n">experiment</span><span class="o">.</span><span class="n">exptype</span><span class="p">),</span>
-                        <span class="p">)</span>
                         <span class="k">if</span> <span class="n">experiment</span><span class="o">.</span><span class="n">exptype</span> <span class="o">==</span> <span class="s2">&quot;OrderParameters&quot;</span><span class="p">:</span>
-                            <span class="n">lipid</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">molname</span>
-                            <span class="k">if</span> <span class="n">lipid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">]:</span>
-                                <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">lipid</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-                            <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">lipid</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp_path</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">lipid</span> <span class="ow">in</span> <span class="n">experiment</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">lipid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">]:</span>
+                                    <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">lipid</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                                <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">lipid</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">exp_id</span><span class="p">)</span>
                         <span class="k">elif</span> <span class="n">experiment</span><span class="o">.</span><span class="n">exptype</span> <span class="o">==</span> <span class="s2">&quot;FormFactors&quot;</span><span class="p">:</span>
-                            <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;FORMFACTOR&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp_path</span><span class="p">)</span>
+                            <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;FORMFACTOR&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">exp_id</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">continue</span>
 
@@ -336,12 +332,6 @@
         <span class="n">cur_exp</span><span class="p">[</span><span class="s2">&quot;FORMFACTOR&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">_lipid</span> <span class="ow">in</span> <span class="n">cur_exp</span><span class="p">[</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">]:</span>
             <span class="n">cur_exp</span><span class="p">[</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">_lipid</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-
-        <span class="n">outfile_dict</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">simulation</span><span class="o">.</span><span class="n">idx_path</span><span class="p">,</span> <span class="s2">&quot;README.yaml&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile_dict</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;path&quot;</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
-            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">readme</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">pairs</span></div>
 
@@ -388,7 +378,6 @@
     <span class="n">simulations</span> <span class="o">=</span> <span class="n">load_simulations</span><span class="p">()</span>
 
     <span class="c1"># clear all EXPERIMENT sections in all simulations</span>
-    <span class="c1"># TODO: check if EXPERIMENT section changed and trigger the action!</span>
     <span class="k">for</span> <span class="n">simulation</span> <span class="ow">in</span> <span class="n">simulations</span><span class="p">:</span>
         <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -396,30 +385,30 @@
         <span class="k">for</span> <span class="n">lipid</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">get_lipids</span><span class="p">():</span>
             <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">lipid</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">readme_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">simulation</span><span class="o">.</span><span class="n">idx_path</span><span class="p">,</span> <span class="s2">&quot;README.yaml&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">readme</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading all experiments from databank...&quot;</span><span class="p">)</span>
-    <span class="n">ExperimentCollection</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">(</span><span class="s2">&quot;OPExperiment&quot;</span><span class="p">)</span>
-    <span class="n">ExperimentCollection</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">(</span><span class="s2">&quot;FFExperiment&quot;</span><span class="p">)</span>
-    <span class="n">all_experiments</span> <span class="o">=</span> <span class="n">ExperimentCollection</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_experiments</span><span class="p">)</span><span class="si">}</span><span class="s2"> experiments loaded.&quot;</span><span class="p">)</span>
-
-    <span class="n">experiments_op</span> <span class="o">=</span> <span class="n">load_experiments</span><span class="p">(</span><span class="s2">&quot;OrderParameters&quot;</span><span class="p">,</span> <span class="n">all_experiments</span><span class="p">)</span>
-    <span class="n">experiments_ff</span> <span class="o">=</span> <span class="n">load_experiments</span><span class="p">(</span><span class="s2">&quot;FormFactors&quot;</span><span class="p">,</span> <span class="n">all_experiments</span><span class="p">)</span>
-
     <span class="c1"># Pair each simulation with an experiment with the closest matching temperature</span>
     <span class="c1"># and composition</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;search-databank-pairs.log&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">logf</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scanning simulation-experiment pairs among order parameter experiments.&quot;</span><span class="p">)</span>
-        <span class="n">pairs_op</span> <span class="o">=</span> <span class="n">find_pairs</span><span class="p">(</span><span class="n">experiments_op</span><span class="p">,</span> <span class="n">simulations</span><span class="p">)</span>
+        <span class="n">exps</span> <span class="o">=</span> <span class="n">ExperimentCollection</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">(</span><span class="s2">&quot;OPExperiment&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">exps</span><span class="p">)</span><span class="si">}</span><span class="s2"> OP experiments loaded.&quot;</span><span class="p">)</span>
+        <span class="n">pairs_op</span> <span class="o">=</span> <span class="n">find_pairs_and_change_sims</span><span class="p">(</span><span class="n">exps</span><span class="p">,</span> <span class="n">simulations</span><span class="p">)</span>
         <span class="n">logf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;=== OP PAIRS ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">log_pairs</span><span class="p">(</span><span class="n">pairs_op</span><span class="p">,</span> <span class="n">logf</span><span class="p">)</span>
+
+        <span class="n">exps</span> <span class="o">=</span> <span class="n">ExperimentCollection</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">(</span><span class="s2">&quot;FFExperiment&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">exps</span><span class="p">)</span><span class="si">}</span><span class="s2"> FF experiments loaded.&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Scanning simulation-experiment pairs among form factor experiments.&quot;</span><span class="p">)</span>
-        <span class="n">pairs_ff</span> <span class="o">=</span> <span class="n">find_pairs</span><span class="p">(</span><span class="n">experiments_ff</span><span class="p">,</span> <span class="n">simulations</span><span class="p">)</span>
+        <span class="n">pairs_ff</span> <span class="o">=</span> <span class="n">find_pairs_and_change_sims</span><span class="p">(</span><span class="n">exps</span><span class="p">,</span> <span class="n">simulations</span><span class="p">)</span>
         <span class="n">logf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;=== FF PAIRS ===</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">log_pairs</span><span class="p">(</span><span class="n">pairs_ff</span><span class="p">,</span> <span class="n">logf</span><span class="p">)</span>
+
+    <span class="c1"># save changed simulations</span>
+    <span class="k">for</span> <span class="n">simulation</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">simulations</span><span class="p">,</span> <span class="s2">&quot;Saving READMEs&quot;</span><span class="p">):</span>
+        <span class="n">outfile_dict</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">simulation</span><span class="o">.</span><span class="n">idx_path</span><span class="p">,</span> <span class="s2">&quot;README.yaml&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile_dict</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;path&quot;</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]</span>
+            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">readme</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found order parameter data for &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pairs_op</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; pairs&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found form factor data for &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pairs_ff</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; pairs&quot;</span><span class="p">)</span></div>
