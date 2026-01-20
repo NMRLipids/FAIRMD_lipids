@@ -272,19 +272,19 @@ def systemQuality(system_fragment_qualities, simulation):
                 total += value
             elif key == "headgroup":
                 headgroup += value
-            elif key == "sn-1" or key == "sn-2":
+            elif key in ("sn-1", "sn-2"):
                 tail_values.append(value)
-            else:
-                tail_values.append(value)
+            
 
     if tail_values:
         tails = sum(tail_values) / len(tail_values)
     else:
-        tails = None
+        tails = np.nan
 
     if np.prod(w_nan) > 0:
         system_quality["headgroup"] = headgroup * np.prod(w_nan)
-        system_quality["tails"] = tails * np.prod(w_nan)
+        if tails is not None:
+            system_quality["tails"] = tails * np.prod(w_nan)
         system_quality["total"] = total * np.prod(w_nan)
     else:
         system_quality["headgroup"] = headgroup
