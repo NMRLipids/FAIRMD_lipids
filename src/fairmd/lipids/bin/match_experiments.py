@@ -14,6 +14,7 @@ files and into a log file.
     fmdl_match_experiments
 
 No arguments are needed.
+TODO: check if EXPERIMENT section changed and trigger the action!
 """
 
 import logging
@@ -30,13 +31,14 @@ from fairmd.lipids.experiment import Experiment, ExperimentCollection
 
 logger = logging.getLogger("__name__")
 
-# TODO: move ions list into Data
+# TODO: REMOVE IT COMPLETELY!!!
 ions_list = ["POT", "SOD", "CLA", "CAL"]  # should contain names of all ions
 
 LIP_CONC_REL_THRESHOLD = 0.15  # relative acceptable error for determination
 # of the hydration in ssNMR
 
 
+# TODO: derive from Simulation (if not to remove at all!)
 class SearchSystem:
     system: dict
     idx_path: str
@@ -115,7 +117,6 @@ def load_simulations() -> list[SearchSystem]:
     systems = initialize_databank()
     simulations: list[SearchSystem] = []
 
-    #    simulations.append(SearchSystem(systems.loc(810)))
     for system in systems:
         # conditions of exclusions
         try:
@@ -135,7 +136,7 @@ def load_experiments(exp_type: str, all_experiments: ExperimentCollection) -> li
     return [exp for exp in all_experiments if exp.exptype == exp_type]
 
 
-def find_pairs_and_save_sims(experiments: list[Experiment], simulations: list[SearchSystem]):
+def find_pairs_and_change_sims(experiments: list[Experiment], simulations: list[SearchSystem]):
     pairs = []
     for simulation in tqdm(simulations, desc="Simulation"):
         sim_lipids = simulation.get_lipids()
@@ -267,7 +268,6 @@ def match_experiments() -> None:
     simulations = load_simulations()
 
     # clear all EXPERIMENT sections in all simulations
-    # TODO: check if EXPERIMENT section changed and trigger the action!
     for simulation in simulations:
         simulation.system["EXPERIMENT"] = {}
         simulation.system["EXPERIMENT"]["ORDERPARAMETER"] = {}
@@ -281,17 +281,18 @@ def match_experiments() -> None:
         print("Scanning simulation-experiment pairs among order parameter experiments.")
         exps = ExperimentCollection.load_from_data("OPExperiment")
         print(f"{len(exps)} OP experiments loaded.")
-        pairs_op = find_pairs_and_save_sims(exps, simulations)
+        pairs_op = find_pairs_and_change_sims(exps, simulations)
         logf.write("=== OP PAIRS ===\n")
         log_pairs(pairs_op, logf)
 
         exps = ExperimentCollection.load_from_data("FFExperiment")
         print(f"{len(exps)} FF experiments loaded.")
         print("Scanning simulation-experiment pairs among form factor experiments.")
-        pairs_ff = find_pairs_and_save_sims(exps, simulations)
+        pairs_ff = find_pairs_and_change_sims(exps, simulations)
         logf.write("=== FF PAIRS ===\n")
         log_pairs(pairs_ff, logf)
 
+    # save changed simulations
     for simulation in tqdm(simulations, "Saving READMEs"):
         outfile_dict = os.path.join(FMDL_SIMU_PATH, simulation.idx_path, "README.yaml")
         with open(outfile_dict, "w") as f:
