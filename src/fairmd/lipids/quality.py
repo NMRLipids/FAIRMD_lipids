@@ -274,7 +274,6 @@ def systemQuality(system_fragment_qualities, simulation):
                 headgroup += value
             elif key in ("sn-1", "sn-2"):
                 tail_values.append(value)
-            
 
     if tail_values:
         tails = sum(tail_values) / len(tail_values)
