@@ -4,6 +4,7 @@
 :description: Unittest for the experiment module
 """
 
+import json
 import os
 import numpy as np
 import pytest
@@ -28,9 +29,7 @@ def mock_op_experiment_path(tmpdir):
         yaml.dump(readme_content, f)
 
     data_content = {"C22": [-0.1, -0.2], "C23": [-0.15, -0.25]}
-    with open(exp_dir.join("POPC_Order_Parameters.json"), "w") as f:
-        import json
-
+    with open(exp_dir.join("POPC_OrderParameters.json"), "w") as f:
         json.dump(data_content, f)
 
     return str(exp_dir)
@@ -49,8 +48,6 @@ def mock_ff_experiment_path(tmpdir):
 
     data_content = {"q": [0.1, 0.2, 0.3], "I": [1.0, 0.5, 0.2]}
     with open(exp_dir.join("system_FormFactor.json"), "w") as f:
-        import json
-
         json.dump(data_content, f)
 
     return str(exp_dir)
@@ -105,7 +102,6 @@ class TestOPExperiment:
 
         """Test properties of OPExperiment."""
         exp = OPExperiment("exp1", mock_op_experiment_path)
-        check.equal(exp.molname, "POPC")
         check.equal(exp.exptype, "OrderParameters")
         check.equal(OPExperiment.target_folder(), "OrderParameters")
 
@@ -115,7 +111,6 @@ class TestOPExperiment:
         """Test behavior with no data files."""
         exp = OPExperiment("exp_empty", mock_empty_data_path)
         assert exp.data == {}
-        assert exp.molname == ""
 
 
 class TestFFExperiment:
@@ -144,7 +139,6 @@ class TestFFExperiment:
 
         """Test properties of FFExperiment."""
         exp = FFExperiment("exp2", mock_ff_experiment_path)
-        assert exp.molname == "system"
         assert exp.exptype == "FormFactors"
         assert FFExperiment.target_folder() == "FormFactors"
 
@@ -154,8 +148,6 @@ class TestFFExperiment:
         """Test behavior with no data files."""
         exp = FFExperiment("exp_empty", mock_empty_data_path)
         assert exp.data == {}
-        # molname is hardcoded for FFExperiment
-        assert exp.molname == "system"
 
 
 class TestExperimentBase:

@@ -16,6 +16,10 @@ from fairmd.lipids.core import CollectionSingleton
 from fairmd.lipids.molecules import lipids_set
 
 
+class ExperimentError(BaseException):
+    """Experiment-related exception"""
+
+
 class Experiment(ABC):
     """
     Abstract base class representing an experimental dataset in the databank.
@@ -89,11 +93,6 @@ class Experiment(ABC):
 
     @property
     @abstractmethod
-    def molname(self) -> str:
-        """The molecule name associated with the experiment data."""
-
-    @property
-    @abstractmethod
     def exptype(self) -> str:
         """The type of the experiment."""
 
@@ -107,12 +106,12 @@ class Experiment(ABC):
         return [k for k in self.metadata.get("MOLAR_FRACTIONS", {}) if k in molecules]
 
     def get_ions(self, ions: list[str]) -> list[str]:
-        """Get ions from ion concentrations and counter ions."""
+        """Get ions existing in the system."""
         exp_ions: list[str] = []
         for key in ions:
             if self.metadata.get("ION_CONCENTRATIONS", {}).get(key, 0) != 0:
                 exp_ions.append(key)
-            if key in self.metadata.get("COUNTER_IONS", []):
+            if self.metadata.get("COUNTER_IONS", {}) and key in self.metadata["COUNTER_IONS"]:
                 exp_ions.append(key)
         return list(set(exp_ions))
 
@@ -137,20 +136,15 @@ class OPExperiment(Experiment):
         if self._data is None:
             self._data = {}
             for fname in os.listdir(self._get_path()):
-                if fname.endswith("_Order_Parameters.json"):
-                    molecule_name = fname.replace("_Order_Parameters.json", "")
+                if fname.endswith("_OrderParameters.json"):
+                    molecule_name = fname.replace("_OrderParameters.json", "")
+                    if molecule_name not in self.get_lipids():
+                        msg = f"Data for non-existing molecule {molecule_name} in {self.exp_id}!"
+                        raise ExperimentError(msg)
                     fpath = os.path.join(self._get_path(), fname)
                     with open(fpath) as json_file:
                         self._data[molecule_name] = json.load(json_file)
         return self._data
-
-    @property
-    def molname(self) -> str:
-        """The molecule name is derived from the first found data file."""
-        for fname in os.listdir(self._get_path()):
-            if fname.endswith("_Order_Parameters.json"):
-                return fname.replace("_Order_Parameters.json", "")
-        return ""
 
     @property
     def exptype(self) -> str:
@@ -177,10 +171,6 @@ class FFExperiment(Experiment):
         return self._data
 
     @property
-    def molname(self) -> str:
-        return "system"
-
-    @property
     def exptype(self) -> str:
         return "FormFactors"
 
@@ -205,7 +195,7 @@ class ExperimentCollection(CollectionSingleton[Experiment]):
             "OPExperiment": OPExperiment,
             "FFExperiment": FFExperiment,
         }
-        if exp_type not in exp_types.keys():
+        if exp_type not in exp_types:
             msg = "..."
             raise ValueError(msg)
         collection = ExperimentCollection()
