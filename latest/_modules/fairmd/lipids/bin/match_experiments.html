@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.bin.match_experiments &mdash; FAIRMD Lipids v1.3.5.dev29+g878346d00 1.3.5.dev29+g878346d00 documentation</title>
+  <title>fairmd.lipids.bin.match_experiments &mdash; FAIRMD Lipids v1.3.5.dev43+g69bb2a7b7 1.3.5.dev43+g69bb2a7b7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=0df25873"></script>
+      <script src="../../../../_static/documentation_options.js?v=7582abce"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev29+g878346d00
+            FAIRMD Lipids v1.3.5.dev43+g69bb2a7b7
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev29+g878346d00</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev43+g69bb2a7b7</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -104,6 +104,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_EXP_PATH</span><span class="p">,</span> <span class="n">FMDL_SIMU_PATH</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span><span class="p">,</span> <span class="n">initialize_databank</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">ExperimentCollection</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;__name__&quot;</span><span class="p">)</span>
 
@@ -203,43 +204,6 @@
 <span class="c1">##################</span>
 
 
-<div class="viewcode-block" id="Experiment">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.Experiment">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Experiment</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">readme</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">molname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exptype</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">readme</span> <span class="o">=</span> <span class="n">readme</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">molname</span> <span class="o">=</span> <span class="n">molname</span>  <span class="c1"># &lt;- the dictionary about existence of data files</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataPath</span> <span class="o">=</span> <span class="n">data_path</span>  <span class="c1"># .... for particular lipids</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">exptype</span> <span class="o">=</span> <span class="n">exptype</span>
-
-<div class="viewcode-block" id="Experiment.get_lipids">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.Experiment.get_lipids">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_lipids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecules</span><span class="o">=</span><span class="n">lipids_set</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="n">lipids</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readme</span><span class="p">[</span><span class="s2">&quot;MOLAR_FRACTIONS&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">molecules</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">lipids</span></div>
-
-
-<div class="viewcode-block" id="Experiment.get_ions">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.Experiment.get_ions">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_ions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ions</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="n">exp_ions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ions</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">readme</span><span class="p">[</span><span class="s2">&quot;ION_CONCENTRATIONS&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">exp_ions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">readme</span><span class="p">[</span><span class="s2">&quot;COUNTER_IONS&quot;</span><span class="p">]:</span>
-                    <span class="n">exp_ions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">):</span>
-                <span class="k">continue</span>
-        <span class="k">return</span> <span class="n">exp_ions</span></div>
-</div>
-
-
-
 <div class="viewcode-block" id="load_simulations">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.load_simulations">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_simulations</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SearchSystem</span><span class="p">]:</span>
@@ -265,49 +229,12 @@
 
 <div class="viewcode-block" id="load_experiments">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.match_experiments.html#fairmd.lipids.bin.match_experiments.load_experiments">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">load_experiments</span><span class="p">(</span><span class="n">exp_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Experiment</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_experiments</span><span class="p">(</span><span class="n">exp_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">all_experiments</span><span class="p">:</span> <span class="n">ExperimentCollection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Experiment</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Loops over the experiment entries in the experiment databank and read experiment</span>
-<span class="sd">    readme and order parameter files into objects.</span>
+<span class="sd">    Filters experiments from the collection by experiment type.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">exp_type</span> <span class="o">==</span> <span class="s2">&quot;OrderParameters&quot;</span><span class="p">:</span>
-        <span class="n">data_file</span> <span class="o">=</span> <span class="s2">&quot;_OrderParameters.json&quot;</span>
-    <span class="k">elif</span> <span class="n">exp_type</span> <span class="o">==</span> <span class="s2">&quot;FormFactors&quot;</span><span class="p">:</span>
-        <span class="n">data_file</span> <span class="o">=</span> <span class="s2">&quot;_FormFactor.json&quot;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Only OrderParameters and FormFactors types are implemented.&quot;</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Build experiments [</span><span class="si">%s</span><span class="s2">] index...&quot;</span> <span class="o">%</span> <span class="n">exp_type</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
-    <span class="n">rm_idx</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_EXP_PATH</span><span class="p">,</span> <span class="n">exp_type</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">subdir</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">fn</span> <span class="o">==</span> <span class="s2">&quot;README.yaml&quot;</span><span class="p">:</span>
-                <span class="n">rm_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subdir</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> READMEs loaded.&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">rm_idx</span><span class="p">))</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading data for each experiment.&quot;</span><span class="p">)</span>
-    <span class="n">experiments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Experiment</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">rm_idx</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Experiment&quot;</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">exp_readme_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subdir</span><span class="p">,</span> <span class="s2">&quot;README.yaml&quot;</span><span class="p">)</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">exp_readme_fp</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file_exp</span><span class="p">:</span>
-                <span class="n">exp_readme</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_file_exp</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">PermissionError</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problems while accessing README.yaml in: </span><span class="si">{</span><span class="n">subdir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">continue</span>
-
-        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">subdir</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">data_file</span><span class="p">):</span>
-                <span class="n">molecule_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                <span class="k">if</span> <span class="n">exp_type</span> <span class="o">==</span> <span class="s2">&quot;OrderParameters&quot;</span><span class="p">:</span>
-                    <span class="n">molecule_name</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">exp_type</span> <span class="o">==</span> <span class="s2">&quot;FormFactors&quot;</span><span class="p">:</span>
-                    <span class="n">molecule_name</span> <span class="o">=</span> <span class="s2">&quot;system&quot;</span>
-                <span class="n">experiments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Experiment</span><span class="p">(</span><span class="n">exp_readme</span><span class="p">,</span> <span class="n">molecule_name</span><span class="p">,</span> <span class="n">subdir</span><span class="p">,</span> <span class="n">exp_type</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">experiments</span></div>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Filtering for </span><span class="si">{</span><span class="n">exp_type</span><span class="si">}</span><span class="s2"> experiments...&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">exp</span> <span class="k">for</span> <span class="n">exp</span> <span class="ow">in</span> <span class="n">all_experiments</span> <span class="k">if</span> <span class="n">exp</span><span class="o">.</span><span class="n">exptype</span> <span class="o">==</span> <span class="n">exp_type</span><span class="p">]</span></div>
 
 
 
@@ -332,7 +259,7 @@
 
             <span class="n">exp_total_lipid_concentration</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">readme</span><span class="p">[</span><span class="s2">&quot;TOTAL_LIPID_CONCENTRATION&quot;</span><span class="p">]</span>
             <span class="n">exp_ions</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">get_ions</span><span class="p">(</span><span class="n">ions_list</span><span class="p">)</span>
-            <span class="n">exp_counter_ions</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">readme</span><span class="p">[</span><span class="s2">&quot;COUNTER_IONS&quot;</span><span class="p">]</span>
+            <span class="n">exp_counter_ions</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">readme</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;COUNTER_IONS&quot;</span><span class="p">)</span>
 
             <span class="c1"># calculate simulation ion concentrations</span>
             <span class="n">sim_concentrations</span> <span class="o">=</span> <span class="p">{}</span>
@@ -396,6 +323,8 @@
                         <span class="p">)</span>
                         <span class="k">if</span> <span class="n">experiment</span><span class="o">.</span><span class="n">exptype</span> <span class="o">==</span> <span class="s2">&quot;OrderParameters&quot;</span><span class="p">:</span>
                             <span class="n">lipid</span> <span class="o">=</span> <span class="n">experiment</span><span class="o">.</span><span class="n">molname</span>
+                            <span class="k">if</span> <span class="n">lipid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">]:</span>
+                                <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">lipid</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
                             <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;ORDERPARAMETER&quot;</span><span class="p">][</span><span class="n">lipid</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp_path</span><span class="p">)</span>
                         <span class="k">elif</span> <span class="n">experiment</span><span class="o">.</span><span class="n">exptype</span> <span class="o">==</span> <span class="s2">&quot;FormFactors&quot;</span><span class="p">:</span>
                             <span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;FORMFACTOR&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exp_path</span><span class="p">)</span>
@@ -471,8 +400,14 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">readme_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">simulation</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">readme</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">allow_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">experiments_op</span> <span class="o">=</span> <span class="n">load_experiments</span><span class="p">(</span><span class="s2">&quot;OrderParameters&quot;</span><span class="p">)</span>
-    <span class="n">experiments_ff</span> <span class="o">=</span> <span class="n">load_experiments</span><span class="p">(</span><span class="s2">&quot;FormFactors&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading all experiments from databank...&quot;</span><span class="p">)</span>
+    <span class="n">ExperimentCollection</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">(</span><span class="s2">&quot;OPExperiment&quot;</span><span class="p">)</span>
+    <span class="n">ExperimentCollection</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">(</span><span class="s2">&quot;FFExperiment&quot;</span><span class="p">)</span>
+    <span class="n">all_experiments</span> <span class="o">=</span> <span class="n">ExperimentCollection</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_experiments</span><span class="p">)</span><span class="si">}</span><span class="s2"> experiments loaded.&quot;</span><span class="p">)</span>
+
+    <span class="n">experiments_op</span> <span class="o">=</span> <span class="n">load_experiments</span><span class="p">(</span><span class="s2">&quot;OrderParameters&quot;</span><span class="p">,</span> <span class="n">all_experiments</span><span class="p">)</span>
+    <span class="n">experiments_ff</span> <span class="o">=</span> <span class="n">load_experiments</span><span class="p">(</span><span class="s2">&quot;FormFactors&quot;</span><span class="p">,</span> <span class="n">all_experiments</span><span class="p">)</span>
 
     <span class="c1"># Pair each simulation with an experiment with the closest matching temperature</span>
     <span class="c1"># and composition</span>

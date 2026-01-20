@@ -24,6 +24,7 @@ Python files
    fairmd.lipids.api
    fairmd.lipids.core
    fairmd.lipids.databankio
+   fairmd.lipids.experiment
    fairmd.lipids.molecules
    fairmd.lipids.quality
    fairmd.lipids.utils
