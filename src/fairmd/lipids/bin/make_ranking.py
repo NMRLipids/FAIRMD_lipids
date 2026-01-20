@@ -16,6 +16,7 @@ No arguments are needed.
 
 import math
 import os
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -58,6 +59,9 @@ def _get_hydration_nan(s: System) -> float:
 def make_ranking() -> None:
     """Make ranking CSV tables."""
     ss = initialize_databank()
+
+    ranking_dir = os.path.join(FMDL_DATA_PATH, "Ranking")
+    Path(ranking_dir).mkdir(parents=True, exist_ok=True)
 
     # GLOBAL FF and OP rankings
     res_array = []
