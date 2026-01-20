@@ -8,6 +8,8 @@ files, SMILES, and add the alignments for only heavy atoms. Further should
 be converted into a mature CI/CD script.
 """
 
+import argparse
+import os
 import re
 import sys
 from copy import deepcopy
@@ -24,6 +26,7 @@ from fairmd.lipids.auxiliary import elements
 
 lg = RDLogger.logger()
 lg.setLevel(RDLogger.CRITICAL)
+
 
 def get_1mol_selstr(comp_name: str, mol_obj: dlc.Molecule) -> str:
     """Return selection string for a single molecule"""
@@ -48,7 +51,7 @@ def get_brutto_formula(eorder: str, agrp: mda.AtomGroup, charge: float = 0) -> s
     return ans
 
 
-def compare_neutralized(a: Chem.rdchem.Mol, b: Chem.rdchem.Mol):
+def compare_neutralized(a: Chem.rdchem.Mol, b: Chem.rdchem.Mol) -> bool:
     """Compare neutralized forms of molecules"""
     a_ = MolStandardize.rdMolStandardize.ChargeParent(a)
     b_ = MolStandardize.rdMolStandardize.ChargeParent(b)
@@ -57,22 +60,27 @@ def compare_neutralized(a: Chem.rdchem.Mol, b: Chem.rdchem.Mol):
     return aib and bia
 
 
-def find_uname(x, atom_name, res_name) -> str:
-    for k, v in x.mapping_dict.items():
-        if v["ATOMNAME"] == atom_name:
-            if "RESIDUE" in v and res_name != v["RESIDUE"]:
-                continue
-            return k
-    msg = f"Atom {atom_name} / {res_name} not found"
-    raise KeyError(msg)
+DONE_LOG_FNAME = "align-mapping-file.log"
+
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--skip-ids",
+        type=lambda s: [int(x) for x in s.split(",")],
+        default=[],
+        help="Comma-separated list of IDs to skip",
+    )
+
+    args = parser.parse_args()
+
     ss = dlc.initialize_databank()
 
     done_ids = []
-    # with open("done.txt") as fd:
-    #    done_ids = list(map(int, fd.readlines()))
-    done_ids += [151] # defective systems
+    if os.path.isfile(DONE_LOG_FNAME):
+        with open(DONE_LOG_FNAME) as fd:
+            done_ids = list(map(int, fd.readlines()))
+    done_ids.extend(args.skip_ids)  # add defective systems
 
     print("Loading current state..")
     print(done_ids)
@@ -90,7 +98,7 @@ def main():
             continue
         print("LIPID COMPOSITION: ", s.lipids.keys())
 
-        u: mda.Universe|None = None
+        u: mda.Universe | None = None
 
         for cur_lip, mol_obj in s.lipids.items():
             print("Current lipids ", cur_lip)
@@ -171,7 +179,7 @@ def main():
                 else:
                     b = next(rdatit2)
                     match_in_smile = next(mtch_iter)
-                    un = find_uname(mol_obj, mdat.name, mdat.resname)
+                    un = mol_obj.md2uan(mdat.name, mdat.resname)
                     print(un, a.GetAtomicNum(), mdat.name, b.GetAtomicNum(), match_in_smile)
                     new_mapping_dict[un]["SMILEIDX"] = int(match_in_smile)
 
@@ -187,8 +195,9 @@ def main():
                 print("Saving mapping with SMILE indexes for the first time!")
                 with open(mol_obj._mapping_fpath, "w") as fd:
                     fd.write(yaml.safe_dump(new_mapping_dict, sort_keys=False, indent=1))
-        with open("done.txt", "a") as fd:
+        with open(DONE_LOG_FNAME, "a") as fd:
             fd.write("%d\n" % s["ID"])
+
 
 if __name__ == "__main__":
     main()
