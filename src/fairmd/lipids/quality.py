@@ -263,7 +263,7 @@ def systemQuality(system_fragment_qualities, simulation):
     system_quality = {}
 
     headgroup = 0
-    tail_values = []
+    tails = 0
     total = 0
 
     for lipid_key in system_dict:
@@ -272,18 +272,15 @@ def systemQuality(system_fragment_qualities, simulation):
                 total += value
             elif key == "headgroup":
                 headgroup += value
-            elif key in ("sn-1", "sn-2"):
-                tail_values.append(value)
-
-    if tail_values:
-        tails = sum(tail_values) / len(tail_values)
-    else:
-        tails = np.nan
+            elif key == "sn-1" or key == "sn-2":
+                tails += value / 2
+            else:
+                tails += value
 
     if np.prod(w_nan) > 0:
+        # multiply all elements of w_nan and divide the sum by the product
         system_quality["headgroup"] = headgroup * np.prod(w_nan)
-        if tails is not None:
-            system_quality["tails"] = tails * np.prod(w_nan)
+        system_quality["tails"] = tails * np.prod(w_nan)
         system_quality["total"] = total * np.prod(w_nan)
     else:
         system_quality["headgroup"] = headgroup
