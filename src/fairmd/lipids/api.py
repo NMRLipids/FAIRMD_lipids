@@ -198,12 +198,7 @@ def get_quality(
         with open(spath) as fd:
             qdict = json.load(fd)
         if part == "tails":
-            sn1 = qdict.get("sn-1")
-            sn2 = qdict.get("sn-2")
-            if sn1 is None and sn2 is None:
-                return np.nan
-            vals = [v for v in (sn1, sn2) if v is not None]
-            return float(sum(vals) / len(vals))
+            return float(np.nanmean([qdict.get("sn-1"), qdict.get("sn-2")]))
         else:
             return float(qdict[part])
     return q

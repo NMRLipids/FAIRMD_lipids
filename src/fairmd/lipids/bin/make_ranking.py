@@ -61,7 +61,8 @@ def make_ranking() -> None:
     ss = initialize_databank()
 
     ranking_dir = os.path.join(FMDL_DATA_PATH, "Ranking")
-    Path(ranking_dir).mkdir(parents=True, exist_ok=True)
+    if not os.path.isdir(ranking_dir):
+        os.mkdir(ranking_dir)
 
     # GLOBAL FF and OP rankings
     res_array = []
