@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analib.maicos &mdash; FAIRMD Lipids v1.3.5.dev60+g4a1755c18 1.3.5.dev60+g4a1755c18 documentation</title>
+  <title>fairmd.lipids.analib.maicos &mdash; FAIRMD Lipids v1.3.5.dev66+g6647f2962 1.3.5.dev66+g6647f2962 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=8469d2b5"></script>
+      <script src="../../../../_static/documentation_options.js?v=aaf6ea45"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev60+g4a1755c18
+            FAIRMD Lipids v1.3.5.dev66+g6647f2962
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev60+g4a1755c18</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev66+g6647f2962</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -96,7 +96,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">maicos.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProfilePlanarBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">maicos.lib.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">center_cluster</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">maicos.lib.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_compound</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">maicos.lib.weights</span><span class="w"> </span><span class="kn">import</span> <span class="n">density_weights</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary.jsonEncoders</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompactJSONEncoder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
@@ -153,11 +156,13 @@
 
             <span class="c1"># TODO: rewrite via lipid dictionary</span>
             <span class="k">for</span> <span class="n">c_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">30</span><span class="p">):</span>
-                <span class="k">if</span> <span class="s2">&quot;M_G1C4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;M_G1C4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>  <span class="c1"># glycerolipids</span>
                     <span class="n">atom</span> <span class="o">=</span> <span class="s2">&quot;M_G1C&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span>
-                <span class="k">elif</span> <span class="s2">&quot;M_G11C4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="s2">&quot;M_N1C4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>  <span class="c1"># sphingomyelins</span>
+                    <span class="n">atom</span> <span class="o">=</span> <span class="s2">&quot;M_N1C&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span>
+                <span class="k">elif</span> <span class="s2">&quot;M_G11C4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>  <span class="c1"># other spec.cases</span>
                     <span class="n">atom</span> <span class="o">=</span> <span class="s2">&quot;M_G11C&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span>
-                <span class="k">elif</span> <span class="s2">&quot;M_CA4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="s2">&quot;M_CA4_M&quot;</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>  <span class="c1"># other spec.cases</span>
                     <span class="n">atom</span> <span class="o">=</span> <span class="s2">&quot;M_CA&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c_idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_M&quot;</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># cannot be determined for this particular lipid. Maybe another ..</span>
@@ -170,9 +175,9 @@
 
 
 
-<div class="viewcode-block" id="traj_centering_for_maicos">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.maicos.html#fairmd.lipids.analib.maicos.traj_centering_for_maicos">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">traj_centering_for_maicos</span><span class="p">(</span>
+<div class="viewcode-block" id="traj_centering_for_maicos_gromacs">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.maicos.html#fairmd.lipids.analib.maicos.traj_centering_for_maicos_gromacs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">traj_centering_for_maicos_gromacs</span><span class="p">(</span>
     <span class="n">system_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">trj_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">tpr_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -309,6 +314,49 @@
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;A error occurred during removing temporary files </span><span class="si">{</span><span class="n">ndxpath</span><span class="si">}</span><span class="s2"> &amp; </span><span class="si">{</span><span class="n">xtcfoo</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">return</span> <span class="n">xtccentered</span></div>
+
+
+
+<div class="viewcode-block" id="traj_centering_for_maicos_mda">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.maicos.html#fairmd.lipids.analib.maicos.traj_centering_for_maicos_mda">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">traj_centering_for_maicos_mda</span><span class="p">(</span>
+    <span class="n">universe</span><span class="p">:</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">,</span>
+    <span class="n">system_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">last_atom</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">eq_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">recompute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Center trajectory around the center of mass of all methyl carbons.&quot;&quot;&quot;</span>
+    <span class="n">xtccentered</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="s2">&quot;whole.xtc&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">xtccentered</span>  <span class="c1"># already done</span>
+    <span class="k">if</span> <span class="n">recompute</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">)</span>
+    <span class="c1"># select refgroup based on g3 and last atom</span>
+    <span class="n">refgroup</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;name </span><span class="si">{</span><span class="n">last_atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ref_weights</span> <span class="o">=</span> <span class="n">refgroup</span><span class="o">.</span><span class="n">masses</span>
+    <span class="n">wrap_compound</span> <span class="o">=</span> <span class="n">get_compound</span><span class="p">(</span><span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+    <span class="n">eq_frame</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">eq_time</span> <span class="o">/</span> <span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">mda</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">,</span> <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span> <span class="k">as</span> <span class="n">W</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="n">eq_frame</span><span class="p">:]):</span>
+            <span class="c1"># unwrap</span>
+            <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">compound</span><span class="o">=</span><span class="n">wrap_compound</span><span class="p">)</span>
+
+            <span class="c1"># center on refgroup</span>
+            <span class="n">com_refgroup</span> <span class="o">=</span> <span class="n">center_cluster</span><span class="p">(</span><span class="n">refgroup</span><span class="p">,</span> <span class="n">ref_weights</span><span class="p">)</span>
+            <span class="n">box_center</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">box_center</span> <span class="o">-</span> <span class="n">com_refgroup</span>
+            <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+            <span class="c1"># pack back into box</span>
+            <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">compound</span><span class="o">=</span><span class="n">wrap_compound</span><span class="p">)</span>
+
+            <span class="n">W</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">xtccentered</span></div>
 
