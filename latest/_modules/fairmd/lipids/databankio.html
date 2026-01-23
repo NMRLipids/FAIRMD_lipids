@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.databankio &mdash; FAIRMD Lipids v1.3.5.dev48+gb71f905a0 1.3.5.dev48+gb71f905a0 documentation</title>
+  <title>fairmd.lipids.databankio &mdash; FAIRMD Lipids v1.3.5.dev60+g4a1755c18 1.3.5.dev60+g4a1755c18 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=f474ab53"></script>
+      <script src="../../../_static/documentation_options.js?v=8469d2b5"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev48+gb71f905a0
+            FAIRMD Lipids v1.3.5.dev60+g4a1755c18
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.3.5.dev48+gb71f905a0</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.3.5.dev60+g4a1755c18</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -89,10 +89,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests.exceptions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rexp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">requests.adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPAdapter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">urllib3.util.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Retry</span>
@@ -101,6 +103,7 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;MAX_BYTES_DEFAULT&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;_fmdl_chunk_size&quot;</span><span class="p">,</span>
     <span class="s2">&quot;_get_file_size_with_retry&quot;</span><span class="p">,</span>
     <span class="s2">&quot;_open_url_with_retry&quot;</span><span class="p">,</span>
     <span class="s2">&quot;calc_file_sha1_hash&quot;</span><span class="p">,</span>
@@ -110,6 +113,7 @@
     <span class="s2">&quot;resolve_file_url&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
+<span class="n">_fmdl_chunk_size</span> <span class="o">=</span> <span class="mi">8192</span>  <span class="c1"># 8 KB, chunk size for downloading files in pieces</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">MAX_BYTES_DEFAULT</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c1"># 50 MB, default max size for download_resource_from_uri(..., max_bytes=True)</span>
 
@@ -146,16 +150,22 @@
     <span class="n">backoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">update_headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Open a URL with a timeout and retry logic (aprivate helper).</span>
 
 <span class="sd">    :param uri: The URL to open.</span>
 <span class="sd">    :param backoff: The backoff timeout for the request in seconds.</span>
+<span class="sd">    :param stream: Whether to stream the response content.</span>
+<span class="sd">    :param update_headers: Additional headers to include in the request.</span>
 
 <span class="sd">    :return: The response object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;fairmd-lipids/</span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">update_headers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">update_headers</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">_requests_session_with_retry</span><span class="p">(</span><span class="n">retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">backoff</span><span class="o">=</span><span class="n">backoff</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;fairmd-lipids/</span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
         <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">response</span>
@@ -179,7 +189,12 @@
 <div class="viewcode-block" id="download_with_progress_with_retry">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.databankio.html#fairmd.lipids.databankio.download_with_progress_with_retry">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">download_with_progress_with_retry</span><span class="p">(</span>
-    <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tqdm_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Downloading&quot;</span><span class="p">,</span> <span class="n">stop_after</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">dest</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">tqdm_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Downloading&quot;</span><span class="p">,</span>
+    <span class="n">stop_after</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">total_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Download a file with a progress bar and retry logic.</span>
 
@@ -190,6 +205,7 @@
 <span class="sd">        dest (str): The local destination path to save the file.</span>
 <span class="sd">        tqdm_title (str): The title used for the progress bar description.</span>
 <span class="sd">        stop_after (int): Download max num of bytes</span>
+<span class="sd">        total_size (int): Total size of the file to download (for resuming).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">RetrieveProgressBar</span><span class="p">(</span><span class="n">tqdm</span><span class="p">):</span>
@@ -198,32 +214,60 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">tsize</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="n">bsize</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="p">(</span>
-        <span class="n">RetrieveProgressBar</span><span class="p">(</span>
-            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span>
-            <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">unit_divisor</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
-            <span class="n">miniters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">desc</span><span class="o">=</span><span class="n">tqdm_title</span><span class="p">,</span>
-        <span class="p">)</span> <span class="k">as</span> <span class="n">u</span><span class="p">,</span>
-        <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">,</span>
-        <span class="n">_open_url_with_retry</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="n">total</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">stop_after</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">total</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">total</span><span class="p">,</span> <span class="n">stop_after</span><span class="p">)</span>
-        <span class="n">downloaded</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">with</span> <span class="n">RetrieveProgressBar</span><span class="p">(</span>
+        <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span>
+        <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">unit_divisor</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+        <span class="n">miniters</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="n">tqdm_title</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">u</span><span class="p">:</span>
+        <span class="c1"># go</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">dest</span><span class="p">):</span>
+            <span class="c1"># Resuming download</span>
+            <span class="n">dl_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="mi">8192</span><span class="p">):</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
-            <span class="n">downloaded</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">downloaded</span> <span class="o">&gt;=</span> <span class="n">total</span><span class="p">:</span>
-                <span class="k">break</span>
-            <span class="n">u</span><span class="o">.</span><span class="n">update_retrieve</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">downloaded</span><span class="p">,</span> <span class="n">bsize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tsize</span><span class="o">=</span><span class="n">total</span><span class="p">)</span>
+            <span class="n">n_chunks</span> <span class="o">=</span> <span class="n">dl_size</span> <span class="o">//</span> <span class="n">_fmdl_chunk_size</span>
+            <span class="n">downloaded</span> <span class="o">=</span> <span class="n">_fmdl_chunk_size</span> <span class="o">*</span> <span class="n">n_chunks</span>
+            <span class="k">if</span> <span class="n">dl_size</span> <span class="o">%</span> <span class="n">_fmdl_chunk_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applying truncation to nearest chunk size [</span><span class="si">{</span><span class="n">downloaded</span><span class="si">}</span><span class="s2">].&quot;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="n">downloaded</span><span class="p">)</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">update_retrieve</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">downloaded</span><span class="p">,</span> <span class="n">bsize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tsize</span><span class="o">=</span><span class="n">total_size</span><span class="p">)</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;ab&quot;</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Range&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;bytes=</span><span class="si">{</span><span class="n">downloaded</span><span class="si">}</span><span class="s2">-&quot;</span><span class="p">}</span>  <span class="c1"># request only missing part</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;wb&quot;</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">downloaded</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># open connection</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">,</span> <span class="n">_open_url_with_retry</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">update_headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span> <span class="k">as</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">total_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">total</span> <span class="o">=</span> <span class="n">total_size</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">content_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+                <span class="n">total</span> <span class="o">=</span> <span class="n">content_length</span> <span class="o">+</span> <span class="n">downloaded</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;ab&quot;</span> <span class="k">else</span> <span class="n">content_length</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;ab&quot;</span> <span class="ow">and</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">PARTIAL_CONTENT</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;Server doesn&#39;t return PARTIAL CONTENT 206 status.&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Cannot resume </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">. Please delete it and restart.&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;wb&quot;</span> <span class="ow">and</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="n">requests</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Failed to download </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">. Server returned status code </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stop_after</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">total</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">total</span><span class="p">,</span> <span class="n">stop_after</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">downloaded</span> <span class="o">&gt;</span> <span class="n">total</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;rb+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="n">total</span><span class="p">)</span></div>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">chunk_size</span><span class="o">=</span><span class="n">_fmdl_chunk_size</span><span class="p">):</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                <span class="n">downloaded</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                <span class="n">u</span><span class="o">.</span><span class="n">update_retrieve</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">downloaded</span><span class="p">,</span> <span class="n">bsize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tsize</span><span class="o">=</span><span class="n">total</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">downloaded</span> <span class="o">&gt;=</span> <span class="n">total</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">downloaded</span> <span class="o">&gt;</span> <span class="n">total</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s2">&quot;rb+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="n">total</span><span class="p">)</span></div>
 
 
 
@@ -238,6 +282,7 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">override_if_exists</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">max_bytes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">max_restarts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Download file resource from a URI to a local destination.</span>
 
@@ -282,21 +327,36 @@
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fi_name</span><span class="si">}</span><span class="s2"> filesize mismatch of local file &#39;</span><span class="si">{</span><span class="n">fi_name</span><span class="si">}</span><span class="s2">&#39;, redownloading ...&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">return_code</span> <span class="o">=</span> <span class="mi">2</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">):</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">rexp</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">rexp</span><span class="o">.</span><span class="n">ConnectionError</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Failed to verify file size for </span><span class="si">{</span><span class="n">fi_name</span><span class="si">}</span><span class="s2">. Proceeding with redownload.&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">return_code</span> <span class="o">=</span> <span class="mi">2</span>
 
-    <span class="c1"># Download file in dry run mode</span>
-    <span class="k">if</span> <span class="n">max_bytes</span><span class="p">:</span>
-        <span class="n">url_size</span> <span class="o">=</span> <span class="n">_get_file_size_with_retry</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-        <span class="n">download_with_progress_with_retry</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">tqdm_title</span><span class="o">=</span><span class="n">fi_name</span><span class="p">,</span> <span class="n">stop_after</span><span class="o">=</span><span class="n">MAX_BYTES_DEFAULT</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mi">0</span>
-
-    <span class="c1"># Download with progress bar and check for final size match</span>
     <span class="n">url_size</span> <span class="o">=</span> <span class="n">_get_file_size_with_retry</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
-    <span class="n">download_with_progress_with_retry</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">tqdm_title</span><span class="o">=</span><span class="n">fi_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_bytes</span><span class="p">:</span>
+        <span class="c1"># Download file in dry run mode</span>
+        <span class="n">download_with_progress_with_retry</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">tqdm_title</span><span class="o">=</span><span class="n">fi_name</span><span class="p">,</span> <span class="n">stop_after</span><span class="o">=</span><span class="n">MAX_BYTES_DEFAULT</span><span class="p">)</span>
+        <span class="n">url_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">url_size</span><span class="p">,</span> <span class="n">MAX_BYTES_DEFAULT</span><span class="p">)</span>
+        <span class="n">return_code</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Download with progress bar and check for final size match</span>
+        <span class="n">dest_part</span> <span class="o">=</span> <span class="n">dest</span> <span class="o">+</span> <span class="s2">&quot;.part&quot;</span>
+        <span class="n">re</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">download_with_progress_with_retry</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">dest_part</span><span class="p">,</span> <span class="n">tqdm_title</span><span class="o">=</span><span class="n">fi_name</span><span class="p">,</span> <span class="n">total_size</span><span class="o">=</span><span class="n">url_size</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">rexp</span><span class="o">.</span><span class="n">ReadTimeout</span><span class="p">,</span> <span class="n">rexp</span><span class="o">.</span><span class="n">ChunkedEncodingError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: PERF203</span>
+                <span class="n">re</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">re</span> <span class="o">&lt;=</span> <span class="n">max_restarts</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Download timed out. Attempting restart...&quot;</span><span class="p">)</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Maximum download attempts exceeded.&quot;</span>
+                    <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">dest_part</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
 
     <span class="n">size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">url_size</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">url_size</span> <span class="o">!=</span> <span class="n">size</span><span class="p">:</span>
@@ -345,7 +405,7 @@
                     <span class="n">found_flag</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found_flag</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;File &#39;</span><span class="si">{</span><span class="n">fi_name</span><span class="si">}</span><span class="s2">&#39; not found in zenodo record &#39;</span><span class="si">{</span><span class="n">doi</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
-                <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">rexp</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">_open_url_with_retry</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
                 <span class="k">pass</span>
