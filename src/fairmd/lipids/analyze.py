@@ -265,7 +265,11 @@ def computeOP(  # noqa: N802 (API)
     # calculating order parameters
     print("Analyzing: ", path)
     uc = UniverseConstructor(system)
-    uc.download_mddata()
+    try:
+        uc.download_mddata()
+    except Exception:
+        logger.exception("Problem with downloading system %s from %s.", system["ID"], system["DOI"])
+        return RCODE_ERROR
 
     # Software and time for equilibration period
     software = system["SOFTWARE"]
@@ -587,7 +591,7 @@ def computeMAICOS(  # noqa: N802 (API)
     try:
         uc.download_mddata()
     except Exception:
-        logger.error(f"Problem with downloading system {system} from {system['DOI']}.")
+        logger.exception(f"Problem with downloading system {system} from {system['DOI']}.")
         return RCODE_ERROR
 
     if uc.paths["top"] is None:

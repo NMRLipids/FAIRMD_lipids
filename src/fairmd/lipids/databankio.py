@@ -11,10 +11,12 @@ import hashlib
 import logging
 import math
 import os
+import time
 from collections.abc import Generator, Mapping
 from contextlib import contextmanager
 
 import requests
+import requests.exceptions as rexp
 from requests.adapters import HTTPAdapter
 from tqdm import tqdm
 from urllib3.util.retry import Retry
@@ -23,6 +25,7 @@ from fairmd.lipids import __version__
 
 __all__ = [
     "MAX_BYTES_DEFAULT",
+    "_fmdl_chunk_size",
     "_get_file_size_with_retry",
     "_open_url_with_retry",
     "calc_file_sha1_hash",
@@ -32,6 +35,7 @@ __all__ = [
     "resolve_file_url",
 ]
 
+_fmdl_chunk_size = 8192  # 8 KB, chunk size for downloading files in pieces
 logger = logging.getLogger(__name__)
 MAX_BYTES_DEFAULT = 50 * 1024 * 1024  # 50 MB, default max size for download_resource_from_uri(..., max_bytes=True)
 
@@ -68,16 +72,22 @@ def _open_url_with_retry(
     backoff: float = 10,
     *,
     stream: bool = True,
+    update_headers: dict | None = None,
 ) -> Generator[requests.Response, None, None]:
     """Open a URL with a timeout and retry logic (aprivate helper).
 
     :param uri: The URL to open.
     :param backoff: The backoff timeout for the request in seconds.
+    :param stream: Whether to stream the response content.
+    :param update_headers: Additional headers to include in the request.
 
     :return: The response object.
     """
+    headers = {"User-Agent": f"fairmd-lipids/{__version__}"}
+    if update_headers is not None:
+        headers.update(update_headers)
     with _requests_session_with_retry(retries=5, backoff=backoff) as session:
-        response = session.get(uri, stream=stream, headers={"User-Agent": f"fairmd-lipids/{__version__}"})
+        response = session.get(uri, stream=stream, headers=headers)
         response.raise_for_status()
         try:
             yield response
@@ -99,7 +109,12 @@ def _get_file_size_with_retry(uri: str) -> int:
 
 
 def download_with_progress_with_retry(
-    uri: str, dest: str, *, tqdm_title: str = "Downloading", stop_after: int | None = None
+    uri: str,
+    dest: str,
+    *,
+    tqdm_title: str = "Downloading",
+    stop_after: int | None = None,
+    total_size: int | None = None,
 ) -> None:
     """Download a file with a progress bar and retry logic.
 
@@ -110,6 +125,7 @@ def download_with_progress_with_retry(
         dest (str): The local destination path to save the file.
         tqdm_title (str): The title used for the progress bar description.
         stop_after (int): Download max num of bytes
+        total_size (int): Total size of the file to download (for resuming).
     """
 
     class RetrieveProgressBar(tqdm):
@@ -118,32 +134,60 @@ def download_with_progress_with_retry(
                 self.total = tsize
             return self.update(b * bsize - self.n)
 
-    with (
-        RetrieveProgressBar(
-            unit="B",
-            unit_scale=True,
-            unit_divisor=1024,
-            miniters=1,
-            desc=tqdm_title,
-        ) as u,
-        open(dest, "wb") as f,
-        _open_url_with_retry(uri) as resp,
-    ):
-        total = int(resp.headers.get("Content-Length", 0))
-        if stop_after is not None:
-            total = min(total, stop_after)
-        downloaded = 0
+    with RetrieveProgressBar(
+        unit="B",
+        unit_scale=True,
+        unit_divisor=1024,
+        miniters=1,
+        desc=tqdm_title,
+    ) as u:
+        # go
+        if os.path.isfile(dest):
+            # Resuming download
+            dl_size = os.path.getsize(dest)
 
-        for chunk in resp.iter_content(8192):
-            f.write(chunk)
-            downloaded += len(chunk)
-            if downloaded >= total:
-                break
-            u.update_retrieve(b=downloaded, bsize=1, tsize=total)
+            n_chunks = dl_size // _fmdl_chunk_size
+            downloaded = _fmdl_chunk_size * n_chunks
+            if dl_size % _fmdl_chunk_size != 0:
+                print(f"Applying truncation to nearest chunk size [{downloaded}].")
+                with open(dest, "a") as f:
+                    f.truncate(downloaded)
+            u.update_retrieve(b=downloaded, bsize=1, tsize=total_size)
+            mode = "ab"
+            headers = {"Range": f"bytes={downloaded}-"}  # request only missing part
+        else:
+            mode = "wb"
+            headers = {}
+            downloaded = 0
+        # open connection
+        with open(dest, mode) as f, _open_url_with_retry(uri, update_headers=headers) as resp:
+            if total_size is not None:
+                total = total_size
+            else:
+                content_length = int(resp.headers.get("Content-Length", 0))
+                total = content_length + downloaded if mode == "ab" else content_length
+            if mode == "ab" and resp.status_code != requests.status_codes.codes.PARTIAL_CONTENT:
+                msg = (
+                    "Server doesn't return PARTIAL CONTENT 206 status.",
+                    f"Cannot resume {dest}. Please delete it and restart.",
+                )
+                raise requests.exceptions.HTTPError(msg)
+            if mode == "wb" and resp.status_code != requests.status_codes.codes.OK:
+                msg = f"Failed to download {dest}. Server returned status code {resp.status_code}."
+                raise requests.exceptions.HTTPError(msg)
+            if stop_after is not None:
+                total = min(total, stop_after)
 
-    if downloaded > total:
-        with open(dest, "rb+") as f:
-            f.truncate(total)
+            for chunk in resp.iter_content(chunk_size=_fmdl_chunk_size):
+                f.write(chunk)
+                downloaded += len(chunk)
+                u.update_retrieve(b=downloaded, bsize=1, tsize=total)
+                if downloaded >= total:
+                    break
+
+        if downloaded > total:
+            with open(dest, "rb+") as f:
+                f.truncate(total)
 
 
 # --- Main Functions ---
@@ -155,6 +199,7 @@ def download_resource_from_uri(
     *,
     override_if_exists: bool = False,
     max_bytes: bool = False,
+    max_restarts: int = 0,
 ) -> int:
     """Download file resource from a URI to a local destination.
 
@@ -199,21 +244,36 @@ def download_resource_from_uri(
                 f"{fi_name} filesize mismatch of local file '{fi_name}', redownloading ...",
             )
             return_code = 2
-        except (requests.exceptions.HTTPError, requests.exceptions.ConnectionError):
+        except (rexp.HTTPError, rexp.ConnectionError):
             logger.exception(
                 f"Failed to verify file size for {fi_name}. Proceeding with redownload.",
             )
             return_code = 2
 
-    # Download file in dry run mode
-    if max_bytes:
-        url_size = _get_file_size_with_retry(uri)
-        download_with_progress_with_retry(uri, dest, tqdm_title=fi_name, stop_after=MAX_BYTES_DEFAULT)
-        return 0
-
-    # Download with progress bar and check for final size match
     url_size = _get_file_size_with_retry(uri)
-    download_with_progress_with_retry(uri, dest, tqdm_title=fi_name)
+    if max_bytes:
+        # Download file in dry run mode
+        download_with_progress_with_retry(uri, dest, tqdm_title=fi_name, stop_after=MAX_BYTES_DEFAULT)
+        url_size = min(url_size, MAX_BYTES_DEFAULT)
+        return_code = 0
+    else:
+        # Download with progress bar and check for final size match
+        dest_part = dest + ".part"
+        re = 0
+        while True:
+            try:
+                download_with_progress_with_retry(uri, dest_part, tqdm_title=fi_name, total_size=url_size)
+            except (rexp.ReadTimeout, rexp.ChunkedEncodingError) as e:  # noqa: PERF203
+                re += 1
+                if re <= max_restarts:
+                    logger.warning("Download timed out. Attempting restart...")
+                    time.sleep(5)
+                else:
+                    msg = "Maximum download attempts exceeded."
+                    raise ConnectionError(msg) from e
+            else:
+                break
+        os.replace(dest_part, dest)
 
     size = os.path.getsize(dest)
     if url_size != 0 and url_size != size:
@@ -259,7 +319,7 @@ def resolve_file_url(doi: str, fi_name: str, *, validate_uri: bool = True) -> st
                     found_flag = True
             if not found_flag:
                 msg = f"File '{fi_name}' not found in zenodo record '{doi}'"
-                raise requests.exceptions.HTTPError(msg)
+                raise rexp.HTTPError(msg)
         else:
             with _open_url_with_retry(uri):
                 pass

@@ -9,6 +9,8 @@ import hashlib
 import os
 import requests
 import responses
+from responses import matchers
+from unittest import mock
 import sys
 import time
 
@@ -37,6 +39,9 @@ class TestDownloadWithProgressWithRetry:
             body=body,
             headers={"Content-Length": str(len(body))},
         )
+
+        with check.raises(OSError) as e:
+            dio.download_with_progress_with_retry("https://nonexistent.domain/file.bin", str(tmp_path))
 
         dio.download_with_progress_with_retry(self.url, dest)
 
@@ -76,6 +81,65 @@ class TestDownloadWithProgressWithRetry:
         check.is_true(os.path.isfile(dest), "Dry-run mode must create a file")
         check.equal(os.path.getsize(dest), dsize, "Stop-after mode must download not more than some number of bytes")
 
+    @responses.activate
+    def test_download_after_break(self, tmp_path):
+        import fairmd.lipids.databankio as dio
+
+        body_part1 = b"a" * dio._fmdl_chunk_size
+        body_part2 = b"b" * dio._fmdl_chunk_size
+
+        dest = os.path.join(str(tmp_path), self.fname)
+
+        responses.add(
+            responses.GET,
+            self.url,
+            status=200,
+            body=body_part1 + body_part2,
+            headers={"Content-Length": str(dio._fmdl_chunk_size * 2)},
+        )
+        responses.add(
+            responses.GET,
+            self.url,
+            status=206,
+            body=body_part2,
+            headers={"Content-Length": str(dio._fmdl_chunk_size)},
+            match=[matchers.header_matcher({"Range": "bytes=8192-"})],
+        )
+
+        def _ic_brok(chunk_size):
+            yield body_part1
+            raise requests.exceptions.ReadTimeout("timeout")
+
+        with mock.patch(
+            "requests.models.Response.iter_content",
+            side_effect=_ic_brok,
+        ):
+            # first attempt, broken in the middle
+            with check.raises(requests.exceptions.ReadTimeout):
+                s = dio.download_with_progress_with_retry(self.url, dest)
+            check.is_true(os.path.isfile(dest), "Partial download must create a file")
+            check.equal(
+                os.path.getsize(dest),
+                dio._fmdl_chunk_size,
+                "Partial download must have partial size",
+            )
+
+        # now resume
+        dio.download_with_progress_with_retry(self.url, dest)
+
+        check.is_true(os.path.isfile(dest), "Resumed download must create a file")
+        check.equal(
+            os.path.getsize(dest),
+            dio._fmdl_chunk_size * 2,
+            "Resumed download must have full size",
+        )
+        with open(dest, "br") as f:
+            check.equal(
+                f.read(),
+                body_part1 + body_part2,
+                "Resumed download must have full content",
+            )
+
 
 class TestDownloadResourceFromUri:
     url = "https://example.org/file.bin"
@@ -105,8 +169,8 @@ class TestDownloadResourceFromUri:
     @pytest.mark.parametrize(
         "fsize, dsize",
         [
-            (52400, 0),
-            (-52400, -52400),
+            (8192 * 4, 0),
+            (-8192 * 4, -8192 * 4),
         ],
     )
     @responses.activate
@@ -137,6 +201,115 @@ class TestDownloadResourceFromUri:
             dio.MAX_BYTES_DEFAULT + dsize,
             "Dry-run mode must download not more than some number of bytes",
         )
+
+    @responses.activate
+    def test_resume_break_in_the_middle(self, tmp_path):
+        import fairmd.lipids.databankio as dio
+
+        body_part1 = b"a" * 8192
+        body_part2 = b"b" * 8192
+
+        dest = os.path.join(str(tmp_path), self.fname)
+        responses.add(
+            responses.GET,
+            self.url,
+            status=200,
+            body=body_part1 + body_part2,
+            headers={"Content-Length": str(16384)},
+        )
+        responses.add(
+            responses.GET,
+            self.url,
+            status=206,
+            body=body_part2,
+            headers={"Content-Length": str(16384)},
+            match=[matchers.header_matcher({"Range": "bytes=8192-"})],
+        )
+
+        def _ic_midbrok(*args, **kwargs):
+            yield body_part1
+            raise requests.exceptions.ReadTimeout("timeout")
+
+        with mock.patch(
+            "requests.models.Response.iter_content",
+            side_effect=[_ic_midbrok(), iter([body_part2])],
+        ):
+            # now try again - should resume
+            status = dio.download_resource_from_uri(self.url, dest, max_restarts=1)
+            check.equal(status, 0, "Resume must work")
+            check.is_true(os.path.isfile(dest), "Resume must create a file")
+            check.is_false(os.path.isfile(dest + ".part"), "Resume must remove file.part")
+            check.equal(
+                os.path.getsize(dest),
+                16384,
+                "Resumed download must have full size",
+            )
+
+    @responses.activate
+    def test_resume_nonmultiply(self, tmp_path):
+        import fairmd.lipids.databankio as dio
+
+        body_part1 = b"a" * 15000
+        body_part2 = b"b" * 5000
+
+        dest = os.path.join(str(tmp_path), self.fname)
+
+        # first create a .part file with non-multiple of chunk size
+        part_path = dest + ".part"
+        with open(part_path, "wb") as f:
+            f.write(body_part1)
+
+        responses.add(  # for size-request mocking
+            responses.GET,
+            self.url,
+            status=200,
+            body=body_part1 + body_part2,
+            headers={"Content-Length": str(20000)},
+        )
+
+        responses.add(
+            responses.GET,
+            self.url,
+            status=206,
+            body=body_part1[8192:] + body_part2,
+            headers={"Content-Length": str(20000 - 8192)},
+            match=[matchers.header_matcher({"Range": "bytes=8192-"})],
+        )
+
+        dio.download_resource_from_uri(self.url, dest)  # will truncate and continue
+        with open(dest, "br") as fd:
+            check.equal(fd.read(), body_part1 + body_part2, "Success download must get predefined content")
+
+    @responses.activate
+    def test_download_break_in_the_middle(self, tmp_path):
+        import fairmd.lipids.databankio as dio
+
+        body_part1 = b"a" * 8192
+        body_part2 = b"b" * 8192
+
+        def _ic_midbrok(*args, **kwargs):
+            yield body_part1
+            raise requests.exceptions.ReadTimeout("timeout")
+
+        dest = os.path.join(str(tmp_path), self.fname)
+        responses.add(
+            responses.GET,
+            self.url,
+            status=200,
+            body=body_part1 + body_part2,
+            headers={"Content-Length": str(16384)},
+        )
+
+        with mock.patch(
+            "requests.models.Response.iter_content",
+            side_effect=[_ic_midbrok()],
+        ):
+            if os.path.exists(dest):
+                os.remove(dest)
+            with check.raises(ConnectionError):
+                status = dio.download_resource_from_uri(self.url, dest)
+            check.is_true(os.path.isfile(dest + ".part"), "Partial download must create a file.part")
+            check.is_false(os.path.isfile(dest), "Partial download must not create a file.")
 
 
 class TestGetFileSize:

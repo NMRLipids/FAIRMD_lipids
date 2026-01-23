@@ -24,6 +24,7 @@ SIM_MAP = {
     "sim1": "Simulations.1",
     "sim2": "Simulations.2",
     "adddata": "Simulations.AddData",
+    "rdkit": "Simulations.2",
     "nodata": None,
 }
 

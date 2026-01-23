@@ -10,6 +10,7 @@ import importlib.util
 import os
 import re
 import sys
+import warnings
 
 from ._version import __version__
 
@@ -41,6 +42,18 @@ FMDL_MOL_PATH: str = os.path.join(FMDL_DATA_PATH, "Molecules")
 
 FMDL_EXP_PATH: str = os.path.join(FMDL_DATA_PATH, "experiments")
 """ Path to the project experiments folder """
+
+try:
+    import rdkit  # pyright: ignore[reportMissingImports] # noqa: F401
+
+    _HAS_RDKIT = True
+except ImportError:
+    warnings.warn(
+        "Warning: RDKit not found. Some FAIRMD Lipids functionalities will be disabled.",
+        ImportWarning,
+        stacklevel=2,
+    )
+    _HAS_RDKIT = False
 
 # Universal return codes
 

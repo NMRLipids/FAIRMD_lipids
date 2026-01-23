@@ -12,7 +12,7 @@ Collaboration](http://nmrlipids.blogspot.com/2021/03/second-online-meeting-on-nm
 
 # Installation
 
-The code has been tested in Linux and MacOS environment with python 3.10 and 3.14.
+The code has been tested in Linux and MacOS environment with python 3.10 and 3.13.
 Recent [Gromacs](https://manual.gromacs.org/current/install-guide/index.html) version
 should be available in the system. All dependecies are listed in
 [pyproject.toml](pyproject.toml).

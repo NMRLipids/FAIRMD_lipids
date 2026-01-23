@@ -17,7 +17,7 @@ from typing import Any
 import MDAnalysis as mda
 import yaml
 
-from fairmd.lipids import FMDL_MOL_PATH
+from fairmd.lipids import _HAS_RDKIT, FMDL_MOL_PATH
 
 
 class MoleculeError(Exception):
@@ -105,9 +105,16 @@ class Molecule(ABC):
     @property
     def mapping_dict(self) -> dict:
         """Return mapping dictionary (load on first call)"""
+        if self._mapping_fpath is None:
+            msg = "Mapping file is not registered!"
+            raise MoleculeError(msg, mol=self)
         if self._mapping_dict is None:
-            with open(self._mapping_fpath) as yaml_file:
-                self._mapping_dict = yaml.safe_load(yaml_file)  # yaml.load(yaml_file, Loader=yaml.FullLoader)
+            try:
+                with open(self._mapping_fpath) as yaml_file:
+                    self._mapping_dict = yaml.safe_load(yaml_file)  # yaml.load(yaml_file, Loader=yaml.FullLoader)
+            except OSError as e:
+                msg = "Error opening mapping-file!"
+                raise MoleculeError(msg, mol=self) from e
         return self._mapping_dict
 
     def md2uan(self, mdatomname: str, mdresname: str | None = None) -> str:
@@ -258,6 +265,82 @@ class Lipid(Molecule):
         """
         super().__init__(name)
         self._populate_meta_data()
+
+    def smi2uan(self, smile_id: int) -> str:
+        """Convert SMILEIDX to universal atomname"""
+        if smile_id < 0:
+            msg = "ID<0: out of range"
+            raise KeyError(msg)
+        max_smid = 0
+        for universal_name, mrecord in self.mapping_dict.items():
+            smi = mrecord.get("SMILEIDX", -1)
+            if smi == smile_id:
+                return universal_name
+            max_smid = max(max_smid, smi)
+        if smile_id > max_smid:
+            msg = f"ID>{max_smid}: out of range"
+            raise KeyError(msg)
+
+        emsg = f"Atom with SMILEIDX {smile_id} is not found."
+        raise MoleculeMappingError(emsg, mol=self)
+
+    @property
+    def rdkit_object(self) -> "rdkit.Chem.Mol":  # noqa: F821
+        """
+        Return RDKit molecule object for the lipid.
+
+        :return: RDKit molecule object
+        """
+        if not _HAS_RDKIT:
+            msg = "RDKit is required for RDKit molecule object. Please install the 'rdkit' extra."
+            raise ImportError(msg)
+
+        from rdkit import Chem  # noqa: PLC0415
+
+        if "smiles" not in self.metadata.get("bioschema_properties", {}):
+            msg = (
+                "SMILES is obligatory in `bioschema_properties->smiles` "
+                "to request SMARTS and use cheminformatic integration."
+            )
+            raise MoleculeError(msg, mol=self)
+        _smiles = self.metadata["bioschema_properties"]["smiles"]
+        rdkit_mol = Chem.MolFromSmiles(_smiles)
+        if rdkit_mol is None:
+            msg = f"Invalid SMILES for molecule {self.name}: {_smiles}"
+            raise MoleculeError(msg, mol=self)
+        return rdkit_mol
+
+    def atoms_by(self, query: str, id: int) -> list[str]:
+        """
+        Return list of universal atom names matching the SMARTS query|id.
+
+        :param query: SMARTS pattern
+        :type query: str
+        :param id: Position inside SMARTS pattern
+        :type id: int
+        :return: list of universal atom names matching the query
+        :rtype: list[str]
+        """
+        list_unames = []
+        rdkit_mol = self.rdkit_object  # import check happens here
+
+        from rdkit import Chem  # noqa: PLC0415
+
+        patt = Chem.MolFromSmarts(query)
+        if patt is None:
+            msg = "SMART syntax error (see above)"
+            raise ValueError(msg)
+        if id < 0 or id > patt.GetNumHeavyAtoms() - 1:
+            msg = f"SMARTS '{query}' has {patt.GetNumHeavyAtoms()} heavy atoms. {id} out of range."
+            raise KeyError(msg)
+
+        matches = rdkit_mol.GetSubstructMatches(patt)
+        for match in matches:
+            atom_idx = match[id]
+            # USE FURHTER: rdk_atom = rdkit_mol.GetAtomWithIdx(atom_idx)
+            list_unames.append(self.smi2uan(atom_idx))
+
+        return list_unames
 
 
 class NonLipid(Molecule):

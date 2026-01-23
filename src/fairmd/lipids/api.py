@@ -313,7 +313,7 @@ class UniverseConstructor:
                 # do not download if exists
                 return fpath
             url = resolve_file_url(self._s["DOI"], fname)
-            _ = download_resource_from_uri(url, fpath)
+            _ = download_resource_from_uri(url, fpath, max_restarts=5)
             return fpath
 
         if struc is not None:
