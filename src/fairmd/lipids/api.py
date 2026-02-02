@@ -160,10 +160,16 @@ def get_quality(
     :param system: Simulation system
     :param part: Part of the system to evaluate quality for (total|tails|headgroup)".
     :param lipid: Lipid name to evaluate quality for (if None, evaluates for all lipids).
-    :param experiment: Experiment type to evaluate quality against (XR|NMR|both).
+    :param experiment: Experiment type to evaluate quality against ("FF"|"OP"|"both").
+           Note: "both" is not implemented yet.
+    :return: quality value (float) or np.nan if not available
+    :raises: ValueError, NotImplementedError
     """
-    if part not in ["total", "headgroup", "tails"] or experiment not in ["FF", "OP", "both"]:
-        msg = "Invalid values for `part` or `experiment`!"
+    if part not in ["total", "headgroup", "tails"]:
+        msg = f"`part` must be one of 'total', 'headgroup', 'tails'. Got '{part}'!"
+        raise ValueError(msg)
+    if experiment not in ["FF", "OP", "both"]:
+        msg = f"`experiment` must be one of 'FF', 'OP', 'both'. Got '{experiment}'!"
         raise ValueError(msg)
     if (part != "total" or lipid is not None) and experiment in ["both", "FF"]:
         msg = "Combined or form-factor qualities are available only for the entire system!"
