@@ -14,6 +14,7 @@ import periodictable
 
 from fairmd.lipids import FMDL_DATA_PATH
 from fairmd.lipids.core import System
+from fairmd.lipids.molecules import Lipid
 
 
 def uname2element(mapping_name: str) -> str:
@@ -95,3 +96,18 @@ def guess_elements(system: System, u: mda.Universe) -> None:
             selection.atoms.elements = selection.n_atoms * [elname]
         # end mapping loop
     # end molecules loop
+
+
+def get_tails_of_lipid(lipid: Lipid) -> list[str]:
+    """Get the tails of a lipid molecule.
+
+    :param lipid: Lipid molecule
+    :return: List of tails (str-s)
+    """
+    tails = []
+    for props in lipid.mapping_dict.values():
+        if "FRAGMENT" in props and props["FRAGMENT"].startswith("sn-"):
+            tail_id = props["FRAGMENT"]
+            if tail_id not in tails:
+                tails.append(tail_id)
+    return tails
