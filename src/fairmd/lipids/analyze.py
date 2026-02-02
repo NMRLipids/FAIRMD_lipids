@@ -43,7 +43,7 @@ from fairmd.lipids.analib.maicos import (
     traj_centering_for_maicos_mda_parallel,
 )
 from fairmd.lipids.api import UniverseConstructor, mda_gen_selection_mols
-from fairmd.lipids.auxiliary import elements
+from fairmd.lipids.auxiliary import mollib
 from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
 from fairmd.lipids.core import System
 from fairmd.lipids.molecules import lipids_set
@@ -658,7 +658,7 @@ def computeMAICOS(  # noqa: N802 (API)
         # introduce elements attribute (if it's empty)
         # and make initial guess (just in case)
         u.guess_TopologyAttrs(force_guess=["elements"])
-        elements.guess_elements(system, u)
+        mollib.guess_elements(system, u)
 
         # Adjust the group selection to be general for analysis
         water = u.select_atoms(f"resname {system['COMPOSITION']['SOL']['NAME']}")

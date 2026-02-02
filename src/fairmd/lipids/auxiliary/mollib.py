@@ -1,7 +1,8 @@
 """
-Elements assigneer functions.
+Auxiliary module for molecule handling in FMDL.
 
-Helps Molecule to define brutto formula from existing mapping files and element guesser.
+Includes elements assigneer functions that help Molecule to define brutto formula
+from existing mapping files and element guesser.
 """
 
 import json
