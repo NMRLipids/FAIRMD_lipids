@@ -1,3 +1,26 @@
+"""
+Tools for validating YAML files against predefined JSON Schemas.
+
+This module can be run either as a module or as a script.
+
+Module usage:
+-------------
+.. code-block:: bash
+
+    python -m fairmd.lipids.schema_validation.validate_yaml --schema readme README.yaml
+
+Script usage:
+-------------
+.. code-block:: bash
+
+    # Validate a README.yaml file
+    python validate_yaml.py --schema readme README.yaml
+    python validate_yaml.py --schema info info.yml
+    # Multiple files can be validated at once
+    python validate_yaml.py README.yaml other/README.yaml
+
+"""
+
 import argparse
 import datetime
 import json
@@ -8,23 +31,6 @@ from typing import Literal
 
 import yaml
 from jsonschema import Draft7Validator, FormatChecker, SchemaError, ValidationError
-
-"""
-Tools for validating YAML files against predefined JSON Schemas.
-
-This module can be run either as a module or as a script.
-
-Module usage:
-    python -m fairmd.lipids.schema_validation.validate_yaml --schema readme README.yaml
-
-Script usage:
-    python validate_yaml.py --schema readme README.yaml
-    python validate_yaml.py --schema info info.yml
-
-Multiple files can be validated at once:
-    python validate_yaml.py README.yaml other/README.yaml
-"""
-
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +112,6 @@ def run_file(path: str, schema_type: schema_type_options) -> None:
     Validate a single YAML file against the selected schema.
 
     On success, logs "OK: <path>" and returns normally.
-
     On failure, logs detailed schema errors and raises an exception.
 
     Raises:
@@ -122,7 +127,6 @@ def run_file(path: str, schema_type: schema_type_options) -> None:
         OSError, yaml.YAMLError, json.JSONDecodeError, SchemaError:
             For I/O errors, invalid YAML, invalid JSON schema, or other runtime failures.
     """
-
     if not os.path.isfile(path):
         raise FileNotFoundError(path)
 
@@ -150,13 +154,11 @@ def main() -> int:
     Validates one or more YAML files against either the FAIRMD
     info.yml schema or the README.yaml schema.
 
-    Returns:
-        int: Process exit code:
-            0 = all files valid
-            1 = at least one file failed schema validation
-            2 = at least one file was missing or not a regular file
-            3 = at least one file could not be read, parsed, or validated
-                due to YAML, JSON, or runtime errors
+    :returns: Process exit code:
+              0 = all files valid
+              1 = at least one file failed schema validation
+              2 = at least one file was missing or not a regular file
+              3 = at least one file could not be read, parsed, or validated due to YAML, JSON, or runtime errors
     """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 

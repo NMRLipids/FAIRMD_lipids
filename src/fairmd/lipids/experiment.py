@@ -1,7 +1,12 @@
-"""
-:module: experiment.py
+"""Module for handling experimental data entries in the databank.
 
-:description: Module for handling experimental data entries in the databank.
+This module defines classes to represent different types of experimental datasets,
+they inherit from a common abstract base class :class:`Experiment` which implements
+:class:`SampleComposition <fairmd.lipids._base.SampleComposition>` for retrieving sample
+composition information.
+
+Two concrete experiment types are implemented: :class:`OPExperiment` for ssNMR order parameter data
+and :class:`FFExperiment` for form factor data.
 """
 
 import json
@@ -181,7 +186,13 @@ class Experiment(SampleComposition):
 
 
 class OPExperiment(Experiment):
-    """Represents an order parameter experiment."""
+    """Represents an ssNMR order parameter experiment.
+
+    :attr:`data` provides access to a dictionary where keys are lipid names and values are dictionaries
+    mapping atom unique names to their order parameters.
+
+    :meth:`verify_data` checks that all atom unique names in the data correspond to known atoms in the lipid mapping.
+    """
 
     @property
     def data(self) -> dict:

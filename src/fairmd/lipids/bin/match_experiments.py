@@ -31,69 +31,81 @@ from fairmd.lipids.experiment import Experiment, ExperimentCollection
 
 logger = logging.getLogger("__name__")
 
-LIP_CONC_REL_THRESHOLD = 0.15  # relative acceptable error for determination
-# of the hydration in ssNMR
+# Helper functions for matching criteria
+# TODO: remove to a module and TEST!
+
+
+def _match_membrane_composition(sim_mf: dict, exp_mf: dict) -> bool:
+    """Compare two membrane compositions given as molar fractions."""
+    if set(sim_mf.keys()) != set(exp_mf.keys()):
+        return False
+    abs_tolerance_molfraction = 0.03
+    # TODO: BAD! use relative threshold instead!
+    membrane_composition_ok = True
+    for key in sim_mf:
+        if np.abs(exp_mf[key] - sim_mf[key]) > abs_tolerance_molfraction:
+            membrane_composition_ok = False
+            break
+    return membrane_composition_ok
+
+
+def _match_solution_composition(sim_mf: dict, exp_mf: dict) -> bool:
+    """Compare two solution compositions given as molar fractions."""
+    if set(sim_mf.keys()) != set(exp_mf.keys()):
+        return False
+    # BAD! use relative threshold instead!
+    # BAD! use logarithmic scale instead!
+    solution_rel_log10_tol = 0.5
+    solution_composition_ok = True
+    for key in sim_mf:
+        if np.abs(np.log10(exp_mf[key] / sim_mf[key])) > solution_rel_log10_tol:
+            solution_composition_ok = False
+            break
+    return solution_composition_ok
+
+
+def _match_temperature(sim_t: float, exp_t: float) -> bool:
+    """Check if two temperatures match within tolerance."""
+    abs_tolerance_t = 2.5
+    return np.abs(sim_t - exp_t) <= abs_tolerance_t
+
+
+def _match_hydration(sim_h: float, exp_h: float) -> bool:
+    """Check if two hydration levels match within tolerance."""
+    if exp_h > 25 and sim_h > 25:  # both not full hydration
+        return True
+    lip_rel_hydration_tol = 0.15  # relative acceptable error for determination
+    return np.abs(exp_h / sim_h - 1) <= lip_rel_hydration_tol
 
 
 def find_pairs_and_change_sims(experiments: ExperimentCollection, simulations: SystemsCollection):
+    """Find matching simulation-experiment pairs and update simulations' README data."""
     pairs = []
     for simulation in tqdm(simulations, desc="Simulation"):
-        if simulation["ID"] == 755:
-            continue
-        sim_lipids_set = simulation.lipids.keys()
         sim_lipids_mf = simulation.membrane_composition(basis="molar")
-        sim_ions_set = simulation.solubles.keys()
         try:
             sim_ions_mf = simulation.solution_composition(basis="molar")
-            sim_tlc = simulation.get_hydration(basis="number")
+            sim_hydr = simulation.get_hydration(basis="number")
         except ValueError:
             # implicit water - hydration is not supported currently => don't pair
             continue
-        t_sim = simulation["TEMPERATURE"]
 
         for experiment in experiments:
-            # compare molar fractions
-            # TODO: BAD! use relative threshold instead!
-            if set(sim_lipids_set) != set(experiment.lipids.keys()):
-                continue
-            exp_mf = experiment.membrane_composition(basis="molar")
-            abs_tolerance_molfraction = 0.03
-            membrane_composition_ok = True
-            for key in sim_lipids_mf:
-                if np.abs(exp_mf[key] - sim_lipids_mf[key]) > abs_tolerance_molfraction:
-                    membrane_composition_ok = False
-                    break
-            if not membrane_composition_ok:
+            exp_lipids_mf = experiment.membrane_composition(basis="molar")
+            if not _match_membrane_composition(sim_lipids_mf, exp_lipids_mf):
                 continue
 
-            # compare ion concentrations
-            # BAD! use relative threshold instead!
-            # BAD! use logarithmic scale instead!
-            abs_tolerance_solutionconc = 0.05
-            if set(sim_ions_set) != set(experiment.solubles.keys()):
-                continue
             exp_ions_mf = experiment.solution_composition(basis="molar")
-            solution_composition_ok = True
-            for key in sim_ions_set:
-                if (exp_ions_mf[key] - sim_ions_mf[key]) < abs_tolerance_solutionconc:
-                    solution_composition_ok = False
-                    break
-            if not solution_composition_ok:
+            if not _match_solution_composition(sim_ions_mf, exp_ions_mf):
                 continue
 
-            exp_tlc = experiment.get_hydration(basis="number")
-            if (
-                not (exp_tlc > 25 and sim_tlc > 25)  # both not full hydration
-                and np.abs(exp_tlc / sim_tlc - 1) > LIP_CONC_REL_THRESHOLD
-            ):
+            exp_hydr = experiment.get_hydration(basis="number")
+            if not _match_hydration(sim_hydr, exp_hydr):
                 continue
 
-            t_exp = experiment.readme["TEMPERATURE"]
-            abs_tolerance_t = 2.5
-            if np.abs(t_exp - t_sim) > abs_tolerance_t:
+            if not _match_temperature(simulation["TEMPERATURE"], experiment["TEMPERATURE"]):
                 continue
 
-            # !we found the match!
             pairs.append([simulation, experiment])
 
             # Add path to experiment into simulation README.yaml
