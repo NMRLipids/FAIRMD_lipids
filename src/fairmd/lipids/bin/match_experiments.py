@@ -44,7 +44,6 @@ def _match_membrane_composition(sim_mf: dict, exp_mf: dict) -> bool:
     _exp_mf = copy(exp_mf)
     # Presence tolerance: remove molecules with very small fractions
     presence_tol = 0.01
-    print(_sim_mf, _exp_mf)
     for key in set(sim_mf.keys()) - set(exp_mf.keys()):
         if sim_mf[key] < presence_tol:
             del _sim_mf[key]
@@ -66,14 +65,27 @@ def _match_membrane_composition(sim_mf: dict, exp_mf: dict) -> bool:
 
 def _match_solution_composition(sim_mf: dict, exp_mf: dict) -> bool:
     """Compare two solution compositions given as molar fractions."""
-    if set(sim_mf.keys()) != set(exp_mf.keys()):
+    if not sim_mf and not exp_mf:
+        return True  # pure water
+    if not (set(sim_mf.keys()) & set(exp_mf.keys())):
         return False
-    # BAD! use relative threshold instead!
-    # BAD! use logarithmic scale instead!
+    _sim_mf = copy(sim_mf)
+    _exp_mf = copy(exp_mf)
+    # Presence tolerance: remove molecules with very small fractions
+    presence_tol = 0.02  # this is set to 20 mM (should depend on charge?)
+    for key in set(sim_mf.keys()) - set(exp_mf.keys()):
+        if sim_mf[key] < presence_tol:
+            del _sim_mf[key]
+    for key in set(exp_mf.keys()) - set(sim_mf.keys()):
+        if exp_mf[key] < presence_tol:
+            del _exp_mf[key]
+    if set(_sim_mf.keys()) != set(_exp_mf.keys()):
+        return False
+    # Relative log10-based tolerance
     solution_rel_log10_tol = 0.5
     solution_composition_ok = True
-    for key in sim_mf:
-        if np.abs(np.log10(exp_mf[key] / sim_mf[key])) > solution_rel_log10_tol:
+    for key in _sim_mf:
+        if np.abs(np.log10(_exp_mf[key] / _sim_mf[key])) > solution_rel_log10_tol:
             solution_composition_ok = False
             break
     return solution_composition_ok
