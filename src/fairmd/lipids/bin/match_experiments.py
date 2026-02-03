@@ -19,6 +19,7 @@ TODO: check if EXPERIMENT section changed and trigger the action!
 
 import logging
 import os
+import warnings
 from copy import copy
 from typing import IO
 
@@ -115,6 +116,10 @@ def find_pairs_and_change_sims(experiments: ExperimentCollection, simulations: S
             sim_hydr = simulation.get_hydration(basis="number")
         except ValueError:
             # implicit water - hydration is not supported currently => don't pair
+            warnings.warn(
+                f"Simulation {simulation['ID']} has implicit water; skipping experiment matching.",
+                stacklevel=2,
+            )
             continue
 
         for experiment in experiments:
