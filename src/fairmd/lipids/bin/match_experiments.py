@@ -19,6 +19,7 @@ TODO: check if EXPERIMENT section changed and trigger the action!
 
 import logging
 import os
+from copy import copy
 from typing import IO
 
 import numpy as np
@@ -37,13 +38,27 @@ logger = logging.getLogger("__name__")
 
 def _match_membrane_composition(sim_mf: dict, exp_mf: dict) -> bool:
     """Compare two membrane compositions given as molar fractions."""
-    if set(sim_mf.keys()) != set(exp_mf.keys()):
+    if not (set(sim_mf.keys()) & set(exp_mf.keys())):
         return False
-    abs_tolerance_molfraction = 0.03
-    # TODO: BAD! use relative threshold instead!
+    _sim_mf = copy(sim_mf)
+    _exp_mf = copy(exp_mf)
+    # Presence tolerance: remove molecules with very small fractions
+    presence_tol = 0.01
+    print(_sim_mf, _exp_mf)
+    for key in set(sim_mf.keys()) - set(exp_mf.keys()):
+        if sim_mf[key] < presence_tol:
+            del _sim_mf[key]
+    for key in set(exp_mf.keys()) - set(sim_mf.keys()):
+        if exp_mf[key] < presence_tol:
+            del _exp_mf[key]
+    if set(_sim_mf.keys()) != set(_exp_mf.keys()):
+        return False
+    # SQRT-based tolerance
+    sqrt_tolerance_molfraction = 0.03
     membrane_composition_ok = True
-    for key in sim_mf:
-        if np.abs(exp_mf[key] - sim_mf[key]) > abs_tolerance_molfraction:
+    for key in _sim_mf:
+        if np.abs(np.sqrt(_exp_mf[key]) - np.sqrt(_sim_mf[key])) > sqrt_tolerance_molfraction:
+            # more sensitive to small fraction changes and less to large fraction changes
             membrane_composition_ok = False
             break
     return membrane_composition_ok
