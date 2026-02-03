@@ -2,8 +2,7 @@
 
 This module defines classes to represent different types of experimental datasets,
 they inherit from a common abstract base class :class:`Experiment` which implements
-:class:`SampleComposition <fairmd.lipids._base.SampleComposition>` for retrieving sample
-composition information.
+internal ``SampleComposition`` class for retrieving sample  composition information.
 
 Two concrete experiment types are implemented: :class:`OPExperiment` for ssNMR order parameter data
 and :class:`FFExperiment` for form factor data.
@@ -28,7 +27,12 @@ class ExperimentError(Exception):
 
 
 class Experiment(SampleComposition):
-    """Abstract base class representing an experimental dataset in the databank."""
+    """Abstract base class representing an experimental dataset in the databank.
+
+    Implements important methods from :class:`SampleComposition`: :meth:`get_hydration`,
+    :meth:`membrane_composition`, and :meth:`solution_composition`. Additionally, defines
+    abstract properties for accessing experiment data (:attr:`data`) and metadata.
+    """
 
     _exp_id: str
     _metadata: dict | None = None
@@ -46,14 +50,10 @@ class Experiment(SampleComposition):
         self._populate_meta_data()
         self._initialize_content()
 
-    def _get_path(self) -> str:
-        """Return the absolute path to the experiment's directory."""
-        return self._path
-
     def _populate_meta_data(self) -> None:
         """Populate metadata from the README.yaml file."""
         self._metadata = {}
-        meta_path = os.path.join(self._get_path(), "README.yaml")
+        meta_path = os.path.join(self.path, "README.yaml")
         if os.path.isfile(meta_path):
             with open(meta_path) as yaml_file:
                 self._metadata = yaml.load(yaml_file, Loader=yaml.FullLoader)
@@ -198,13 +198,13 @@ class OPExperiment(Experiment):
     def data(self) -> dict:
         if self._data is None:
             self._data = {}
-            for fname in os.listdir(self._get_path()):
+            for fname in os.listdir(self.path):
                 if fname.endswith("_OrderParameters.json"):
                     molecule_name = fname.replace("_OrderParameters.json", "")
                     if molecule_name not in self.lipids:
                         msg = f"Data for non-existing molecule {molecule_name} in {self.exp_id}!"
                         raise ExperimentError(msg)
-                    fpath = os.path.join(self._get_path(), fname)
+                    fpath = os.path.join(self.path, fname)
                     with open(fpath) as json_file:
                         _tmpdic = json.load(json_file)
                         self._data[molecule_name] = {k: v[0] for k, v in _tmpdic.items()}
@@ -234,15 +234,21 @@ class OPExperiment(Experiment):
 
 
 class FFExperiment(Experiment):
-    """Represents a form factor experiment."""
+    """Represent a SAXS form-factor experiment.
+
+    :attr:`data` provides access to a table with the first column is Q(A-1),
+    second is the intensity, and third is error.
+
+    :meth:`verify_data` is not currently implemented for FF.
+    """
 
     @property
     def data(self) -> dict:
         if self._data is None:
             self._data = {}
-            for fname in os.listdir(self._get_path()):
+            for fname in os.listdir(self.path):
                 if fname.endswith("_FormFactor.json"):
-                    fpath = os.path.join(self._get_path(), fname)
+                    fpath = os.path.join(self.path, fname)
                     with open(fpath) as json_file:
                         self._data = json.load(json_file)
                     break  # Assuming one form factor file per experiment
