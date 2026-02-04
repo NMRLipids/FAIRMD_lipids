@@ -233,6 +233,43 @@ def test_analyze_maicos(systems, systemLoadTraj, systemid, rcodex, logger):
     # TODO: check other MAICoS outputs for at least existence
 
 
+@pytest.mark.parametrize("systemid, rcodex, ncores", [(731, 1, 2)])
+def test_analyze_maicos_parallel(systems, systemLoadTraj, systemid, rcodex, ncores, logger, monkeypatch):
+    """Test MAICoS analysis with parallel trajectory centering.
+    
+    This test specifically verifies that system ID=731 works with ncores=2
+    as required by the PR review.
+    """
+    import fairmd.lipids as fmdl
+    from fairmd.lipids.analyze import computeMAICOS
+
+    # Set FMDL_MAICOS_NCORES via monkeypatch to trigger parallel centering
+    monkeypatch.setattr(fmdl, "FMDL_MAICOS_NCORES", ncores)
+
+    s = systems.loc(systemid)
+    
+    # Remove existing whole.xtc to force recomputation with parallel centering
+    whole_xtc = os.path.join(fmdl.FMDL_SIMU_PATH, s["path"], "whole.xtc")
+    if os.path.exists(whole_xtc):
+        os.remove(whole_xtc)
+    
+    rCode = computeMAICOS(s, logger, recompute=True)
+    assert rCode == rcodex, f"rCode = {rCode} is not the same as rcodex = {rcodex}"
+    if rcodex == fmdl.RCODE_ERROR:
+        return
+
+    for fn in ["WaterDensity.json", "LipidDensity.json", "TotalDensity.json", "FormFactor.json"]:
+        cFile = os.path.join(fmdl.FMDL_SIMU_PATH, s["path"], fn)
+        check.is_true(os.path.isfile(cFile), msg=f"File {fn} not found")
+        check.is_true(os.path.getsize(cFile) > 1e3, msg=f"File {fn} is too small")
+        try:
+            compareJSONsBtwSD(
+                os.path.relpath(cFile, fmdl.FMDL_SIMU_PATH),
+            )
+        except AssertionError as e:
+            check.is_true(False, msg=str(e))
+
+
 @pytest.mark.parametrize(
     "systemid, rcodex",
     [(281, 1), (566, 1), (787, 2), (243, 1), (86, 1)],
