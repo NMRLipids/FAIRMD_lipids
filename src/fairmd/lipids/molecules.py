@@ -83,7 +83,7 @@ class Molecule(ABC):
                 if f.endswith((".yaml", ".yml")) and not f.startswith("metadata")
             ]
             if len(_possible_mfiles) == 0:
-                msg = f"No mapping file found for in {self._get_path()}"
+                msg = f"No mapping file found in {self._get_path()}"
                 raise MoleculeMappingError(msg, mol=self)
             fname = _possible_mfiles[0]  # take the first one
         # set mapping file path
