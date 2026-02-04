@@ -23,7 +23,6 @@ from maicos.core import ProfilePlanarBase
 from maicos.lib.math import center_cluster
 from maicos.lib.util import get_compound
 from maicos.lib.weights import density_weights
-from joblib import Parallel, delayed
 from tqdm import tqdm
 
 from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
@@ -242,8 +241,25 @@ def traj_centering_for_maicos_mda(
     eq_time: int = 0,
     *,
     recompute: bool = False,
+    logger: Logger | None = None,
 ) -> str:
-    """Center trajectory around the center of mass of all methyl carbons."""
+    """
+    Center trajectory around the center of mass of specified reference atoms.
+
+    This function processes trajectory frames sequentially, unwrapping molecules,
+    centering on the specified reference group, and re-wrapping into the box.
+
+    Args:
+        universe: MDAnalysis Universe object with loaded trajectory.
+        system_path: Path to the system directory where output will be saved.
+        last_atom: Atom name for centering reference (e.g., terminal methyl carbon).
+        eq_time: Equilibration time to skip in ps. Defaults to 0.
+        recompute: If True, recompute even if output file exists. Defaults to False.
+        logger: Optional logger for progress information.
+
+    Returns:
+        Path to the centered trajectory file (whole.xtc).
+    """
     xtccentered = os.path.join(system_path, "whole.xtc")
     if os.path.isfile(xtccentered) and not recompute:
         return xtccentered  # already done
@@ -282,12 +298,27 @@ def _center_trajectory_chunk(
     start_frame: int,
     stop_frame: int,
     temp_output: str,
-) -> str:
+    chunk_id: int = 0,
+    total_chunks: int = 1,
+) -> tuple[str, int, int]:
     """
     Process a single trajectory chunk for parallel centering.
 
     Worker function that must re-instantiate Universe for process safety.
     Uses the same centering logic as traj_centering_for_maicos_mda.
+
+    Args:
+        topo_path: Path to topology file (GRO, PDB, etc.).
+        traj_path: Path to trajectory file (XTC, etc.).
+        last_atom: Atom name for centering reference.
+        start_frame: Starting frame index (inclusive).
+        stop_frame: Stopping frame index (exclusive).
+        temp_output: Path for temporary output file.
+        chunk_id: Identifier for this chunk (0-indexed).
+        total_chunks: Total number of chunks being processed.
+
+    Returns:
+        Tuple of (output_path, chunk_id, total_chunks) for logging by caller.
     """
     u = mda.Universe(topo_path, traj_path)
 
@@ -311,7 +342,7 @@ def _center_trajectory_chunk(
 
             W.write(u.atoms)
 
-    return temp_output
+    return temp_output, chunk_id, total_chunks
 
 
 def traj_centering_for_maicos_mda_parallel(
@@ -322,6 +353,7 @@ def traj_centering_for_maicos_mda_parallel(
     n_jobs: int = -1,
     *,
     recompute: bool = False,
+    logger: Logger | None = None,
 ) -> str:
     """
     Center trajectory using parallel chunk processing.
@@ -329,14 +361,34 @@ def traj_centering_for_maicos_mda_parallel(
     Uses joblib to process trajectory chunks in parallel, providing ~4x speedup
     at the cost of ~3x memory usage compared to the sequential version.
 
-    :param universe: MDAnalysis Universe object
-    :param system_path: Path to the system directory for output
-    :param last_atom: Atom name for centering reference (e.g., terminal methyl carbon)
-    :param eq_time: Equilibration time to skip in ps (default: 0)
-    :param n_jobs: Number of parallel workers. -1 uses all available cores (default: -1)
-    :param recompute: If True, recompute even if output file exists (default: False)
-    :return: Path to centered trajectory file
+    Note:
+        Requires the optional 'parallel' dependency: ``pip install fairmd-lipids[parallel]``
+
+    Args:
+        universe: MDAnalysis Universe object with loaded trajectory.
+        system_path: Path to the system directory where output will be saved.
+        last_atom: Atom name for centering reference (e.g., terminal methyl carbon).
+        eq_time: Equilibration time to skip in ps. Defaults to 0.
+        n_jobs: Number of parallel workers. -1 uses all available cores. Defaults to -1.
+        recompute: If True, recompute even if output file exists. Defaults to False.
+        logger: Optional logger for progress information.
+
+    Returns:
+        Path to the centered trajectory file (whole.xtc).
+
+    Raises:
+        ImportError: If joblib is not installed.
     """
+    # Import joblib here to make it an optional dependency
+    try:
+        from joblib import Parallel, delayed
+    except ImportError as e:
+        msg = (
+            "joblib is required for parallel trajectory centering. "
+            "Install it with: pip install fairmd-lipids[parallel]"
+        )
+        raise ImportError(msg) from e
+
     xtccentered = os.path.join(system_path, "whole.xtc")
     if os.path.isfile(xtccentered) and not recompute:
         return xtccentered  # already done
@@ -362,6 +414,12 @@ def traj_centering_for_maicos_mda_parallel(
     tasks = []
     temp_dir = tempfile.mkdtemp()
 
+    if logger:
+        logger.info(
+            f"Starting parallel trajectory centering: {frames_to_process} frames, "
+            f"{n_jobs} workers, ~{chunk_size} frames/chunk"
+        )
+
     try:
         for i in range(n_jobs):
             start = eq_frame + i * chunk_size
@@ -378,19 +436,43 @@ def traj_centering_for_maicos_mda_parallel(
                 start,
                 stop,
                 temp_out,
+                i,
+                len(tasks) + 1,  # Will be updated after loop
             ))
 
+        # Update total_chunks in tasks now that we know the actual count
+        total_chunks = len(tasks)
+        tasks = [(*t[:7], total_chunks) for t in tasks]
+
+        if logger:
+            logger.info(f"Dispatching {total_chunks} chunks for parallel processing")
+
         # Run parallel processing
-        chunk_files = Parallel(n_jobs=n_jobs)(
+        results = Parallel(n_jobs=n_jobs)(
             delayed(_center_trajectory_chunk)(*args) for args in tasks
         )
 
+        # Log completion of each chunk
+        if logger:
+            for temp_xtc, chunk_id, total in results:
+                pct = int((chunk_id + 1) / total * 100)
+                logger.info(f"Chunk {chunk_id + 1}/{total} completed ({pct}%)")
+
+        # Extract file paths in order
+        chunk_files = [r[0] for r in results]
+
         # Merge chunks
+        if logger:
+            logger.info("Merging trajectory chunks...")
+
         with mda.Writer(xtccentered, universe.atoms.n_atoms) as W:
             for temp_xtc in chunk_files:
                 u_temp = mda.Universe(topo_path, temp_xtc)
                 for ts in u_temp.trajectory:
                     W.write(u_temp.atoms)
+
+        if logger:
+            logger.info(f"Parallel centering complete: {xtccentered}")
 
     finally:
         shutil.rmtree(temp_dir)
