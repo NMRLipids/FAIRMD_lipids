@@ -43,6 +43,9 @@ FMDL_MOL_PATH: str = os.path.join(FMDL_DATA_PATH, "Molecules")
 FMDL_EXP_PATH: str = os.path.join(FMDL_DATA_PATH, "experiments")
 """ Path to the project experiments folder """
 
+FMDL_MAICOS_NCORES: int = int(os.environ.get("FMDL_MAICOS_NCORES", "1"))
+""" Number of cores for parallel MAICoS trajectory centering (default: 1 = sequential) """
+
 try:
     import rdkit  # pyright: ignore[reportMissingImports] # noqa: F401
 
@@ -112,6 +115,7 @@ and then specify by FMDL_DATA_PATH environment variable."""
 __all__ = [
     "FMDL_DATA_PATH",
     "FMDL_EXP_PATH",
+    "FMDL_MAICOS_NCORES",
     "FMDL_MOL_PATH",
     "FMDL_SIMU_PATH",
     "RCODE_COMPUTED",
