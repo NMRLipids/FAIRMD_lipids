@@ -13,6 +13,7 @@ import re
 from abc import ABC, abstractmethod
 from collections.abc import MutableSet
 from copy import copy
+from glob import glob
 from typing import Any
 
 import MDAnalysis as mda
@@ -77,11 +78,8 @@ class Molecule(ABC):
         """
         # iterate over possible paths
         if fname is None:
-            _possible_mfiles = [
-                f
-                for f in os.listdir(self._get_path())
-                if f.endswith((".yaml", ".yml")) and not f.startswith("metadata")
-            ]
+            path = self._get_path()
+            _possible_mfiles = [os.path.basename(f) for f in glob(os.path.join(path, "mapping*.y*ml"))]
             if len(_possible_mfiles) == 0:
                 msg = f"No mapping file found in {self._get_path()}"
                 raise MoleculeMappingError(msg, mol=self)
