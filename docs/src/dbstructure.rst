@@ -47,11 +47,11 @@ It is connected into the FAIRMD Lipids repository as a submodule into :file:`./D
    └── Molecules/
        ├── membrane/
        │   └── lipid1/
-       │       ├── lipid1-forcefield2-mapping.yaml
+       │       ├── mapping-lipid1-forcefield2.yaml
        │       └── metadata.yaml
        └── solution/
            └── ion1/
-               ├── ion1-forcefield3-mapping.yaml
+               ├── mapping-ion1-forcefield3.yaml
                └── metadata.yaml
 
 .. _dbstructure_simu:
@@ -184,9 +184,10 @@ is described in :ref:`molmetadata_schema`.
 
 Mapping files
 ~~~~~~~~~~~~~
-Describe connection between universal atom names and simulation specific atom names.
+They are YAML-type files named as ``mapping-YOURMOL-usecase.yaml``.
+Each mapping file describes connection between universal atom names and simulation specific atom names.
 These enable automatic analyses over simulations with different naming conventions. For
-more information, see :ref:`molecule_names`
+more information, see :ref:`molecule_names`.
 
 Other files
 -----------
