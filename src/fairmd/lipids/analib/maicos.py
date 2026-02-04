@@ -266,27 +266,26 @@ def traj_centering_for_maicos_mda(
     if recompute:
         with contextlib.suppress(FileNotFoundError):
             os.remove(xtccentered)
-    # select refgroup based on g3 and last atom
-    refgroup = universe.select_atoms(f"name {last_atom}")
-    ref_weights = refgroup.masses
-    wrap_compound = get_compound(universe.atoms)
-    eq_frame = int(eq_time / universe.trajectory.dt)
 
-    with mda.Writer(xtccentered, universe.atoms.n_atoms) as W:
-        for ts in tqdm(universe.trajectory[eq_frame:]):
-            # unwrap
-            universe.atoms.unwrap(compound=wrap_compound)
+    # Get trajectory info
+    topo_path = universe.filename
+    traj_path = universe.trajectory.filename
+    dt = universe.trajectory.dt
+    n_frames = universe.trajectory.n_frames
+    eq_frame = int(eq_time / dt) if dt > 0 else 0
 
-            # center on refgroup
-            com_refgroup = center_cluster(refgroup, ref_weights)
-            box_center = ts.dimensions[:3].astype(np.float64) / 2.0
-            t = box_center - com_refgroup
-            universe.atoms.translate(t)
+    if logger:
+        logger.info(f"Sequential trajectory centering: {n_frames - eq_frame} frames")
 
-            # pack back into box
-            universe.atoms.wrap(compound=wrap_compound)
-
-            W.write(universe.atoms)
+    # Use the chunk helper for the entire frame range
+    _center_trajectory_chunk(
+        topo_path,
+        traj_path,
+        last_atom,
+        eq_frame,
+        n_frames,
+        xtccentered,
+    )
 
     return xtccentered
 
