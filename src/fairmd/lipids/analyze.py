@@ -626,16 +626,18 @@ def computeMAICOS(  # noqa: N802 (API)
                 recompute=recompute,
             )
         else:
-            # Use parallel centering if ncores > 1 and joblib is available
-            if FMDL_MAICOS_NCORES > 1:
+            # Use parallel centering by default (None = use all cores, or specific number > 1)
+            # Only use sequential if explicitly set to 1
+            if FMDL_MAICOS_NCORES != 1:
                 try:
-                    logger.info(f"Using parallel trajectory centering with {FMDL_MAICOS_NCORES} cores")
+                    n_jobs = FMDL_MAICOS_NCORES if FMDL_MAICOS_NCORES is not None else -1
+                    logger.info(f"Using parallel trajectory centering (n_jobs={n_jobs})")
                     traj_centered = traj_centering_for_maicos_mda_parallel(
                         u,
                         spath,
                         last_atom,
                         eq_time,
-                        n_jobs=FMDL_MAICOS_NCORES,
+                        n_jobs=n_jobs,
                         recompute=recompute,
                         logger=logger,
                     )
@@ -650,6 +652,7 @@ def computeMAICOS(  # noqa: N802 (API)
                         logger=logger,
                     )
             else:
+                logger.info("Using sequential trajectory centering (FMDL_MAICOS_NCORES=1)")
                 traj_centered = traj_centering_for_maicos_mda(
                     u,
                     spath,
