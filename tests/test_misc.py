@@ -203,7 +203,7 @@ def test_get_tails():
     lipid.register_mapping("mappingDPPCberger.yaml")
 
     tails = get_tails_of_lipid(lipid)
-    check.is_instance(tails, list)
+    check.is_instance(tails, set)
     check.equal(len(tails), 2)
     check.is_in("sn-1", tails)
     check.is_in("sn-2", tails)

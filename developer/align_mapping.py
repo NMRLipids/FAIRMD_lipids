@@ -23,7 +23,7 @@ from rdkit.Chem import MolStandardize
 import fairmd.lipids.api as dlapi
 import fairmd.lipids.core as dlc
 import fairmd.lipids.molecules as dlm
-from fairmd.lipids.auxiliary import elements
+from fairmd.lipids.auxiliary import mollib
 
 lg = RDLogger.logger()
 lg.setLevel(RDLogger.CRITICAL)
@@ -116,7 +116,7 @@ def main():
 
             # use internal element guesser
             u.guess_TopologyAttrs(force_guess=["elements"])
-            elements.guess_elements(s, u)
+            mollib.guess_elements(s, u)
 
             # select all molecules in the system
             sel_str = get_1mol_selstr(s["COMPOSITION"][cur_lip]["NAME"], mol_obj)

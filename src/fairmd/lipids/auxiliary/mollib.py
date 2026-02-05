@@ -98,7 +98,7 @@ def guess_elements(system: System, u: mda.Universe) -> None:
     # end molecules loop
 
 
-def get_tails_of_lipid(lipid: Lipid) -> list[str]:
+def get_tails_of_lipid(lipid: Lipid) -> set[str]:
     """Get the tails of a lipid molecule.
 
     :param lipid: Lipid molecule
@@ -110,4 +110,4 @@ def get_tails_of_lipid(lipid: Lipid) -> list[str]:
             tail_id = props["FRAGMENT"]
             if tail_id not in tails:
                 tails.append(tail_id)
-    return tails
+    return set(tails)
