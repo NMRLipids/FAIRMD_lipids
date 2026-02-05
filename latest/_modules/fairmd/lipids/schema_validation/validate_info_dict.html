@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.schema_validation.validate_info_dict &mdash; FAIRMD Lipids v1.3.5.dev69+g8b5b37a23 1.3.5.dev69+g8b5b37a23 documentation</title>
+  <title>fairmd.lipids.schema_validation.validate_info_dict &mdash; FAIRMD Lipids v1.3.5.dev97+g630c8889c 1.3.5.dev97+g630c8889c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=fa8c9f42"></script>
+      <script src="../../../../_static/documentation_options.js?v=4c677b33"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev69+g8b5b37a23
+            FAIRMD Lipids v1.3.5.dev97+g630c8889c
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev69+g8b5b37a23</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev97+g630c8889c</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -78,7 +78,7 @@
   <h1>Source code for fairmd.lipids.schema_validation.validate_info_dict</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span><span class="p">,</span> <span class="n">molecule_ff_set</span><span class="p">,</span> <span class="n">molecules_set</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span><span class="p">,</span> <span class="n">molecule_ff_set</span><span class="p">,</span> <span class="n">solubles_set</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.schema_validation.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">software_dict</span>
 
 
@@ -150,13 +150,13 @@
         <span class="c1"># molecule_ff_dict too</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="p">(</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">software_sim</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">molecules_set</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">solubles_set</span><span class="p">)</span>
             <span class="ow">and</span> <span class="p">(</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lipids_set</span><span class="p">)</span>
             <span class="ow">and</span> <span class="p">(</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">molecule_ff_set</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="n">_es</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;key_sim &#39;</span><span class="si">{</span><span class="n">key_sim</span><span class="si">}</span><span class="s2">&#39; in </span><span class="si">{</span><span class="n">sim</span><span class="p">[</span><span class="s1">&#39;SOFTWARE&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_dict&#39; : </span><span class="si">{</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">software_sim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;key_sim &#39;</span><span class="si">{</span><span class="n">key_sim</span><span class="si">}</span><span class="s2">&#39; in molecules_dict : </span><span class="si">{</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">molecules_set</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;key_sim &#39;</span><span class="si">{</span><span class="n">key_sim</span><span class="si">}</span><span class="s2">&#39; in molecules_dict : </span><span class="si">{</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">solubles_set</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;key_sim &#39;</span><span class="si">{</span><span class="n">key_sim</span><span class="si">}</span><span class="s2">&#39; in lipids_dict : </span><span class="si">{</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">lipids_set</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;key_sim &#39;</span><span class="si">{</span><span class="n">key_sim</span><span class="si">}</span><span class="s2">&#39; in molecule_ff_dict : </span><span class="si">{</span><span class="n">key_sim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">molecule_ff_set</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">)</span>

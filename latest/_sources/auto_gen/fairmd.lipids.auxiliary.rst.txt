@@ -10,6 +10,7 @@ Python files
 
    fairmd.lipids.auxiliary.elements
    fairmd.lipids.auxiliary.jsonEncoders
+   fairmd.lipids.auxiliary.opconvertor
 
 Module contents
 ---------------
