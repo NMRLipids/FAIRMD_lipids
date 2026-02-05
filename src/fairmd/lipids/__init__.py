@@ -43,9 +43,7 @@ FMDL_MOL_PATH: str = os.path.join(FMDL_DATA_PATH, "Molecules")
 FMDL_EXP_PATH: str = os.path.join(FMDL_DATA_PATH, "experiments")
 """ Path to the project experiments folder """
 
-FMDL_MAICOS_NCORES: int | None = (
-    int(os.environ["FMDL_MAICOS_NCORES"]) if "FMDL_MAICOS_NCORES" in os.environ else None
-)
+FMDL_MAICOS_NCORES: int | None = int(os.environ["FMDL_MAICOS_NCORES"]) if "FMDL_MAICOS_NCORES" in os.environ else None
 """ Number of cores for parallel MAICoS trajectory centering.
 None (default): use all cores if joblib is installed, else sequential.
 Set to 1 to force sequential processing. """

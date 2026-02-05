@@ -236,7 +236,7 @@ def test_analyze_maicos(systems, systemLoadTraj, systemid, rcodex, logger):
 @pytest.mark.parametrize("systemid, rcodex, ncores", [(731, 1, 2)])
 def test_analyze_maicos_parallel(systems, systemLoadTraj, systemid, rcodex, ncores, logger, monkeypatch):
     """Test MAICoS analysis with parallel trajectory centering.
-    
+
     This test specifically verifies that system ID=731 works with ncores=2
     as required by the PR review.
     """
@@ -247,12 +247,12 @@ def test_analyze_maicos_parallel(systems, systemLoadTraj, systemid, rcodex, ncor
     monkeypatch.setattr(fmdl, "FMDL_MAICOS_NCORES", ncores)
 
     s = systems.loc(systemid)
-    
+
     # Remove existing whole.xtc to force recomputation with parallel centering
     whole_xtc = os.path.join(fmdl.FMDL_SIMU_PATH, s["path"], "whole.xtc")
     if os.path.exists(whole_xtc):
         os.remove(whole_xtc)
-    
+
     rCode = computeMAICOS(s, logger, recompute=True)
     assert rCode == rcodex, f"rCode = {rCode} is not the same as rcodex = {rcodex}"
     if rcodex == fmdl.RCODE_ERROR:

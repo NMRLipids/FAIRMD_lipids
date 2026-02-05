@@ -278,4 +278,3 @@ class TestEnvironmentVariable:
         # Would need to reimport to see effect, so just verify parsing logic
         val = int(os.environ.get("FMDL_MAICOS_NCORES", "1"))
         assert val == 4
-

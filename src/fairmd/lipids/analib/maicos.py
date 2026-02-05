@@ -402,8 +402,7 @@ def traj_centering_for_maicos_mda_parallel(
         from joblib import Parallel, delayed
     except ImportError as e:
         msg = (
-            "joblib is required for parallel trajectory centering. "
-            "Install it with: pip install fairmd-lipids[parallel]"
+            "joblib is required for parallel trajectory centering. Install it with: pip install fairmd-lipids[parallel]"
         )
         raise ImportError(msg) from e
 
@@ -447,24 +446,23 @@ def traj_centering_for_maicos_mda_parallel(
                 break
 
             temp_out = os.path.join(temp_dir, f"chunk_{i}.xtc")
-            tasks.append((
-                topo_path,
-                traj_path,
-                last_atom,
-                start,
-                stop,
-                temp_out,
-                i,
-                len(tasks) + 1,  # Will be updated after loop
-            ))
+            tasks.append(
+                (
+                    topo_path,
+                    traj_path,
+                    last_atom,
+                    start,
+                    stop,
+                    temp_out,
+                    i,
+                    len(tasks) + 1,  # Will be updated after loop
+                )
+            )
 
         # Update total_chunks in tasks now that we know the actual count
         total_chunks = len(tasks)
         # Add tqdm_position to each task (position=i if show_progress, else None)
-        tasks = [
-            (*t[:7], total_chunks, i if show_progress else None)
-            for i, t in enumerate(tasks)
-        ]
+        tasks = [(*t[:7], total_chunks, i if show_progress else None) for i, t in enumerate(tasks)]
 
         if logger:
             logger.info(f"Dispatching {total_chunks} chunks for parallel processing")
@@ -472,9 +470,7 @@ def traj_centering_for_maicos_mda_parallel(
         # Run parallel processing
         # Use 'threads' backend when show_progress is enabled for proper tqdm display
         backend = "threads" if show_progress else None
-        results = Parallel(n_jobs=n_jobs, prefer=backend)(
-            delayed(_center_trajectory_chunk)(*args) for args in tasks
-        )
+        results = Parallel(n_jobs=n_jobs, prefer=backend)(delayed(_center_trajectory_chunk)(*args) for args in tasks)
 
         # Print newlines to clear tqdm progress bars area
         if show_progress:
