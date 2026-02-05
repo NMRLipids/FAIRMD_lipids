@@ -640,6 +640,7 @@ def computeMAICOS(  # noqa: N802 (API)
                         n_jobs=n_jobs,
                         recompute=recompute,
                         logger=logger,
+                        show_progress=True,
                     )
                 except ImportError:
                     logger.warning("joblib not available, falling back to sequential centering")

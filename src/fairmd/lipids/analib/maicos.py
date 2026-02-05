@@ -260,6 +260,7 @@ def traj_centering_for_maicos_mda(
     Returns:
         Path to the centered trajectory file (whole.xtc).
     """
+    print("sequential trajectory")
     xtccentered = os.path.join(system_path, "whole.xtc")
     if os.path.isfile(xtccentered) and not recompute:
         return xtccentered  # already done
@@ -299,6 +300,7 @@ def _center_trajectory_chunk(
     temp_output: str,
     chunk_id: int = 0,
     total_chunks: int = 1,
+    tqdm_position: int | None = None,
 ) -> tuple[str, int, int]:
     """
     Process a single trajectory chunk for parallel centering.
@@ -315,6 +317,7 @@ def _center_trajectory_chunk(
         temp_output: Path for temporary output file.
         chunk_id: Identifier for this chunk (0-indexed).
         total_chunks: Total number of chunks being processed.
+        tqdm_position: Position for tqdm progress bar (enables per-worker progress).
 
     Returns:
         Tuple of (output_path, chunk_id, total_chunks) for logging by caller.
@@ -325,8 +328,22 @@ def _center_trajectory_chunk(
     ref_weights = refgroup.masses
     wrap_compound = get_compound(u.atoms)
 
+    n_frames = stop_frame - start_frame
+
     with mda.Writer(temp_output, u.atoms.n_atoms) as W:
-        for ts in u.trajectory[start_frame:stop_frame]:
+        # Use tqdm if position is provided for per-worker progress
+        frame_iter = u.trajectory[start_frame:stop_frame]
+        if tqdm_position is not None:
+            frame_iter = tqdm(
+                frame_iter,
+                total=n_frames,
+                desc=f"Worker {chunk_id + 1}/{total_chunks}",
+                position=tqdm_position,
+                leave=False,
+                ncols=80,
+            )
+
+        for ts in frame_iter:
             # unwrap
             u.atoms.unwrap(compound=wrap_compound)
 
@@ -353,6 +370,7 @@ def traj_centering_for_maicos_mda_parallel(
     *,
     recompute: bool = False,
     logger: Logger | None = None,
+    show_progress: bool = False,
 ) -> str:
     """
     Center trajectory using parallel chunk processing.
@@ -371,6 +389,7 @@ def traj_centering_for_maicos_mda_parallel(
         n_jobs: Number of parallel workers. -1 uses all available cores. Defaults to -1.
         recompute: If True, recompute even if output file exists. Defaults to False.
         logger: Optional logger for progress information.
+        show_progress: If True, display per-worker tqdm progress bars. Defaults to False.
 
     Returns:
         Path to the centered trajectory file (whole.xtc).
@@ -441,15 +460,25 @@ def traj_centering_for_maicos_mda_parallel(
 
         # Update total_chunks in tasks now that we know the actual count
         total_chunks = len(tasks)
-        tasks = [(*t[:7], total_chunks) for t in tasks]
+        # Add tqdm_position to each task (position=i if show_progress, else None)
+        tasks = [
+            (*t[:7], total_chunks, i if show_progress else None)
+            for i, t in enumerate(tasks)
+        ]
 
         if logger:
             logger.info(f"Dispatching {total_chunks} chunks for parallel processing")
 
         # Run parallel processing
-        results = Parallel(n_jobs=n_jobs)(
+        # Use 'threads' backend when show_progress is enabled for proper tqdm display
+        backend = "threads" if show_progress else None
+        results = Parallel(n_jobs=n_jobs, prefer=backend)(
             delayed(_center_trajectory_chunk)(*args) for args in tasks
         )
+
+        # Print newlines to clear tqdm progress bars area
+        if show_progress:
+            print("\n" * total_chunks)
 
         # Log completion of each chunk
         if logger:
