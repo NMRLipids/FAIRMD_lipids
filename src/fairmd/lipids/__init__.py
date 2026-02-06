@@ -12,6 +12,7 @@ import re
 import sys
 import warnings
 
+from ._base import progress
 from ._version import __version__
 
 # Package Information
@@ -123,4 +124,5 @@ __all__ = [
     "__license__",
     "__url__",
     "__version__",
+    "progress",
 ]

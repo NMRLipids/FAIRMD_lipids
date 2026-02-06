@@ -25,9 +25,8 @@ from typing import IO
 
 import numpy as np
 import yaml
-from tqdm import tqdm
 
-from fairmd.lipids import FMDL_SIMU_PATH
+from fairmd.lipids import FMDL_SIMU_PATH, progress
 from fairmd.lipids.core import System, SystemsCollection, initialize_databank
 from fairmd.lipids.experiment import Experiment, ExperimentCollection
 
@@ -109,7 +108,7 @@ def _match_hydration(sim_h: float, exp_h: float) -> bool:
 def find_pairs_and_change_sims(experiments: ExperimentCollection, simulations: SystemsCollection):
     """Find matching simulation-experiment pairs and update simulations' README data."""
     pairs = []
-    for simulation in tqdm(simulations, desc="Simulation"):
+    for simulation in progress(simulations, desc="Simulation"):
         sim_lipids_mf = simulation.membrane_composition(basis="molar")
         try:
             sim_ions_mf = simulation.solution_composition(basis="molar")
@@ -220,7 +219,7 @@ def match_experiments() -> None:
         log_pairs(pairs_ff, logf)
 
     # save changed simulations
-    for simulation in tqdm(simulations, "Saving READMEs"):
+    for simulation in progress(simulations, desc="Saving READMEs"):
         outfile_dict = os.path.join(FMDL_SIMU_PATH, simulation["path"], "README.yaml")
         with open(outfile_dict, "w") as f:
             if "path" in simulation:

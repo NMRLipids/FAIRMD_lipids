@@ -21,8 +21,8 @@ from maicos.core import ProfilePlanarBase
 from maicos.lib.math import center_cluster
 from maicos.lib.util import get_compound
 from maicos.lib.weights import density_weights
-from tqdm import tqdm
 
+from fairmd.lipids import progress
 from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
 from fairmd.lipids.core import System
 from fairmd.lipids.molecules import lipids_set
@@ -254,7 +254,10 @@ def traj_centering_for_maicos_mda(
     eq_frame = int(eq_time / universe.trajectory.dt)
 
     with mda.Writer(xtccentered, universe.atoms.n_atoms) as W:
-        for ts in tqdm(universe.trajectory[eq_frame:]):
+        for ts in progress(
+            universe.trajectory[eq_frame:],
+            desc="Centering trajectory (MDAnalysis)",
+        ):
             # unwrap
             universe.atoms.unwrap(compound=wrap_compound)
 
