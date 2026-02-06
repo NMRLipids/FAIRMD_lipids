@@ -12,7 +12,8 @@ import warnings
 
 import MDAnalysis as mda
 import numpy as np
-from tqdm import tqdm
+
+from fairmd.lipids import progress
 
 # Maximum bond length for a C-H bond to be considered reasonable.
 bond_len_max = 1.5  # in Angstrom
@@ -177,7 +178,12 @@ def _read_trajs_calc_OPs(
         op.traj = np.zeros(n_res, dtype=np.float64)
 
     print("Processing trajectory with optimized single-core engine...")
-    for _ in tqdm(mol.trajectory, total=n_frames, unit="frame"):
+    for _ in progress(
+        mol.trajectory,
+        total=n_frames,
+        unit="frame",
+        desc="Processing trajectory",
+    ):
         for op in op_obj_list:
             if op.atomgroup is None or len(op.atomgroup) == 0:
                 continue

@@ -18,10 +18,9 @@ from contextlib import contextmanager
 import requests
 import requests.exceptions as rexp
 from requests.adapters import HTTPAdapter
-from tqdm import tqdm
 from urllib3.util.retry import Retry
 
-from fairmd.lipids import __version__
+from fairmd.lipids import __version__, progress
 
 __all__ = [
     "MAX_BYTES_DEFAULT",
@@ -128,11 +127,20 @@ def download_with_progress_with_retry(
         total_size (int): Total size of the file to download (for resuming).
     """
 
-    class RetrieveProgressBar(tqdm):
+    class RetrieveProgressBar:
+        def __init__(self, **kwargs):
+            self._pbar = progress(**kwargs)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            self._pbar.close()
+
         def update_retrieve(self, b=1, bsize=1, tsize=None):
             if tsize is not None:
-                self.total = tsize
-            return self.update(b * bsize - self.n)
+                self._pbar.total = tsize
+            self._pbar.update(b * bsize - self._pbar.n)
 
     with RetrieveProgressBar(
         unit="B",
@@ -354,7 +362,7 @@ def calc_file_sha1_hash(fi: str, step: int = 67108864, *, one_block: bool = True
             block = f.read(step)
             sha1_hash.update(block)
         else:
-            with tqdm(total=n_tot_steps, desc="Calculating SHA1") as pbar:
+            with progress(total=n_tot_steps, desc="Calculating SHA1") as pbar:
                 for byte_block in iter(lambda: f.read(step), b""):
                     sha1_hash.update(byte_block)
                     pbar.update(1)

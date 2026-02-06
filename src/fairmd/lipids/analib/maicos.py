@@ -23,8 +23,8 @@ from maicos.core import ProfilePlanarBase
 from maicos.lib.math import center_cluster
 from maicos.lib.util import get_compound
 from maicos.lib.weights import density_weights
-from tqdm import tqdm
 
+from fairmd.lipids import progress
 from fairmd.lipids.auxiliary import CompactJSONEncoder
 from fairmd.lipids.core import System
 from fairmd.lipids.molecules import lipids_set

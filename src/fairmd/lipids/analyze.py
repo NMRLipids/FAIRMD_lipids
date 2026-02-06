@@ -19,7 +19,6 @@ from logging import Logger
 import buildh
 import numpy as np
 from maicos.core.base import AnalysisCollection
-from tqdm import tqdm
 
 from fairmd.lipids import (
     FMDL_DATA_PATH,
@@ -28,6 +27,7 @@ from fairmd.lipids import (
     RCODE_COMPUTED,
     RCODE_ERROR,
     RCODE_SKIPPED,
+    progress,
 )
 from fairmd.lipids.analib import analyze_nmrpca as nmrpca
 from fairmd.lipids.analib.databankop import find_OP
@@ -159,7 +159,7 @@ def computeAPL(  # noqa: N802 (API)
         # in the databank
         apl = {}
         nlipids = system.n_lipids
-        for _ts in tqdm(u.trajectory, desc="Scanning the trajectory"):
+        for _ts in progress(u.trajectory, desc="Scanning the trajectory"):
             if u.trajectory.time >= system["TIMELEFTOUT"] * 1000:
                 dims = u.dimensions
                 apl_frame = dims[0] * dims[1] * 2 / nlipids
