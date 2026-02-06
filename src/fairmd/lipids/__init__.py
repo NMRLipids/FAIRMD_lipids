@@ -88,9 +88,13 @@ if os.path.isdir(FMDL_DATA_PATH):
     for p in [FMDL_DATA_PATH, FMDL_EXP_PATH, FMDL_MOL_PATH, FMDL_SIMU_PATH]:
         raise_if_subpath_of_dblspec(p)
 
-    from fairmd.lipids import molecules
+    try:
+        from fairmd.lipids import molecules
+        _ = len(molecules.lipids_set)
+    except Exception:
+        # avoiding circular imports and import-time failures
+        pass
 
-    _ = len(molecules.lipids_set)
     print(
         f"FAIRMD Lipids is initialized from the folder: {FMDL_DATA_PATH}\n"
         "---------------------------------------------------------------",
