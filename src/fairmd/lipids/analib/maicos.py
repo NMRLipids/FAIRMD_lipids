@@ -478,7 +478,7 @@ def traj_centering_for_maicos_mda_parallel(
 
         # Log completion of each chunk
         if logger:
-            for temp_xtc, chunk_id, total in results:
+            for _temp_xtc, chunk_id, total in results:
                 pct = int((chunk_id + 1) / total * 100)
                 logger.info(f"Chunk {chunk_id + 1}/{total} completed ({pct}%)")
 
@@ -490,7 +490,7 @@ def traj_centering_for_maicos_mda_parallel(
             logger.info("Merging trajectory chunks...")
 
         with mda.Writer(xtccentered, universe.atoms.n_atoms) as W:
-            for _temp_xtc in chunk_files:
+            for temp_xtc in chunk_files:
                 u_temp = mda.Universe(topo_path, temp_xtc)
                 for _ts in u_temp.trajectory:
                     W.write(u_temp.atoms)

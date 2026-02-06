@@ -25,7 +25,17 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 def run_analysis(info_file_path: str) -> None:
     """Run full analysis of info-file"""
     work_directory_real, _ = setup_folders()
-    subprocess.run(["fmdl_add_simulation", "-f", info_file_path, "-w", work_directory_real, "--non-interactive"], check=True)
+    subprocess.run(
+        [
+            "fmdl_add_simulation", 
+            "-f", 
+            info_file_path, 
+            "-w", 
+            work_directory_real, 
+            "--non-interactive"
+            ], 
+            check=True
+                )
 
     subprocess.run(
         [
