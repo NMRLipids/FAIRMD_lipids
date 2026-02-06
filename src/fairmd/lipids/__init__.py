@@ -90,6 +90,7 @@ if os.path.isdir(FMDL_DATA_PATH):
 
     try:
         from fairmd.lipids import molecules
+
         _ = len(molecules.lipids_set)
     except Exception:
         # avoiding circular imports and import-time failures
