@@ -33,6 +33,7 @@ import MDAnalysis as mda
 import numpy as np
 
 from fairmd.lipids import FMDL_SIMU_PATH
+from fairmd.lipids.auxiliary import block_average_time_series
 from fairmd.lipids.core import System
 from fairmd.lipids.databankio import download_resource_from_uri, resolve_file_url
 from fairmd.lipids.molecules import Molecule, lipids_set
@@ -218,13 +219,14 @@ def get_quality(
     return q
 
 
-def get_mean_ApL(system: System) -> float:  # noqa: N802 (API name)
+def get_ApL_data(system: System, blocksize: float | None = None) -> np.ndarray:  # noqa: N802 (API name)
     """
-    Calculate average area per lipid for a system.
+    Return Area-per-lipid data as a numpy array (block-averaging possible).
 
-    :param system: Simulation object.
+    :param system: Simulation object
+    :param blocksize: Averaged t-series by <blocksize> ps
 
-    :return: area per lipid (Å^2)
+    :return: Array (t, value) with blocksize step.
     """
     path = os.path.join(FMDL_SIMU_PATH, system["path"], "apl.json")
     try:
@@ -236,8 +238,27 @@ def get_mean_ApL(system: System) -> float:  # noqa: N802 (API name)
     except json.JSONDecodeError as e:
         msg = "Area per lipid data for system #{} in {} is invalid.".format(system["ID"], path)
         raise ValueError(msg) from e
-    vals = np.array(list(data.values()))
-    return vals.mean()
+    df = np.vstack(
+        [
+            np.array(list(data.keys()), dtype=float),
+            np.array(list(data.values()), dtype=float),
+        ]
+    ).T
+    if blocksize is not None:
+        df = block_average_time_series(df, blocksize)
+    return df
+
+
+def get_mean_ApL(system: System) -> float:  # noqa: N802 (API name)
+    """
+    Calculate average area per lipid for a system.
+
+    :param system: Simulation object.
+
+    :return: area per lipid (Å^2)
+    """
+    df = get_ApL_data(system)
+    return df[:, 1].mean()
 
 
 def get_total_area(system: System) -> float:

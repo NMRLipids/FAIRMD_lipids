@@ -120,6 +120,29 @@ def test_get_mean_apl(systems, systemid, result):
 
 
 @pytest.mark.parametrize(
+    "systemid, nlines",
+    [
+        (281, 1001),
+        (566, 401),  # 1
+    ],
+)
+def test_get_apl_data(systems, systemid, nlines):
+    from fairmd.lipids.api import get_ApL_data
+
+    s = systems.loc(systemid)
+    df = get_ApL_data(s)
+    check.is_true(isinstance(df, np.ndarray))
+    check.equal(df.shape[1], 2)
+    check.equal(df.shape[0], nlines)
+    # block-average behavior
+    df1k = get_ApL_data(s, blocksize=1000)
+    df2k = get_ApL_data(s, blocksize=2000)
+    df3k = get_ApL_data(s, blocksize=3000)
+    check.almost_equal(df1k[0:2, 1].mean(), df2k[0, 1], abs=1e-7)
+    check.almost_equal(df1k[0:3, 1].mean(), df3k[0, 1], abs=1e-7)
+
+
+@pytest.mark.parametrize(
     "systemid, result",
     [(281, 4142.234), (566, 3923.568), (787, 4694.191), (243, 2241.920), (86, 3869.417)],
 )

@@ -18,19 +18,21 @@ def block_average_time_series(arr: np.ndarray, blocksize: float) -> np.ndarray:
     """
     # arr: (N, 2) -> [time, value]
     t = arr[:, 0]
+    if t[1] - t[0] > blocksize:
+        msg = f"Blocksize ({blocksize}) must be greater than write timestep ({t[1] - t[0]})"
+        raise ValueError(msg)
     x = arr[:, 1]
 
     t0 = t.min()
     t1 = t.max()
-    t1 = np.ceil((t0 - t1) / blocksize) * blocksize  # fit int num of blocksize to interval
-
     # Bin edges: [t0, t0+blocksize, t0+2*blocksize, ...]
-    edges = np.arange(t0, t1, blocksize)
-    # Bin index for each sample: 0..len(edges)-2
+    edges = np.arange(t0, t1 + blocksize + 1e-3, blocksize)  # +1e-3 required to make t1 // blocksize working!
+    nbins = len(edges) - 1
+
+    # Bin index for each sample: 0..len(edges)
     idx = np.digitize(t, edges) - 1
 
     # Prepare output arrays
-    nbins = len(edges) - 1
     sums = np.zeros(nbins)
     counts = np.zeros(nbins, dtype=int)
 
