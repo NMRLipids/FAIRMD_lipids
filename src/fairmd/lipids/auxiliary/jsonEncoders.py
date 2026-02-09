@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
+"""
+Compact JSON encoder class.
 
-#
-# Compact JSON from @jannismain is used here.
-# https://gist.github.com/jannismain/e96666ca4f059c3e5bc28abb711b5c92
-#
+:meta: private
+"""
 
 import json
 import math
@@ -12,7 +11,11 @@ import numpy as np
 
 
 class CompactJSONEncoder(json.JSONEncoder):
-    """A JSON Encoder that puts small containers on single lines."""
+    """A JSON Encoder that puts small containers on single lines.
+
+    Originally taken from `the GiST of @jannismain
+    <https://gist.github.com/jannismain/e96666ca4f059c3e5bc28abb711b5c92>`_.
+    """
 
     CONTAINER_TYPES = (list, tuple, dict)
     """Container datatypes include primitives or other containers."""
@@ -100,30 +103,5 @@ class CompactJSONEncoder(json.JSONEncoder):
             return " " * (self.indentation_level * self.indent)
         if isinstance(self.indent, str):
             return self.indentation_level * self.indent
-        raise ValueError(
-            f"indent must either be of type int or str (is: {type(self.indent)})",
-        )
-
-
-if __name__ == "__main__":
-    import sys
-
-    if "--example" in sys.argv:
-        data = {
-            "compact_object": {"first": "element", "second": 2},
-            "compact_list": ["first", "second"],
-            "long_list": [
-                "this",
-                "is",
-                "a",
-                "rather",
-                "long\nlist",
-                "and should be broken up because of its width",
-            ],
-            "non_ascii": "汉语",
-            1: 2,
-        }
-        json.dump(data, sys.stdout, cls=CompactJSONEncoder, ensure_ascii=False)
-        exit()
-
-    json.dump(json.load(sys.stdin), sys.stdout, cls=CompactJSONEncoder)
+        msg = f"Indent must either be of type int or str (is: {type(self.indent)})"
+        raise ValueError(msg)

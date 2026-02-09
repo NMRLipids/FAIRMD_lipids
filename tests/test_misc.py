@@ -11,6 +11,7 @@ NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
 from contextlib import contextmanager
 import os
 import shutil
+import json
 
 import pytest
 import pytest_check as check
@@ -192,3 +193,27 @@ def test_maicos_what_to_compute(caplog, logger):
         check.is_not_in("Dielectric", line)
         check.is_not_in("ChargeDensity", line)
         check.equal(rcode, RCODE_ERROR)
+
+
+def test_json_encoder(tmpdir):
+    """Fixture for a mock experiment path with no data files."""
+    from fairmd.lipids.auxiliary import CompactJSONEncoder
+
+    exp_dir = tmpdir.mkdir("jsonenc")
+
+    data = {
+        "compact_object": {"first": "element", "second": 2},
+        "compact_list": ["first", "second"],
+        "long_list": [
+            "this",
+            "is",
+            "a",
+            "rather",
+            "long\nlist",
+            "and should be broken up because of its width",
+        ],
+        "non_ascii": "汉语",
+        1: 2,
+    }
+    with open(exp_dir.join("test.yaml"), "w") as fd:
+        json.dump(data, fd, cls=CompactJSONEncoder, ensure_ascii=False)
