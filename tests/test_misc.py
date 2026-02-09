@@ -217,7 +217,7 @@ def test_json_encoder(tmpdir):
         "non_ascii": "汉语",
         1: 2,
     }
-    with open(exp_dir.join("test.yaml"), "w") as fd:
+    with open(exp_dir.join("test.yaml"), "w", encoding="utf-8") as fd:
         json.dump(data, fd, cls=CompactJSONEncoder, ensure_ascii=False)
 
 
