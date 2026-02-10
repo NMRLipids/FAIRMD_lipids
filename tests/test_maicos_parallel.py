@@ -24,12 +24,13 @@ pytestmark = pytest.mark.sim1
 def simple_universe():
     """Create a simple MDAnalysis Universe for testing."""
     import MDAnalysis as mda
-    from MDAnalysis.lib.mdamath import make_whole
+    from fairmd.lipids.core import initialize_databank
+    from fairmd.lipids.api import UniverseConstructor
 
-    # Use MDAnalysis test data
-    from MDAnalysis.tests.datafiles import GRO, XTC
-
-    return mda.Universe(GRO, XTC)
+    ss = initialize_databank()
+    uc = UniverseConstructor(ss.loc(243))
+    uc.download_mddata()
+    return uc.build_universe()
 
 
 class TestCenterTrajectoryChunk:
