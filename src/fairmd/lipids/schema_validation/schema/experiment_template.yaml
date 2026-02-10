@@ -1,0 +1,61 @@
+# Experiment Metadata Template
+
+# Global Metadata
+ARTICLE_DOI: string  # DOI of the of the original publication of the experimental data
+DATA_DOI: string     # DOI of the dataset deposition with raw data 
+DATA_REF: string     # eference to deposited dataset
+
+TEMPERATURE: number  # Temperature (K) of the experiment
+
+# Membrane Composition dictionary of molar fractions of membrane phase
+MEMBRANE_COMPOSITION: object
+  # Example: 
+  # POPC: 0.93
+  # CHOL: 0.07
+
+
+# Solution Composition dictionary of ion concentrations in the system 
+SOLUTION_COMPOSITION: object
+  # Example:
+  # SOD: 0.5
+  # CLA: 0.24
+  # GLUCOSE: 0.1
+
+# Additional Molecules dictionary of molecules which are not in the databank
+ADDITIONAL_MOLECULES: object
+  # Example:
+  # TFA: 
+  #   name: trifluoroacetic acid
+  #   concentration: 0.1
+
+TOTAL_HYDRATION: number  # Total hydration of the system (water mass %)
+PH: string              # pH of the system (number or UNKNOWN)
+PH_METHOD: string       # Method of pH setting or measurement (buffer / measurement)
+
+# Reagent Sources description of lipid reagents. Source, purity, etc. 
+REAGENT_SOURCES: object
+  # Example:
+  # POPC: Avanti Polar Lipids
+
+
+SAMPLE_PROTOCOL: string  # Protocol for sample preparation (in free format, references are welcome).
+
+# NMR-Specific Metadata (Optional)
+NMR:
+  T_RF_HEATING: string  # Correction of the temperature according to RF heating
+  INSTRUMENT: string    # Instrument name (including field)
+  METHOD: string        # NMR method (e.g., "2H:QE")
+  SIGN_MEASURED: string # Method of OP measurement "abbr1:abbr2" (see detailed explaining below)
+  DETAILS: string       # Additional experiment details
+
+# X-ray Specific Metadata (Optional)
+XRAY:
+  SOURCE: string        # X-ray source name
+  LAMBDA: string        # Source wavelength or range. Wavelength (and/or range) of the X-ray beam used, with units (e.g., Ångstroms)
+  QRANGE: number        # Scattering detection range (Q-range). The accessible scattering vector range, typically given in 1/Å.
+  DETECTOR: string      # Detector type (e.g., CCD camera, PILATUS, or other detector model).
+  DISTANCE: number      # Distance to detector (m)
+  DATATYPE: sting      # Measurement data type. Batch mode or size-exclusion chromatography (SEC) mode.
+  EXPOSURE: number      # Exposure time per frame. The total data acquisition time per measurement frame, usually given in seconds.
+  FRAMES: number        # Number of frames
+  SAMPLE_TYPE: string   # 'MLV', 'SUV', 'GUV', 'OS' (oriented sample), 'BIC'. The type of sample used, with definitions: MLV (multilamellar vesicles), SUV (small unilamellar vesicles), GUV (giant unilamellar vesicles), OS (oriented sample), BIC (bicelles).
