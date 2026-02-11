@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analib.maicos module &mdash; FAIRMD Lipids v1.3.5.dev97+g630c8889c 1.3.5.dev97+g630c8889c documentation</title>
+  <title>fairmd.lipids.analib.maicos module &mdash; FAIRMD Lipids v1.3.5.dev114+g0c0cce81d 1.3.5.dev114+g0c0cce81d documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=4c677b33"></script>
+      <script src="../_static/documentation_options.js?v=8f0a8cba"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev97+g630c8889c
+            FAIRMD Lipids v1.3.5.dev114+g0c0cce81d
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.5.dev97+g630c8889c</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.5.dev114+g0c0cce81d</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -117,8 +117,57 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.maicos.traj_centering_for_maicos_mda">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.maicos.</span></span><span class="sig-name descname"><span class="pre">traj_centering_for_maicos_mda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">universe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Universe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_atom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eq_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">recompute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/maicos.html#traj_centering_for_maicos_mda"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.maicos.traj_centering_for_maicos_mda" title="Link to this definition"></a></dt>
-<dd><p>Center trajectory around the center of mass of all methyl carbons.</p>
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.maicos.</span></span><span class="sig-name descname"><span class="pre">traj_centering_for_maicos_mda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">universe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Universe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_atom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eq_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">recompute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/maicos.html#traj_centering_for_maicos_mda"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.maicos.traj_centering_for_maicos_mda" title="Link to this definition"></a></dt>
+<dd><p>Center trajectory around the center of mass of specified reference atoms.</p>
+<p>This function processes trajectory frames sequentially, unwrapping molecules,
+centering on the specified reference group, and re-wrapping into the box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>universe</strong> – MDAnalysis Universe object with loaded trajectory.</p></li>
+<li><p><strong>system_path</strong> – Path to the system directory where output will be saved.</p></li>
+<li><p><strong>last_atom</strong> – Atom name for centering reference (e.g., terminal methyl carbon).</p></li>
+<li><p><strong>eq_time</strong> – Equilibration time to skip in ps. Defaults to 0.</p></li>
+<li><p><strong>recompute</strong> – If True, recompute even if output file exists. Defaults to False.</p></li>
+<li><p><strong>logger</strong> – Optional logger for progress information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the centered trajectory file (whole.xtc).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.analib.maicos.traj_centering_for_maicos_mda_parallel">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.maicos.</span></span><span class="sig-name descname"><span class="pre">traj_centering_for_maicos_mda_parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">universe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Universe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_atom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eq_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">recompute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/maicos.html#traj_centering_for_maicos_mda_parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.maicos.traj_centering_for_maicos_mda_parallel" title="Link to this definition"></a></dt>
+<dd><p>Center trajectory using parallel chunk processing.</p>
+<p>Uses joblib to process trajectory chunks in parallel, providing ~4x speedup
+at the cost of ~3x memory usage compared to the sequential version.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Requires the optional ‘parallel’ dependency: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">fairmd-lipids[parallel]</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>universe</strong> – MDAnalysis Universe object with loaded trajectory.</p></li>
+<li><p><strong>system_path</strong> – Path to the system directory where output will be saved.</p></li>
+<li><p><strong>last_atom</strong> – Atom name for centering reference (e.g., terminal methyl carbon).</p></li>
+<li><p><strong>eq_time</strong> – Equilibration time to skip in ps. Defaults to 0.</p></li>
+<li><p><strong>n_jobs</strong> – Number of parallel workers. -1 uses all available cores. Defaults to -1.</p></li>
+<li><p><strong>recompute</strong> – If True, recompute even if output file exists. Defaults to False.</p></li>
+<li><p><strong>logger</strong> – Optional logger for progress information.</p></li>
+<li><p><strong>show_progress</strong> – If True, display per-worker tqdm progress bars. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to the centered trajectory file (whole.xtc).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ImportError</strong> – If joblib is not installed.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">

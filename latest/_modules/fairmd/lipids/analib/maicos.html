@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analib.maicos &mdash; FAIRMD Lipids v1.3.5.dev97+g630c8889c 1.3.5.dev97+g630c8889c documentation</title>
+  <title>fairmd.lipids.analib.maicos &mdash; FAIRMD Lipids v1.3.5.dev114+g0c0cce81d 1.3.5.dev114+g0c0cce81d documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=4c677b33"></script>
+      <script src="../../../../_static/documentation_options.js?v=8f0a8cba"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev97+g630c8889c
+            FAIRMD Lipids v1.3.5.dev114+g0c0cce81d
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev97+g630c8889c</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev114+g0c0cce81d</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -88,7 +88,9 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
 
@@ -328,35 +330,268 @@
     <span class="n">eq_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">recompute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Center trajectory around the center of mass of all methyl carbons.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Center trajectory around the center of mass of specified reference atoms.</span>
+
+<span class="sd">    This function processes trajectory frames sequentially, unwrapping molecules,</span>
+<span class="sd">    centering on the specified reference group, and re-wrapping into the box.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        universe: MDAnalysis Universe object with loaded trajectory.</span>
+<span class="sd">        system_path: Path to the system directory where output will be saved.</span>
+<span class="sd">        last_atom: Atom name for centering reference (e.g., terminal methyl carbon).</span>
+<span class="sd">        eq_time: Equilibration time to skip in ps. Defaults to 0.</span>
+<span class="sd">        recompute: If True, recompute even if output file exists. Defaults to False.</span>
+<span class="sd">        logger: Optional logger for progress information.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Path to the centered trajectory file (whole.xtc).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;sequential trajectory&quot;</span><span class="p">)</span>
     <span class="n">xtccentered</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="s2">&quot;whole.xtc&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">xtccentered</span>  <span class="c1"># already done</span>
     <span class="k">if</span> <span class="n">recompute</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">)</span>
-    <span class="c1"># select refgroup based on g3 and last atom</span>
-    <span class="n">refgroup</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;name </span><span class="si">{</span><span class="n">last_atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">ref_weights</span> <span class="o">=</span> <span class="n">refgroup</span><span class="o">.</span><span class="n">masses</span>
-    <span class="n">wrap_compound</span> <span class="o">=</span> <span class="n">get_compound</span><span class="p">(</span><span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
-    <span class="n">eq_frame</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">eq_time</span> <span class="o">/</span> <span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="n">mda</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">,</span> <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span> <span class="k">as</span> <span class="n">W</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="n">eq_frame</span><span class="p">:]):</span>
+    <span class="c1"># Get trajectory info</span>
+    <span class="n">topo_path</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">filename</span>
+    <span class="n">traj_path</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">filename</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">n_frames</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">n_frames</span>
+    <span class="n">eq_frame</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">eq_time</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sequential trajectory centering: </span><span class="si">{</span><span class="n">n_frames</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">eq_frame</span><span class="si">}</span><span class="s2"> frames&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Use the chunk helper for the entire frame range</span>
+    <span class="n">_center_trajectory_chunk</span><span class="p">(</span>
+        <span class="n">topo_path</span><span class="p">,</span>
+        <span class="n">traj_path</span><span class="p">,</span>
+        <span class="n">last_atom</span><span class="p">,</span>
+        <span class="n">eq_frame</span><span class="p">,</span>
+        <span class="n">n_frames</span><span class="p">,</span>
+        <span class="n">xtccentered</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">xtccentered</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_center_trajectory_chunk</span><span class="p">(</span>
+    <span class="n">topo_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">traj_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">last_atom</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">start_frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">stop_frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">temp_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">chunk_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">total_chunks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">tqdm_position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process a single trajectory chunk for parallel centering.</span>
+
+<span class="sd">    Worker function that must re-instantiate Universe for process safety.</span>
+<span class="sd">    Uses the same centering logic as traj_centering_for_maicos_mda.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        topo_path: Path to topology file (GRO, PDB, etc.).</span>
+<span class="sd">        traj_path: Path to trajectory file (XTC, etc.).</span>
+<span class="sd">        last_atom: Atom name for centering reference.</span>
+<span class="sd">        start_frame: Starting frame index (inclusive).</span>
+<span class="sd">        stop_frame: Stopping frame index (exclusive).</span>
+<span class="sd">        temp_output: Path for temporary output file.</span>
+<span class="sd">        chunk_id: Identifier for this chunk (0-indexed).</span>
+<span class="sd">        total_chunks: Total number of chunks being processed.</span>
+<span class="sd">        tqdm_position: Position for tqdm progress bar (enables per-worker progress).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple of (output_path, chunk_id, total_chunks) for logging by caller.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">topo_path</span><span class="p">,</span> <span class="n">traj_path</span><span class="p">)</span>
+
+    <span class="n">refgroup</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;name </span><span class="si">{</span><span class="n">last_atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">ref_weights</span> <span class="o">=</span> <span class="n">refgroup</span><span class="o">.</span><span class="n">masses</span>
+    <span class="n">wrap_compound</span> <span class="o">=</span> <span class="n">get_compound</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+
+    <span class="n">n_frames</span> <span class="o">=</span> <span class="n">stop_frame</span> <span class="o">-</span> <span class="n">start_frame</span>
+
+    <span class="k">with</span> <span class="n">mda</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="n">temp_output</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span> <span class="k">as</span> <span class="n">W</span><span class="p">:</span>
+        <span class="c1"># Use tqdm if position is provided for per-worker progress</span>
+        <span class="n">frame_iter</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="n">start_frame</span><span class="p">:</span><span class="n">stop_frame</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">tqdm_position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">frame_iter</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
+                <span class="n">frame_iter</span><span class="p">,</span>
+                <span class="n">total</span><span class="o">=</span><span class="n">n_frames</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Worker </span><span class="si">{</span><span class="n">chunk_id</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_chunks</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">position</span><span class="o">=</span><span class="n">tqdm_position</span><span class="p">,</span>
+                <span class="n">leave</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">ncols</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">frame_iter</span><span class="p">:</span>
             <span class="c1"># unwrap</span>
-            <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">compound</span><span class="o">=</span><span class="n">wrap_compound</span><span class="p">)</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">compound</span><span class="o">=</span><span class="n">wrap_compound</span><span class="p">)</span>
 
             <span class="c1"># center on refgroup</span>
             <span class="n">com_refgroup</span> <span class="o">=</span> <span class="n">center_cluster</span><span class="p">(</span><span class="n">refgroup</span><span class="p">,</span> <span class="n">ref_weights</span><span class="p">)</span>
             <span class="n">box_center</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">dimensions</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
             <span class="n">t</span> <span class="o">=</span> <span class="n">box_center</span> <span class="o">-</span> <span class="n">com_refgroup</span>
-            <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
             <span class="c1"># pack back into box</span>
-            <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">compound</span><span class="o">=</span><span class="n">wrap_compound</span><span class="p">)</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">compound</span><span class="o">=</span><span class="n">wrap_compound</span><span class="p">)</span>
 
-            <span class="n">W</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+            <span class="n">W</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">temp_output</span><span class="p">,</span> <span class="n">chunk_id</span><span class="p">,</span> <span class="n">total_chunks</span>
+
+
+<div class="viewcode-block" id="traj_centering_for_maicos_mda_parallel">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.maicos.html#fairmd.lipids.analib.maicos.traj_centering_for_maicos_mda_parallel">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">traj_centering_for_maicos_mda_parallel</span><span class="p">(</span>
+    <span class="n">universe</span><span class="p">:</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">,</span>
+    <span class="n">system_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">last_atom</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">eq_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">recompute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Center trajectory using parallel chunk processing.</span>
+
+<span class="sd">    Uses joblib to process trajectory chunks in parallel, providing ~4x speedup</span>
+<span class="sd">    at the cost of ~3x memory usage compared to the sequential version.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Requires the optional &#39;parallel&#39; dependency: ``pip install fairmd-lipids[parallel]``</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        universe: MDAnalysis Universe object with loaded trajectory.</span>
+<span class="sd">        system_path: Path to the system directory where output will be saved.</span>
+<span class="sd">        last_atom: Atom name for centering reference (e.g., terminal methyl carbon).</span>
+<span class="sd">        eq_time: Equilibration time to skip in ps. Defaults to 0.</span>
+<span class="sd">        n_jobs: Number of parallel workers. -1 uses all available cores. Defaults to -1.</span>
+<span class="sd">        recompute: If True, recompute even if output file exists. Defaults to False.</span>
+<span class="sd">        logger: Optional logger for progress information.</span>
+<span class="sd">        show_progress: If True, display per-worker tqdm progress bars. Defaults to False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Path to the centered trajectory file (whole.xtc).</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ImportError: If joblib is not installed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Import joblib here to make it an optional dependency</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">joblib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;joblib is required for parallel trajectory centering. Install it with: pip install fairmd-lipids[parallel]&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="n">xtccentered</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">system_path</span><span class="p">,</span> <span class="s2">&quot;whole.xtc&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">xtccentered</span>  <span class="c1"># already done</span>
+    <span class="k">if</span> <span class="n">recompute</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">suppress</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">)</span>
+
+    <span class="c1"># Get trajectory info from the universe</span>
+    <span class="n">topo_path</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">filename</span>
+    <span class="n">traj_path</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">filename</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">n_frames</span> <span class="o">=</span> <span class="n">universe</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">n_frames</span>
+    <span class="n">eq_frame</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">eq_time</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+
+    <span class="c1"># Calculate chunks</span>
+    <span class="n">frames_to_process</span> <span class="o">=</span> <span class="n">n_frames</span> <span class="o">-</span> <span class="n">eq_frame</span>
+    <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="ow">or</span> <span class="mi">1</span>
+
+    <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">frames_to_process</span> <span class="o">/</span> <span class="n">n_jobs</span><span class="p">))</span>
+
+    <span class="c1"># Prepare tasks</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">temp_dir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Starting parallel trajectory centering: </span><span class="si">{</span><span class="n">frames_to_process</span><span class="si">}</span><span class="s2"> frames, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2"> workers, ~</span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2"> frames/chunk&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">eq_frame</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="n">chunk_size</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">eq_frame</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">n_frames</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="n">stop</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="n">temp_out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;chunk_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.xtc&quot;</span><span class="p">)</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">topo_path</span><span class="p">,</span>
+                    <span class="n">traj_path</span><span class="p">,</span>
+                    <span class="n">last_atom</span><span class="p">,</span>
+                    <span class="n">start</span><span class="p">,</span>
+                    <span class="n">stop</span><span class="p">,</span>
+                    <span class="n">temp_out</span><span class="p">,</span>
+                    <span class="n">i</span><span class="p">,</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Will be updated after loop</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Update total_chunks in tasks now that we know the actual count</span>
+        <span class="n">total_chunks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="c1"># Add tqdm_position to each task (position=i if show_progress, else None)</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[(</span><span class="o">*</span><span class="n">t</span><span class="p">[:</span><span class="mi">7</span><span class="p">],</span> <span class="n">total_chunks</span><span class="p">,</span> <span class="n">i</span> <span class="k">if</span> <span class="n">show_progress</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tasks</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dispatching </span><span class="si">{</span><span class="n">total_chunks</span><span class="si">}</span><span class="s2"> chunks for parallel processing&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Run parallel processing</span>
+        <span class="c1"># Use &#39;threads&#39; backend when show_progress is enabled for proper tqdm display</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;threads&quot;</span> <span class="k">if</span> <span class="n">show_progress</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">prefer</span><span class="o">=</span><span class="n">backend</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="n">_center_trajectory_chunk</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">)</span>
+
+        <span class="c1"># Print newlines to clear tqdm progress bars area</span>
+        <span class="k">if</span> <span class="n">show_progress</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">*</span> <span class="n">total_chunks</span><span class="p">)</span>
+
+        <span class="c1"># Log completion of each chunk</span>
+        <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_temp_xtc</span><span class="p">,</span> <span class="n">chunk_id</span><span class="p">,</span> <span class="n">total</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                <span class="n">pct</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">chunk_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">total</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Chunk </span><span class="si">{</span><span class="n">chunk_id</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2"> completed (</span><span class="si">{</span><span class="n">pct</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Extract file paths in order</span>
+        <span class="n">chunk_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+
+        <span class="c1"># Merge chunks</span>
+        <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Merging trajectory chunks...&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">mda</span><span class="o">.</span><span class="n">Writer</span><span class="p">(</span><span class="n">xtccentered</span><span class="p">,</span> <span class="n">universe</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span> <span class="k">as</span> <span class="n">W</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">temp_xtc</span> <span class="ow">in</span> <span class="n">chunk_files</span><span class="p">:</span>
+                <span class="n">u_temp</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">topo_path</span><span class="p">,</span> <span class="n">temp_xtc</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_ts</span> <span class="ow">in</span> <span class="n">u_temp</span><span class="o">.</span><span class="n">trajectory</span><span class="p">:</span>
+                    <span class="n">W</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">u_temp</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parallel centering complete: </span><span class="si">{</span><span class="n">xtccentered</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">xtccentered</span></div>
 
