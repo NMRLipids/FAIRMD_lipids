@@ -22,6 +22,7 @@ from maicos.core.base import AnalysisCollection
 
 from fairmd.lipids import (
     FMDL_DATA_PATH,
+    FMDL_MAICOS_NCORES,
     FMDL_SIMU_PATH,
     RCODE_COMPUTED,
     RCODE_ERROR,
@@ -39,6 +40,7 @@ from fairmd.lipids.analib.maicos import (
     is_system_suitable_4_maicos,
     traj_centering_for_maicos_gromacs,
     traj_centering_for_maicos_mda,
+    traj_centering_for_maicos_mda_parallel,
 )
 from fairmd.lipids.api import UniverseConstructor, mda_gen_selection_mols
 from fairmd.lipids.auxiliary import elements
@@ -624,14 +626,42 @@ def computeMAICOS(  # noqa: N802 (API)
                 recompute=recompute,
             )
         else:
-            # SLO-O-O-OW but does the job
-            traj_centered = traj_centering_for_maicos_mda(
-                u,
-                spath,
-                last_atom,
-                eq_time,
-                recompute=recompute,
-            )
+            # Use parallel centering by default (None = use all cores, or specific number > 1)
+            # Only use sequential if explicitly set to 1
+            if FMDL_MAICOS_NCORES != 1:
+                try:
+                    n_jobs = FMDL_MAICOS_NCORES if FMDL_MAICOS_NCORES is not None else -1
+                    logger.info(f"Using parallel trajectory centering (n_jobs={n_jobs})")
+                    traj_centered = traj_centering_for_maicos_mda_parallel(
+                        u,
+                        spath,
+                        last_atom,
+                        eq_time,
+                        n_jobs=n_jobs,
+                        recompute=recompute,
+                        logger=logger,
+                        show_progress=True,
+                    )
+                except ImportError:
+                    logger.warning("joblib not available, falling back to sequential centering")
+                    traj_centered = traj_centering_for_maicos_mda(
+                        u,
+                        spath,
+                        last_atom,
+                        eq_time,
+                        recompute=recompute,
+                        logger=logger,
+                    )
+            else:
+                logger.info("Using sequential trajectory centering (FMDL_MAICOS_NCORES=1)")
+                traj_centered = traj_centering_for_maicos_mda(
+                    u,
+                    spath,
+                    last_atom,
+                    eq_time,
+                    recompute=recompute,
+                    logger=logger,
+                )
         # replace trajectory in universe with centered one
         u.load_new(traj_centered, format="XTC")
 
