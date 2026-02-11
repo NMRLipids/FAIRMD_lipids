@@ -35,6 +35,10 @@ def test_mapping_dict():
     with pytest.raises(MoleculeError, match="not registered"):
         _ = mol1.mapping_dict
 
+    mol1.register_mapping()
+    mdic = mol1.mapping_dict  # should not raise
+    check.is_in("M_G1_M", mdic, "Mapping dict should contain key 'M_G1_M'")
+
 
 def test_uan2selection(toy_mols):
     toy_pope = toy_mols["pope/charmm"]

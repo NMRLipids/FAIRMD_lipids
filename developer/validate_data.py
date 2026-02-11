@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def check_integrity() -> None:
     """Run imports of lipid_set and molecule_set"""
     from fairmd.lipids.core import initialize_databank
-    from fairmd.lipids.molecules import lipids_set, molecules_set  # noqa: F401
+    from fairmd.lipids.molecules import lipids_set, solubles_set  # noqa: F401
 
     initialize_databank()
 

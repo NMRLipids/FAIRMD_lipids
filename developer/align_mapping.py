@@ -22,13 +22,14 @@ from rdkit.Chem import MolStandardize
 
 import fairmd.lipids.api as dlapi
 import fairmd.lipids.core as dlc
+import fairmd.lipids.molecules as dlm
 from fairmd.lipids.auxiliary import elements
 
 lg = RDLogger.logger()
 lg.setLevel(RDLogger.CRITICAL)
 
 
-def get_1mol_selstr(comp_name: str, mol_obj: dlc.Molecule) -> str:
+def get_1mol_selstr(comp_name: str, mol_obj: dlm.Molecule) -> str:
     """Return selection string for a single molecule"""
     res_set = set()
     try:
@@ -107,7 +108,7 @@ def main():
             if smileids:
                 print(f" -- SMILEIDX already present ({len(smileids)}). Skipping.")
                 continue
-
+            print("START WORKING -- ", s)
             if u is None:
                 uc = dlapi.UniverseConstructor(s)
                 uc.download_mddata(skip_traj=True)
@@ -141,7 +142,7 @@ def main():
                 try:
                     mol_from_md = mol_.atoms.convert_to("rdkit")
                     last_good_mol = mol_
-                except Chem.AtomValenceException:
+                except (Chem.AtomValenceException, KeyError):
                     print(f"Molecule {_} has bad conformation. Trying another one.", file=sys.stderr)
                     last_good_mol = None
                     continue

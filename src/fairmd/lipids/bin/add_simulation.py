@@ -56,7 +56,7 @@ from fairmd.lipids.databankio import (
     download_resource_from_uri,
     resolve_file_url,
 )
-from fairmd.lipids.molecules import Lipid, MoleculeMappingError, NonLipid, lipids_set, molecules_set
+from fairmd.lipids.molecules import Lipid, MoleculeMappingError, NonLipid, lipids_set, solubles_set
 from fairmd.lipids.schema_validation.engines import get_struc_top_traj_fnames, software_dict
 from fairmd.lipids.schema_validation.validate_info_dict import parse_valid_config_settings
 from fairmd.lipids.schema_validation.validate_yaml import validate_info_dict
@@ -478,7 +478,7 @@ Returns error codes:
 
     # ----- numbers of other molecules
 
-    for key_mol in molecules_set.names:
+    for key_mol in solubles_set.names:
         try:
             mol_name = sim["COMPOSITION"][key_mol]["NAME"]
         except KeyError:

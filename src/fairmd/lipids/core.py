@@ -8,17 +8,17 @@ Can be imported without additional libraries to scan Databank system file tree!
 import os
 import sys
 import typing
-from abc import ABC, abstractmethod
-from collections.abc import MutableMapping, MutableSet
-from typing import Any, Generic, TypeVar
+from collections.abc import MutableMapping
+from typing import Any
 
 import yaml
 
 from fairmd.lipids import FMDL_SIMU_PATH
-from fairmd.lipids.molecules import Lipid, Molecule, NonLipid, lipids_set, molecules_set
+from fairmd.lipids._base import CollectionSingleton, SampleComposition
+from fairmd.lipids.molecules import Lipid, NonLipid, lipids_set, solubles_set
 
 
-class System(MutableMapping):
+class System(MutableMapping, SampleComposition):
     """
     Main Databank single object.
 
@@ -43,18 +43,7 @@ class System(MutableMapping):
             expect_type_msg = "Expected dict or Mapping"
             raise TypeError(expect_type_msg)
 
-        self._content = {}
-        for k, v in self["COMPOSITION"].items():
-            mol = None
-            if k in lipids_set:
-                mol = Lipid(k)
-            elif k in molecules_set:
-                mol = NonLipid(k)
-            else:
-                mol_not_found_msg = f"Molecule {k} is not in the set of lipids or molecules."
-                raise ValueError(mol_not_found_msg)
-            mol.register_mapping(v["MAPPING"])
-            self._content[k] = mol
+        self._initialize_content()
 
     def __getitem__(self, key: str):  # noqa: ANN204
         return self._store[key]
@@ -71,6 +60,9 @@ class System(MutableMapping):
     def __len__(self) -> int:
         return len(self._store)
 
+    def __repr__(self) -> str:
+        return f"System({self._store['ID']}): {self._store['path']}"
+
     @property
     def readme(self) -> dict:
         """Get the README dictionary of the system in true dict format.
@@ -78,16 +70,6 @@ class System(MutableMapping):
         :return: dict-type README (dict)
         """
         return self._store
-
-    @property
-    def content(self) -> dict[str, Molecule]:
-        """Returns dictionary of molecule objects."""
-        return self._content
-
-    @property
-    def lipids(self) -> dict[str, Lipid]:
-        """Returns dictionary of lipid molecule objects."""
-        return {k: v for k, v in self._content.items() if k in lipids_set}
 
     @property
     def n_lipids(self) -> int:
@@ -98,14 +80,23 @@ class System(MutableMapping):
                 total += sum(v["COUNT"])
         return total
 
-    def membrane_composition(self, basis: typing.Literal["molar", "mass"] = "molar") -> dict[str, float]:
-        """Return the composition of the membrane in system.
+    # Implementation of SampleComposition interface
 
-        :param which: Type of composition to return. Options are:
-                      - "molar": compute molar fraction
-                      - "mass": compute mass fraction
-        :return: dictionary (universal molecule name -> value)
-        """
+    def _initialize_content(self) -> None:
+        self._content = {}
+        for k, v in self["COMPOSITION"].items():
+            mol = None
+            if k in lipids_set:
+                mol = Lipid(k)
+            elif k in solubles_set:
+                mol = NonLipid(k)
+            else:
+                mol_not_found_msg = f"Molecule {k} is not in the set of lipids or molecules."
+                raise ValueError(mol_not_found_msg)
+            mol.register_mapping(v["MAPPING"])
+            self._content[k] = mol
+
+    def membrane_composition(self, basis: typing.Literal["molar", "mass"] = "molar") -> dict[str, float]:
         if basis not in ["molar", "mass"]:
             msg = "Basis must be 'molar' or 'mass'"
             raise ValueError(msg)
@@ -131,7 +122,6 @@ class System(MutableMapping):
         return comp
 
     def get_hydration(self, basis: typing.Literal["number", "mass"] = "number") -> float:
-        """Get system hydration."""
         if basis not in ["number", "mass"]:
             msg = "Basis must be 'molar' or 'mass'"
             raise ValueError(msg)
@@ -145,111 +135,28 @@ class System(MutableMapping):
             raise NotImplementedError(msg)
         return hyval
 
-    def __repr__(self) -> str:
-        return f"System({self._store['ID']}): {self._store['path']}"
-
-
-T = TypeVar("T")
-
-
-class CollectionSingleton(MutableSet[T], Generic[T], ABC):
-    """A generic, mutable set collection for databank items."""
-
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
-    def __init__(self):
-        """Initialize the Empty Collection."""
-        self._items: list[T] = list()
-        self._ids: set = set()
-
-    @classmethod
-    def clear_instance(cls):
-        """Clear the singleton instance. For testing purposes only."""
-        cls._instance = None
-
-    @abstractmethod
-    def _test_item_type(self, item: Any) -> bool:
-        """Test if an item is of the proper type for the collection."""
-
-    @abstractmethod
-    def _get_item_id(self, item: T) -> str:
-        """Get the unique identifier of an item."""
-
-    def __contains__(self, item: Any) -> bool:
-        """Check if an item is in the set by instance or by ID."""
-        if isinstance(item, str):
-            item = item.upper()
-        return (self._test_item_type(item) and item in self._items) or (item in self._ids)
-
-    def __iter__(self):
-        return iter(self._items)
-
-    def __len__(self) -> int:
-        return len(self._items)
-
-    def __getitem__(self, index: int) -> T:
-        return self._items[index]
-
-    def add(self, item: T) -> None:
-        """Add an item to the set."""
-        if self._test_item_type(item):
-            self._items.append(item)
-            id = self._get_item_id(item)
-            if isinstance(id, str):
-                id = id.upper()
-            if id in self._ids:
-                msg = f"Item with ID '{id}' already exists in {type(self).__name__}."
-                raise KeyError(msg)
-            self._ids.add(id)
-        else:
-            msg = f"Only proper instances can be added to {type(self).__name__}."
-            raise TypeError(msg)
-
-    def discard(self, id: str | int) -> None:
-        """Remove an item from the set without raising an error if it does not exist."""
-        raise NotImplementedError("This method should be implemented for non-set.")
-        # if isinstance(id, str):
-        #     id = id.upper()
-        # item_to_remove = self.get(id)
-        # if item_to_remove:
-        #     # self._items.discard(item_to_remove) MUST BE IMPLEMENTED FOR LIST
-        #     self._ids.discard(id)
-
-    def get(self, key: str | int, default: Any = None) -> T | None:
-        """Get an item by its ID (case-insensitive)."""
-        if isinstance(key, str):
-            key = key.upper()
-        if key in self._ids:
-            for item in self._items:
-                comparison_id = self._get_item_id(item)
-                if isinstance(comparison_id, str):
-                    comparison_id = comparison_id.upper()
-                if comparison_id == key:
-                    return item
-        return default
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({sorted(list(self._ids))})"
-
-    @property
-    def ids(self) -> set:
-        """The set of unique identifiers for all items in the collection."""
-        return self._ids
-
-    @staticmethod
-    def load_from_data() -> "CollectionSingleton":
-        """Load collection data from the designated directory."""
-        raise NotImplementedError("This method should be implemented in subclasses.")
-
-    # TODO: schedule for removing
-    def loc(self, key: str | int) -> T:
-        """Locate an item by its unique identifier."""
-        return self.get(key)
+    def solution_composition(self, basis="molar"):
+        if basis not in ["molar", "mass"]:
+            msg = "Basis must be 'molar' or 'mass'"
+            raise ValueError(msg)
+        if not self.solubles:
+            return {}  # pure water is allowed here (even for implicit water)
+        if self["COMPOSITION"].get("SOL") is None:
+            msg = "Cannot compute solution composition for implicit water (system #{}).".format(self["ID"])
+            raise ValueError(msg)
+        n_water = self["COMPOSITION"].get("SOL")
+        comp: dict[str, float] = {}
+        for k, v in self["COMPOSITION"].items():
+            if k in lipids_set or k == "SOL":
+                continue
+            # convert to molar concentration
+            # NOTE: we assume dilute solution. Sometimes not true!
+            comp[k] = v["COUNT"] / n_water["COUNT"] * 55.5
+        if basis == "molar":
+            return comp
+        # TODO: solubles doesn't have mass data yet
+        msg = "Mass basis not implemented for solubles."
+        raise NotImplementedError(msg)
 
 
 class SystemsCollection(CollectionSingleton[System]):

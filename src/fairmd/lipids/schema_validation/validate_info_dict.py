@@ -1,6 +1,6 @@
 import copy
 
-from fairmd.lipids.molecules import lipids_set, molecule_ff_set, molecules_set
+from fairmd.lipids.molecules import lipids_set, molecule_ff_set, solubles_set
 from fairmd.lipids.schema_validation.engines import software_dict
 
 
@@ -67,13 +67,13 @@ def parse_valid_config_settings(info_yaml: dict, logger) -> tuple[dict, list[str
         # molecule_ff_dict too
         if (
             (key_sim.upper() not in software_sim)
-            and (key_sim.upper() not in molecules_set)
+            and (key_sim.upper() not in solubles_set)
             and (key_sim.upper() not in lipids_set)
             and (key_sim.upper() not in molecule_ff_set)
         ):
             _es = (
                 f"key_sim '{key_sim}' in {sim['SOFTWARE'].lower()}_dict' : {key_sim.upper() in software_sim}",
-                f"key_sim '{key_sim}' in molecules_dict : {key_sim.upper() in molecules_set}",
+                f"key_sim '{key_sim}' in molecules_dict : {key_sim.upper() in solubles_set}",
                 f"key_sim '{key_sim}' in lipids_dict : {key_sim.upper() in lipids_set}",
                 f"key_sim '{key_sim}' in molecule_ff_dict : {key_sim.upper() in molecule_ff_set}",
             )

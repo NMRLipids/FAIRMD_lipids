@@ -19,212 +19,139 @@ TODO: check if EXPERIMENT section changed and trigger the action!
 
 import logging
 import os
+import warnings
+from copy import copy
 from typing import IO
 
+import numpy as np
 import yaml
 from tqdm import tqdm
 
 from fairmd.lipids import FMDL_SIMU_PATH
-from fairmd.lipids.api import lipids_set
-from fairmd.lipids.core import System, initialize_databank
+from fairmd.lipids.core import System, SystemsCollection, initialize_databank
 from fairmd.lipids.experiment import Experiment, ExperimentCollection
 
 logger = logging.getLogger("__name__")
 
-# TODO: REMOVE IT COMPLETELY!!!
-ions_list = ["POT", "SOD", "CLA", "CAL"]  # should contain names of all ions
-
-LIP_CONC_REL_THRESHOLD = 0.15  # relative acceptable error for determination
-# of the hydration in ssNMR
+# Helper functions for matching criteria
+# TODO: remove to a module and TEST!
 
 
-# TODO: derive from Simulation (if not to remove at all!)
-class SearchSystem:
-    system: dict
-    idx_path: str
-
-    def __init__(self, readme):
-        self.system: System = readme
-        self.idx_path = readme["path"]
-
-    def get_lipids(self, molecules=lipids_set):
-        """Return list of lipids"""
-        lipids = [k for k in self.system["COMPOSITION"] if k in molecules]
-        return lipids
-
-    def get_ions(self, ions):
-        """Return list of non-zero ions"""
-        sim_ions = [k for k in self.system["COMPOSITION"] if k in ions]
-        return sim_ions
-
-    # fraction of each lipid with respect to total amount of lipids (only for lipids!)
-    def molar_fraction(self, molecule, molecules=lipids_set) -> float:
-        cmps = self.system["COMPOSITION"]
-        number = sum(cmps[molecule]["COUNT"])
-        all_counts = [i["COUNT"] for k, i in cmps.items() if k in molecules]
-        return number / sum(map(sum, all_counts))
-
-    # concentration of other molecules than lipids
-    # change name to ionConcentration()
-
-    def ion_conc(self, molecule, exp_counter_ions):
-        lipids1 = self.get_lipids()
-        c_water = 55.5
-        n_water = self.system["COMPOSITION"]["SOL"]["COUNT"]
-        try:
-            n_molecule = self.system["COMPOSITION"][molecule]["COUNT"]  # number of ions
-        except KeyError:
-            n_molecule = 0
-
-        lipids2 = []
-        if exp_counter_ions and n_molecule != 0:
-            for lipid in lipids1:
-                if molecule in exp_counter_ions.keys() and lipid == exp_counter_ions[molecule]:
-                    n_lipid = self.system["COMPOSITION"][lipid]["COUNT"]
-                    lipids2.append(sum(n_lipid))
-
-        n_molecule = n_molecule - sum(lipids2)
-        c_molecule = (n_molecule * c_water) / n_water
-
-        return c_molecule
-
-    def total_lipid_conc(self):
-        c_water = 55.5
-        n_water = self.system["COMPOSITION"]["SOL"]["COUNT"]
-        n_lipids = 0
-        for lipid in self.get_lipids():
-            try:
-                n_lipids += sum(self.system["COMPOSITION"][lipid]["COUNT"])
-            except KeyError as e:
-                print(self.system)
-                raise e
-        try:
-            if (n_water / n_lipids) > 25:
-                tot_lipid_c = "full hydration"
-            else:
-                tot_lipid_c = (n_lipids * c_water) / n_water
-        except ZeroDivisionError:
-            logger.warning("Division by zero when determining lipid concentration!")
-            print(self.system)
-        return tot_lipid_c
+def _match_membrane_composition(sim_mf: dict, exp_mf: dict) -> bool:
+    """Compare two membrane compositions given as molar fractions."""
+    if not (set(sim_mf.keys()) & set(exp_mf.keys())):
+        return False
+    _sim_mf = copy(sim_mf)
+    _exp_mf = copy(exp_mf)
+    # Presence tolerance: remove molecules with very small fractions
+    presence_tol = 0.01
+    for key in set(sim_mf.keys()) - set(exp_mf.keys()):
+        if sim_mf[key] < presence_tol:
+            del _sim_mf[key]
+    for key in set(exp_mf.keys()) - set(sim_mf.keys()):
+        if exp_mf[key] < presence_tol:
+            del _exp_mf[key]
+    if set(_sim_mf.keys()) != set(_exp_mf.keys()):
+        return False
+    # SQRT-based tolerance
+    sqrt_tolerance_molfraction = 0.03
+    membrane_composition_ok = True
+    for key in _sim_mf:
+        if np.abs(np.sqrt(_exp_mf[key]) - np.sqrt(_sim_mf[key])) > sqrt_tolerance_molfraction:
+            # more sensitive to small fraction changes and less to large fraction changes
+            membrane_composition_ok = False
+            break
+    return membrane_composition_ok
 
 
-##################
+def _match_solution_composition(sim_mf: dict, exp_mf: dict) -> bool:
+    """Compare two solution compositions given as molar fractions."""
+    if not sim_mf and not exp_mf:
+        return True  # pure water
+    if not (set(sim_mf.keys()) & set(exp_mf.keys())):
+        return False
+    _sim_mf = copy(sim_mf)
+    _exp_mf = copy(exp_mf)
+    # Presence tolerance: remove molecules with very small fractions
+    presence_tol = 0.02  # this is set to 20 mM (should depend on charge?)
+    for key in set(sim_mf.keys()) - set(exp_mf.keys()):
+        if sim_mf[key] < presence_tol:
+            del _sim_mf[key]
+    for key in set(exp_mf.keys()) - set(sim_mf.keys()):
+        if exp_mf[key] < presence_tol:
+            del _exp_mf[key]
+    if set(_sim_mf.keys()) != set(_exp_mf.keys()):
+        return False
+    # Relative log10-based tolerance
+    solution_rel_log10_tol = 0.5
+    solution_composition_ok = True
+    for key in _sim_mf:
+        if np.abs(np.log10(_exp_mf[key] / _sim_mf[key])) > solution_rel_log10_tol:
+            solution_composition_ok = False
+            break
+    return solution_composition_ok
 
 
-def load_simulations() -> list[SearchSystem]:
-    """Generate the list of Simulation objects. Go through all README.yaml files."""
-    systems = initialize_databank()
-    simulations: list[SearchSystem] = []
-
-    for system in systems:
-        # conditions of exclusions
-        try:
-            if system["WARNINGS"]["NOWATER"]:
-                continue
-        except (KeyError, TypeError):
-            pass
-
-        simulations.append(SearchSystem(system))
-
-    return simulations
+def _match_temperature(sim_t: float, exp_t: float) -> bool:
+    """Check if two temperatures match within tolerance."""
+    abs_tolerance_t = 2.5
+    return np.abs(sim_t - exp_t) <= abs_tolerance_t
 
 
-def load_experiments(exp_type: str, all_experiments: ExperimentCollection) -> list[Experiment]:
-    """Filter experiments from the collection by experiment type."""
-    print(f"Filtering for {exp_type} experiments...")
-    return [exp for exp in all_experiments if exp.exptype == exp_type]
+def _match_hydration(sim_h: float, exp_h: float) -> bool:
+    """Check if two hydration levels match within tolerance."""
+    if exp_h > 25 and sim_h > 25:  # both not full hydration
+        return True
+    lip_rel_hydration_tol = 0.15  # relative acceptable error for determination
+    return np.abs(exp_h / sim_h - 1) <= lip_rel_hydration_tol
 
 
-def find_pairs_and_change_sims(experiments: list[Experiment], simulations: list[SearchSystem]):
+def find_pairs_and_change_sims(experiments: ExperimentCollection, simulations: SystemsCollection):
+    """Find matching simulation-experiment pairs and update simulations' README data."""
     pairs = []
     for simulation in tqdm(simulations, desc="Simulation"):
-        sim_lipids = simulation.get_lipids()
-        sim_total_lipid_concentration = simulation.total_lipid_conc()
-        sim_ions = simulation.get_ions(ions_list)
-        t_sim = simulation.system["TEMPERATURE"]
-
-        # calculate molar fractions from simulation
-        sim_molar_fractions = {}
-        for lipid in sim_lipids:
-            sim_molar_fractions[lipid] = simulation.molar_fraction(lipid)
+        sim_lipids_mf = simulation.membrane_composition(basis="molar")
+        try:
+            sim_ions_mf = simulation.solution_composition(basis="molar")
+            sim_hydr = simulation.get_hydration(basis="number")
+        except ValueError:
+            # implicit water - hydration is not supported currently => don't pair
+            warnings.warn(
+                f"Simulation {simulation['ID']} has implicit water; skipping experiment matching.",
+                stacklevel=2,
+            )
+            continue
 
         for experiment in experiments:
-            # check lipid composition matches the simulation
-            exp_lipids = experiment.get_lipids()
+            exp_lipids_mf = experiment.membrane_composition(basis="molar")
+            if not _match_membrane_composition(sim_lipids_mf, exp_lipids_mf):
+                continue
 
-            exp_total_lipid_concentration = experiment.readme["TOTAL_LIPID_CONCENTRATION"]
-            exp_ions = experiment.get_ions(ions_list)
-            exp_counter_ions = experiment.readme.get("COUNTER_IONS")
+            exp_ions_mf = experiment.solution_composition(basis="molar")
+            if not _match_solution_composition(sim_ions_mf, exp_ions_mf):
+                continue
 
-            # calculate simulation ion concentrations
-            sim_concentrations = {}
-            for molecule in ions_list:
-                sim_concentrations[molecule] = simulation.ion_conc(molecule, exp_counter_ions)
+            exp_hydr = experiment.get_hydration(basis="number")
+            if not _match_hydration(sim_hydr, exp_hydr):
+                continue
 
-            # continue if lipid compositions are the same
-            if set(sim_lipids) == set(exp_lipids):
-                # compare molar fractions
-                mf_ok = 0
-                for key in sim_lipids:
-                    if (experiment.readme["MOLAR_FRACTIONS"][key] >= sim_molar_fractions[key] - 0.03) and (
-                        experiment.readme["MOLAR_FRACTIONS"][key] <= sim_molar_fractions[key] + 0.03
-                    ):
-                        mf_ok += 1
+            if not _match_temperature(simulation["TEMPERATURE"], experiment["TEMPERATURE"]):
+                continue
 
-                # compare ion concentrations
-                c_ok = 0
-                if set(sim_ions) == set(exp_ions):
-                    for key in sim_ions:
-                        if (experiment.readme["ION_CONCENTRATIONS"][key] >= sim_concentrations[key] - 0.05) and (
-                            experiment.readme["ION_CONCENTRATIONS"][key] <= sim_concentrations[key] + 0.05
-                        ):
-                            c_ok += 1
+            pairs.append([simulation, experiment])
 
-                switch = 0
-
-                if isinstance(exp_total_lipid_concentration, (int, float)) and isinstance(
-                    sim_total_lipid_concentration,
-                    (int, float),
-                ):
-                    if (
-                        exp_total_lipid_concentration / sim_total_lipid_concentration > 1 - LIP_CONC_REL_THRESHOLD
-                    ) and (exp_total_lipid_concentration / sim_total_lipid_concentration < 1 + LIP_CONC_REL_THRESHOLD):
-                        switch = 1
-                elif (
-                    (type(exp_total_lipid_concentration) is str)
-                    and (type(sim_total_lipid_concentration) is str)
-                    and (exp_total_lipid_concentration == sim_total_lipid_concentration)
-                ):
-                    switch = 1
-
-                if switch:
-                    # check temperature +/- 2 degrees
-                    t_exp = experiment.readme["TEMPERATURE"]
-
-                    if (
-                        (mf_ok == len(sim_lipids))
-                        and (c_ok == len(sim_ions))
-                        and (t_exp > float(t_sim) - 2.5)
-                        and (t_exp < float(t_sim) + 2.5)
-                    ):
-                        # !we found the match!
-                        pairs.append([simulation, experiment])
-
-                        # Add path to experiment into simulation README.yaml
-                        # many experiment entries can match to same simulation
-                        if experiment.exptype == "OrderParameters":
-                            for lipid in experiment.data:
-                                if lipid not in simulation.system["EXPERIMENT"]["ORDERPARAMETER"]:
-                                    simulation.system["EXPERIMENT"]["ORDERPARAMETER"][lipid] = []
-                                simulation.system["EXPERIMENT"]["ORDERPARAMETER"][lipid].append(experiment.exp_id)
-                        elif experiment.exptype == "FormFactors":
-                            simulation.system["EXPERIMENT"]["FORMFACTOR"].append(experiment.exp_id)
-                    else:
-                        continue
+            # Add path to experiment into simulation README.yaml
+            # many experiment entries can match to same simulation
+            if experiment.exptype == "OrderParameters":
+                for lipid in experiment.data:
+                    if lipid not in simulation["EXPERIMENT"]["ORDERPARAMETER"]:
+                        simulation["EXPERIMENT"]["ORDERPARAMETER"][lipid] = []
+                    simulation["EXPERIMENT"]["ORDERPARAMETER"][lipid].append(experiment.exp_id)
+            elif experiment.exptype == "FormFactors":
+                simulation["EXPERIMENT"]["FORMFACTOR"].append(experiment.exp_id)
 
         # sorting experiment lists to keep experimental order strict
-        cur_exp = simulation.system["EXPERIMENT"]
+        cur_exp = simulation["EXPERIMENT"]
         cur_exp["FORMFACTOR"].sort()
         for _lipid in cur_exp["ORDERPARAMETER"]:
             cur_exp["ORDERPARAMETER"][_lipid].sort()
@@ -240,13 +167,13 @@ def log_pairs(pairs, fd: IO[str]) -> None:
     fd: file descriptor for writting into
     """
     for p in pairs:
-        sim: SearchSystem = p[0]
+        sim: System = p[0]
         exp: Experiment = p[1]
 
-        sysn = sim.system["SYSTEM"]
-        simp = sim.idx_path
+        sysn = sim["SYSTEM"]
+        simp = sim["path"]
 
-        expp = exp.dataPath
+        expp = exp.path
         expd = exp.readme.get("ARTICLE_DOI", "[no article DOI]")
 
         fd.write(f"""
@@ -265,15 +192,15 @@ Experiment:
 
 def match_experiments() -> None:
     """Do main program work. Not for exporting."""
-    simulations = load_simulations()
+    simulations = initialize_databank()
 
     # clear all EXPERIMENT sections in all simulations
     for simulation in simulations:
-        simulation.system["EXPERIMENT"] = {}
-        simulation.system["EXPERIMENT"]["ORDERPARAMETER"] = {}
-        simulation.system["EXPERIMENT"]["FORMFACTOR"] = []
-        for lipid in simulation.get_lipids():
-            simulation.system["EXPERIMENT"]["ORDERPARAMETER"][lipid] = []
+        simulation["EXPERIMENT"] = {}
+        simulation["EXPERIMENT"]["ORDERPARAMETER"] = {}
+        simulation["EXPERIMENT"]["FORMFACTOR"] = []
+        for lipid in simulation.lipids:
+            simulation["EXPERIMENT"]["ORDERPARAMETER"][lipid] = []
 
     # Pair each simulation with an experiment with the closest matching temperature
     # and composition
@@ -294,11 +221,11 @@ def match_experiments() -> None:
 
     # save changed simulations
     for simulation in tqdm(simulations, "Saving READMEs"):
-        outfile_dict = os.path.join(FMDL_SIMU_PATH, simulation.idx_path, "README.yaml")
+        outfile_dict = os.path.join(FMDL_SIMU_PATH, simulation["path"], "README.yaml")
         with open(outfile_dict, "w") as f:
-            if "path" in simulation.system:
-                del simulation.system["path"]
-            yaml.dump(simulation.system.readme, f, sort_keys=False, allow_unicode=True)
+            if "path" in simulation:
+                del simulation["path"]
+            yaml.dump(simulation.readme, f, sort_keys=False, allow_unicode=True)
 
     print("Found order parameter data for " + str(len(pairs_op)) + " pairs")
     print("Found form factor data for " + str(len(pairs_ff)) + " pairs")

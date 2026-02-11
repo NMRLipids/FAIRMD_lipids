@@ -12,6 +12,8 @@ import os
 import re
 from abc import ABC, abstractmethod
 from collections.abc import MutableSet
+from copy import copy
+from glob import glob
 from typing import Any
 
 import MDAnalysis as mda
@@ -67,13 +69,22 @@ class Molecule(ABC):
         :return: str path
         """
 
-    def register_mapping(self, fname: str) -> None:
+    def register_mapping(self, fname: str | None = None) -> None:
         """
         Register mapping dictionary for the Molecule object
 
-        :param fname: mapping filename (without path)
+        :param fname: mapping filename (without path) or None to auto-detect
         :return:
         """
+        # iterate over possible paths
+        if fname is None:
+            path = self._get_path()
+            _possible_mfiles = [os.path.basename(f) for f in glob(os.path.join(path, "mapping*.y*ml"))]
+            if len(_possible_mfiles) == 0:
+                msg = f"No mapping file found in {self._get_path()}"
+                raise MoleculeMappingError(msg, mol=self)
+            fname = _possible_mfiles[0]  # take the first one
+        # set mapping file path
         self._disp_mapping = fname
         self._mapping_fpath = os.path.join(self._get_path(), fname)
         if not os.path.isfile(self._mapping_fpath):
@@ -438,7 +449,7 @@ class MoleculeSet(MutableSet[Molecule], ABC):
 
     def get(self, key: str, default=None) -> Molecule | None:
         """
-        Get a molecule by its name.
+        Get a molecule by its name (copy-object).
 
         :param key: The name of the molecule to retrieve.
         :param default: The value to return if the molecule is not found.
@@ -446,7 +457,7 @@ class MoleculeSet(MutableSet[Molecule], ABC):
         if key.upper() in self._names:
             for item in self._items:
                 if item.name.upper() == key.upper():
-                    return item
+                    return copy(item)
         return default
 
     def __repr__(self) -> str:
@@ -511,16 +522,10 @@ class NonLipidSet(MoleculeSet):
 lipids_set: LipidSet = LipidSet.load_from_data()
 """ MutableSet of possible lipids """
 
-lipids_dict = lipids_set
-""" @deprecated: Use lipids_set instead. """
-
-molecules_set: NonLipidSet = NonLipidSet.load_from_data()
+solubles_set: NonLipidSet = NonLipidSet.load_from_data()
 """ Dictionary of other than lipid molecules. """
 
-molecules_dict = molecules_set
-""" @deprecated: Use molecules_set instead"""
-
-molecule_ff_set = {("FF" + x) for x in (lipids_set.names | molecules_set.names)}
+molecule_ff_set = {("FF" + x) for x in (lipids_set.names | solubles_set.names)}
 """
 Dictionary containing possible force-field labels for molecules given by the contributor
  (used for README/info fields validation)
