@@ -44,11 +44,6 @@ FMDL_MOL_PATH: str = os.path.join(FMDL_DATA_PATH, "Molecules")
 FMDL_EXP_PATH: str = os.path.join(FMDL_DATA_PATH, "experiments")
 """ Path to the project experiments folder """
 
-FMDL_MAICOS_NCORES: int | None = int(os.environ["FMDL_MAICOS_NCORES"]) if "FMDL_MAICOS_NCORES" in os.environ else None
-""" Number of cores for parallel MAICoS trajectory centering.
-None (default): use all cores if joblib is installed, else sequential.
-Set to 1 to force sequential processing. """
-
 try:
     import rdkit  # pyright: ignore[reportMissingImports] # noqa: F401
 
@@ -93,14 +88,9 @@ if os.path.isdir(FMDL_DATA_PATH):
     for p in [FMDL_DATA_PATH, FMDL_EXP_PATH, FMDL_MOL_PATH, FMDL_SIMU_PATH]:
         raise_if_subpath_of_dblspec(p)
 
-    try:
-        from fairmd.lipids import molecules
+    from fairmd.lipids import molecules
 
-        _ = len(molecules.lipids_set)
-    except Exception:
-        # avoiding circular imports and import-time failures
-        pass
-
+    _ = len(molecules.lipids_set)
     print(
         f"FAIRMD Lipids is initialized from the folder: {FMDL_DATA_PATH}\n"
         "---------------------------------------------------------------",
@@ -110,24 +100,21 @@ elif "fmdl_initialize_data" in sys.argv[0]:
     # so we should not complain that directories don't exist
     pass
 else:
-    # Avoid failing on import in docs / CI / test environments
-    if os.environ.get("READTHEDOCS") or os.environ.get("CI"):
-        pass
-    else:
-        msg = f"""
+    msg = f"""
 Error: no data folder {FMDL_DATA_PATH}.
 If Data folder was not created, please create it by using
  $ fmdl_initialize_data.py toy
           OR
  $ fmdl_initialize_data.py stable
 and then specify by FMDL_DATA_PATH environment variable."""
-        raise RuntimeError(msg)
+    raise RuntimeError(msg)
 
+# reexport progress to use globally instead of tqdm
+from fairmd.lipids._base import progress  # noqa: E402
 
 __all__ = [
     "FMDL_DATA_PATH",
     "FMDL_EXP_PATH",
-    "FMDL_MAICOS_NCORES",
     "FMDL_MOL_PATH",
     "FMDL_SIMU_PATH",
     "RCODE_COMPUTED",
