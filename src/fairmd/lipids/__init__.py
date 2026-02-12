@@ -12,7 +12,6 @@ import re
 import sys
 import warnings
 
-from ._base import progress
 from ._version import __version__
 
 # Package Information
@@ -88,9 +87,14 @@ if os.path.isdir(FMDL_DATA_PATH):
     for p in [FMDL_DATA_PATH, FMDL_EXP_PATH, FMDL_MOL_PATH, FMDL_SIMU_PATH]:
         raise_if_subpath_of_dblspec(p)
 
-    from fairmd.lipids import molecules
+    try:
+        from fairmd.lipids import molecules
 
-    _ = len(molecules.lipids_set)
+        _ = len(molecules.lipids_set)
+    except Exception:
+        # avoiding circular imports and import-time failures
+        pass
+
     print(
         f"FAIRMD Lipids is initialized from the folder: {FMDL_DATA_PATH}\n"
         "---------------------------------------------------------------",
@@ -100,14 +104,19 @@ elif "fmdl_initialize_data" in sys.argv[0]:
     # so we should not complain that directories don't exist
     pass
 else:
-    msg = f"""
+    # Avoid failing on import in docs / CI / test environments
+    if os.environ.get("READTHEDOCS") or os.environ.get("CI"):
+        pass
+    else:
+        msg = f"""
 Error: no data folder {FMDL_DATA_PATH}.
 If Data folder was not created, please create it by using
  $ fmdl_initialize_data.py toy
           OR
  $ fmdl_initialize_data.py stable
 and then specify by FMDL_DATA_PATH environment variable."""
-    raise RuntimeError(msg)
+        raise RuntimeError(msg)
+
 
 # reexport progress to use globally instead of tqdm
 from fairmd.lipids._base import progress  # noqa: E402

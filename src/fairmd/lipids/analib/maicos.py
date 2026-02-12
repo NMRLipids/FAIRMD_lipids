@@ -23,8 +23,8 @@ from maicos.core import ProfilePlanarBase
 from maicos.lib.math import center_cluster
 from maicos.lib.util import get_compound
 from maicos.lib.weights import density_weights
+from tqdm import tqdm
 
-from fairmd.lipids import progress
 from fairmd.lipids.auxiliary.jsonEncoders import CompactJSONEncoder
 from fairmd.lipids.core import System
 from fairmd.lipids.molecules import lipids_set
@@ -268,11 +268,82 @@ def traj_centering_for_maicos_mda(
         with contextlib.suppress(FileNotFoundError):
             os.remove(xtccentered)
 
-    with mda.Writer(xtccentered, universe.atoms.n_atoms) as W:
-        for ts in progress(
-            universe.trajectory[eq_frame:],
-            desc="Centering trajectory (MDAnalysis)",
-        ):
+    # Get trajectory info
+    topo_path = universe.filename
+    traj_path = universe.trajectory.filename
+    dt = universe.trajectory.dt
+    n_frames = universe.trajectory.n_frames
+    eq_frame = int(eq_time / dt) if dt > 0 else 0
+
+    if logger:
+        logger.info(f"Sequential trajectory centering: {n_frames - eq_frame} frames")
+
+    # Use the chunk helper for the entire frame range
+    _center_trajectory_chunk(
+        topo_path,
+        traj_path,
+        last_atom,
+        eq_frame,
+        n_frames,
+        xtccentered,
+    )
+
+    return xtccentered
+
+
+def _center_trajectory_chunk(
+    topo_path: str,
+    traj_path: str,
+    last_atom: str,
+    start_frame: int,
+    stop_frame: int,
+    temp_output: str,
+    chunk_id: int = 0,
+    total_chunks: int = 1,
+    tqdm_position: int | None = None,
+) -> tuple[str, int, int]:
+    """
+    Process a single trajectory chunk for parallel centering.
+
+    Worker function that must re-instantiate Universe for process safety.
+    Uses the same centering logic as traj_centering_for_maicos_mda.
+
+    Args:
+        topo_path: Path to topology file (GRO, PDB, etc.).
+        traj_path: Path to trajectory file (XTC, etc.).
+        last_atom: Atom name for centering reference.
+        start_frame: Starting frame index (inclusive).
+        stop_frame: Stopping frame index (exclusive).
+        temp_output: Path for temporary output file.
+        chunk_id: Identifier for this chunk (0-indexed).
+        total_chunks: Total number of chunks being processed.
+        tqdm_position: Position for tqdm progress bar (enables per-worker progress).
+
+    Returns:
+        Tuple of (output_path, chunk_id, total_chunks) for logging by caller.
+    """
+    u = mda.Universe(topo_path, traj_path)
+
+    refgroup = u.select_atoms(f"name {last_atom}")
+    ref_weights = refgroup.masses
+    wrap_compound = get_compound(u.atoms)
+
+    n_frames = stop_frame - start_frame
+
+    with mda.Writer(temp_output, u.atoms.n_atoms) as W:
+        # Use tqdm if position is provided for per-worker progress
+        frame_iter = u.trajectory[start_frame:stop_frame]
+        if tqdm_position is not None:
+            frame_iter = tqdm(
+                frame_iter,
+                total=n_frames,
+                desc=f"Worker {chunk_id + 1}/{total_chunks}",
+                position=tqdm_position,
+                leave=False,
+                ncols=80,
+            )
+
+        for ts in frame_iter:
             # unwrap
             u.atoms.unwrap(compound=wrap_compound)
 
