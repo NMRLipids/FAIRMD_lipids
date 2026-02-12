@@ -12,7 +12,6 @@ import re
 import sys
 import warnings
 
-from ._base import progress
 from ._version import __version__
 
 # Package Information
@@ -114,6 +113,8 @@ If Data folder was not created, please create it by using
 and then specify by FMDL_DATA_PATH environment variable."""
     raise RuntimeError(msg)
 
+# reexport progress to use globally instead of tqdm
+from fairmd.lipids._base import progress  # noqa: E402
 
 __all__ = [
     "FMDL_DATA_PATH",

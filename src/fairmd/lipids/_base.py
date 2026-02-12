@@ -3,8 +3,8 @@
 import sys
 import typing
 from abc import ABC, abstractmethod
-from collections.abc import MutableSet
-from typing import Any, Generic, Iterable, Optional, TypeVar
+from collections.abc import Iterable, MutableSet
+from typing import Any, Generic, TypeVar
 
 from tqdm import tqdm
 
@@ -14,13 +14,13 @@ from fairmd.lipids.molecules import Lipid, Molecule, NonLipid, lipids_set, solub
 def progress(
     iterable: Iterable,
     *,
-    desc: Optional[str] = None,
-    total: Optional[int] = None,
+    desc: str | None = None,
+    total: int | None = None,
     disable: bool = False,
     **kwargs,
 ):
     """
-    Wrapper around tqdm with FAIRMD defaults.
+    Wrap around tqdm with FAIRMD defaults.
 
     - Always writes to stdout
     - Progress is shown by default (including CI)
