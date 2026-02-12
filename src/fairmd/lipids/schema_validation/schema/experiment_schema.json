@@ -92,17 +92,11 @@
     },
     "required": [
         "ARTICLE_DOI", 
-        "DATA_DOI", 
-        "DATA_REF", 
         "TEMPERATURE", 
         "MEMBRANE_COMPOSITION", 
-        "SOLUTION_COMPOSITION", 
-        "ADDITIONAL_MOLECULES", 
         "TOTAL_HYDRATION", 
         "PH", 
-        "PH_METHOD", 
-        "REAGENT_SOURCES", 
-        "SAMPLE_PROTOCOL"
+        "PH_METHOD"
     ],
     "oneOf": [
         {"required": ["NMR"]},
