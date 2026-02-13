@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.auxiliary.jsonEncoders module &mdash; FAIRMD Lipids v1.3.5.dev114+g0c0cce81d 1.3.5.dev114+g0c0cce81d documentation</title>
+  <title>fairmd.lipids.auxiliary.jsonEncoders module &mdash; FAIRMD Lipids v1.3.5.dev115+g054fb115a 1.3.5.dev115+g054fb115a documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=8f0a8cba"></script>
+      <script src="../_static/documentation_options.js?v=f5982b8c"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev114+g0c0cce81d
+            FAIRMD Lipids v1.3.5.dev115+g054fb115a
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.5.dev114+g0c0cce81d</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.5.dev115+g054fb115a</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -83,11 +83,18 @@
              
   <section id="module-fairmd.lipids.auxiliary.jsonEncoders">
 <span id="fairmd-lipids-auxiliary-jsonencoders-module"></span><h1>fairmd.lipids.auxiliary.jsonEncoders module<a class="headerlink" href="#module-fairmd.lipids.auxiliary.jsonEncoders" title="Link to this heading"></a></h1>
+<p>Compact JSON encoder class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">meta<span class="colon">:</span></dt>
+<dd class="field-odd"><p>private</p>
+</dd>
+</dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="fairmd.lipids.auxiliary.jsonEncoders.CompactJSONEncoder">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.auxiliary.jsonEncoders.</span></span><span class="sig-name descname"><span class="pre">CompactJSONEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/auxiliary/jsonEncoders.html#CompactJSONEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.auxiliary.jsonEncoders.CompactJSONEncoder" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONEncoder</span></code></p>
 <p>A JSON Encoder that puts small containers on single lines.</p>
+<p>Originally taken from <a class="reference external" href="https://gist.github.com/jannismain/e96666ca4f059c3e5bc28abb711b5c92">the GiST of &#64;jannismain</a>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="fairmd.lipids.auxiliary.jsonEncoders.CompactJSONEncoder.CONTAINER_TYPES">
 <span class="sig-name descname"><span class="pre">CONTAINER_TYPES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(&lt;class</span> <span class="pre">'list'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'tuple'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'dict'&gt;)</span></span><a class="headerlink" href="#fairmd.lipids.auxiliary.jsonEncoders.CompactJSONEncoder.CONTAINER_TYPES" title="Link to this definition"></a></dt>

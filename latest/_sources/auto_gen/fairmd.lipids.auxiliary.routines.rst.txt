@@ -1,0 +1,7 @@
+fairmd.lipids.auxiliary.routines module
+=======================================
+
+.. automodule:: fairmd.lipids.auxiliary.routines
+   :members:
+   :show-inheritance:
+   :undoc-members:
