@@ -6,16 +6,16 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adding experimental data &mdash; FAIRMD Lipids v1.3.4 1.3.4 documentation</title>
+  <title>Adding experimental data &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=e358f374"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.4
+            FAIRMD Lipids v1.4.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -69,7 +69,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.4</a>
+          <a href="../index.html">FAIRMD Lipids v1.4.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -96,12 +96,12 @@ The keys of these dictionaries are summarized in the <a class="reference interna
 <ol class="arabic">
 <li><p>Create and fill the <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> file of your data.</p></li>
 <li><p>Copy this README file data into a appropriate directory named as described above.</p></li>
-<li><p>If you have order parameter data, create a file named <code class="docutils literal notranslate"><span class="pre">{lipidname}_Order_Parameters.dat</span></code>
+<li><p>If you have order parameter data, create a file named <code class="docutils literal notranslate"><span class="pre">{lipidname}_OrderParameters.json</span></code>
 where <code class="docutils literal notranslate"><span class="pre">{lipidname}</span></code> is the universal name of the lipid from which the data is measured
 from. The first two columns of this file should define the atom pair with universal
 atom names, third column has the experimental order parameter value, and fourth
 column has the experimental error. If the experimental error is not known, set it to 0.02.
-Store the created <code class="docutils literal notranslate"><span class="pre">{lipidname}_Order_Parameters.dat</span></code> file into the appropriate folder
+Store the created <code class="docutils literal notranslate"><span class="pre">{lipidname}_OrderParameters.json</span></code> file into the appropriate folder
 with the <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> file. Create <code class="docutils literal notranslate"><span class="pre">json</span></code> version from <code class="docutils literal notranslate"><span class="pre">dat</span></code> file by running</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>data_to_json.py<span class="w"> </span>path-to-dat.dat
 </pre></div>

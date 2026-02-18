@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fairmd.lipids.schema_validation.validate_yaml module &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="fairmd.lipids.analyze module" href="fairmd.lipids.analyze.html" />
+    <link rel="prev" title="fairmd.lipids.schema_validation.validate_info_dict module" href="fairmd.lipids.schema_validation.validate_info_dict.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.4.0
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FAIRMD Lipids v1.4.0</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../Overview.html">Project structure</a></li>
+          <li class="breadcrumb-item"><a href="fairmd.lipids.html">fairmd.lipids</a></li>
+          <li class="breadcrumb-item"><a href="fairmd.lipids.schema_validation.html">fairmd.lipids.schema_validation</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.schema_validation.validate_yaml module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_gen/fairmd.lipids.schema_validation.validate_yaml.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-fairmd.lipids.schema_validation.validate_yaml">
+<span id="fairmd-lipids-schema-validation-validate-yaml-module"></span><h1>fairmd.lipids.schema_validation.validate_yaml module<a class="headerlink" href="#module-fairmd.lipids.schema_validation.validate_yaml" title="Link to this heading"></a></h1>
+<p>Tools for validating YAML files against predefined JSON Schemas.</p>
+<p>This module can be run either as a module or as a script.</p>
+<section id="module-usage">
+<h2>Module usage:<a class="headerlink" href="#module-usage" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>fairmd.lipids.schema_validation.validate_yaml<span class="w"> </span>--schema<span class="w"> </span>readme<span class="w"> </span>README.yaml
+</pre></div>
+</div>
+</section>
+<section id="script-usage">
+<h2>Script usage:<a class="headerlink" href="#script-usage" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Validate a README.yaml file</span>
+python<span class="w"> </span>validate_yaml.py<span class="w"> </span>--schema<span class="w"> </span>readme<span class="w"> </span>README.yaml
+python<span class="w"> </span>validate_yaml.py<span class="w"> </span>--schema<span class="w"> </span>info<span class="w"> </span>info.yml
+<span class="c1"># Multiple files can be validated at once</span>
+python<span class="w"> </span>validate_yaml.py<span class="w"> </span>README.yaml<span class="w"> </span>other/README.yaml
+</pre></div>
+</div>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.schema_validation.validate_yaml.validate_info_dict">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.schema_validation.validate_yaml.</span></span><span class="sig-name descname"><span class="pre">validate_info_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/home/runner/work/FAIRMD_lipids/FAIRMD_lipids/.tox/docs/lib/python3.13/site-packages/fairmd/lipids/schema_validation/schema/info_yml_schema.json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/schema_validation/validate_yaml.html#validate_info_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.schema_validation.validate_yaml.validate_info_dict" title="Link to this definition"></a></dt>
+<dd><p>Validate an info dict against a schema dict.
+Returns a list of jsonschema.ValidationError objects which is empty with valid.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.schema_validation.validate_yaml.validate_info_file">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.schema_validation.validate_yaml.</span></span><span class="sig-name descname"><span class="pre">validate_info_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/home/runner/work/FAIRMD_lipids/FAIRMD_lipids/.tox/docs/lib/python3.13/site-packages/fairmd/lipids/schema_validation/schema/info_yml_schema.json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/schema_validation/validate_yaml.html#validate_info_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.schema_validation.validate_yaml.validate_info_file" title="Link to this definition"></a></dt>
+<dd><p>Validate an info file (YML/YAML) on disk against a JSON schema file.
+Returns a list of ValidationError objects (empty if valid).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.schema_validation.validate_yaml.validate_readme_dict">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.schema_validation.validate_yaml.</span></span><span class="sig-name descname"><span class="pre">validate_readme_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/home/runner/work/FAIRMD_lipids/FAIRMD_lipids/.tox/docs/lib/python3.13/site-packages/fairmd/lipids/schema_validation/schema/readme_yaml_schema.json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/schema_validation/validate_yaml.html#validate_readme_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.schema_validation.validate_yaml.validate_readme_dict" title="Link to this definition"></a></dt>
+<dd><p>Validate a README.yaml dict against the README JSON schema.</p>
+<p>Returns a list of jsonschema.ValidationError objects (empty if valid).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.schema_validation.validate_yaml.validate_readme_file">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.schema_validation.validate_yaml.</span></span><span class="sig-name descname"><span class="pre">validate_readme_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">readme_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/home/runner/work/FAIRMD_lipids/FAIRMD_lipids/.tox/docs/lib/python3.13/site-packages/fairmd/lipids/schema_validation/schema/readme_yaml_schema.json'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/schema_validation/validate_yaml.html#validate_readme_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.schema_validation.validate_yaml.validate_readme_file" title="Link to this definition"></a></dt>
+<dd><p>Validate a README.yaml file on disk against the README JSON schema.</p>
+<p>Returns a list of ValidationError objects (empty if valid).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.schema_validation.validate_yaml.run_file">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.schema_validation.validate_yaml.</span></span><span class="sig-name descname"><span class="pre">run_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'info'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'readme'</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/schema_validation/validate_yaml.html#run_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.schema_validation.validate_yaml.run_file" title="Link to this definition"></a></dt>
+<dd><p>Validate a single YAML file against the selected schema.</p>
+<p>On success, logs “OK: &lt;path&gt;” and returns normally.
+On failure, logs detailed schema errors and raises an exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If the file does not exist or is not a regular file.</p></li>
+<li><p><strong>RuntimeError</strong> – If the file was successfully read but failed schema validation.</p></li>
+<li><p><strong>ValueError</strong> – If the YAML does not contain a non-empty mapping (invalid structure).</p></li>
+<li><p><strong>OSError</strong><strong>, </strong><strong>yaml.YAMLError</strong><strong>, </strong><strong>json.JSONDecodeError</strong><strong>, </strong><strong>SchemaError</strong> – For I/O errors, invalid YAML, invalid JSON schema, or other runtime failures.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.schema_validation.validate_yaml.main">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.schema_validation.validate_yaml.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/schema_validation/validate_yaml.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.schema_validation.validate_yaml.main" title="Link to this definition"></a></dt>
+<dd><p>Command-line entry point for YAML schema validation.</p>
+<p>Validates one or more YAML files against either the FAIRMD
+info.yml schema or the README.yaml schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Process exit code:
+0 = all files valid
+1 = at least one file failed schema validation
+2 = at least one file was missing or not a regular file
+3 = at least one file could not be read, parsed, or validated due to YAML, JSON, or runtime errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="fairmd.lipids.schema_validation.validate_info_dict.html" class="btn btn-neutral float-left" title="fairmd.lipids.schema_validation.validate_info_dict module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fairmd.lipids.analyze.html" class="btn btn-neutral float-right" title="fairmd.lipids.analyze module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

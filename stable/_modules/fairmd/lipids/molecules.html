@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.molecules &mdash; FAIRMD Lipids v1.3.4 1.3.4 documentation</title>
+  <title>fairmd.lipids.molecules &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=e358f374"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.4
+            FAIRMD Lipids v1.4.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.3.4</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.4.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -90,12 +90,14 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">MutableSet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">glob</span><span class="w"> </span><span class="kn">import</span> <span class="n">glob</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_MOL_PATH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">_HAS_RDKIT</span><span class="p">,</span> <span class="n">FMDL_MOL_PATH</span>
 
 
 <div class="viewcode-block" id="MoleculeError">
@@ -155,13 +157,22 @@
 
 <div class="viewcode-block" id="Molecule.register_mapping">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.molecules.html#fairmd.lipids.molecules.Molecule.register_mapping">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">register_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register mapping dictionary for the Molecule object</span>
 
-<span class="sd">        :param fname: mapping filename (without path)</span>
+<span class="sd">        :param fname: mapping filename (without path) or None to auto-detect</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># iterate over possible paths</span>
+        <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path</span><span class="p">()</span>
+            <span class="n">_possible_mfiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;mapping*.y*ml&quot;</span><span class="p">))]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_possible_mfiles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No mapping file found in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="n">MoleculeMappingError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">_possible_mfiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># take the first one</span>
+        <span class="c1"># set mapping file path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disp_mapping</span> <span class="o">=</span> <span class="n">fname</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path</span><span class="p">(),</span> <span class="n">fname</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">):</span>
@@ -197,9 +208,16 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mapping_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return mapping dictionary (load on first call)&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Mapping file is not registered!&quot;</span>
+            <span class="k">raise</span> <span class="n">MoleculeError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span>  <span class="c1"># yaml.load(yaml_file, Loader=yaml.FullLoader)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span>  <span class="c1"># yaml.load(yaml_file, Loader=yaml.FullLoader)</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Error opening mapping-file!&quot;</span>
+                <span class="k">raise</span> <span class="n">MoleculeError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span>
 
 <div class="viewcode-block" id="Molecule.md2uan">
@@ -358,7 +376,89 @@
 <span class="sd">        :type name: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_meta_data</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_meta_data</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Lipid.smi2uan">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.molecules.html#fairmd.lipids.molecules.Lipid.smi2uan">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">smi2uan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smile_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert SMILEIDX to universal atomname&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">smile_id</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;ID&lt;0: out of range&quot;</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">max_smid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">universal_name</span><span class="p">,</span> <span class="n">mrecord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">smi</span> <span class="o">=</span> <span class="n">mrecord</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SMILEIDX&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">smi</span> <span class="o">==</span> <span class="n">smile_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">universal_name</span>
+            <span class="n">max_smid</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_smid</span><span class="p">,</span> <span class="n">smi</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">smile_id</span> <span class="o">&gt;</span> <span class="n">max_smid</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ID&gt;</span><span class="si">{</span><span class="n">max_smid</span><span class="si">}</span><span class="s2">: out of range&quot;</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">emsg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Atom with SMILEIDX </span><span class="si">{</span><span class="n">smile_id</span><span class="si">}</span><span class="s2"> is not found.&quot;</span>
+        <span class="k">raise</span> <span class="n">MoleculeMappingError</span><span class="p">(</span><span class="n">emsg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rdkit_object</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;rdkit.Chem.Mol&quot;</span><span class="p">:</span>  <span class="c1"># noqa: F821</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return RDKit molecule object for the lipid.</span>
+
+<span class="sd">        :return: RDKit molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_HAS_RDKIT</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;RDKit is required for RDKit molecule object. Please install the &#39;rdkit&#39; extra.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rdkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chem</span>  <span class="c1"># noqa: PLC0415</span>
+
+        <span class="k">if</span> <span class="s2">&quot;smiles&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bioschema_properties&quot;</span><span class="p">,</span> <span class="p">{}):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;SMILES is obligatory in `bioschema_properties-&gt;smiles` &quot;</span>
+                <span class="s2">&quot;to request SMARTS and use cheminformatic integration.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">MoleculeError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">_smiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;bioschema_properties&quot;</span><span class="p">][</span><span class="s2">&quot;smiles&quot;</span><span class="p">]</span>
+        <span class="n">rdkit_mol</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">_smiles</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rdkit_mol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Invalid SMILES for molecule </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">_smiles</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="n">MoleculeError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rdkit_mol</span>
+
+<div class="viewcode-block" id="Lipid.atoms_by">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.molecules.html#fairmd.lipids.molecules.Lipid.atoms_by">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">atoms_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return list of universal atom names matching the SMARTS query|id.</span>
+
+<span class="sd">        :param query: SMARTS pattern</span>
+<span class="sd">        :type query: str</span>
+<span class="sd">        :param id: Position inside SMARTS pattern</span>
+<span class="sd">        :type id: int</span>
+<span class="sd">        :return: list of universal atom names matching the query</span>
+<span class="sd">        :rtype: list[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">list_unames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rdkit_mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rdkit_object</span>  <span class="c1"># import check happens here</span>
+
+        <span class="kn">from</span><span class="w"> </span><span class="nn">rdkit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Chem</span>  <span class="c1"># noqa: PLC0415</span>
+
+        <span class="n">patt</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">patt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;SMART syntax error (see above)&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">id</span> <span class="o">&gt;</span> <span class="n">patt</span><span class="o">.</span><span class="n">GetNumHeavyAtoms</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SMARTS &#39;</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#39; has </span><span class="si">{</span><span class="n">patt</span><span class="o">.</span><span class="n">GetNumHeavyAtoms</span><span class="p">()</span><span class="si">}</span><span class="s2"> heavy atoms. </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2"> out of range.&quot;</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">rdkit_mol</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">patt</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+            <span class="n">atom_idx</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span>
+            <span class="c1"># USE FURHTER: rdk_atom = rdkit_mol.GetAtomWithIdx(atom_idx)</span>
+            <span class="n">list_unames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smi2uan</span><span class="p">(</span><span class="n">atom_idx</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">list_unames</span></div>
+</div>
 
 
 
@@ -470,7 +570,7 @@
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.molecules.html#fairmd.lipids.molecules.MoleculeSet.get">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Molecule</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a molecule by its name.</span>
+<span class="sd">        Get a molecule by its name (copy-object).</span>
 
 <span class="sd">        :param key: The name of the molecule to retrieve.</span>
 <span class="sd">        :param default: The value to return if the molecule is not found.</span>
@@ -478,7 +578,7 @@
         <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_names</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
-                    <span class="k">return</span> <span class="n">item</span>
+                    <span class="k">return</span> <span class="n">copy</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">default</span></div>
 
 
@@ -557,16 +657,10 @@
 <span class="n">lipids_set</span><span class="p">:</span> <span class="n">LipidSet</span> <span class="o">=</span> <span class="n">LipidSet</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">()</span>
 <span class="sd">&quot;&quot;&quot; MutableSet of possible lipids &quot;&quot;&quot;</span>
 
-<span class="n">lipids_dict</span> <span class="o">=</span> <span class="n">lipids_set</span>
-<span class="sd">&quot;&quot;&quot; @deprecated: Use lipids_set instead. &quot;&quot;&quot;</span>
-
-<span class="n">molecules_set</span><span class="p">:</span> <span class="n">NonLipidSet</span> <span class="o">=</span> <span class="n">NonLipidSet</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">()</span>
+<span class="n">solubles_set</span><span class="p">:</span> <span class="n">NonLipidSet</span> <span class="o">=</span> <span class="n">NonLipidSet</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">()</span>
 <span class="sd">&quot;&quot;&quot; Dictionary of other than lipid molecules. &quot;&quot;&quot;</span>
 
-<span class="n">molecules_dict</span> <span class="o">=</span> <span class="n">molecules_set</span>
-<span class="sd">&quot;&quot;&quot; @deprecated: Use molecules_set instead&quot;&quot;&quot;</span>
-
-<span class="n">molecule_ff_set</span> <span class="o">=</span> <span class="p">{(</span><span class="s2">&quot;FF&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">lipids_set</span><span class="o">.</span><span class="n">names</span> <span class="o">|</span> <span class="n">molecules_set</span><span class="o">.</span><span class="n">names</span><span class="p">)}</span>
+<span class="n">molecule_ff_set</span> <span class="o">=</span> <span class="p">{(</span><span class="s2">&quot;FF&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">lipids_set</span><span class="o">.</span><span class="n">names</span> <span class="o">|</span> <span class="n">solubles_set</span><span class="o">.</span><span class="n">names</span><span class="p">)}</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Dictionary containing possible force-field labels for molecules given by the contributor</span>
 <span class="sd"> (used for README/info fields validation)</span>

@@ -1,0 +1,7 @@
+fairmd.lipids.auxiliary.opconvertor module
+==========================================
+
+.. automodule:: fairmd.lipids.auxiliary.opconvertor
+   :members:
+   :show-inheritance:
+   :undoc-members:

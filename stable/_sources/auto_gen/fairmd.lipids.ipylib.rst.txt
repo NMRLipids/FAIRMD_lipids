@@ -8,7 +8,6 @@ Python files
 .. toctree::
    :maxdepth: 1
 
-   fairmd.lipids.ipylib.jpyroutines
    fairmd.lipids.ipylib.plottings
 
 Module contents

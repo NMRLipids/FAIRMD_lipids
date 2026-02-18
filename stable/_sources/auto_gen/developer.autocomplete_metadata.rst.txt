@@ -1,0 +1,7 @@
+developer.autocomplete\_metadata module
+=======================================
+
+.. automodule:: developer.autocomplete_metadata
+   :members:
+   :show-inheritance:
+   :undoc-members:

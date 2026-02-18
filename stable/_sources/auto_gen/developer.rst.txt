@@ -10,8 +10,8 @@ Python files
 .. toctree::
    :maxdepth: 1
 
-   developer.AutocompleteMetadata
-   developer.ProcessInfoFile
-   developer.RunAnalysis
-   developer.ValidateData
    developer.align_mapping
+   developer.autocomplete_metadata
+   developer.process_info_file
+   developer.run_global_analysis
+   developer.validate_data

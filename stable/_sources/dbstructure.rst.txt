@@ -47,11 +47,11 @@ It is connected into the FAIRMD Lipids repository as a submodule into :file:`./D
    └── Molecules/
        ├── membrane/
        │   └── lipid1/
-       │       ├── lipid1-forcefield2-mapping.yaml
+       │       ├── mapping-lipid1-forcefield2.yaml
        │       └── metadata.yaml
        └── solution/
            └── ion1/
-               ├── ion1-forcefield3-mapping.yaml
+               ├── mapping-ion1-forcefield3.yaml
                └── metadata.yaml
 
 .. _dbstructure_simu:
@@ -95,23 +95,25 @@ Simulation computed properties
    particular simulation to sample the ensemble for each lipid molecule. |br|
    See :py:func:`fairmd.lipids.analyze.computeNMRPCA` for computing details.
 
+
+.. _simulation-quality-files:
 Simulation quality files
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. :file:`POPC_OrderParameters_quality.json` contains a dictionary with the quality of
-   each C-H bond against experiments if available. First key is the DOI for the source
-   of experimental data. Second key gives C-H pair univeral atom names. Third key gives
-   values for simulation order parameter, its stardard deviation, standard error of the
-   mean, experimental order parameter, its error, and finally the quality of the order
-   parameter. Quality is the probability for the agreement between simulated and
+1. :file:`XXXX_OrderParameters_quality.json` contains a dictionary with the quality of
+   each C-H bond against experiments, if available, for molecule XXXX. First key is the
+   DOI for the source of experimental data. Second key gives C-H pair univeral atom names.
+   Third key gives values for simulation order parameter, its stardard deviation, standard
+   error of the mean, experimental order parameter, its error, and finally the quality of
+   the order parameter. Quality is the probability for the agreement between simulated and
    experimental values taking into account the error bars.
 
    For more details, see the `FAIRMD Lipids manuscript
    <https://doi.org/10.1038/s41467-024-45189-z>`_.
 
-2. :file:`POPC_FragmentQuality.json` contains fragment qualities determined separately
-   for each lipid in the simulation with experimental data available using Eq. (4) in
-   the `FAIRMD Lipids manuscript <https://doi.org/10.1038/s41467-024-45189-z>`_.
+2. :file:`XXXX_FragmentQuality.json` contains fragment qualities determined separately
+   for each lipid XXXX in the simulation with experimental data available using Eq. (4)
+   in the `FAIRMD Lipids manuscript <https://doi.org/10.1038/s41467-024-45189-z>`_.
 
 3. :file:`SYSTEM_quality.json` contains total qualities averaged over different lipids
    for different membrane parts calculated from Eq. (5) in the `FAIRMD Lipids manuscript
@@ -122,6 +124,12 @@ Simulation quality files
    <https://doi.org/10.1038/s41467-024-45189-z>`_. Second term is the scaling
    coefficient for experimental intensities (Eq. (6) in the `FAIRMD Lipids manuscript
    <https://doi.org/10.1038/s41467-024-45189-z>`_).
+
+.. toctree::
+   :maxdepth: 1
+
+   ../quality.rst
+
 
 .. _dbstructure_exp:
 
@@ -176,12 +184,33 @@ is described in :ref:`molmetadata_schema`.
 
 Mapping files
 ~~~~~~~~~~~~~
-Describe connection between universal atom names and simulation specific atom names.
+They are YAML-type files named as ``mapping-YOURMOL-usecase.yaml``.
+Each mapping file describes connection between universal atom names and simulation specific atom names.
 These enable automatic analyses over simulations with different naming conventions. For
-more information, see :ref:`molecule_names`
+more information, see :ref:`molecule_names`.
 
 Other files
 -----------
+
+.. _ranking_files:
+
+Ranking files
+~~~~~~~~~~~~~~~~~
+Contain tables where major conditions and quality scores are stored for each simulation in CSV format. These files are stored at ``Ranking`` subfolder of :py:data:`fairmd.lipids.FMDL_DATA_PATH` folder. We store:
+
+1. Form-factor ranking files named as ``FF_ranking.csv``.
+2. Order paparmeter ranking files named as ``OP_ranking.csv``.
+3. Individual lipid ranking files named as ``<lipid>_ranking.csv``.
+
+The difference between 2. and 3. is that 2. contains average quality scores over all lipids in the simulation, while 3. contains quality scores for only selected lipid.
+
+.. _uadic_files:
+
+Lipid united-atom dictionary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Contains information about guessing implicit hydrogens for united-atom force fields. See :ref:`NMRlipids/buildh <https://github.com/NMRlipids/buildh>`_ for more details.
+
+TODO: write the block
 
 .. _info_files:
 
@@ -196,8 +225,3 @@ stored historically in ``info_files`` subfolder of
 
 For more information see :ref:`readmesimu` and :ref:`addSimulation`.
 
-.. _uadic_files:
-
-Lipid united-atom dictionary
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-TODO: write the block

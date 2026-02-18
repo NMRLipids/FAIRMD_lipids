@@ -27,7 +27,7 @@ you should make it clear).
       └── Molecules/
           └── membrane/
               └── YOURMOL/
-                  ├── yourmol-forcefield2-mapping.yaml
+                  ├── mapping-yourmol-forcefield2.yaml
                   └── metadata.yaml
 
 Metadata file creation
@@ -67,7 +67,9 @@ add the residue name to ``RESIDUE`` key of each atom in the mapping file. In thi
 give the name of the head group residue in the ``COMPOSITION`` dictionary in
 :ref:`the README.yaml file <readmesimu>`.
 
-The mapping file should contain all the atoms of the molecules.
+The mapping file should contain all the atoms of the molecules and should be named ``mapping-YOURMOL-usecase.yaml``.
+Very often, the usecase is the force field name, however, if the naming convention is the same between
+different force fields, you can use more general naming.
 
 Specific cases:
 - TODO: mapping for UA

@@ -8,8 +8,10 @@ Python files
 .. toctree::
    :maxdepth: 1
 
-   fairmd.lipids.auxiliary.elements
    fairmd.lipids.auxiliary.jsonEncoders
+   fairmd.lipids.auxiliary.mollib
+   fairmd.lipids.auxiliary.opconvertor
+   fairmd.lipids.auxiliary.routines
 
 Module contents
 ---------------

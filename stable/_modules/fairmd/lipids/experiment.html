@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fairmd.lipids.experiment &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            FAIRMD Lipids v1.4.0
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gettingstarted.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbprograms.html">fairmd-lipids CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Overview.html">Project structure</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbstructure.html">Data Organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dbcontribute.html">Data Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">FAIRMD Lipids v1.4.0</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">fairmd.lipids.experiment</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for fairmd.lipids.experiment</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module for handling experimental data entries in the databank.</span>
+
+<span class="sd">This module defines classes to represent different types of experimental datasets,</span>
+<span class="sd">they inherit from a common abstract base class :class:`Experiment` which implements</span>
+<span class="sd">internal ``SampleComposition`` class for retrieving sample  composition information.</span>
+
+<span class="sd">Two concrete experiment types are implemented: :class:`OPExperiment` for ssNMR order parameter data</span>
+<span class="sd">and :class:`FFExperiment` for form factor data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_EXP_PATH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids._base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CollectionSingleton</span><span class="p">,</span> <span class="n">SampleComposition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lipid</span><span class="p">,</span> <span class="n">NonLipid</span>
+
+
+<div class="viewcode-block" id="ExperimentError">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.ExperimentError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExperimentError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Experiment-related exception&quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="Experiment">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.Experiment">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Experiment</span><span class="p">(</span><span class="n">SampleComposition</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class representing an experimental dataset in the databank.</span>
+
+<span class="sd">    Implements important methods from :class:`SampleComposition`: :meth:`get_hydration`,</span>
+<span class="sd">    :meth:`membrane_composition`, and :meth:`solution_composition`. Additionally, defines</span>
+<span class="sd">    abstract properties for accessing experiment data (:attr:`data`) and metadata.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_exp_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">_metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Experiment object.</span>
+
+<span class="sd">        :param exp_id: The unique identifier for the experiment.</span>
+<span class="sd">        :param path: The absolute path to the experiment&#39;s directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exp_id</span> <span class="o">=</span> <span class="n">exp_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_populate_meta_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_content</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_populate_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Populate metadata from the README.yaml file.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">meta_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;README.yaml&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">meta_path</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">meta_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
+            <span class="c1"># remove None entries</span>
+            <span class="n">_keys_to_check</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_keys_to_check</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Metadata file (README.yaml) not found for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exp_id</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Access the experiment&#39;s metadata.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_populate_meta_data</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(id=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_id</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">exp_id</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_id</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">readme</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provides access to the experiment&#39;s metadata (for backward compatibility).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exp_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The unique identifier of the experiment.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exp_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The absolute path to the experiment&#39;s directory.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide access to the experiment&#39;s data.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Experiment.verify_data">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.Experiment.verify_data">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify the integrity and consistency of the experiment&#39;s data.&quot;&quot;&quot;</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exptype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The type of the experiment.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Experiment.target_folder">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.Experiment.target_folder">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target_folder</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get target folder name for the experiment type.&quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;This method should be implemented in subclasses.&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Implementation of SampleComposition interface</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_content</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">null_concentration_threshold</span> <span class="o">=</span> <span class="mf">1e-7</span>  <span class="c1"># 0.1 uM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_content</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;MOLAR_FRACTIONS&quot;</span><span class="p">]:</span>
+            <span class="n">lip</span> <span class="o">=</span> <span class="n">Lipid</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">lip</span><span class="o">.</span><span class="n">register_mapping</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_content</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">lip</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ION_CONCENTRATIONS&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">null_concentration_threshold</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_content</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">NonLipid</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;COUNTER_IONS&quot;</span><span class="p">,</span> <span class="p">{}):</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_content</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">NonLipid</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Experiment.get_hydration">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.Experiment.get_hydration">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_hydration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basis</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">,</span> <span class="s2">&quot;mass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;number&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;mass&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;TOTAL_HYDRATION&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;number&quot;</span><span class="p">:</span>
+            <span class="n">tlc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;TOTAL_LIPID_CONCENTRATION&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">tlc</span> <span class="o">==</span> <span class="s2">&quot;full hydration&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">70</span>
+            <span class="k">return</span> <span class="mf">55.5</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">tlc</span><span class="p">)</span>  <span class="c1"># water per lipid from outdated field</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Basis must be &#39;molar&#39; or &#39;mass&#39;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Experiment.membrane_composition">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.Experiment.membrane_composition">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">membrane_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basis</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;molar&quot;</span><span class="p">,</span> <span class="s2">&quot;mass&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;molar&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;molar&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;MOLAR_FRACTIONS&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;mass&quot;</span><span class="p">:</span>
+            <span class="n">comp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">total_mass</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;MOLAR_FRACTIONS&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">mol</span><span class="p">:</span> <span class="n">Lipid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="n">mw</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;bioschema_properties&quot;</span><span class="p">][</span><span class="s2">&quot;molecularWeight&quot;</span><span class="p">])</span>
+                <span class="n">comp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">*</span> <span class="n">mw</span>
+                <span class="n">total_mass</span> <span class="o">+=</span> <span class="n">comp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">comp</span><span class="p">:</span>
+                <span class="n">comp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/=</span> <span class="n">total_mass</span>
+            <span class="k">return</span> <span class="n">comp</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Basis must be &#39;molar&#39; or &#39;mass&#39;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Experiment.solution_composition">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.Experiment.solution_composition">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solution_composition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="s2">&quot;molar&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;molar&quot;</span><span class="p">:</span>
+            <span class="n">concs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">_tlc</span> <span class="o">=</span> <span class="mf">55.5</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_hydration</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ION_CONCENTRATIONS&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">solubles</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">concs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;COUNTER_IONS&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">concs</span><span class="p">:</span>
+                    <span class="n">concs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="n">concs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_tlc</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">membrane_composition</span><span class="p">(</span><span class="s2">&quot;molar&quot;</span><span class="p">)[</span><span class="n">v</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">concs</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="o">==</span> <span class="s2">&quot;mass&quot;</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Mass basis for solution composition is not implemented yet&quot;</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Basis must be &#39;molar&#39; or &#39;mass&#39; (not implemented yet)&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="OPExperiment">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.OPExperiment">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OPExperiment</span><span class="p">(</span><span class="n">Experiment</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents an ssNMR order parameter experiment.</span>
+
+<span class="sd">    :attr:`data` provides access to a dictionary where keys are lipid names and values are dictionaries</span>
+<span class="sd">    mapping atom unique names to their order parameters.</span>
+
+<span class="sd">    :meth:`verify_data` checks that all atom unique names in the data correspond to known atoms in the lipid mapping.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_OrderParameters.json&quot;</span><span class="p">):</span>
+                    <span class="n">molecule_name</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_OrderParameters.json&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">molecule_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lipids</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Data for non-existing molecule </span><span class="si">{</span><span class="n">molecule_name</span><span class="si">}</span><span class="s2"> in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">!&quot;</span>
+                        <span class="k">raise</span> <span class="n">ExperimentError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                        <span class="n">_tmpdic</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">molecule_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_tmpdic</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No order parameter data files found for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="k">raise</span> <span class="n">ExperimentError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+<div class="viewcode-block" id="OPExperiment.verify_data">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.OPExperiment.verify_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ln</span><span class="p">,</span> <span class="n">opdic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">lipid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lipids</span><span class="p">[</span><span class="n">ln</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">uname_pair</span> <span class="ow">in</span> <span class="n">opdic</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">uname_pair</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lipid</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="s2">&quot;Order parameter data contains unknown atom &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">uname_pair</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; for lipid &#39;</span><span class="si">{</span><span class="n">ln</span><span class="si">}</span><span class="s2">&#39; in experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">ExperimentError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exptype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;OrderParameters&quot;</span>
+
+<div class="viewcode-block" id="OPExperiment.target_folder">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.OPExperiment.target_folder">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target_folder</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;OrderParameters&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FFExperiment">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.FFExperiment">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FFExperiment</span><span class="p">(</span><span class="n">Experiment</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represent a SAXS form-factor experiment.</span>
+
+<span class="sd">    :attr:`data` provides access to a table with the first column is Q(A-1),</span>
+<span class="sd">    second is the intensity, and third is error.</span>
+
+<span class="sd">    :meth:`verify_data` is not currently implemented for FF.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_FormFactor.json&quot;</span><span class="p">):</span>
+                    <span class="n">fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+                    <span class="k">break</span>  <span class="c1"># Assuming one form factor file per experiment</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;No form factor data file found for experiment &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_id</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+                <span class="k">raise</span> <span class="n">ExperimentError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+<div class="viewcode-block" id="FFExperiment.verify_data">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.FFExperiment.verify_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">exptype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;FormFactors&quot;</span>
+
+<div class="viewcode-block" id="FFExperiment.target_folder">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.FFExperiment.target_folder">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">target_folder</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;FormFactors&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ExperimentCollection">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.ExperimentCollection">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExperimentCollection</span><span class="p">(</span><span class="n">CollectionSingleton</span><span class="p">[</span><span class="n">Experiment</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A collection of experiments.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test_item_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Experiment</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_item_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Experiment</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">exp_id</span>
+
+<div class="viewcode-block" id="ExperimentCollection.load_from_data">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.experiment.html#fairmd.lipids.experiment.ExperimentCollection.load_from_data">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_from_data</span><span class="p">(</span><span class="n">exp_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;OPExperiment&quot;</span><span class="p">,</span> <span class="s2">&quot;FFExperiment&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;OPExperiment&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExperimentCollection&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load experiment data from the designated directory.&quot;&quot;&quot;</span>
+        <span class="n">exp_types</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;OPExperiment&quot;</span><span class="p">:</span> <span class="n">OPExperiment</span><span class="p">,</span>
+            <span class="s2">&quot;FFExperiment&quot;</span><span class="p">:</span> <span class="n">FFExperiment</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">exp_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exp_types</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">collection</span> <span class="o">=</span> <span class="n">ExperimentCollection</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">exp_cls</span> <span class="ow">in</span> <span class="p">[</span><span class="n">exp_types</span><span class="p">[</span><span class="n">exp_type</span><span class="p">]]:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_EXP_PATH</span><span class="p">,</span> <span class="n">exp_cls</span><span class="o">.</span><span class="n">target_folder</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">subdir</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s2">&quot;README.yaml&quot;</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                    <span class="c1"># exp_id is the directory name relative to the exp_type directory</span>
+                    <span class="n">exp_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">subdir</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">exp</span> <span class="o">=</span> <span class="n">exp_cls</span><span class="p">(</span><span class="n">exp_id</span><span class="p">,</span> <span class="n">subdir</span><span class="p">)</span>
+                        <span class="n">collection</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                        <span class="c1"># Log this error?</span>
+                        <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">collection</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, NMRlipids Open Collaboration &lt;databank@nmrlipids.fi&gt;
+    OSI Approved: GNU General Public License v3 (GPLv3)
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version
+   .
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids/blob/main/LICENSE.txt"
+            target="_blank"
+            rel="noopener">
+            Link to GNU GPL v3 License
+            </a>
+        </p>
+        <p>
+            <a href="https://github.com/NMRLipids/FAIRMD_lipids"
+            target="_blank"
+            rel="noopener">
+            Link to the GitHub repository
+            </a>
+        </p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

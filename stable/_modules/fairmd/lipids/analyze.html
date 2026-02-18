@@ -5,16 +5,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analyze &mdash; FAIRMD Lipids v1.3.4 1.3.4 documentation</title>
+  <title>fairmd.lipids.analyze &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=e358f374"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.4
+            FAIRMD Lipids v1.4.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.3.4</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.4.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -95,13 +95,13 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">buildh</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">maicos.core.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalysisCollection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">FMDL_DATA_PATH</span><span class="p">,</span>
+    <span class="n">FMDL_MAICOS_NCORES</span><span class="p">,</span>
     <span class="n">FMDL_SIMU_PATH</span><span class="p">,</span>
     <span class="n">RCODE_COMPUTED</span><span class="p">,</span>
     <span class="n">RCODE_ERROR</span><span class="p">,</span>
@@ -116,11 +116,12 @@
     <span class="n">FormFactorPlanar</span><span class="p">,</span>
     <span class="n">first_last_carbon</span><span class="p">,</span>
     <span class="n">is_system_suitable_4_maicos</span><span class="p">,</span>
-    <span class="n">traj_centering_for_maicos</span><span class="p">,</span>
+    <span class="n">traj_centering_for_maicos_gromacs</span><span class="p">,</span>
+    <span class="n">traj_centering_for_maicos_mda</span><span class="p">,</span>
+    <span class="n">traj_centering_for_maicos_mda_parallel</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">UniverseConstructor</span><span class="p">,</span> <span class="n">mda_gen_selection_mols</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary</span><span class="w"> </span><span class="kn">import</span> <span class="n">elements</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary.jsonEncoders</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompactJSONEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompactJSONEncoder</span><span class="p">,</span> <span class="n">mollib</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span>
 
@@ -147,36 +148,22 @@
     <span class="c1"># TODO: 2test|    parser = Parser(FMDL_SIMU_PATH, readme, eq_time_fname, testTraj)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">parser</span> <span class="o">=</span> <span class="n">nmrpca</span><span class="o">.</span><span class="n">Parser</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="s2">&quot;eq_times.json&quot;</span><span class="p">)</span>
-        <span class="c1"># Check trajectory</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
-        <span class="n">vpcode</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">validate_path</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ValidatePath code: &quot;</span><span class="p">,</span> <span class="n">vpcode</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error initializing NMRPCA parser.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">RCODE_ERROR</span>
 
-    <span class="k">if</span> <span class="n">vpcode</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Some errors in analyze_nmrpca.py::Parser constructor.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">RCODE_ERROR</span>
-
     <span class="k">if</span> <span class="p">(</span>
-        <span class="p">(</span><span class="n">vpcode</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="s2">&quot;eq_times.json&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">recompute</span><span class="p">)</span>
         <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;WARNINGS&quot;</span> <span class="ow">in</span> <span class="n">system</span> <span class="ow">and</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;AMBIGUOUS_ATOMNAMES&quot;</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">])</span>
         <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;WARNINGS&quot;</span> <span class="ow">in</span> <span class="n">system</span> <span class="ow">and</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;SKIP_EQTIMES&quot;</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;WARNINGS&quot;</span><span class="p">])</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="n">RCODE_SKIPPED</span>
 
-    <span class="c1"># Check if TPR is defined and non-null or &quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">__</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TPR&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">_</span> <span class="o">=</span> <span class="n">__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;TPR is required for NMRPCA analysis (</span><span class="si">%d</span><span class="s2">})!&quot;</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">RCODE_ERROR</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># TODO: REPLACE WTIH UNIVERSE_CONSTRUCTOR</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">download_traj</span><span class="p">()</span>
+        <span class="c1"># Download md data</span>
+        <span class="n">uc</span> <span class="o">=</span> <span class="n">UniverseConstructor</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+        <span class="n">uc</span><span class="o">.</span><span class="n">download_mddata</span><span class="p">()</span>
         <span class="c1"># Prepare trajectory</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">prepare_traj</span><span class="p">()</span>
         <span class="c1"># Concatenate trajectory</span>
@@ -354,7 +341,11 @@
     <span class="c1"># calculating order parameters</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Analyzing: &quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
     <span class="n">uc</span> <span class="o">=</span> <span class="n">UniverseConstructor</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
-    <span class="n">uc</span><span class="o">.</span><span class="n">download_mddata</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">uc</span><span class="o">.</span><span class="n">download_mddata</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Problem with downloading system </span><span class="si">%s</span><span class="s2"> from </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">],</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;DOI&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">RCODE_ERROR</span>
 
     <span class="c1"># Software and time for equilibration period</span>
     <span class="n">software</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">]</span>
@@ -679,7 +670,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">uc</span><span class="o">.</span><span class="n">download_mddata</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem with downloading system </span><span class="si">{</span><span class="n">system</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;DOI&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem with downloading system </span><span class="si">{</span><span class="n">system</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;DOI&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">RCODE_ERROR</span>
 
     <span class="k">if</span> <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -699,22 +690,57 @@
         <span class="n">last_atom</span><span class="p">,</span> <span class="n">g3_atom</span> <span class="o">=</span> <span class="n">first_last_carbon</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
 
         <span class="c1"># Center around one lipid tail CH3 to guarantee all lipids in the same box</span>
-        <span class="k">if</span> <span class="s2">&quot;gromacs&quot;</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># xtccentered</span>
-            <span class="n">xtccentered</span> <span class="o">=</span> <span class="n">traj_centering_for_maicos</span><span class="p">(</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">build_universe</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s2">&quot;gromacs&quot;</span> <span class="ow">in</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">]:</span>
+            <span class="n">traj_centered</span> <span class="o">=</span> <span class="n">traj_centering_for_maicos_gromacs</span><span class="p">(</span>
                 <span class="n">spath</span><span class="p">,</span>
-                <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;traj&quot;</span><span class="p">],</span>
-                <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span>
-                <span class="n">last_atom</span><span class="p">,</span>
-                <span class="n">g3_atom</span><span class="p">,</span>
-                <span class="n">eq_time</span><span class="p">,</span>
+                <span class="n">tpr_name</span><span class="o">=</span><span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span>
+                <span class="n">trj_name</span><span class="o">=</span><span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;traj&quot;</span><span class="p">],</span>
+                <span class="n">last_atom</span><span class="o">=</span><span class="n">last_atom</span><span class="p">,</span>
+                <span class="n">g3_atom</span><span class="o">=</span><span class="n">g3_atom</span><span class="p">,</span>
+                <span class="n">eq_time</span><span class="o">=</span><span class="n">eq_time</span><span class="p">,</span>
                 <span class="n">recompute</span><span class="o">=</span><span class="n">recompute</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span> <span class="n">xtccentered</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Centering for other than Gromacs is currently not implemented.&quot;</span><span class="p">)</span>
-            <span class="c1"># it may not work w/o TPR if there are jumps over periodic boundary conditions in z-direction.</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">build_universe</span><span class="p">()</span>
+            <span class="c1"># Use parallel centering by default (None = use all cores, or specific number &gt; 1)</span>
+            <span class="c1"># Only use sequential if explicitly set to 1</span>
+            <span class="k">if</span> <span class="n">FMDL_MAICOS_NCORES</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">FMDL_MAICOS_NCORES</span> <span class="k">if</span> <span class="n">FMDL_MAICOS_NCORES</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using parallel trajectory centering (n_jobs=</span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                    <span class="n">traj_centered</span> <span class="o">=</span> <span class="n">traj_centering_for_maicos_mda_parallel</span><span class="p">(</span>
+                        <span class="n">u</span><span class="p">,</span>
+                        <span class="n">spath</span><span class="p">,</span>
+                        <span class="n">last_atom</span><span class="p">,</span>
+                        <span class="n">eq_time</span><span class="p">,</span>
+                        <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+                        <span class="n">recompute</span><span class="o">=</span><span class="n">recompute</span><span class="p">,</span>
+                        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+                        <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;joblib not available, falling back to sequential centering&quot;</span><span class="p">)</span>
+                    <span class="n">traj_centered</span> <span class="o">=</span> <span class="n">traj_centering_for_maicos_mda</span><span class="p">(</span>
+                        <span class="n">u</span><span class="p">,</span>
+                        <span class="n">spath</span><span class="p">,</span>
+                        <span class="n">last_atom</span><span class="p">,</span>
+                        <span class="n">eq_time</span><span class="p">,</span>
+                        <span class="n">recompute</span><span class="o">=</span><span class="n">recompute</span><span class="p">,</span>
+                        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+                    <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using sequential trajectory centering (FMDL_MAICOS_NCORES=1)&quot;</span><span class="p">)</span>
+                <span class="n">traj_centered</span> <span class="o">=</span> <span class="n">traj_centering_for_maicos_mda</span><span class="p">(</span>
+                    <span class="n">u</span><span class="p">,</span>
+                    <span class="n">spath</span><span class="p">,</span>
+                    <span class="n">last_atom</span><span class="p">,</span>
+                    <span class="n">eq_time</span><span class="p">,</span>
+                    <span class="n">recompute</span><span class="o">=</span><span class="n">recompute</span><span class="p">,</span>
+                    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="c1"># replace trajectory in universe with centered one</span>
+        <span class="n">u</span><span class="o">.</span><span class="n">load_new</span><span class="p">(</span><span class="n">traj_centered</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;XTC&quot;</span><span class="p">)</span>
 
         <span class="c1"># -- PHILIP code starts here --</span>
         <span class="c1"># We us a hardoced bin width</span>
@@ -723,7 +749,7 @@
         <span class="c1"># introduce elements attribute (if it&#39;s empty)</span>
         <span class="c1"># and make initial guess (just in case)</span>
         <span class="n">u</span><span class="o">.</span><span class="n">guess_TopologyAttrs</span><span class="p">(</span><span class="n">force_guess</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;elements&quot;</span><span class="p">])</span>
-        <span class="n">elements</span><span class="o">.</span><span class="n">guess_elements</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+        <span class="n">mollib</span><span class="o">.</span><span class="n">guess_elements</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
 
         <span class="c1"># Adjust the group selection to be general for analysis</span>
         <span class="n">water</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;resname </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;COMPOSITION&#39;</span><span class="p">][</span><span class="s1">&#39;SOL&#39;</span><span class="p">][</span><span class="s1">&#39;NAME&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

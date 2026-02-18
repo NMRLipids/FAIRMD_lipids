@@ -6,21 +6,21 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Molecule metadata schema &mdash; FAIRMD Lipids v1.3.4 1.3.4 documentation</title>
+  <title>Molecule metadata schema &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=e358f374"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Data Contribution" href="../dbcontribute.html" />
-    <link rel="prev" title="Data Organization" href="../dbstructure.html" /> 
+    <link rel="prev" title="Simulation quality" href="../quality.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.4
+            FAIRMD Lipids v1.4.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -73,7 +73,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.4</a>
+          <a href="../index.html">FAIRMD Lipids v1.4.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -96,75 +96,13 @@
 <span id="molmetadata-schema"></span><h1>Molecule metadata schema<a class="headerlink" href="#molecule-metadata-schema" title="Link to this heading"></a></h1>
 <p>Molecular metadata is described in the template <code class="file docutils literal notranslate"><span class="pre">SchemaValidation/Schema/metadata_template.yaml</span></code>
 which is distributed with the package.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">##################################################################################</span>
-<span class="c1">## Mandatory fields for the metadata template.</span>
-<span class="c1"># This template is used to describe the metadata of a molecule metadata.yaml file</span>
-<span class="c1"># in a standardized way.</span>
-<span class="c1">##################################################################################</span>
-<span class="nt">NMRlipids</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">charge</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span><span class="w"> </span><span class="c1"># The charge of the molecule, e.g. 0 for neutral, -1 for anionic, +1 for cationic</span>
-
-<span class="c1"># Chemical identifiers for the molecule serving as a unique identifier</span>
-<span class="w">  </span><span class="c1"># The identifier.org prefix is used to look up the identifier in the </span>
-<span class="w">  </span><span class="c1"># identifiers.org database.</span>
-<span class="w">  </span><span class="c1"># The value is the unique identifier for the molecule in that database</span>
-<span class="w">  </span><span class="c1"># For example, pubchem.compound: 5497103 means that the molecule can be </span>
-<span class="w">  </span><span class="c1"># found at https://identifiers.org/pubchem.compound/5497103</span>
-<span class="w">  </span><span class="c1"># The identifiers are used to link the molecule to other databases and resources</span>
-<span class="w">  </span><span class="c1"># All identifier fields are optional, but at least one should be provided.</span>
-<span class="nt">sameAs</span><span class="p">:</span>
-<span class="w">  </span><span class="c1">#key names must correspond to the identifier.org prefix</span>
-<span class="w">  </span><span class="c1"># test lookup at https://identifiers.org/[prefix]/[value]</span>
-<span class="w">  </span><span class="nt">pubchem.compound</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
-<span class="w">  </span><span class="nt">ChEBI</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">lipidmaps</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">metabolights</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">slm</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">pdb.ligand</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">unii</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">cas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-
-<span class="c1"># Bioschema properties for the molecule</span>
-<span class="c1"># These properties are used to describe the molecule in a standardized way</span>
-<span class="c1"># and are used by the Bioschemas community to improve discoverability</span>
-<span class="c1"># and interoperability of molecular data.</span>
-<span class="c1"># The properties are based on the Bioschemas Molecule schema</span>
-<span class="c1"># https://bioschemas.org/profiles/MolecularEntity/0.5-RELEASE</span>
-<span class="nt">bioschema_properties</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="c1"># This is the IUPAC name, which is a systematic way to name chemical compounds</span>
-<span class="w">  </span><span class="nt">iupacName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">molecularFormula</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">molecularWeight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span>
-<span class="w">  </span><span class="c1"># InChI is a standard way to represent chemical substances</span>
-<span class="w">  </span><span class="c1"># It is a text string that encodes the molecular structure</span>
-<span class="w">  </span><span class="c1"># InChIKey is a hashed version of the InChI, used for easier searching</span>
-<span class="w">  </span><span class="c1"># Both are used to uniquely identify chemical substances</span>
-<span class="w">  </span><span class="c1"># In case that multiple protonation states exist, multiple InChis and </span>
-<span class="w">  </span><span class="c1"># InChIKeys may be provided</span>
-<span class="w">  </span><span class="nt">inChI</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">inChIKey</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">smiles</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="c1"># Either a url or a file path to the 2D or 3D structure of the molecule</span>
-<span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-<span class="w">  </span><span class="nt">alternateName</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
-
-<span class="c1"># Additonal properties for the molecule, not covered by bioschema_properties</span>
-<span class="nt">properties</span><span class="p">:</span>
-<span class="w">     </span>
-</pre></div>
-</div>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../dbstructure.html" class="btn btn-neutral float-left" title="Data Organization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../quality.html" class="btn btn-neutral float-left" title="Simulation quality" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../dbcontribute.html" class="btn btn-neutral float-right" title="Data Contribution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
