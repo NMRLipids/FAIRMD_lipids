@@ -11,7 +11,10 @@ NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
 from contextlib import contextmanager
 import os
 import shutil
+import json
 
+import numpy as np
+import numpy.testing as npt
 import pytest
 import pytest_check as check
 
@@ -215,3 +218,56 @@ def test_get_tails():
     check.equal(len(tails), 4)
     check.is_in("sn-1 1", tails)
     check.is_in("sn-2 1", tails)
+
+
+def test_json_encoder(tmpdir):
+    """Fixture for a mock experiment path with no data files."""
+    from fairmd.lipids.auxiliary import CompactJSONEncoder
+
+    exp_dir = tmpdir.mkdir("jsonenc")
+
+    data = {
+        "compact_object": {"first": "element", "second": 2},
+        "compact_list": ["first", "second"],
+        "long_list": [
+            "this",
+            "is",
+            "a",
+            "rather",
+            "long\nlist",
+            "and should be broken up because of its width",
+        ],
+        "non_ascii": "汉语",
+        1: 2,
+    }
+    with open(exp_dir.join("test.yaml"), "w", encoding="utf-8") as fd:
+        json.dump(data, fd, cls=CompactJSONEncoder, ensure_ascii=False)
+
+
+def test_average_block():
+    from fairmd.lipids.auxiliary import block_average_time_series
+
+    # times 0..9, values = times
+    t = np.arange(10, dtype=float)
+    x = t.copy()
+    arr = np.column_stack((t, x))
+
+    out = block_average_time_series(arr, blocksize=2.0)
+    # expected bins: [0,2), [2,4), [4,6), [6,8), [8,10]
+    expected_times = np.array([1, 3, 5, 7, 9], dtype=float)
+    expected_vals = np.array(
+        [
+            (0 + 1) / 2,
+            (2 + 3) / 2,
+            (4 + 5) / 2,
+            (6 + 7) / 2,
+            (8 + 9) / 2,
+        ],
+        dtype=float,
+    )
+
+    npt.assert_allclose(out[:, 0], expected_times)
+    npt.assert_allclose(out[:, 1], expected_vals)
+
+    arr = arr[:-1, :]
+    out = block_average_time_series(arr, blocksize=2.0)
