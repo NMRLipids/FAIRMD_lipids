@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analib.analyze_nmrpca &mdash; FAIRMD Lipids v1.3.5.dev115+g054fb115a 1.3.5.dev115+g054fb115a documentation</title>
+  <title>fairmd.lipids.analib.analyze_nmrpca &mdash; FAIRMD Lipids v1.3.5.dev116+g204618417 1.3.5.dev116+g204618417 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=f5982b8c"></script>
+      <script src="../../../../_static/documentation_options.js?v=867f9217"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev115+g054fb115a
+            FAIRMD Lipids v1.3.5.dev116+g204618417
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev115+g054fb115a</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.3.5.dev116+g204618417</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -118,56 +118,25 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">MDAnalysis</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mda</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">deprecated</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">MDAnalysis.analysis.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalysisFromFunction</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_SIMU_PATH</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">lipids_set</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary.mollib</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_tails_of_lipid</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.databankio</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_resource_from_uri</span><span class="p">,</span> <span class="n">resolve_file_url</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lipid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.schema_validation.engines</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_struc_top_traj_fnames</span>
 
 <span class="c1"># suppress some MDAnalysis warnings issued from mda.analysis.align</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">MDAnalysis.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">align</span>  <span class="c1"># noqa: E402</span>
-
-<span class="c1"># TODO: now there are only regular phospholipids.</span>
-<span class="c1"># The list should be verified by method authors.</span>
-<span class="n">ALLOWLIPIDS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;POPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;POPG&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;POPS&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;POPE&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PYPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DMPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DPPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DPPE&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DPPG&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DEPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DRPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DYPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DLPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DLIPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DOPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DOPE&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DDOPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DOPS&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DSPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DAPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SDPE&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SOPC&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;POPI&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SAPI&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SAPI24&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SAPI25&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SLPI&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 
 <span class="n">merge_cutoff</span> <span class="o">=</span> <span class="mf">2.0</span>
 <span class="n">trj_size_cutoff</span> <span class="o">=</span> <span class="p">(</span>
@@ -175,27 +144,23 @@
     <span class="k">if</span> <span class="s2">&quot;MEM_CUTOFF&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span>
     <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;MEM_CUTOFF&quot;</span><span class="p">])</span>
 <span class="p">)</span>
-
-<span class="n">TAILSN1</span> <span class="o">=</span> <span class="s2">&quot;sn-1&quot;</span>
-<span class="n">TAILSN2</span> <span class="o">=</span> <span class="s2">&quot;sn-2&quot;</span>
-<span class="n">HEADGRP</span> <span class="o">=</span> <span class="s2">&quot;headgroup&quot;</span>
-
-<span class="c1"># In case you want to test for a specific coordinate change the flag to yes</span>
-<span class="n">TEST</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">_NMRPCA_TEST</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">SUPPORTED_TAILSETS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;sn-1&quot;</span><span class="p">,</span> <span class="s2">&quot;sn-2&quot;</span><span class="p">},</span>  <span class="c1"># two-tailed glycerolipids</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="Parser">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Parser">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Parser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class Parser is a basic class to work with the trajectory. It has basic utility</span>
-<span class="sd">    for preparing trajectories:</span>
+<span class="sd">    A basic class to work with the trajectory.</span>
 
-<span class="sd">    1. Checking if simulation has a correct name</span>
-<span class="sd">    2. Checking if trajectory is downloaded. Downloading, if not.</span>
-<span class="sd">    3. Calling AmberMerger to merge head groups and tails for Amber</span>
+<span class="sd">    It has basic utility for preparing trajectories:</span>
+
+<span class="sd">    1. Calling AmberMerger to merge head groups and tails for Amber</span>
 <span class="sd">       trajectories</span>
-<span class="sd">    4. Concatenate trajectories</span>
+<span class="sd">    2. Concatenate trajectories</span>
 
 <span class="sd">    :param system: simulation data</span>
 <span class="sd">    :param eq_time_fname: name of the output file</span>
@@ -203,10 +168,8 @@
 <span class="sd">    :param v: verbosity for testing</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span> <span class="n">eq_time_fname</span><span class="o">=</span><span class="s2">&quot;eq_times.json&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="c1"># Technical</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">v</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span> <span class="n">eq_time_fname</span><span class="o">=</span><span class="s2">&quot;eq_times.json&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
 
         <span class="c1"># Path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">FMDL_SIMU_PATH</span>
@@ -219,22 +182,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parser: Processing trajectory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">doi</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;DOI&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">soft</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;SOFTWARE&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">soft</span> <span class="o">==</span> <span class="s2">&quot;openMM&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">soft</span> <span class="o">==</span> <span class="s2">&quot;NAMD&quot;</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">trj</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TRJ&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">tpr</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;PDB&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parser: Did not find trajectory or pdb for openMM or NAMD&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">trj</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TRJ&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">tpr</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TPR&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parser: Did not find trajectory or tpr for GROMACS&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">trj</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">tpr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tpr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trj</span> <span class="o">=</span> <span class="n">get_struc_top_traj_fnames</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">allow_structure</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trj</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tpr_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tpr</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trj_len</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TRJLENGTH&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1000</span>  <span class="c1"># ns</span>
@@ -245,67 +193,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lipids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Lipid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">lipids_set</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
 
-<div class="viewcode-block" id="Parser.validate_path">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Parser.validate_path">[docs]</a>
-    <span class="nd">@deprecated</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Downloading should happen somewhere else.Not in the analysis classes.&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_gmx_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Path validation. Behaviour depends on the input.</span>
+<span class="sd">        Prepare GROMACS trajectory.</span>
 
-<span class="sd">        1. If ther were any errors, validation fails. Currently the only</span>
-<span class="sd">           error tested is that .xtc and .tpr files are not present. This</span>
-<span class="sd">           is the case for non-GROMACS trajectories.</span>
-<span class="sd">        2. If path is not provided, parser is iterating over all trajectories.</span>
-<span class="sd">        3. If path is provided and current path is equal to the provided one,</span>
-<span class="sd">           parser reports that it finds the trajectory for the analysis.</span>
-
-<span class="sd">        TODO: must be removed. Substitute path-validation part.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># This is an error message. Printing even in silent mode</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parser: Can&#39;t read TPR/PDB and TRJ from README for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Parser: Iterating over all trajectories. Current trajectory is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="c1"># return</span>
-        <span class="c1"># if self.path == self.indexingPath:</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eq_time_fname</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parser: Found file with equilibration data. </span><span class="se">\n</span><span class="s2">Not processing the trajectory&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parser: Found trajectory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="mi">0</span></div>
-
-
-<div class="viewcode-block" id="Parser.download_traj">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Parser.download_traj">[docs]</a>
-    <span class="nd">@deprecated</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Downloading should happen somewhere else.Not in the analysis classes.&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">download_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        TODO: must be removed. We don&#39;t download trajectory in the analysis part</span>
-
-<span class="sd">        Basic trajectory and TPR download.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Downloading&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tpr_name</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tpr_url</span> <span class="o">=</span> <span class="n">resolve_file_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tpr</span><span class="p">)</span>
-            <span class="c1"># This is a log message. Printing even in silent mode</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parser: Downloading tpr &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">)</span>
-            <span class="n">download_resource_from_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tpr_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tpr_name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trj_url</span> <span class="o">=</span> <span class="n">resolve_file_url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trj</span><span class="p">)</span>
-            <span class="c1"># This is a log message. Printing even in silent mode</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parser: Downloading trj &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">doi</span><span class="p">)</span>
-            <span class="n">download_resource_from_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trj_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Parser.prepare_gmx_traj">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Parser.prepare_gmx_traj">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_gmx_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Preparing trajectory. If centered trajectory is found, use it. If whole</span>
+<span class="sd">        If centered trajectory is found, use it. If whole</span>
 <span class="sd">        trajectory is found, use it. Otherwise, call gmx trjconv to make whole</span>
 <span class="sd">        trajectory. The selected trajectory is loaded into Universe.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -328,8 +220,6 @@
 
         <span class="c1"># Skip frames for large trajectories</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">trj_size_cutoff</span><span class="p">:</span>
-            <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-
             <span class="n">_skip</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">1.1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">trj_size_cutoff</span><span class="p">)</span>
             <span class="n">trj_out_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="s2">&quot;short.xtc&quot;</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span>
@@ -347,21 +237,15 @@
                 <span class="sa">f</span><span class="s2">&quot;echo System | gmx trjconv -s </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tpr_name</span><span class="si">}</span><span class="s2">  -f </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span><span class="si">}</span><span class="s2"> -dump 0 -o </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gro_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="c1"># Loading trajectory</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tpr_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gro_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span><span class="p">)</span></div>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gro_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span><span class="p">)</span>
 
     <span class="c1"># TODO: not tested!!</span>
-<div class="viewcode-block" id="Parser.prepare_OpenMM_traj">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Parser.prepare_OpenMM_traj">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_OpenMM_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># noqa: N802</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_OpenMM_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># noqa: N802</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;openMM or NAMD&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">trj_size_cutoff</span><span class="p">:</span>
-            <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-
             <span class="n">_skip</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">1.1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">trj_size_cutoff</span><span class="p">)</span>
             <span class="n">trj_out_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="s2">&quot;short.xtc&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">trj_out_name</span><span class="p">):</span>
@@ -375,29 +259,37 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span> <span class="o">=</span> <span class="n">trj_out_name</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tpr_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span><span class="p">)</span></div>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tpr_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trj_name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Parser.prepare_traj">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Parser.prepare_traj">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepare_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">soft</span> <span class="o">==</span> <span class="s2">&quot;openMM&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">soft</span> <span class="o">==</span> <span class="s2">&quot;NAMD&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prepare_OpenMM_traj</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_OpenMM_traj</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prepare_gmx_traj</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_gmx_traj</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Parser.verify_lipid">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Parser.verify_lipid">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">verify_lipid</span><span class="p">(</span><span class="n">lipid</span><span class="p">:</span> <span class="n">Lipid</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify that the lipid is supported by the method.&quot;&quot;&quot;</span>
+        <span class="n">tails</span> <span class="o">=</span> <span class="n">get_tails_of_lipid</span><span class="p">(</span><span class="n">lipid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tails</span> <span class="ow">in</span> <span class="n">SUPPORTED_TAILSETS</span></div>
 
 
 <div class="viewcode-block" id="Parser.concatenate_traj">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Parser.concatenate_traj">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">concatenate_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create Concatenator and corresponding concatenated trajectories for</span>
-<span class="sd">        all lipids available for the trajectory.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">concatenate_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Concatenator and corresponding concatenated trajectories.</span>
+
+<span class="sd">        Done for all lipids available in the trajectory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">concatenated_trajs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">lipid_name</span><span class="p">,</span> <span class="n">lipid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lipids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">lipid_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWLIPIDS</span><span class="p">:</span>
-                <span class="c1"># We do not treat cholesterols</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">Parser</span><span class="o">.</span><span class="n">verify_lipid</span><span class="p">(</span><span class="n">lipid</span><span class="p">):</span>
+                <span class="c1"># We do treat only lipids with sn-1 and sn-2 tails</span>
                 <span class="k">continue</span>
             <span class="n">topology</span> <span class="o">=</span> <span class="n">Topology</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="p">,</span>
@@ -422,9 +314,10 @@
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Topology">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Topology</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class Topology is a class needed to extract lipid specific data and also to</span>
-<span class="sd">    merge lipids from Amber trajectories, where lipid is often represented as 3</span>
-<span class="sd">    residue types. It has the following methods:</span>
+<span class="sd">    Extract lipid specific data and also to merge lipids if they are more than 1 residue.</span>
+
+<span class="sd">    In Amber FF naming convention, lipid is often represented as several residue types.</span>
+<span class="sd">    The clases has the following methods:</span>
 
 <span class="sd">    1. Simple constructor, which sets the force field,residue names, trajectory,</span>
 <span class="sd">       and loads mapping_file</span>
@@ -440,6 +333,10 @@
 <span class="sd">    :param mapping_dict: preloaded mapping_dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">HEADGRP</span> <span class="o">=</span> <span class="s2">&quot;headgroup&quot;</span>  <span class="c1"># locally used to gather amber lipids together</span>
+    <span class="n">TAILSN1</span> <span class="o">=</span> <span class="s2">&quot;sn-1&quot;</span>  <span class="c1"># NOTE: Removing this hardcoding is planned in issue #464</span>
+    <span class="n">TAILSN2</span> <span class="o">=</span> <span class="s2">&quot;sn-2&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">,</span> <span class="n">lipid_resname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mapping_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lipid_resname</span> <span class="o">=</span> <span class="n">lipid_resname</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traj</span> <span class="o">=</span> <span class="n">traj</span>
@@ -447,10 +344,8 @@
 
 <div class="viewcode-block" id="Topology.atom_names">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Topology.atom_names">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">atom_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extract all names of heavy atoms from the mapping</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">atom_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract all names of heavy atoms from the mapping.&quot;&quot;&quot;</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">:</span>
             <span class="n">atom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
@@ -462,33 +357,27 @@
 
 <div class="viewcode-block" id="Topology.is_merge_needed">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Topology.is_merge_needed">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">is_merge_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Checker for merge. Currently it checks if the RESIDUE key is in the</span>
-<span class="sd">        mapping file.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_merge_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if lipid needs to be merged. Empty set means no merge needed.</span>
 
-<span class="sd">        NOTE: This has to be changed if the content of mapping file changes</span>
+<span class="sd">        Currently it checks if the RESIDUE key is in the mapping file.</span>
+<span class="sd">        NOTE: This has to be changed if the content of mapping file changes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;RESIDUE&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s2">&quot;RESIDUE&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="o">.</span><span class="n">values</span><span class="p">())):</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
         <span class="n">resnames</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">:</span>
             <span class="n">atom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
             <span class="n">anames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_names</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">anames</span><span class="p">:</span>
                 <span class="n">resnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">])</span>
-        <span class="n">resnames</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">resnames</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Topology.get_lipid_resnames">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Topology.get_lipid_resnames">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_lipid_resnames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper function that gets the residue names for lipid, if merge is needed</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the residue names for lipid, if merge is needed&quot;&quot;&quot;</span>
         <span class="n">resnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_merge_needed</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_merge_needed</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">resnames</span>
@@ -501,8 +390,7 @@
 <div class="viewcode-block" id="Topology.assign_resnames">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Topology.assign_resnames">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assign_resnames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resnames</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper function that finds head, sn-1 and sn-2 tails</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find head, sn-1 and sn-2 tails</span>
 
 <span class="sd">        NOTE: currently there are only lipids with 2 different tails available in</span>
 <span class="sd">        databank: e.g. POPC or POPG. This leads to different names of tails. This</span>
@@ -514,24 +402,24 @@
             <span class="c1"># First find headgroup</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">:</span>
                 <span class="n">resname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">]</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">HEADGRP</span><span class="p">:</span>
-                    <span class="n">resname_dict</span><span class="p">[</span><span class="n">HEADGRP</span><span class="p">]</span> <span class="o">=</span> <span class="n">resname</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">HEADGRP</span><span class="p">:</span>
+                    <span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">HEADGRP</span><span class="p">]</span> <span class="o">=</span> <span class="n">resname</span>
                     <span class="k">break</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">:</span>
                 <span class="n">resname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;RESIDUE&quot;</span><span class="p">]</span>
                 <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">TAILSN1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">resname_dict</span>
-                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">TAILSN1</span>
-                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">resname_dict</span><span class="p">[</span><span class="n">HEADGRP</span><span class="p">]</span> <span class="o">==</span> <span class="n">resname</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">TAILSN1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">resname_dict</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TAILSN1</span>
+                    <span class="ow">and</span> <span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">HEADGRP</span><span class="p">]</span> <span class="o">!=</span> <span class="n">resname</span>
                 <span class="p">):</span>
-                    <span class="n">resname_dict</span><span class="p">[</span><span class="n">TAILSN1</span><span class="p">]</span> <span class="o">=</span> <span class="n">resname</span>
+                    <span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">TAILSN1</span><span class="p">]</span> <span class="o">=</span> <span class="n">resname</span>
                 <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">TAILSN2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">resname_dict</span>
-                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">TAILSN2</span>
-                    <span class="ow">and</span> <span class="ow">not</span> <span class="n">resname_dict</span><span class="p">[</span><span class="n">HEADGRP</span><span class="p">]</span> <span class="o">==</span> <span class="n">resname</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">TAILSN2</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">resname_dict</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">TAILSN2</span>
+                    <span class="ow">and</span> <span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">HEADGRP</span><span class="p">]</span> <span class="o">!=</span> <span class="n">resname</span>
                 <span class="p">):</span>
-                    <span class="n">resname_dict</span><span class="p">[</span><span class="n">TAILSN2</span><span class="p">]</span> <span class="o">=</span> <span class="n">resname</span>
-                <span class="k">if</span> <span class="n">TAILSN1</span> <span class="ow">in</span> <span class="n">resname_dict</span> <span class="ow">and</span> <span class="n">TAILSN2</span> <span class="ow">in</span> <span class="n">resname_dict</span><span class="p">:</span>
+                    <span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">TAILSN2</span><span class="p">]</span> <span class="o">=</span> <span class="n">resname</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TAILSN1</span> <span class="ow">in</span> <span class="n">resname_dict</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">TAILSN2</span> <span class="ow">in</span> <span class="n">resname_dict</span><span class="p">:</span>
                     <span class="k">break</span>
             <span class="c1"># TODO: add check that all resnames from input are in the dict</span>
             <span class="k">return</span> <span class="n">resname_dict</span>
@@ -541,7 +429,7 @@
 
 <div class="viewcode-block" id="Topology.run_merger">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Topology.run_merger">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">run_merger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_merger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find lipid tails that correspond to a particular head-group.</span>
 
@@ -557,22 +445,22 @@
         <span class="n">head_residues</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">r</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s2">&quot;not name H* and prop mass &gt; 0.8&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;not name H* and resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="n">HEADGRP</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;not name H* and resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">HEADGRP</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">residues</span>
         <span class="p">]</span>
         <span class="n">sn_1_residues</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">r</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s2">&quot;not name H* and prop mass &gt; 0.8&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;not name H* and resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="n">TAILSN1</span><span class="p">]</span><span class="si">}</span><span class="s2"> and &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;around </span><span class="si">{</span><span class="n">merge_cutoff</span><span class="si">}</span><span class="s2"> (resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="n">HEADGRP</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;not name H* and resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">TAILSN1</span><span class="p">]</span><span class="si">}</span><span class="s2"> and &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;around </span><span class="si">{</span><span class="n">merge_cutoff</span><span class="si">}</span><span class="s2"> (resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">HEADGRP</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="s2">&quot;and not name H*)&quot;</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">residues</span>
         <span class="p">]</span>
         <span class="n">sn_2_residues</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">r</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s2">&quot;not name H* and prop mass &gt; 0.8&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;not name H* and resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="n">TAILSN2</span><span class="p">]</span><span class="si">}</span><span class="s2"> and &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;around </span><span class="si">{</span><span class="n">merge_cutoff</span><span class="si">}</span><span class="s2"> (resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="n">HEADGRP</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;not name H* and resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">TAILSN2</span><span class="p">]</span><span class="si">}</span><span class="s2"> and &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;around </span><span class="si">{</span><span class="n">merge_cutoff</span><span class="si">}</span><span class="s2"> (resname </span><span class="si">{</span><span class="n">resname_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">HEADGRP</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="s2">&quot;and not name H*)&quot;</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">residues</span>
         <span class="p">]</span>
@@ -585,7 +473,8 @@
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Concatenator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Concatenator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class Concatenator is a class needed to concatenate trajectory for lipid types.</span>
+<span class="sd">    Concatenate trajectory for lipid types.</span>
+
 <span class="sd">    It has the following methods:</span>
 
 <span class="sd">    1. Simple constructor, which sets the topology,residue names, and</span>
@@ -614,13 +503,14 @@
 
 <div class="viewcode-block" id="Concatenator.concatenate_traj">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate_traj">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">concatenate_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">concatenate_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        ConcatenateTraj performs basic trajectory concatination. First, it extracts</span>
-<span class="sd">        coordinates from trajectory, next, it reshapes the coordinate array, swaps</span>
-<span class="sd">        time and resid axes to obtain continuous trajectories of individual lipids</span>
-<span class="sd">        (this is needed for autocorrelation time analysis), and finally merges</span>
-<span class="sd">        individual lipid trajectories.</span>
+<span class="sd">        Perform basic trajectory concatination.</span>
+
+<span class="sd">        First, it extracts coordinates from trajectory, next, it reshapes the</span>
+<span class="sd">        coordinate array, swaps time and resid axes to obtain continuous trajectories</span>
+<span class="sd">        of individual lipids (this is needed for autocorrelation time analysis), and</span>
+<span class="sd">        finally merges individual lipid trajectories.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj</span><span class="o">.</span><span class="n">trajectory</span>
         <span class="n">n_frames</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
@@ -663,8 +553,9 @@
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate_traj_with_merging">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">concatenate_traj_with_merging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        ConcatenateTrajWithMerging performs basic trajectory concatination. In</span>
-<span class="sd">        contrast to basic concatenateTraj it additionally merges splitted lipids.</span>
+<span class="sd">        Perform basic trajectory concatination with merging.</span>
+
+<span class="sd">        In contrast to basic :meth:`concatenate_traj` it additionally merges splitted lipids.</span>
 <span class="sd">        First, it creates extracts coordinates from trajectory, next, it reshapes</span>
 <span class="sd">        the coordinate array, swaps time and resid axes to obtain continuous</span>
 <span class="sd">        trajectories of individual lipids (this is needed for autocorrelation</span>
@@ -716,11 +607,13 @@
 
 <div class="viewcode-block" id="Concatenator.align_traj">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Concatenator.align_traj">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">align_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concatenated_traj</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">align_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concatenated_traj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        AlignTraj alignes the concatenated trajectory in two steps: (1) it computes</span>
-<span class="sd">        average structure after alignment to the first frame, and (2) it alignes</span>
-<span class="sd">        the structure to the calculated average structure in (1).</span>
+<span class="sd">        Align the concatenated trajectory.</span>
+
+<span class="sd">        Alignment occurs in two steps: (1) it computes average structure after alignment</span>
+<span class="sd">        to the first frame, and (2) it alignes the structure to the calculated average</span>
+<span class="sd">        structure in (1).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Compute average structure after alignment to the first frame</span>
         <span class="n">av</span> <span class="o">=</span> <span class="n">align</span><span class="o">.</span><span class="n">AverageStructure</span><span class="p">(</span><span class="n">concatenated_traj</span><span class="p">,</span> <span class="n">ref_frame</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
@@ -741,7 +634,7 @@
 <div class="viewcode-block" id="Concatenator.concatenate">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">concatenate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simple enveloping function to perform concatenation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enveloping function to perform concatenation.&quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Concatenator: Concatenating lipid with resname </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lipid_resname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">is_merge_needed</span><span class="p">():</span>
             <span class="c1"># Merging is not needed</span>
@@ -759,7 +652,9 @@
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.PCA">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PCA</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class PCA is a class that actually performs PCA. It has the following methods:</span>
+<span class="sd">    Perform Pinciple Component Analysis (PCA).</span>
+
+<span class="sd">    It has the following methods:</span>
 
 <span class="sd">    1. Simple constructor, which sets the aligned trajtory, average coordinates,</span>
 <span class="sd">       number of lipids, number of frames in the concatenated trajectory and</span>
@@ -791,8 +686,9 @@
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.PCA.PCA">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">PCA</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># noqa: N802</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        PCA calculates the PCA. First the data is centered and then covariance</span>
-<span class="sd">        matrix is calculated manually.</span>
+<span class="sd">        Calculate the PCA.</span>
+
+<span class="sd">        First the data is centered and then covariance matrix is calculated manually.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># centering of positions relative to the origin</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aligned_traj</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
@@ -806,7 +702,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="p">)</span>
         <span class="c1"># eigenvalues and eigenvectors calculation</span>
-        <span class="n">eig_vals</span><span class="p">,</span> <span class="n">eig_vecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">cov_mat</span><span class="p">)</span>
+        <span class="n">_eig_vals</span><span class="p">,</span> <span class="n">eig_vecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">cov_mat</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">eig_vecs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">eig_vecs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
         <span class="k">return</span> <span class="n">x</span></div>
@@ -814,7 +710,7 @@
 
 <div class="viewcode-block" id="PCA.get_proj">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.PCA.get_proj">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_proj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdata</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_proj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdata</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Projecting the trajectory on the 1st principal component.&quot;&quot;&quot;</span>
         <span class="c1"># projection on PC1</span>
         <span class="n">proj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tensordot</span><span class="p">(</span><span class="n">cdata</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">eig_vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
@@ -837,7 +733,7 @@
 
 <div class="viewcode-block" id="PCA.get_autocorrelations">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.PCA.get_autocorrelations">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_autocorrelations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_autocorrelations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Autocorrelation calculation for the trajectory.&quot;&quot;&quot;</span>
         <span class="n">variance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proj</span><span class="o">.</span><span class="n">var</span><span class="p">()</span>
         <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proj</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
@@ -861,8 +757,8 @@
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeEstimator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class TimeEstimator is a class that estimates equilbration time from</span>
-<span class="sd">    autocorrelation data.</span>
+<span class="sd">    Estimate equilbration time from autocorrelation data.</span>
+
 <span class="sd">    It includes the following methods:</span>
 
 <span class="sd">    1. Simple constructor, which sets the autocorrelation data</span>
@@ -882,7 +778,8 @@
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.get_nearest_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_nearest_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        get_nearest_value method return the indices that frame the particular value</span>
+<span class="sd">        Return the indices that frame the particular value.</span>
+
 <span class="sd">        As an input it gets an array, which is expected to decay. The method tries</span>
 <span class="sd">        to find and index (index_A), for which the array gets below the cutoff value</span>
 <span class="sd">        for the first time. Then, for index_A-1 the array was larger than the cutoff</span>
@@ -900,16 +797,13 @@
             <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">iterable</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">iterable</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span> <span class="o">-</span> <span class="mi">1</span>
 
-        <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">iterable</span> <span class="o">&lt;</span> <span class="n">iterable</span><span class="p">[</span><span class="n">a</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">iterable</span> <span class="o">&lt;</span> <span class="n">iterable</span><span class="p">[</span><span class="n">a</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">a</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span></div>
 
 
 <div class="viewcode-block" id="TimeEstimator.timerelax">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.timerelax">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">timerelax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">timerelax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimates autocorrelation decay time.&quot;&quot;&quot;</span>
         <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelation</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
         <span class="n">autocorrelation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocorrelation</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
@@ -945,11 +839,11 @@
 
 <div class="viewcode-block" id="TimeEstimator.calculate_time">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.analyze_nmrpca.html#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.calculate_time">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Basic enveloping method that estimates equilibration time from</span>
-<span class="sd">        autocorrelation decay time. They are linearly connected and the</span>
-<span class="sd">        coefficient is calculated experimentally.</span>
+<span class="sd">        Estimate equilibration time from autocorrelation decay time.</span>
+
+<span class="sd">        The times are linearly connected and the coefficient is calculated experimentally.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># relaxation time at e^1 decay</span>
         <span class="n">te1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timerelax</span><span class="p">()</span>

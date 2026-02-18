@@ -1,7 +1,0 @@
-fairmd.lipids.auxiliary.elements module
-=======================================
-
-.. automodule:: fairmd.lipids.auxiliary.elements
-   :members:
-   :show-inheritance:
-   :undoc-members:

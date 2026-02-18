@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analib.analyze_nmrpca module &mdash; FAIRMD Lipids v1.3.5.dev115+g054fb115a 1.3.5.dev115+g054fb115a documentation</title>
+  <title>fairmd.lipids.analib.analyze_nmrpca module &mdash; FAIRMD Lipids v1.3.5.dev116+g204618417 1.3.5.dev116+g204618417 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=f5982b8c"></script>
+      <script src="../_static/documentation_options.js?v=867f9217"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev115+g054fb115a
+            FAIRMD Lipids v1.3.5.dev116+g204618417
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.5.dev115+g054fb115a</a>
+          <a href="../index.html">FAIRMD Lipids v1.3.5.dev116+g204618417</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -117,13 +117,11 @@ representation for computing ACF.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Parser">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.analyze_nmrpca.</span></span><span class="sig-name descname"><span class="pre">Parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">eq_time_fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'eq_times.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.analyze_nmrpca.</span></span><span class="sig-name descname"><span class="pre">Parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">eq_time_fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'eq_times.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class Parser is a basic class to work with the trajectory. It has basic utility
-for preparing trajectories:</p>
+<p>A basic class to work with the trajectory.</p>
+<p>It has basic utility for preparing trajectories:</p>
 <ol class="arabic simple">
-<li><p>Checking if simulation has a correct name</p></li>
-<li><p>Checking if trajectory is downloaded. Downloading, if not.</p></li>
 <li><p>Calling AmberMerger to merge head groups and tails for Amber
 trajectories</p></li>
 <li><p>Concatenate trajectories</p></li>
@@ -139,50 +137,21 @@ trajectories</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Parser.validate_path">
-<span class="sig-name descname"><span class="pre">validate_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser.validate_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser.validate_path" title="Link to this definition"></a></dt>
-<dd><p>Path validation. Behaviour depends on the input.</p>
-<ol class="arabic simple">
-<li><p>If ther were any errors, validation fails. Currently the only
-error tested is that .xtc and .tpr files are not present. This
-is the case for non-GROMACS trajectories.</p></li>
-<li><p>If path is not provided, parser is iterating over all trajectories.</p></li>
-<li><p>If path is provided and current path is equal to the provided one,
-parser reports that it finds the trajectory for the analysis.</p></li>
-</ol>
-<p>TODO: must be removed. Substitute path-validation part.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Parser.download_traj">
-<span class="sig-name descname"><span class="pre">download_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser.download_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser.download_traj" title="Link to this definition"></a></dt>
-<dd><p>TODO: must be removed. We don’t download trajectory in the analysis part</p>
-<p>Basic trajectory and TPR download.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Parser.prepare_gmx_traj">
-<span class="sig-name descname"><span class="pre">prepare_gmx_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser.prepare_gmx_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser.prepare_gmx_traj" title="Link to this definition"></a></dt>
-<dd><p>Preparing trajectory. If centered trajectory is found, use it. If whole
-trajectory is found, use it. Otherwise, call gmx trjconv to make whole
-trajectory. The selected trajectory is loaded into Universe.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Parser.prepare_OpenMM_traj">
-<span class="sig-name descname"><span class="pre">prepare_OpenMM_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser.prepare_OpenMM_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser.prepare_OpenMM_traj" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Parser.prepare_traj">
 <span class="sig-name descname"><span class="pre">prepare_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser.prepare_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser.prepare_traj" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Parser.verify_lipid">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">verify_lipid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lipid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.molecules.html#fairmd.lipids.molecules.Lipid" title="fairmd.lipids.molecules.Lipid"><span class="pre">Lipid</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser.verify_lipid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser.verify_lipid" title="Link to this definition"></a></dt>
+<dd><p>Verify that the lipid is supported by the method.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Parser.concatenate_traj">
-<span class="sig-name descname"><span class="pre">concatenate_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser.concatenate_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser.concatenate_traj" title="Link to this definition"></a></dt>
-<dd><p>Create Concatenator and corresponding concatenated trajectories for
-all lipids available for the trajectory.</p>
+<span class="sig-name descname"><span class="pre">concatenate_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Parser.concatenate_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Parser.concatenate_traj" title="Link to this definition"></a></dt>
+<dd><p>Create Concatenator and corresponding concatenated trajectories.</p>
+<p>Done for all lipids available in the trajectory.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -197,9 +166,9 @@ all lipids available for the trajectory.</p>
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Topology">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.analyze_nmrpca.</span></span><span class="sig-name descname"><span class="pre">Topology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lipid_resname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class Topology is a class needed to extract lipid specific data and also to
-merge lipids from Amber trajectories, where lipid is often represented as 3
-residue types. It has the following methods:</p>
+<p>Extract lipid specific data and also to merge lipids if they are more than 1 residue.</p>
+<p>In Amber FF naming convention, lipid is often represented as several residue types.
+The clases has the following methods:</p>
 <ol class="arabic simple">
 <li><p>Simple constructor, which sets the force field,residue names, trajectory,
 and loads mapping_file</p></li>
@@ -218,30 +187,45 @@ and loads mapping_file</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Topology.HEADGRP">
+<span class="sig-name descname"><span class="pre">HEADGRP</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'headgroup'</span></span><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.HEADGRP" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Topology.TAILSN1">
+<span class="sig-name descname"><span class="pre">TAILSN1</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sn-1'</span></span><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.TAILSN1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Topology.TAILSN2">
+<span class="sig-name descname"><span class="pre">TAILSN2</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sn-2'</span></span><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.TAILSN2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Topology.atom_names">
-<span class="sig-name descname"><span class="pre">atom_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Topology.atom_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.atom_names" title="Link to this definition"></a></dt>
-<dd><p>Extract all names of heavy atoms from the mapping</p>
+<span class="sig-name descname"><span class="pre">atom_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Topology.atom_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.atom_names" title="Link to this definition"></a></dt>
+<dd><p>Extract all names of heavy atoms from the mapping.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Topology.is_merge_needed">
-<span class="sig-name descname"><span class="pre">is_merge_needed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Topology.is_merge_needed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.is_merge_needed" title="Link to this definition"></a></dt>
-<dd><p>Checker for merge. Currently it checks if the RESIDUE key is in the
-mapping file.</p>
-<p>NOTE: This has to be changed if the content of mapping file changes</p>
+<span class="sig-name descname"><span class="pre">is_merge_needed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Topology.is_merge_needed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.is_merge_needed" title="Link to this definition"></a></dt>
+<dd><p>Check if lipid needs to be merged. Empty set means no merge needed.</p>
+<p>Currently it checks if the RESIDUE key is in the mapping file.
+NOTE: This has to be changed if the content of mapping file changes.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Topology.get_lipid_resnames">
 <span class="sig-name descname"><span class="pre">get_lipid_resnames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Topology.get_lipid_resnames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.get_lipid_resnames" title="Link to this definition"></a></dt>
-<dd><p>Helper function that gets the residue names for lipid, if merge is needed</p>
+<dd><p>Get the residue names for lipid, if merge is needed</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Topology.assign_resnames">
 <span class="sig-name descname"><span class="pre">assign_resnames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resnames</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Topology.assign_resnames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.assign_resnames" title="Link to this definition"></a></dt>
-<dd><p>Helper function that finds head, sn-1 and sn-2 tails</p>
+<dd><p>Find head, sn-1 and sn-2 tails</p>
 <p>NOTE: currently there are only lipids with 2 different tails available in
 databank: e.g. POPC or POPG. This leads to different names of tails. This
 won’t be the case for DOPC. Currently the algorithm is using that all three
@@ -250,7 +234,7 @@ groups differ</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Topology.run_merger">
-<span class="sig-name descname"><span class="pre">run_merger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Topology.run_merger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.run_merger" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run_merger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Topology.run_merger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Topology.run_merger" title="Link to this definition"></a></dt>
 <dd><p>Find lipid tails that correspond to a particular head-group.</p>
 <p>NOTE: currently there are only lipids with 2 different tails available in
 databank: e.g. POPC or POPG. This leads to different names of tails. This
@@ -265,8 +249,8 @@ groups differ</p>
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Concatenator">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.analyze_nmrpca.</span></span><span class="sig-name descname"><span class="pre">Concatenator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#fairmd.lipids.analib.analyze_nmrpca.Topology" title="fairmd.lipids.analib.analyze_nmrpca.Topology"><span class="pre">Topology</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lipid_resname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Concatenator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Concatenator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class Concatenator is a class needed to concatenate trajectory for lipid types.
-It has the following methods:</p>
+<p>Concatenate trajectory for lipid types.</p>
+<p>It has the following methods:</p>
 <ol class="arabic simple">
 <li><p>Simple constructor, which sets the topology,residue names, and
 trajectory</p></li>
@@ -285,19 +269,19 @@ trajectory</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate_traj">
-<span class="sig-name descname"><span class="pre">concatenate_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Concatenator.concatenate_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate_traj" title="Link to this definition"></a></dt>
-<dd><p>ConcatenateTraj performs basic trajectory concatination. First, it extracts
-coordinates from trajectory, next, it reshapes the coordinate array, swaps
-time and resid axes to obtain continuous trajectories of individual lipids
-(this is needed for autocorrelation time analysis), and finally merges
-individual lipid trajectories.</p>
+<span class="sig-name descname"><span class="pre">concatenate_traj</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Universe</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Concatenator.concatenate_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate_traj" title="Link to this definition"></a></dt>
+<dd><p>Perform basic trajectory concatination.</p>
+<p>First, it extracts coordinates from trajectory, next, it reshapes the
+coordinate array, swaps time and resid axes to obtain continuous trajectories
+of individual lipids (this is needed for autocorrelation time analysis), and
+finally merges individual lipid trajectories.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate_traj_with_merging">
 <span class="sig-name descname"><span class="pre">concatenate_traj_with_merging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Concatenator.concatenate_traj_with_merging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate_traj_with_merging" title="Link to this definition"></a></dt>
-<dd><p>ConcatenateTrajWithMerging performs basic trajectory concatination. In
-contrast to basic concatenateTraj it additionally merges splitted lipids.
+<dd><p>Perform basic trajectory concatination with merging.</p>
+<p>In contrast to basic <a class="reference internal" href="#fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate_traj" title="fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate_traj"><code class="xref py py-meth docutils literal notranslate"><span class="pre">concatenate_traj()</span></code></a> it additionally merges splitted lipids.
 First, it creates extracts coordinates from trajectory, next, it reshapes
 the coordinate array, swaps time and resid axes to obtain continuous
 trajectories of individual lipids (this is needed for autocorrelation
@@ -306,16 +290,17 @@ time analysis), and finally merges individual lipid trajectories.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Concatenator.align_traj">
-<span class="sig-name descname"><span class="pre">align_traj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concatenated_traj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Concatenator.align_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Concatenator.align_traj" title="Link to this definition"></a></dt>
-<dd><p>AlignTraj alignes the concatenated trajectory in two steps: (1) it computes
-average structure after alignment to the first frame, and (2) it alignes
-the structure to the calculated average structure in (1).</p>
+<span class="sig-name descname"><span class="pre">align_traj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concatenated_traj</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Concatenator.align_traj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Concatenator.align_traj" title="Link to this definition"></a></dt>
+<dd><p>Align the concatenated trajectory.</p>
+<p>Alignment occurs in two steps: (1) it computes average structure after alignment
+to the first frame, and (2) it alignes the structure to the calculated average
+structure in (1).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate">
 <span class="sig-name descname"><span class="pre">concatenate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#Concatenator.concatenate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.Concatenator.concatenate" title="Link to this definition"></a></dt>
-<dd><p>Simple enveloping function to perform concatenation.</p>
+<dd><p>Enveloping function to perform concatenation.</p>
 </dd></dl>
 
 </dd></dl>
@@ -324,7 +309,8 @@ the structure to the calculated average structure in (1).</p>
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.PCA">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.analyze_nmrpca.</span></span><span class="sig-name descname"><span class="pre">PCA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aligned_traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">av_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_lipid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">traj_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#PCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.PCA" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class PCA is a class that actually performs PCA. It has the following methods:</p>
+<p>Perform Pinciple Component Analysis (PCA).</p>
+<p>It has the following methods:</p>
 <ol class="arabic simple">
 <li><p>Simple constructor, which sets the aligned trajtory, average coordinates,
 number of lipids, number of frames in the concatenated trajectory and
@@ -352,13 +338,13 @@ trajectory</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.PCA.PCA">
 <span class="sig-name descname"><span class="pre">PCA</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#PCA.PCA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.PCA.PCA" title="Link to this definition"></a></dt>
-<dd><p>PCA calculates the PCA. First the data is centered and then covariance
-matrix is calculated manually.</p>
+<dd><p>Calculate the PCA.</p>
+<p>First the data is centered and then covariance matrix is calculated manually.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.PCA.get_proj">
-<span class="sig-name descname"><span class="pre">get_proj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#PCA.get_proj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.PCA.get_proj" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_proj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cdata</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#PCA.get_proj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.PCA.get_proj" title="Link to this definition"></a></dt>
 <dd><p>Projecting the trajectory on the 1st principal component.</p>
 </dd></dl>
 
@@ -370,7 +356,7 @@ matrix is calculated manually.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.PCA.get_autocorrelations">
-<span class="sig-name descname"><span class="pre">get_autocorrelations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#PCA.get_autocorrelations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.PCA.get_autocorrelations" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_autocorrelations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#PCA.get_autocorrelations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.PCA.get_autocorrelations" title="Link to this definition"></a></dt>
 <dd><p>Autocorrelation calculation for the trajectory.</p>
 </dd></dl>
 
@@ -380,9 +366,8 @@ matrix is calculated manually.</p>
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.TimeEstimator">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.analib.analyze_nmrpca.</span></span><span class="sig-name descname"><span class="pre">TimeEstimator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autocorrelation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#TimeEstimator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class TimeEstimator is a class that estimates equilbration time from
-autocorrelation data.
-It includes the following methods:</p>
+<p>Estimate equilbration time from autocorrelation data.</p>
+<p>It includes the following methods:</p>
 <ol class="arabic simple">
 <li><p>Simple constructor, which sets the autocorrelation data</p></li>
 <li><p>Helper method <a class="reference internal" href="#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.get_nearest_value" title="fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.get_nearest_value"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_nearest_value()</span></code></a> that finds the interval in the data
@@ -399,8 +384,8 @@ calculates the decay time</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.get_nearest_value">
 <span class="sig-name descname"><span class="pre">get_nearest_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#TimeEstimator.get_nearest_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.get_nearest_value" title="Link to this definition"></a></dt>
-<dd><p>get_nearest_value method return the indices that frame the particular value
-As an input it gets an array, which is expected to decay. The method tries
+<dd><p>Return the indices that frame the particular value.</p>
+<p>As an input it gets an array, which is expected to decay. The method tries
 to find and index (index_A), for which the array gets below the cutoff value
 for the first time. Then, for index_A-1 the array was larger than the cutoff
 value for the last time. It means that the function, represented by the
@@ -413,16 +398,15 @@ cutoff.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.timerelax">
-<span class="sig-name descname"><span class="pre">timerelax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#TimeEstimator.timerelax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.timerelax" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">timerelax</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#TimeEstimator.timerelax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.timerelax" title="Link to this definition"></a></dt>
 <dd><p>Estimates autocorrelation decay time.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.calculate_time">
-<span class="sig-name descname"><span class="pre">calculate_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#TimeEstimator.calculate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.calculate_time" title="Link to this definition"></a></dt>
-<dd><p>Basic enveloping method that estimates equilibration time from
-autocorrelation decay time. They are linearly connected and the
-coefficient is calculated experimentally.</p>
+<span class="sig-name descname"><span class="pre">calculate_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/analib/analyze_nmrpca.html#TimeEstimator.calculate_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.analib.analyze_nmrpca.TimeEstimator.calculate_time" title="Link to this definition"></a></dt>
+<dd><p>Estimate equilibration time from autocorrelation decay time.</p>
+<p>The times are linearly connected and the coefficient is calculated experimentally.</p>
 </dd></dl>
 
 </dd></dl>
