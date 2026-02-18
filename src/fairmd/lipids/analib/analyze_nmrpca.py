@@ -239,7 +239,7 @@ class Topology:
     """
 
     HEADGRP = "headgroup"  # locally used to gather amber lipids together
-    TAILSN1 = "sn-1"
+    TAILSN1 = "sn-1"  # NOTE: Removing this hardcoding is planned in issue #464
     TAILSN2 = "sn-2"
 
     def __init__(self, traj, lipid_resname: str, mapping_dict: dict):
