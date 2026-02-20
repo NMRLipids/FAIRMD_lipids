@@ -177,7 +177,7 @@ def uconstructor566(systems, capsys):
     uc = UniverseConstructor(s)
     check.equal(uc.system["ID"], 566)
     uc.download_mddata(skip_traj=True)
-    assert "566.gro" in capsys.readouterr().err
+    assert "566.gro" in capsys.readouterr().out
     yield uc
     # TEARDOWN
     uc.clear_mddata()

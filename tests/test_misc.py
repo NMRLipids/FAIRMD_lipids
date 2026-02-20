@@ -271,3 +271,13 @@ def test_average_block():
 
     arr = arr[:-1, :]
     out = block_average_time_series(arr, blocksize=2.0)
+
+
+def test_progress(capsys):
+    from fairmd.lipids import progress
+
+    for i in progress(range(10)):
+        pass
+    captured = capsys.readouterr()
+    check.is_in("100%", captured.out)
+    check.is_not_in("100%", captured.err)
