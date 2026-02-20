@@ -12,7 +12,8 @@ from fairmd.lipids.molecules import Lipid, Molecule, NonLipid, lipids_set, solub
 
 
 def progress(
-    iterable: Iterable | None = None, /,
+    iterable: Iterable | None = None,
+    /,
     *,
     desc: str | None = None,
     total: int | None = None,
