@@ -12,7 +12,7 @@ from fairmd.lipids.molecules import Lipid, Molecule, NonLipid, lipids_set, solub
 
 
 def progress(
-    iterable: Iterable,
+    iterable: Iterable | None = None, /,
     *,
     desc: str | None = None,
     total: int | None = None,
@@ -27,7 +27,7 @@ def progress(
     - Can be explicitly disabled if needed
     """
     return tqdm(
-        iterable,
+        iterable or kwargs.pop("iter", None) or [],
         desc=desc,
         total=total,
         disable=disable,
