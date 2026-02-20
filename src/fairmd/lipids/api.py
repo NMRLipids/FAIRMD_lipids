@@ -41,6 +41,20 @@ from fairmd.lipids.schema_validation.engines import get_struc_top_traj_fnames
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "UniverseConstructError",
+    "UniverseConstructor",
+    "get_ApL_data",
+    "get_FF",
+    "get_OP",
+    "get_eqtimes",
+    "get_mean_ApL",
+    "get_thickness",
+    "get_total_area",
+    "mda_gen_selection_mols",
+    "mda_read_trj_tilt_angles",
+]
+
 
 def get_thickness(system: System) -> float:
     """
@@ -124,17 +138,17 @@ def get_OP(system: System) -> dict:  # noqa: N802 (API name)
     return sim_op_data
 
 
-def get_FF(system: System) -> np.ndarray:  # noqa: N802 (API name)
-    """
-    Get numpy table of FormFactor curve.
+def _get_2d_array(system: System, fname: str) -> np.ndarray:
+    """Get whatever 2D array stored in the DB.
 
     :param system: Simulation object
-    :return: (q,FF,err) numpy table
+    :param fname: Filename (str)
+    :return: numpy table
     """
     fn = os.path.join(
         FMDL_SIMU_PATH,
         system["path"],
-        "FormFactor.json",
+        fname,
     )
     try:
         with open(fn) as json_file:
@@ -146,6 +160,33 @@ def get_FF(system: System) -> np.ndarray:  # noqa: N802 (API name)
         msg = "The form-factor data for system#{} is invalid.".format(system["ID"])
         raise ValueError(msg) from e
     return np.array(sim_ff_data)
+
+
+def get_FF(system: System) -> np.ndarray:  # noqa: N802 (API name)
+    """
+    Get numpy table of FormFactor curve.
+
+    :param system: Simulation object
+    :return: (q,FF,err) numpy table
+    """
+    return _get_2d_array(system, "FormFactor.json")
+
+
+def get_density(system: System, domain: str = "total") -> np.ndarray:
+    """Get numpy table of electron density.
+
+    :param system: Simulation object
+    :param domain: total|water|lipids
+    :return: (z,edens,err) array
+    """
+    if domain == "total":
+        return _get_2d_array(system, "TotalDensity.json")
+    if domain == "lipids":
+        return _get_2d_array(system, "LipidDensity.json")
+    if domain == "water":
+        return _get_2d_array(system, "WaterDensity.json")
+    msg = f"get_density supports only total/lipids/water for domain. Got {domain}!"
+    raise ValueError(msg)
 
 
 def get_quality(
@@ -228,22 +269,7 @@ def get_ApL_data(system: System, blocksize: float | None = None) -> np.ndarray: 
 
     :return: Array (t, value) with blocksize step.
     """
-    path = os.path.join(FMDL_SIMU_PATH, system["path"], "apl.json")
-    try:
-        with open(path) as f:
-            data = json.load(f)
-    except FileNotFoundError as e:
-        msg = "Area per lipid data is absent for system #{}".format(system["ID"])
-        raise FileNotFoundError(msg) from e
-    except json.JSONDecodeError as e:
-        msg = "Area per lipid data for system #{} in {} is invalid.".format(system["ID"], path)
-        raise ValueError(msg) from e
-    df = np.vstack(
-        [
-            np.array(list(data.keys()), dtype=float),
-            np.array(list(data.values()), dtype=float),
-        ]
-    ).T
+    df = _get_2d_array(system, "apl.json")
     if blocksize is not None:
         df = block_average_time_series(df, blocksize)
     return df
@@ -501,6 +527,3 @@ def mda_read_trj_tilt_angles(
     total_std_error = np.std(res_aver_angles) / np.sqrt(n_res)
 
     return angles, res_aver_angles, total_average, total_std_error
-
-
-# -------------------------------------- SEPARATED PART (??) ----------------------

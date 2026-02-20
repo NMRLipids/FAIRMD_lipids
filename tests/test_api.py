@@ -386,6 +386,32 @@ def test_get_FF_valid(systems, systemid):
 
 @pytest.mark.parametrize(
     "systemid",
+    [281, 243],
+)
+def test_get_density_valid(systems, systemid):
+    from fairmd.lipids.api import get_density
+
+    sys0 = systems.loc(systemid)
+    tden: np.ndarray = get_density(sys0, "total")
+    lden: np.ndarray = get_density(sys0, "lipids")
+    wden: np.ndarray = get_density(sys0, "water")
+
+    assert isinstance(tden, np.ndarray)
+    check.equal(tden.shape[1], 3)
+    check.greater(tden.shape[0], 10)
+    check.is_true((tden[:, 1] < 1000.0).all(), "First column is dens")
+    check.greater(np.mean(tden[:, 1] / tden[:, 2]), 1, "Error should be smaller than values")
+
+    check.equal(tden.shape[0], lden.shape[0])
+    check.is_true((tden[:, 1] >= lden[:, 1]).all(), "Total density is bigger than lipid's")
+    check.is_true((tden[:, 1] >= wden[:, 1]).all(), "Total density is bigger than water's")
+    np.testing.assert_allclose(
+        tden[:, 1], wden[:, 1] + lden[:, 1], rtol=5e-2, err_msg="Total density is almost lipid + water"
+    )
+
+
+@pytest.mark.parametrize(
+    "systemid",
     [
         787,
     ],
