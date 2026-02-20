@@ -334,7 +334,7 @@ def _center_trajectory_chunk(
         # Use tqdm if position is provided for per-worker progress
         frame_iter = u.trajectory[start_frame:stop_frame]
         if tqdm_position is not None:
-            frame_iter = tqdm(
+            frame_iter = progress(
                 frame_iter,
                 total=n_frames,
                 desc=f"Worker {chunk_id + 1}/{total_chunks}",
