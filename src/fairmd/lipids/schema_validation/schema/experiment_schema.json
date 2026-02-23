@@ -1,105 +1,180 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "properties": {
-        "ARTICLE_DOI": {
-            "type": "string",
-            "description": "DOI of the original publication of the experimental data"
-        },
-        "DATA_DOI": {
-            "type": "string", 
-            "description": "DOI of the dataset deposition with raw NMR data"
-        },
-        "DATA_REF": {
-            "type": "string",
-            "description": "Reference to deposited dataset"
-        },
-        "TEMPERATURE": {
-            "type": "number",
-            "description": "Temperature (K) of the experiment"
-        },
-        "MEMBRANE_COMPOSITION": {
-            "type": "object",
-            "description": "Dictionary of molar fractions of membrane phase",
-            "additionalProperties": {
-                "type": "number"
-            }
-        },
-        "SOLUTION_COMPOSITION": {
-            "type": "object",
-            "description": "Dictionary of ion concentrations in the system",
-            "additionalProperties": {
-                "type": "number"
-            }
-        },
-        "ADDITIONAL_MOLECULES": {
-            "type": "object",
-            "description": "Dictionary of molecules which are not in the databank",
-            "additionalProperties": true
-        },
-        "TOTAL_HYDRATION": {
-            "type": "number",
-            "description": "Total hydration of the system (water mass %)"
-        },
-        "PH": {
-            "type": ["string", "number"],
-            "description": "pH of the system"
-        },
-        "PH_METHOD": {
-            "type": "string",
-            "description": "Method of pH setting or measurement (buffer / measurement)"
-        },
-        "REAGENT_SOURCES": {
-            "type": "object",
-            "description": "Description of lipid reagents. Source, purity, etc.",
-            "additionalProperties": {
-                "type": "string"
-            }
-        },
-        "SAMPLE_PROTOCOL": {
-            "type": "string",
-            "description": "Protocol for sample preparation (in free format, references are welcome)"
-        },
-        "NMR": {
-            "type": "object",
-            "description": "NMR-Specific Metadata",
-            "properties": {
-                "T_RF_HEATING": {"type": "string"},
-                "INSTRUMENT": {"type": "string"},
-                "METHOD": {"type": "string"},
-                "SIGN_MEASURED": {"type": "string"},
-                "DETAILS": {"type": "string"}
-            }
-        },
-        "XRAY": {
-            "type": "object", 
-            "description": "X-ray Specific Metadata",
-            "properties": {
-                "SOURCE": {"type": "string"},
-                "LAMBDA": {"type": "string"},
-                "QRANGE": {"type": "number"},
-                "DETECTOR": {"type": "string"},
-                "DISTANCE": {"type": "number"},
-                "DATATYPE": {"type": "string"},
-                "EXPOSURE": {"type": "number"},
-                "FRAMES": {"type": "number"},
-                "SAMPLE_TYPE": {
-                    "type": "string", 
-                    "enum": ["MLV", "SUV", "GUV", "OS", "BIC"]
-                }
-            }
-        }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "ARTICLE_DOI": {
+      "type": "string",
+      "description": "DOI of the original publication of the experimental data"
     },
+    "DATA_DOI": {
+      "type": "string",
+      "description": "DOI of the dataset deposition with raw NMR data"
+    },
+    "DATA_REF": {
+      "type": "string",
+      "description": "Reference to deposited dataset"
+    },
+    "TEMPERATURE": {
+      "type": "number",
+      "description": "Temperature (K) of the experiment"
+    },
+    "MEMBRANE_COMPOSITION": {
+      "type": "object",
+      "description": "Dictionary of molar fractions of membrane phase",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "SOLUTION_COMPOSITION": {
+      "type": "object",
+      "description": "Dictionary of ion concentrations in the system",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "ADDITIONAL_MOLECULES": {
+      "type": "object",
+      "description": "Dictionary of molecules which are not in the databank",
+      "additionalProperties": true
+    },
+    "TOTAL_HYDRATION": {
+      "type": "number",
+      "description": "Total hydration of the system (water mass %)"
+    },
+    "PH": {
+      "anyOf": [
+        { "type": "number", "minimum": 0, "maximum": 14 },
+        { "type": "string", "enum": ["UNKNOWN"] },
+        { "type": "string", "pattern": "^[0-9]+([.][0-9]+)?-[0-9]+([.][0-9]+)?" }
+      ],
+      "description": "pH of the system"
+    },
+    "PH_METHOD": {
+      "type": "string",
+      "description": "Method of pH setting or measurement (buffer / measurement)"
+    },
+    "REAGENT_SOURCES": {
+      "type": "object",
+      "description": "Description of lipid reagents. Source, purity, etc.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "SAMPLE_PROTOCOL": {
+      "type": "string",
+      "description": "Protocol for sample preparation (in free format, references are welcome)"
+    },
+    "NMR": {
+      "type": "object",
+      "description": "NMR-Specific Metadata",
+      "additionalProperties": false,
+      "properties": {
+        "T_RF_HEATING": {
+          "type": "string"
+        },
+        "INSTRUMENT": {
+          "type": "string"
+        },
+        "METHOD": {
+          "type": "string",
+          "description": "Field identifying the NMR method used (formatted as METHOD:SUBMETHOD, e.g., '2H:QE').",
+          "examples": [
+            "2H:SP",
+            "2H:QE",
+            "CDLF:REDOR",
+            "CDLF:DIPSHIFT",
+            "CDLF:recDIPSHIFT",
+            "PDLF:DROSS",
+            "PDLF:R18_1^7",
+            "PDLF:see_comments"
+          ],
+          "pattern": "^(2H:(SP|QE|see_comments)|CDLF:(REDOR|DIPSHIFT|recDIPSHIFT|see_comments)|PDLF:(DROSS|R[0-9]+(_[0-9]+)?\\^[0-9]+|see_comments))$"
+        },
+        "SIGN_MEASURED": {
+          "type": "string"
+        },
+        "DETAILS": {
+          "type": "string"
+        }
+      }
+    },
+    "XRAY": {
+      "type": "object",
+      "description": "X-ray Specific Metadata",
+      "additionalProperties": false,
+      "properties": {
+        "SOURCE": {
+          "type": "string"
+        },
+        "LAMBDA": {
+          "type": "number"
+        },
+        "QRANGE": {
+          "type": "string"
+        },
+        "DETECTOR": {
+          "type": "string"
+        },
+        "DISTANCE": {
+          "type": "number"
+        },
+        "DATATYPE": {
+          "type": "string",
+          "enum": [
+            "batch",
+            "sec"
+          ]
+        },
+        "EXPOSURE": {
+          "type": "number"
+        },
+        "FRAMES": {
+          "type": "number"
+        },
+        "SAMPLE_TYPE": {
+          "type": "string",
+          "enum": [
+            "MLV",
+            "SUV",
+            "GUV",
+            "OS",
+            "BIC"
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "ARTICLE_DOI",
+    "TEMPERATURE",
+    "MEMBRANE_COMPOSITION",
+    "TOTAL_HYDRATION",
+    "PH"
+  ],
+  "oneOf": [
+    {
+      "required": [
+        "NMR"
+      ]
+    },
+    {
+      "required": [
+        "XRAY"
+      ]
+    }
+  ],
+  "if": {
+    "properties": {
+      "PH": { "type": "string", "enum": ["UNKNOWN"] }
+    }
+  },
+  "then": {
+    "required": []
+  },
+  "else": {
     "required": [
-        "ARTICLE_DOI", 
-        "TEMPERATURE", 
-        "MEMBRANE_COMPOSITION", 
-        "TOTAL_HYDRATION", 
-        "PH", 
-        "PH_METHOD"
-    ],
-    "oneOf": [
-        {"required": ["NMR"]},
-        {"required": ["XRAY"]}
+      "PH_METHOD"
     ]
+  }
 }
