@@ -3,7 +3,7 @@
 # Global Metadata
 ARTICLE_DOI: string  # DOI of the of the original publication of the experimental data
 DATA_DOI: string     # DOI of the dataset deposition with raw data 
-DATA_REF: string     # eference to deposited dataset
+DATA_REF: string     # reference to deposited dataset
 
 TEMPERATURE: number  # Temperature (K) of the experiment
 
@@ -40,22 +40,24 @@ REAGENT_SOURCES: object
 
 SAMPLE_PROTOCOL: string  # Protocol for sample preparation (in free format, references are welcome).
 
-# NMR-Specific Metadata (Optional)
+#Required: one of NMR-Specific Metadata or X-ray Specific Metadata
+
+# NMR-Specific Metadata
 NMR:
   T_RF_HEATING: string  # Correction of the temperature according to RF heating
   INSTRUMENT: string    # Instrument name (including field)
-  METHOD: string        # NMR method (e.g., "2H:QE")
+  METHOD: string        # NMR method (e.g., "2H:QE") check https://nmrlipids.github.io/FAIRMD_lipids/stable/schemas/experiment_metadata.html#nmr-specific-fields for options
   SIGN_MEASURED: string # Method of OP measurement "abbr1:abbr2" (see detailed explaining below)
   DETAILS: string       # Additional experiment details
 
-# X-ray Specific Metadata (Optional)
+# X-ray Specific Metadata
 XRAY:
   SOURCE: string        # X-ray source name
-  LAMBDA: string        # Source wavelength or range. Wavelength (and/or range) of the X-ray beam used, with units (e.g., Ångstroms)
+  LAMBDA: string        # Source wavelength or range. Wavelength (and/or range) of the X-ray beam used, with units (Ångstroms)
   QRANGE: number        # Scattering detection range (Q-range). The accessible scattering vector range, typically given in 1/Å.
   DETECTOR: string      # Detector type (e.g., CCD camera, PILATUS, or other detector model).
   DISTANCE: number      # Distance to detector (m)
-  DATATYPE: sting      # Measurement data type. Batch mode or size-exclusion chromatography (SEC) mode.
+  DATATYPE: string      # Measurement data type. Batch mode or size-exclusion chromatography (SEC) mode.
   EXPOSURE: number      # Exposure time per frame. The total data acquisition time per measurement frame, usually given in seconds.
   FRAMES: number        # Number of frames
   SAMPLE_TYPE: string   # 'MLV', 'SUV', 'GUV', 'OS' (oriented sample), 'BIC'. The type of sample used, with definitions: MLV (multilamellar vesicles), SUV (small unilamellar vesicles), GUV (giant unilamellar vesicles), OS (oriented sample), BIC (bicelles).
