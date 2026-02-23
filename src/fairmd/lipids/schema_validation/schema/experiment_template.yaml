@@ -53,7 +53,7 @@ NMR:
 # X-ray Specific Metadata
 XRAY:
   SOURCE: string        # X-ray source name
-  LAMBDA: string        # Source wavelength or range. Wavelength (and/or range) of the X-ray beam used, with units (Ångstroms)
+  LAMBDA: number        # Source wavelength or range. Wavelength (and/or range) of the X-ray beam used (in Ångstroms)
   QRANGE: number        # Scattering detection range (Q-range). The accessible scattering vector range, typically given in 1/Å.
   DETECTOR: string      # Detector type (e.g., CCD camera, PILATUS, or other detector model).
   DISTANCE: number      # Distance to detector (m)
