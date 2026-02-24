@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.api &mdash; FAIRMD Lipids v1.4.1.dev1+g52ebae55d 1.4.1.dev1+g52ebae55d documentation</title>
+  <title>fairmd.lipids.api &mdash; FAIRMD Lipids v1.4.1.dev2+gff5fe83f0 1.4.1.dev2+gff5fe83f0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=0b500548"></script>
+      <script src="../../../_static/documentation_options.js?v=ac2b3051"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.1.dev1+g52ebae55d
+            FAIRMD Lipids v1.4.1.dev2+gff5fe83f0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.4.1.dev1+g52ebae55d</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.4.1.dev2+gff5fe83f0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -125,8 +125,10 @@
     <span class="s2">&quot;get_ApL_data&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_FF&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_OP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_density&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_eqtimes&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_mean_ApL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_quality&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_thickness&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_total_area&quot;</span><span class="p">,</span>
     <span class="s2">&quot;mda_gen_selection_mols&quot;</span><span class="p">,</span>
@@ -262,6 +264,8 @@
 
 
 
+<div class="viewcode-block" id="get_density">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.api.html#fairmd.lipids.api.get_density">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_density</span><span class="p">(</span><span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;total&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get numpy table of electron density.</span>
 
@@ -276,9 +280,12 @@
     <span class="k">if</span> <span class="n">domain</span> <span class="o">==</span> <span class="s2">&quot;water&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_get_2d_array</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="s2">&quot;WaterDensity.json&quot;</span><span class="p">)</span>
     <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;get_density supports only total/lipids/water for domain. Got </span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s2">!&quot;</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 
+
+<div class="viewcode-block" id="get_quality">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.api.html#fairmd.lipids.api.get_quality">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_quality</span><span class="p">(</span>
     <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -347,7 +354,8 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">qdict</span><span class="p">[</span><span class="n">part</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">q</span>
+    <span class="k">return</span> <span class="n">q</span></div>
+
 
 
 <div class="viewcode-block" id="get_ApL_data">
