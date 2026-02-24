@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.api module &mdash; FAIRMD Lipids v1.3.5.dev116+g204618417 1.3.5.dev116+g204618417 documentation</title>
+  <title>fairmd.lipids.api module &mdash; FAIRMD Lipids v1.4.1.dev1+g52ebae55d 1.4.1.dev1+g52ebae55d documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=867f9217"></script>
+      <script src="../_static/documentation_options.js?v=0b500548"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.3.5.dev116+g204618417
+            FAIRMD Lipids v1.4.1.dev1+g52ebae55d
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.3.5.dev116+g204618417</a>
+          <a href="../index.html">FAIRMD Lipids v1.4.1.dev1+g52ebae55d</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -108,132 +108,6 @@
 </ul>
 </li>
 </ol>
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.api.get_thickness">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_thickness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_thickness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_thickness" title="Link to this definition"></a></dt>
-<dd><p>Get thickness for a simulation defined with <code class="docutils literal notranslate"><span class="pre">system</span></code> from the <code class="docutils literal notranslate"><span class="pre">thickness.json</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>membrane thickess (nm) or raise exception</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.api.get_eqtimes">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_eqtimes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_eqtimes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_eqtimes" title="Link to this definition"></a></dt>
-<dd><p>Return relative equilibration time for each lipid of <code class="docutils literal notranslate"><span class="pre">system</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>dictionary of relative equilibration times for each lipid</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.api.get_OP">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_OP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_OP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_OP" title="Link to this definition"></a></dt>
-<dd><p>Return a dictionary with the order parameter data for each lipid in <code class="docutils literal notranslate"><span class="pre">system</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>dictionary contaning, for each lipid, the order parameter data:
-average OP, standard deviation, and standard error of mean. Contains
-None if <code class="docutils literal notranslate"><span class="pre">LipidNameOrderParameters.json</span></code> missing.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.api.get_FF">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_FF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_FF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_FF" title="Link to this definition"></a></dt>
-<dd><p>Get numpy table of FormFactor curve.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>system</strong> – Simulation object</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>(q,FF,err) numpy table</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.api.get_quality">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">part</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'total'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lipid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'both'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_quality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_quality" title="Link to this definition"></a></dt>
-<dd><p>Return quality metrics for a given system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>system</strong> – Simulation system</p></li>
-<li><p><strong>part</strong> – Part of the system to evaluate quality for (total|tails|headgroup)”.</p></li>
-<li><p><strong>lipid</strong> – Lipid name to evaluate quality for (if None, evaluates for all lipids).</p></li>
-<li><p><strong>experiment</strong> – Experiment type to evaluate quality against (“FF”|”OP”|”both”).
-Note: “both” is not implemented yet.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>quality value (float) or np.nan if not available</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ValueError, NotImplementedError</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.api.get_ApL_data">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_ApL_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_ApL_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_ApL_data" title="Link to this definition"></a></dt>
-<dd><p>Return Area-per-lipid data as a numpy array (block-averaging possible).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>system</strong> – Simulation object</p></li>
-<li><p><strong>blocksize</strong> – Averaged t-series by &lt;blocksize&gt; ps</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Array (t, value) with blocksize step.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.api.get_mean_ApL">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_mean_ApL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_mean_ApL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_mean_ApL" title="Link to this definition"></a></dt>
-<dd><p>Calculate average area per lipid for a system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>area per lipid (Å^2)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.api.get_total_area">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_total_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_total_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_total_area" title="Link to this definition"></a></dt>
-<dd><p>Return area of the membrane in the simulation box.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>area of the system (Å^2)</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py exception">
 <dt class="sig sig-object py" id="fairmd.lipids.api.UniverseConstructError">
 <span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">UniverseConstructError</span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#UniverseConstructError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.UniverseConstructError" title="Link to this definition"></a></dt>
@@ -292,6 +166,109 @@ the corresponding file is downloaded and the full path is the value.</p>
 <p>Replaces outdated <cite>system2MDanalysisUniverse</cite>.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.api.get_ApL_data">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_ApL_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_ApL_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_ApL_data" title="Link to this definition"></a></dt>
+<dd><p>Return Area-per-lipid data as a numpy array (block-averaging possible).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system</strong> – Simulation object</p></li>
+<li><p><strong>blocksize</strong> – Averaged t-series by &lt;blocksize&gt; ps</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array (t, value) with blocksize step.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.api.get_FF">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_FF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_FF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_FF" title="Link to this definition"></a></dt>
+<dd><p>Get numpy table of FormFactor curve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> – Simulation object</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(q,FF,err) numpy table</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.api.get_OP">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_OP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_OP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_OP" title="Link to this definition"></a></dt>
+<dd><p>Return a dictionary with the order parameter data for each lipid in <code class="docutils literal notranslate"><span class="pre">system</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary contaning, for each lipid, the order parameter data:
+average OP, standard deviation, and standard error of mean. Contains
+None if <code class="docutils literal notranslate"><span class="pre">LipidNameOrderParameters.json</span></code> missing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.api.get_eqtimes">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_eqtimes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_eqtimes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_eqtimes" title="Link to this definition"></a></dt>
+<dd><p>Return relative equilibration time for each lipid of <code class="docutils literal notranslate"><span class="pre">system</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary of relative equilibration times for each lipid</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.api.get_mean_ApL">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_mean_ApL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_mean_ApL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_mean_ApL" title="Link to this definition"></a></dt>
+<dd><p>Calculate average area per lipid for a system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>area per lipid (Å^2)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.api.get_thickness">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_thickness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_thickness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_thickness" title="Link to this definition"></a></dt>
+<dd><p>Get thickness for a simulation defined with <code class="docutils literal notranslate"><span class="pre">system</span></code> from the <code class="docutils literal notranslate"><span class="pre">thickness.json</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>membrane thickess (nm) or raise exception</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fairmd.lipids.api.get_total_area">
+<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.api.</span></span><span class="sig-name descname"><span class="pre">get_total_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/api.html#get_total_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.api.get_total_area" title="Link to this definition"></a></dt>
+<dd><p>Return area of the membrane in the simulation box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> – Simulation object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>area of the system (Å^2)</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
