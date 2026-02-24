@@ -146,11 +146,18 @@
     }
   },
   "required": [
-    "ARTICLE_DOI",
     "TEMPERATURE",
     "MEMBRANE_COMPOSITION",
     "TOTAL_HYDRATION",
     "PH"
+  ],
+  "anyOf": [
+    {
+      "required": ["ARTICLE_DOI"]
+    },
+    {
+      "required": ["DATA_DOI"]
+    }
   ],
   "oneOf": [
     {
