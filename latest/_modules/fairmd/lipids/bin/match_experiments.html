@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.bin.match_experiments &mdash; FAIRMD Lipids v1.4.1.dev4+g32cafe59b 1.4.1.dev4+g32cafe59b documentation</title>
+  <title>fairmd.lipids.bin.match_experiments &mdash; FAIRMD Lipids v1.4.1.dev5+g448c8715a 1.4.1.dev5+g448c8715a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=140d1ed9"></script>
+      <script src="../../../../_static/documentation_options.js?v=e08beec7"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.1.dev4+g32cafe59b
+            FAIRMD Lipids v1.4.1.dev5+g448c8715a
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.4.1.dev4+g32cafe59b</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.4.1.dev5+g448c8715a</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -103,9 +103,8 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_SIMU_PATH</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">progress</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span><span class="p">,</span> <span class="n">SystemsCollection</span><span class="p">,</span> <span class="n">initialize_databank</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">Experiment</span><span class="p">,</span> <span class="n">ExperimentCollection</span>
 
@@ -189,7 +188,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">find_pairs_and_change_sims</span><span class="p">(</span><span class="n">experiments</span><span class="p">:</span> <span class="n">ExperimentCollection</span><span class="p">,</span> <span class="n">simulations</span><span class="p">:</span> <span class="n">SystemsCollection</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find matching simulation-experiment pairs and update simulations&#39; README data.&quot;&quot;&quot;</span>
     <span class="n">pairs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">simulation</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">simulations</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Simulation&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">simulation</span> <span class="ow">in</span> <span class="n">progress</span><span class="p">(</span><span class="n">simulations</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Simulation&quot;</span><span class="p">):</span>
         <span class="n">sim_lipids_mf</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">membrane_composition</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="s2">&quot;molar&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">sim_ions_mf</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">solution_composition</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="s2">&quot;molar&quot;</span><span class="p">)</span>
@@ -306,7 +305,7 @@
         <span class="n">log_pairs</span><span class="p">(</span><span class="n">pairs_ff</span><span class="p">,</span> <span class="n">logf</span><span class="p">)</span>
 
     <span class="c1"># save changed simulations</span>
-    <span class="k">for</span> <span class="n">simulation</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">simulations</span><span class="p">,</span> <span class="s2">&quot;Saving READMEs&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">simulation</span> <span class="ow">in</span> <span class="n">progress</span><span class="p">(</span><span class="n">simulations</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Saving READMEs&quot;</span><span class="p">):</span>
         <span class="n">outfile_dict</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">FMDL_SIMU_PATH</span><span class="p">,</span> <span class="n">simulation</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="s2">&quot;README.yaml&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfile_dict</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;path&quot;</span> <span class="ow">in</span> <span class="n">simulation</span><span class="p">:</span>
