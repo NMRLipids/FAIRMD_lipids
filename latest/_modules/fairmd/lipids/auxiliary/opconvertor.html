@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.auxiliary.opconvertor &mdash; FAIRMD Lipids v1.4.1.dev8+gc5111efef 1.4.1.dev8+gc5111efef documentation</title>
+  <title>fairmd.lipids.auxiliary.opconvertor &mdash; FAIRMD Lipids v1.4.1.dev9+g3271937ed 1.4.1.dev9+g3271937ed documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=cab25489"></script>
+      <script src="../../../../_static/documentation_options.js?v=99a92dc8"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.1.dev8+gc5111efef
+            FAIRMD Lipids v1.4.1.dev9+g3271937ed
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.4.1.dev8+gc5111efef</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.4.1.dev9+g3271937ed</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -85,6 +85,8 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">natsort</span><span class="w"> </span><span class="kn">import</span> <span class="n">natsorted</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lipid</span>
 
 
@@ -93,7 +95,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">NamingRegistry</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Registry for naming conventions.&quot;&quot;&quot;</span>
 
-    <span class="n">_registry</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_registry</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_register</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -102,62 +104,91 @@
 <span class="sd">        :param name: Name of the fragment.</span>
 <span class="sd">        :param func: Function implementing the convention.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">func</span><span class="p">)]</span>
 
 <div class="viewcode-block" id="NamingRegistry.apply">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.auxiliary.opconvertor.html#fairmd.lipids.auxiliary.opconvertor.NamingRegistry.apply">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opdic</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply a naming convention functions.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opdic</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make whatever required to apply naming conventions to fragmentized dictionary.</span>
 
 <span class="sd">        :param opdic: Fragmented dictionary.</span>
-<span class="sd">        :return: Function implementing the convention.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">frag_name</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_apply_naming</span><span class="p">(</span><span class="n">opdic</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_apply_sorting</span><span class="p">(</span><span class="n">opdic</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_sorting</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opdic</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort every fragment list by C atom number.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">frag_name</span> <span class="ow">in</span> <span class="n">opdic</span><span class="p">:</span>
+            <span class="n">opdic</span><span class="p">[</span><span class="n">frag_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">natsorted</span><span class="p">(</span><span class="n">opdic</span><span class="p">[</span><span class="n">frag_name</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;__&quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">])</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_naming</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">opdic</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply naming conventions to the fragmented dictionary.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">frag_func</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">:</span>
+            <span class="n">frag_name</span><span class="p">,</span> <span class="n">func</span> <span class="o">=</span> <span class="n">frag_func</span>
             <span class="k">if</span> <span class="n">frag_name</span> <span class="ow">in</span> <span class="n">opdic</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">opdic</span><span class="p">[</span><span class="n">frag_name</span><span class="p">])):</span>
                     <span class="n">opdic</span><span class="p">[</span><span class="n">frag_name</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">opdic</span><span class="p">[</span><span class="n">frag_name</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
             <span class="k">elif</span> <span class="n">frag_name</span> <span class="o">==</span> <span class="s2">&quot;_all_&quot;</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">opdic</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">opdic</span><span class="p">[</span><span class="n">f</span><span class="p">])):</span>
-                        <span class="n">opdic</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">opdic</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="n">i</span><span class="p">])</span></div>
-
+                        <span class="n">opdic</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">opdic</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
 
     <span class="c1"># initialize the registry</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_initialize</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">_snX_c_renamer</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_snX_c_renamer</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>  <span class="c1"># noqa: N802</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;M_G[12]C([0-9]{1,2})_M&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected C format: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">row</span>
 
         <span class="bp">cls</span><span class="o">.</span><span class="n">_register</span><span class="p">(</span><span class="s2">&quot;sn-1&quot;</span><span class="p">,</span> <span class="n">_snX_c_renamer</span><span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_register</span><span class="p">(</span><span class="s2">&quot;sn-2&quot;</span><span class="p">,</span> <span class="n">_snX_c_renamer</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_gbb_c_renamer</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;M_G([1-3])_M&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected C format: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;C&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;g</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;g</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">return</span> <span class="n">row</span>
 
         <span class="bp">cls</span><span class="o">.</span><span class="n">_register</span><span class="p">(</span><span class="s2">&quot;glycerol backbone&quot;</span><span class="p">,</span> <span class="n">_gbb_c_renamer</span><span class="p">)</span>
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">_h_renamer</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;M_.+H([1-4])&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected H format: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;H&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">row</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-
+        <span class="k">def</span><span class="w"> </span><span class="nf">_headgroup_c_renamer</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;M_G3C4_M&quot;</span><span class="p">:</span>
+                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;α&quot;</span>
+            <span class="k">elif</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;M_G3C5_M&quot;</span><span class="p">:</span>
+                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;β&quot;</span>
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;M_G3N6C[1-3]_M&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]):</span>
+                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;γ&quot;</span>
             <span class="k">return</span> <span class="n">row</span>
 
-        <span class="bp">cls</span><span class="o">.</span><span class="n">_register</span><span class="p">(</span><span class="s2">&quot;_all_&quot;</span><span class="p">,</span> <span class="n">_h_renamer</span><span class="p">)</span></div>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_register</span><span class="p">(</span><span class="s2">&quot;headgroup&quot;</span><span class="p">,</span> <span class="n">_headgroup_c_renamer</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_h_renamer</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;M_.+H([1-4])_M&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">row</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_register</span><span class="p">(</span><span class="s2">&quot;_all_&quot;</span><span class="p">,</span> <span class="n">_h_renamer</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_plain_c_renamer</span><span class="p">(</span><span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;M_C([0-9]+)_M&quot;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">match</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">row</span><span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">row</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_register</span><span class="p">(</span><span class="s2">&quot;_all_&quot;</span><span class="p">,</span> <span class="n">_plain_c_renamer</span><span class="p">)</span></div>
 
 
 
@@ -183,7 +214,8 @@
         <span class="k">for</span> <span class="n">apair</span><span class="p">,</span> <span class="n">opvals</span> <span class="ow">in</span> <span class="n">src</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">atom_c</span><span class="p">,</span> <span class="n">atom_h</span> <span class="o">=</span> <span class="n">apair</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">atom_c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mdict</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Atom </span><span class="si">{</span><span class="n">atom_c</span><span class="si">}</span><span class="s2"> not found in mapping dictionary.&quot;</span><span class="p">)</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Atom </span><span class="si">{</span><span class="n">atom_c</span><span class="si">}</span><span class="s2"> not found in mapping dictionary.&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">frag_c</span> <span class="o">=</span> <span class="n">mdict</span><span class="p">[</span><span class="n">atom_c</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">frag_c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
                 <span class="n">r</span><span class="p">[</span><span class="n">frag_c</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
