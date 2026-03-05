@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.molecules &mdash; FAIRMD Lipids v1.4.1.dev9+g3271937ed 1.4.1.dev9+g3271937ed documentation</title>
+  <title>fairmd.lipids.molecules &mdash; FAIRMD Lipids v1.4.1.dev10+g897a9d93d 1.4.1.dev10+g897a9d93d documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=99a92dc8"></script>
+      <script src="../../../_static/documentation_options.js?v=7b161d58"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.1.dev9+g3271937ed
+            FAIRMD Lipids v1.4.1.dev10+g897a9d93d
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.4.1.dev9+g3271937ed</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.4.1.dev10+g897a9d93d</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -77,12 +77,10 @@
              
   <h1>Source code for fairmd.lipids.molecules</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">:module: settings/molecules.py</span>
+<span class="sd">Define classes for molecules (lipids, ions, etc.) and their sets.</span>
 
-<span class="sd">:description: Module file with definition of different global-level dictionaries.</span>
-
-<span class="sd">There is a dictionary of lipids, ions, etc. If you add a lipid which is not yet</span>
-<span class="sd">in the databank, you have to add it here!</span>
+<span class="sd">File defines crucial API classes for working with molecules.</span>
+<span class="sd">There is a dictionary of lipids, ions, etc. with their metadata and mapping files.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">fnmatch</span>
@@ -125,10 +123,14 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="n">message</span>
-        <span class="k">elif</span> <span class="n">mol</span><span class="o">.</span><span class="n">mapping_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">mol</span><span class="o">.</span><span class="n">_can_load_mapping</span><span class="p">():</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;From </span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;From </span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">mol</span><span class="o">.</span><span class="n">mapping_file</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">message</span>
+            <span class="k">if</span> <span class="n">mol</span><span class="o">.</span><span class="n">_mapping_fpath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">disp_name</span> <span class="o">=</span> <span class="s2">&quot;naming.yaml&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">disp_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">,</span> <span class="n">FMDL_MOL_PATH</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;From </span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">disp_name</span><span class="si">}</span><span class="s2">]: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">message</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="n">mol</span><span class="p">)</span></div>
 
 
@@ -173,7 +175,6 @@
                 <span class="k">raise</span> <span class="n">MoleculeMappingError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="n">fname</span> <span class="o">=</span> <span class="n">_possible_mfiles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># take the first one</span>
         <span class="c1"># set mapping file path</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disp_mapping</span> <span class="o">=</span> <span class="n">fname</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path</span><span class="p">(),</span> <span class="n">fname</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Cannot find &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="si">}</span><span class="s2">&#39; mapping for molecule </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -208,17 +209,21 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mapping_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return mapping dictionary (load on first call)&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_can_load_mapping</span><span class="p">():</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Mapping file is not registered!&quot;</span>
             <span class="k">raise</span> <span class="n">MoleculeError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span>  <span class="c1"># yaml.load(yaml_file, Loader=yaml.FullLoader)</span>
-            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Error opening mapping-file!&quot;</span>
-                <span class="k">raise</span> <span class="n">MoleculeError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># load on first request</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_mapping_dict</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_mapping_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load mapping dictionary from the registered mapping file.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">)</span>  <span class="c1"># yaml.load(yaml_file, Loader=yaml.FullLoader)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Error opening mapping-file!&quot;</span>
+            <span class="k">raise</span> <span class="n">MoleculeError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
 <div class="viewcode-block" id="Molecule.md2uan">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.molecules.html#fairmd.lipids.molecules.Molecule.md2uan">[docs]</a>
@@ -230,6 +235,12 @@
 <span class="sd">        :return: Universal Atom Name (str)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">universal_name</span><span class="p">,</span> <span class="n">mrecord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;ATOMNAME&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mrecord</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;ATOMNAME field is missing for </span><span class="si">{</span><span class="n">universal_name</span><span class="si">}</span><span class="s2"> in mapping dictionary.&quot;</span>  <span class="c1"># !</span>
+                    <span class="s2">&quot; MD mapping is not possible.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">MoleculeMappingError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="n">mapping_aname</span> <span class="o">=</span> <span class="n">mrecord</span><span class="p">[</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
             <span class="c1"># MDAnalysis uses fnmatch patterns for selection language</span>
             <span class="c1"># https://userguide.mdanalysis.org/stable/selections.html</span>
@@ -252,6 +263,9 @@
 <span class="sd">        :raises KeyError: if the universal name is not found in the mapping.</span>
 <span class="sd">        :return: selection string for MDAnalysis</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;ATOMNAME&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">uname</span><span class="p">]:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ATOMNAME field is missing for </span><span class="si">{</span><span class="n">uname</span><span class="si">}</span><span class="s2"> in mapping dictionary. MD mapping is not possible.&quot;</span>
+            <span class="k">raise</span> <span class="n">MoleculeMappingError</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">anm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">uname</span><span class="p">][</span><span class="s2">&quot;ATOMNAME&quot;</span><span class="p">]</span>
         <span class="n">selstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;name </span><span class="si">{</span><span class="n">anm</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;RESIDUE&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">[</span><span class="n">uname</span><span class="p">]:</span>
@@ -270,7 +284,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__check_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_molname</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disp_mapping</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -312,10 +325,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Molecule name&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molname</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">mapping_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mapping file name&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disp_mapping</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_can_load_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Is mapping registered for the molecule?&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_fpath</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
     <span class="c1"># comparison by name to behave in a set</span>
     <span class="c1"># It&#39;s case-insesitive as folder structure should work on mac/win</span>
@@ -356,6 +368,40 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Metadata file not found for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_can_load_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">super_is_reg</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_can_load_mapping</span><span class="p">()</span>
+        <span class="n">naming_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path</span><span class="p">(),</span> <span class="s2">&quot;naming.yaml&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">super_is_reg</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">naming_path</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_mapping_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_can_load_mapping</span><span class="p">():</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_load_mapping_dict</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_naming_dict</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_naming_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load naming dictionary from `naming.yaml` file if it exists.</span>
+
+<span class="sd">        Updates existing mapping dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">naming_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_path</span><span class="p">(),</span> <span class="s2">&quot;naming.yaml&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">naming_path</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">naming_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
+                <span class="n">_naming_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_file</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">unm</span><span class="p">,</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">_naming_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">unm</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fragments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return list of fragments for the lipid.&quot;&quot;&quot;</span>
+        <span class="n">frags</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">mrecord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">frag</span> <span class="o">=</span> <span class="n">mrecord</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">)</span>
+            <span class="n">frags</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">frag</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">frags</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
