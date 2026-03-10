@@ -4,6 +4,7 @@
 [![documentation-stable](https://img.shields.io/badge/📚_documentation-stable-sucess)](https://nmrlipids.github.io/FAIRMD_lipids/)
 [![documentation-latest](https://img.shields.io/badge/📒_documentation-latest-yellow)](https://nmrlipids.github.io/FAIRMD_lipids/latest/index.html)
 [![coverage](https://codecov.io/gh/NMRLipids/FAIRMD_lipids/branch/main/graph/badge.svg)](https://codecov.io/gh/NMRLipids/FAIRMD_lipids)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18679885.svg)](https://doi.org/10.5281/zenodo.18679885)
 
 This is the FAIRMD Lipids &mdash; an API package for the community-driven catalogue 
 FAIRMD Lipid Databank (formerly NMRlipids Databank) containing atomistic MD

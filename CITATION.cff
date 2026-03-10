@@ -1,0 +1,150 @@
+cff-version: 1.2.1
+title: FAIRMD_lipids
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: comcon1
+    family-names: Nesterenko
+    given-names: Alexey
+  - name: ohsOllila
+    family-names: Ollila
+    given-names: O. H. Samuli
+  - name: batukav
+    family-names: Kav
+    given-names: Batuhan
+  - name: MagnusSletten
+  - name: larabort
+  - name: PicoCentauri
+    family-names: Loche
+    given-names: Philip
+  - name: thraindk
+    given-names: Cedric
+  - name: markussmiettinen
+    family-names: Miettinen
+    given-names: Markus
+  - name: fsuarezleston
+    family-names: Suárez-Lestón
+    given-names: Fabián
+  - name: pbuslaev
+  - name: mdondrup
+    family-names: Dondrup
+    given-names: Michael
+  - name: korbinib
+    family-names: Bösl
+    given-names: Korbinian
+    orcid: https://orcid.org/0000-0003-0498-4273
+  - name: hsantila
+  - name: akiirik
+  - name: JHoeflich1
+  - name: jagdep-singh
+  - name: suviheinonen
+  - name: awurl
+    family-names: Wurl
+    given-names: Anika
+  - name: PEFrankel
+  - name: hseara
+    family-names: Martinez-Seara
+    given-names: Hector
+  - names: tfmFerreira 
+    family-names: Ferreira
+    given-names: Tiago M.
+  - names: yesthisisarne
+  - names: MelbourneFL
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.7875567
+    description: zenodo archive of version 1.4.0 of FAIRMD_lipids
+repository-code: 'https://github.com/NMRLipids/FAIRMD_lipids'
+url: 'https://databank2.nmrlipids.fi/'
+repository-artifact: 'https://pypi.org/project/fairmd-lipids/'
+abstract: >-
+  This is the FAIRMD Lipids — an API package for the
+  community-driven catalogue FAIRMD Lipid Databank (formerly
+  NMRlipids Databank) containing atomistic MD simulations of
+  biologically relevant lipid membranes emerging from the
+  NMRlipids Open Collaboration.
+keywords:
+  - Membrane
+  - Biophysics
+  - Molecular dynamics simulation
+  - intrinsic disorder
+  - Lipid
+license: GPL-3.0
+commit: 20461841753107a13497cfe2a2635c55a7f83c14
+version: 1.4.0
+date-released: '2026-02-16'
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Kiirikki
+      given-names: Anne M.
+    - family-names: Antila
+      given-names: Hanne S.
+    - family-names: Bort
+      given-names: Lara S.
+    - family-names: Buslaev
+      given-names: Pavel
+    - family-names: Favela-Rosales
+      given-names: Fernando
+    - family-names: Ferreira
+      given-names: Tiago Mendes
+    - family-names: Fuchs
+      given-names: Patrick F. J.
+    - family-names: Garcia-Fandino
+      given-names: Rebeca
+    - family-names: Gushchin
+      given-names: Ivan
+    - family-names: Kav
+      given-names: Batuhan
+    - family-names: Kučerka
+      given-names: Norbert
+    - family-names: Kula
+      given-names: Patrik
+    - family-names: Kurki
+      given-names: Milla
+    - family-names: Kuzmin
+      given-names: Alexander
+    - family-names: Lalitha
+      given-names: Anusha
+    - family-names: Lolicato
+      given-names: Fabio
+    - family-names: Madsen
+      given-names: Jesper J.
+    - family-names: Miettinen
+      given-names: Markus S.
+    - family-names: Mingham
+      given-names: Cedric
+    - family-names: Monticelli
+      given-names: Luca
+    - family-names: Nencini
+      given-names: Ricky
+    - family-names: Nesterenko
+      given-names: Alexey M.
+    - family-names: Piggot
+      given-names: Thomas J.
+    - family-names: Piñeiro
+      given-names: Ángel
+    - family-names: Reuter
+      given-names: Nathalie
+    - family-names: Samantray
+      given-names: Suman
+    - family-names: Suárez-Lestón
+      given-names: Fabián
+    - family-names: Talandashti
+      given-names: Reza
+    - family-names: Ollila
+      given-names: O. H. Samuli
+  title: Overlay Databank Unlocks Data-Driven Analyses of Biomolecules for All
+  journal: Nature Communications
+  volume: 15
+  issue: 1
+  pages: 1136
+  year: 2024
+  month: 2
+  issn: 2041-1723
+  doi: 10.1038/s41467-024-45189-z
+  abstract: >-
+    Tools based on artificial intelligence (AI) are currently revolutionising many fields, yet their applications are often limited by the lack of suitable training data in programmatically accessible format. Here we propose an effective solution to make data scattered in various locations and formats accessible for data-driven and machine learning applications using the overlay databank format. To demonstrate the practical relevance of such approach, we present the NMRlipids Databank—a community-driven, open-for-all database featuring programmatic access to quality-evaluated atom-resolution molecular dynamics simulations of cellular membranes. Cellular membrane lipid composition is implicated in diseases and controls major biological functions, but membranes are difficult to study experimentally due to their intrinsic disorder and complex phase behaviour. While MD simulations have been useful in understanding membrane systems, they require significant computational resources and often suffer from inaccuracies in model parameters. Here, we demonstrate how programmable interface for flexible implementation of data-driven and machine learning applications, and rapid access to simulation data through a graphical user interface, unlock possibilities beyond current MD simulation and experimental studies to understand cellular membranes. The proposed overlay databank concept can be further applied to other biomolecules, as well as in other fields where similar barriers hinder the AI revolution.
+
