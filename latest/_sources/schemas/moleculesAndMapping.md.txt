@@ -3,61 +3,12 @@
 # Universal molecule and atom names
 
 ## Molecule names
-To enable automatic analyses over all simulations, universal names for molecules are defined in the FAIRMD Lipids as listed in the table below. These names are connected to simulation specific molecule names using the COMPOSITION dictionary in README.yaml files.
+To enable automatic analyses over all simulations, universal names for molecules are defined
+in the FAIRMD Lipids as listed in the table below. These names are connected to simulation
+specific molecule names using the `MEMBRANE_COMPOSITION` dictionary in `README.yaml` files.
+Note that the content of the table is loaded dynamically from [FAIRMD Lipids web portal](https://databank2.nmrlipids.fi).
 
-Abbreviation | Molecule name 
------------- | -------------
-POPC |  1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine
-POPG |  1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoglycerol
-POPS | 1-palmitoyl-2-oleoyl-sn-glycero-3-phospho-L-serine
-POPE | 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoethanolamine
-PYPC | 1-(16:0)-2-(16:1$^\Delta9$)-sn-glycero-3-phosphocholine
-PAzePCprot | 1-palmitoyl-2-azelaoyl-sn-glycero-3-phosphocholine protonated
-PAzePCdeprot | 1-palmitoyl-2-azelaoyl-sn-glycero-3-phosphocholine deprotonated
-DMPC | 1,2-dimyristoyl-sn-glycero-3-phosphocholine
-DPPC | 1,2-dipalmitoyl-sn-glycero-3-phosphocholine
-DPPE | 1,2-dipalmitoyl-sn-glycero-3-phosphoethanolamine
-DPPG | 1,2-dipalmitoyl-sn-glycero-3-phospho-(1'-rac-glycerol) (sodium salt)
-DEPC | 1,2-dierucoyl-sn-glycero-3-phosphocholine
-DRPC | 1,2-(14:1$^\Delta9$)-sn-glycero-3-phosphocholine
-DYPC | 1,2-(16:1$^\Delta9$)-sn-glycero-3-phosphocholine
-DLPC | 1,2-dilauroyl-sn-glycero-3-phosphocholine
-DLIPC| 1,2-dilinoleoyl-sn-glycero-3-phosphocholine
-DOG  | 1,2-dioleoyl-sn-glycerol
-DOPC | 1,2-dioleoyl-sn-glycero-3-phosphocholine
-DOPE | 1,2-dioleoyl-sn-glycero-3-phosphoethanolamine
-DDOPC| 1,2-didocosahexaenoyl-sn-glycero-3-phosphocholine
-DOPS | 1,2-dioleoyl-sn-glycero-3-phospho-L-serine
-DSPC | 1,2-distearoyl-sn-glycero-3-phosphocholine
-DAPC | 1,2-diarachidonoyl-sn-glycero-3-phosphocholine
-SLiPC | 1-(18:0)-2-(18:2 $^{\Delta9,12}$)-sn-glycero-3-phosphocholine 
-DMTAP | 1,2-dimyristoyl-3-trimethylammonium-propane
-GM1  | GM1 Ganglioside
-SOPC | 1-stearoyl-2-oleoyl-sn-glycero-3-phosphocholine
-POPI | 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoinositol 
-SAPI | 1-stearoyl-2-arachidonoyl-sn-glycero-3-phosphoinositol
-SAPI24 | 1-stearoyl-2-arachidonoyl-sn-glycero-3-phospho-(1'-myo-inositol-4',5'-bisphosphate)
-SLPI | 1-stearoyl-2-lauroyl-sn-glycero-3-phosphoinositol
-SDG | 1-stearoyl-2-docosahexaenoyl-sn-glycerol
-SDPE | 1-stearoyl-2-docosahexaenoyl-sn-glycero-3-phosphoethanolamine
-SM16 | N-palmitoyl-D-erythro-sphingosylphosphorylcholine
-SM18 | N-stearoyl-D-erythro-sphingosylphosphorylcholine
-TOCL | 1',3'-Bis[1,2-dioleoyl-sn-glycero-3-phospho]-glycerol
-TLCL | tetralinoleoyl cardiolipin
-CER  | N-palmitoyl-D-erythro-sphingosine
-CER180 | N-stearoyl-D-erythro-sphingosine
-CHOL | cholesterol 
-DCHOL | 18,19-di-nor-cholesterol
-DHMDMAB | dihexadecyldimethylammonium
-DPPGK | 1,2-dioleoyl-sn-glycero-3-[phospho-rac-(3-lysyl(1-glycerol))] (lysyl-PG)
-POT | potassium ion 
-SOD | sodium ion 
-CLA | chloride ion
-CAL | calcium ion 
-CES | caesium ion
-C20 | n-eicosane
-SOL | water 
-
+<iframe src="https://databank2.nmrlipids.fi/lipids?items_per_page=all&embed=1" width="100%" height="400px" frameborder="0"></iframe>
 
 ## Universal atom names in mapping files
 To enable automatic analyses over all simulations, universal atom names for each molecule are defined in the FAIRMD Lipids using the **mapping files**. In these files, universal atom names are connected to simulation specific atom names using python dictionaries stored in yaml file format. The first key in the mapping file dictionary is the universal atom name, second keys define the simulation specific atom name (`ATOMNAME`) and molecule fragment (`FRAGMENT:` head group, glycerol backbone, sn-1 or sn-2). For example, the beginning of the mapping file for CHARMM36 POPC looks like this:
@@ -84,7 +35,11 @@ To enable automatic analyses over all simulations, universal atom names for each
     .
     .
 
-Universal atom names start with "M_" flag and ends with "_M" flag. In the actual naming convention between the flags, the first two characters define in which glycerol backbone chain the atoms attached (G1, G2 or G3), third character tells the atom type and fourth character tells the counting number from the glycerol backbone carbon. If there are hydrogens or other atoms attached to the main chain, those will be added to the end of the naming. More details can be found from [the original NMRlipids project post defining the mapping files](https://nmrlipids.blogspot.com/2015/03/mapping-scheme-for-lipid-atom-names-for.html). Examples already existing mapping files can be found in [the Toy Databank](https://github.com/NMRLipids/FAIRMD_lipids/tree/main/src/fairmd/lipids/data/ToyData/Molecules).
+Universal atom names start with "M_" flag and ends with "_M" flag. 
+
+## Glycerolipids naming convention
+
+In the actual naming convention between the flags, the first two characters define in which glycerol backbone chain the atoms attached (G1, G2 or G3), third character tells the atom type and fourth character tells the counting number from the glycerol backbone carbon. If there are hydrogens or other atoms attached to the main chain, those will be added to the end of the naming. More details can be found from [the original NMRlipids project post defining the mapping files](https://nmrlipids.blogspot.com/2015/03/mapping-scheme-for-lipid-atom-names-for.html). Examples already existing mapping files can be found in [the Toy Databank](https://github.com/NMRLipids/FAIRMD_lipids/tree/main/src/fairmd/lipids/data/ToyData/Molecules).
 
 ## Cardiolipin universal naming conventions
 
@@ -108,3 +63,15 @@ If you add a lipid of this family, you can stick to following namings:
                G32C4              G11C4
                 ..                 ..
 ```
+
+## Sphingolipids naming convention
+
+Shpingosine chain of sphingolipids is named according to the numeration of sphingosine, i.e., `M_C1_M`, `M_C2_M`, etc.
+Hydroxy-group is called `M_C3O1_M`, `M_C3O1H1_M`, accordingly.
+N-atom is called `M_N1_M`. N-attached fatty acid is named as `M_N1C1_M`, `M_N1C2_M`, etc.
+Choline/ethanolamine headgroups should be named according to glycerolipid convention.
+
+## Cholesterol
+
+Cholesterol and its derivatives are named according to IUPAC numbering: `M_Ci_M` and `M_CiHj_M`.
+Hydroxy-group is named according to the attached carbon: `M_C3O1_M`.
