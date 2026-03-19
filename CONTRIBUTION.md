@@ -25,7 +25,7 @@ We are using automatic testing with `pytest` please consult (test-README)[Script
 4. You must make sure that the tests don't break before you make a PR.
 5. We don't oblige contributors to squash commits. We appreciate if the commit has a considerable size.
 6. We require at least one review from organisation member to accept a pull-request.
-7. Check representation of yourself in `AUTHORS.md` file.
+7. Check representation of yourself in the `AUTHORS.md` and `CITATION.cff` files.
 8. You are always welcome to participate in repository discussions and NMRlipids community events to develop code together.
 
 # PATH handling in our code
