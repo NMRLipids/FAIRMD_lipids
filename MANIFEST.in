@@ -3,6 +3,7 @@ graft src
 include AUTHORS.md
 include LICENSE
 include README.md
+include CITATION.cff
 
 prune .github
 prune .tox
