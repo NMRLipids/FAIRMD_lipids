@@ -48,7 +48,7 @@ analyses enabled by the FAIRMD Lipids API see the `FAIRMD Lipids manuscript
 
 Functions available for simulation analyses are described in :mod:`fairmd.lipids.core`
 and :mod:`fairmd.lipids.databankLibrary`. A project `Databank template
-<https://github.com/NMRLipids/databank-template>`_ designed to intialize projects that
+<https://github.com/NMRLipids/databank-template>`_ designed to initialize projects that
 analyse data from FAIRMD Lipids contains a `minimum example for looping over available
 simulations
 <https://github.com/NMRLipids/databank-template/blob/main/scripts/template.ipynb>`_. For
@@ -82,7 +82,7 @@ are here:
    after the approval of your submission by one of the NMRlipids contributors.
 
 Experimental data addition is currently not automatized and should be performed manually
-via making pull request to the BilayerData repository. The instrutions are available at
+via making pull request to the BilayerData repository. The instructions are available at
 :ref:`addingExpData`.
 
 Do not hesitate to ask assistance regarding data addition on the GitHub page of
@@ -96,11 +96,11 @@ The code has been tested in Linux, MacOS and Windows environment with python 3.1
 newer and recent `Gromacs
 <https://manual.gromacs.org/current/install-guide/index.html>`_ version installed.
 
-Setup is straingforward using ``pip`` or ``uv pip``:
+Setup is straightforward using ``pip`` or ``uv pip``:
 
 .. code-block:: bash
 
-   pip install nmrlipids_databank
+   pip install fairmd-lipids
    fmdl_initialize_data dev
    source databank_env.rc
 
