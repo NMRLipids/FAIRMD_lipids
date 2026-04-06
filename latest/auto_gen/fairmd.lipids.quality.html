@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.quality module &mdash; FAIRMD Lipids v1.4.1.dev16+g6733204bf 1.4.1.dev16+g6733204bf documentation</title>
+  <title>fairmd.lipids.quality module &mdash; FAIRMD Lipids v1.4.1.dev41+gbb289bb0c 1.4.1.dev41+gbb289bb0c documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d5862957"></script>
+      <script src="../_static/documentation_options.js?v=b7fadd83"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.1.dev16+g6733204bf
+            FAIRMD Lipids v1.4.1.dev41+gbb289bb0c
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,7 +60,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.4.1.dev16+g6733204bf</a>
+          <a href="../index.html">FAIRMD Lipids v1.4.1.dev41+gbb289bb0c</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -82,100 +82,174 @@
              
   <section id="module-fairmd.lipids.quality">
 <span id="fairmd-lipids-quality-module"></span><h1>fairmd.lipids.quality module<a class="headerlink" href="#module-fairmd.lipids.quality" title="Link to this heading"></a></h1>
-<p>Module <cite>quality</cite> accumulate functions required for major QualityEvaluation script.
-TODO: add tests
-TODO: remove code duplication and commented code</p>
+<p>Accumulate functions required for major evaluate_quality script.</p>
+<p>TODO: add proper tests</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="fairmd.lipids.quality.QualSimulation">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">QualSimulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ff_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#QualSimulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.QualSimulation" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">QualSimulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#QualSimulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.QualSimulation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="fairmd.lipids.core.html#fairmd.lipids.core.System" title="fairmd.lipids.core.System"><code class="xref py py-class docutils literal notranslate"><span class="pre">System</span></code></a></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.QualSimulation.get_lipids">
-<span class="sig-name descname"><span class="pre">get_lipids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LipidSet[{'TOCL',</span> <span class="pre">'DPPC',</span> <span class="pre">'CHOL',</span> <span class="pre">'BOG',</span> <span class="pre">'POPC',</span> <span class="pre">'POPE'}]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#QualSimulation.get_lipids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.QualSimulation.get_lipids" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.QualSimulation.molar_fraction">
-<span class="sig-name descname"><span class="pre">molar_fraction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">LipidSet[{'TOCL',</span> <span class="pre">'DPPC',</span> <span class="pre">'CHOL',</span> <span class="pre">'BOG',</span> <span class="pre">'POPC',</span> <span class="pre">'POPE'}]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#QualSimulation.molar_fraction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.QualSimulation.molar_fraction" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="fairmd.lipids.quality.QualSimulation.load_all_paired">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">load_all_paired</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fairmd.lipids.quality.QualSimulation" title="fairmd.lipids.quality.QualSimulation"><span class="pre">QualSimulation</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#QualSimulation.load_all_paired"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.QualSimulation.load_all_paired" title="Link to this definition"></a></dt>
+<dd><p>Load simulations with experimental pairings.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.Experiment">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#Experiment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.Experiment" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dt class="sig sig-object py" id="fairmd.lipids.quality.QualityEvaluator">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">QualityEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#fairmd.lipids.quality.QualSimulation" title="fairmd.lipids.quality.QualSimulation"><span class="pre">QualSimulation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.experiment.html#fairmd.lipids.experiment.ExperimentCollection" title="fairmd.lipids.experiment.ExperimentCollection"><span class="pre">ExperimentCollection</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#QualityEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.QualityEvaluator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Interface for quality evaluation of simulation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.QualityEvaluator.evaluate_one">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">evaluate_one</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#QualityEvaluator.evaluate_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.QualityEvaluator.evaluate_one" title="Link to this definition"></a></dt>
+<dd><p>Evaluate quality for one simulation.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.prob_S_in_g">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">prob_S_in_g</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">OP_exp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OP_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_sim_sd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#prob_S_in_g"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.prob_S_in_g" title="Link to this definition"></a></dt>
-<dd><p>Main quality function computing the quality value from experimental and
-simulation OP data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.QualityEvaluator.save_results">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">save_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#QualityEvaluator.save_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.QualityEvaluator.save_results" title="Link to this definition"></a></dt>
+<dd><p>Save quality evaluation results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.QualityEvaluator.prob_2_within_trustinterval">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prob_2_within_trustinterval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xerr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yerr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ArrayLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ArrayLike</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#QualityEvaluator.prob_2_within_trustinterval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.QualityEvaluator.prob_2_within_trustinterval" title="Link to this definition"></a></dt>
+<dd><p>Compute the probability of two vals being a part of one distribution.</p>
+<p>Used quality value from experimental and simulation OP data.
+Probability is computed using Eq. (3) [10.1038/s41467-024-45189-z].</p>
+<p>NOTE: Computing the probability taking into account small values using
+scipy.special.log1p is not required if sd is above 1e-5, which is
+currently the case for all OP data. It is also not required if we are
+not going to bring values to log-scale.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>OP_exp</strong> (<em>float</em>) – Experimental OP value</p></li>
-<li><p><strong>exp_error</strong> (<em>float</em>) – Experimental error</p></li>
-<li><p><strong>OP_sim</strong> (<em>float</em>) – Simulated OP value</p></li>
-<li><p><strong>op_sim_sd</strong> (<em>float</em>) – Standard deviation from simulation</p></li>
+<li><p><strong>xv</strong> – Experimental OP value (all float/arrays)</p></li>
+<li><p><strong>xerr</strong> – Experimental error</p></li>
+<li><p><strong>yv</strong> – Simulated OP value</p></li>
+<li><p><strong>yerr</strong> – Standard deviation from simulation</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>float</strong></p>
+<dd class="field-even"><p><strong>float/ndarray</strong></p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>single-OP quality value or NaN</p>
+<dd class="field-odd"><p>probability value(s) or nans</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.get_fragments">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">get_fragments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mapping_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#get_fragments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.get_fragments" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.filterCH">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">filterCH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragments</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#filterCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.filterCH" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.checkForCH">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">checkForCH</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragments</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#checkForCH"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.checkForCH" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.evaluated_percentage">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">evaluated_percentage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_op_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#evaluated_percentage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.evaluated_percentage" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.fragmentQuality">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">fragmentQuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_op_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_op_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#fragmentQuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.fragmentQuality" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.fragmentQualityAvg">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">fragmentQualityAvg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lipid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment_qual_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragments</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#fragmentQualityAvg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.fragmentQualityAvg" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.systemQuality">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">systemQuality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system_fragment_qualities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#systemQuality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.systemQuality" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.calc_k_e">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">calc_k_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SimExpData</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#calc_k_e"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.calc_k_e" title="Link to this definition"></a></dt>
-<dd><p>Scaling factor as defined by Kučerka et al. 2008b,</p>
-<p>doi:10.1529/biophysj.107.122465</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.get_ffq_scaling">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">get_ffq_scaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ffd_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ffd_exp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#get_ffq_scaling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.get_ffq_scaling" title="Link to this definition"></a></dt>
-<dd><p>Calculate form factor quality and plot scaling factor for a simulation-experiment pair.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.OPQualityEvaluator">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">OPQualityEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#fairmd.lipids.quality.QualSimulation" title="fairmd.lipids.quality.QualSimulation"><span class="pre">QualSimulation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.experiment.html#fairmd.lipids.experiment.ExperimentCollection" title="fairmd.lipids.experiment.ExperimentCollection"><span class="pre">ExperimentCollection</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#OPQualityEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.OPQualityEvaluator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#fairmd.lipids.quality.QualityEvaluator" title="fairmd.lipids.quality.QualityEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualityEvaluator</span></code></a></p>
+<p>Evaluate quality of order parameter data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.OPQualityEvaluator.evaluate_one">
+<span class="sig-name descname"><span class="pre">evaluate_one</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#OPQualityEvaluator.evaluate_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.OPQualityEvaluator.evaluate_one" title="Link to this definition"></a></dt>
+<dd><p>Evaluate quality for one simulation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.OPQualityEvaluator.save_results">
+<span class="sig-name descname"><span class="pre">save_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#OPQualityEvaluator.save_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.OPQualityEvaluator.save_results" title="Link to this definition"></a></dt>
+<dd><p>Save quality evaluation results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.OPQualityEvaluator.atomic_quality">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">atomic_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exp_op_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_op_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#OPQualityEvaluator.atomic_quality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.OPQualityEvaluator.atomic_quality" title="Link to this definition"></a></dt>
+<dd><p>Calculate quality for a molecule (times their weights in exp data).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exp_op_data</strong> – dictionary of type {op_uname: [op_value]}.</p></li>
+<li><p><strong>sim_op_data</strong> – dictionary of type {op_uname: [op_value, op_sigma, op_sd]}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary of type {“nC nH”: quality value}.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.OPQualityEvaluator.get_fragments_coverage">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">get_fragments_coverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#OPQualityEvaluator.get_fragments_coverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.OPQualityEvaluator.get_fragments_coverage" title="Link to this definition"></a></dt>
+<dd><p>Calculate the coverage in data of each fragment.</p>
+<p>The coverage is implemented as the percent of non-nans.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fragments</strong> – Dictionary of type {fragment: lists of unames}.</p></li>
+<li><p><strong>q_data</strong> – Dictionary of type {op_uname: quality value}.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of type {fragment: percentage of evaluated OPs}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.OPQualityEvaluator.atomic2fragment_quality">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">atomic2fragment_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atomic_qual_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#OPQualityEvaluator.atomic2fragment_quality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.OPQualityEvaluator.atomic2fragment_quality" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.OPQualityEvaluator.fragment_quality_unite_multexp">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">fragment_quality_unite_multexp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment_qual_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#OPQualityEvaluator.fragment_quality_unite_multexp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.OPQualityEvaluator.fragment_quality_unite_multexp" title="Link to this definition"></a></dt>
+<dd><p>Condition fragment qualities.</p>
+<p>The second-layer function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fragment_qual_perexp</strong> – dictionary of type {expid: {fragment: quality value}}.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary of type {fragment: average quality value}.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.OPQualityEvaluator.system_quality_gather_lipids">
+<span class="sig-name descname"><span class="pre">system_quality_gather_lipids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#OPQualityEvaluator.system_quality_gather_lipids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.OPQualityEvaluator.system_quality_gather_lipids" title="Link to this definition"></a></dt>
+<dd><p>Gather fragment qualities for each lipid in a system and compute system-wide quality.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary of type {macrofragment: quality} where macrofragmetn is headgroup|tails|total.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.FFQualityEvaluator">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">FFQualityEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#fairmd.lipids.quality.QualSimulation" title="fairmd.lipids.quality.QualSimulation"><span class="pre">QualSimulation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="fairmd.lipids.experiment.html#fairmd.lipids.experiment.ExperimentCollection" title="fairmd.lipids.experiment.ExperimentCollection"><span class="pre">ExperimentCollection</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#FFQualityEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.FFQualityEvaluator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#fairmd.lipids.quality.QualityEvaluator" title="fairmd.lipids.quality.QualityEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">QualityEvaluator</span></code></a></p>
+<p>Evaluate quality of form factor data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.FFQualityEvaluator.evaluate_one">
+<span class="sig-name descname"><span class="pre">evaluate_one</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#FFQualityEvaluator.evaluate_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.FFQualityEvaluator.evaluate_one" title="Link to this definition"></a></dt>
+<dd><p>Evaluate quality for one simulation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.FFQualityEvaluator.save_results">
+<span class="sig-name descname"><span class="pre">save_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#FFQualityEvaluator.save_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.FFQualityEvaluator.save_results" title="Link to this definition"></a></dt>
+<dd><p>Save quality evaluation results.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fairmd.lipids.quality.FFQualityEvaluator.calc_ff_quality">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">calc_ff_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ffd_sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ffd_exp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#FFQualityEvaluator.calc_ff_quality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.FFQualityEvaluator.calc_ff_quality" title="Link to this definition"></a></dt>
+<dd><p>Calculate form factor quality.</p>
+<p>Quality calculation is performed as defined by Kučerka et al. 2010, doi:10.1007/s00232-010-9254-5</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -183,21 +257,12 @@ simulation OP data.</p>
 <li><p><strong>ffd_exp</strong> – Experiment FF data (float 2D list)</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Quality value.</p>
+</dd>
 </dl>
-<p>Quality calculation is performed as defined by Kučerka et al. 2010, doi:10.1007/s00232-010-9254-5</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.formfactorQualitySIMtoEXP">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">formfactorQualitySIMtoEXP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simFFdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expFFdata</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#formfactorQualitySIMtoEXP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.formfactorQualitySIMtoEXP" title="Link to this definition"></a></dt>
-<dd><p>Calculate form factor quality for a simulation.</p>
-<p>Quality as defined by Kučerka et al. 2010, doi:10.1007/s00232-010-9254-5</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="fairmd.lipids.quality.load_simulation_qe">
-<span class="sig-prename descclassname"><span class="pre">fairmd.lipids.quality.</span></span><span class="sig-name descname"><span class="pre">load_simulation_qe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fairmd.lipids.quality.QualSimulation" title="fairmd.lipids.quality.QualSimulation"><span class="pre">QualSimulation</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/fairmd/lipids/quality.html#load_simulation_qe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fairmd.lipids.quality.load_simulation_qe" title="Link to this definition"></a></dt>
-<dd><p>Load simulations for quality evaluation.</p>
 </dd></dl>
 
 </section>

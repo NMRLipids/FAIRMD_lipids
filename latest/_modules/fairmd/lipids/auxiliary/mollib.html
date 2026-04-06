@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.auxiliary.mollib &mdash; FAIRMD Lipids v1.4.1.dev16+g6733204bf 1.4.1.dev16+g6733204bf documentation</title>
+  <title>fairmd.lipids.auxiliary.mollib &mdash; FAIRMD Lipids v1.4.1.dev41+gbb289bb0c 1.4.1.dev41+gbb289bb0c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=d5862957"></script>
+      <script src="../../../../_static/documentation_options.js?v=b7fadd83"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.1.dev16+g6733204bf
+            FAIRMD Lipids v1.4.1.dev41+gbb289bb0c
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.4.1.dev16+g6733204bf</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.4.1.dev41+gbb289bb0c</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -200,6 +200,29 @@
             <span class="k">if</span> <span class="n">tail_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tails</span><span class="p">:</span>
                 <span class="n">tails</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tail_id</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">tails</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_fragments">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.auxiliary.mollib.html#fairmd.lipids.auxiliary.mollib.get_fragments">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fragments</span><span class="p">(</span><span class="n">mapping_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get dictionary {fragment:[uname1,uname2,...]} from a mapping dictionary.</span>
+
+<span class="sd">    TODO: This is a function for molecule class. Should be moved there.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fragments</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">key_m</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mapping_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">key_f</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;FRAGMENT&quot;</span><span class="p">,</span> <span class="s2">&quot;n/d&quot;</span><span class="p">)</span>
+        <span class="n">fragments</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">key_f</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key_m</span><span class="p">)</span>
+
+    <span class="c1"># merge glycerol backbone fragment into headgroup fragment</span>
+    <span class="k">if</span> <span class="s2">&quot;glycerol backbone&quot;</span> <span class="ow">in</span> <span class="n">fragments</span> <span class="ow">and</span> <span class="s2">&quot;headgroup&quot;</span> <span class="ow">in</span> <span class="n">fragments</span><span class="p">:</span>
+        <span class="n">fragments</span><span class="p">[</span><span class="s2">&quot;headgroup&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">fragments</span><span class="p">[</span><span class="s2">&quot;glycerol backbone&quot;</span><span class="p">]</span>
+        <span class="n">fragments</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;glycerol backbone&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fragments</span></div>
 
 </pre></div>
 
