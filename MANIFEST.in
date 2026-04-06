@@ -4,6 +4,7 @@ include AUTHORS.md
 include LICENSE
 include README.md
 include CITATION.cff
+include GOVERNANCE.md
 
 prune .github
 prune .tox
