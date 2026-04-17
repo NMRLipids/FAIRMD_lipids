@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analib.formfactor &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
+  <title>fairmd.lipids.analib.formfactor &mdash; FAIRMD Lipids v1.5.0 1.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../../../../_static/documentation_options.js?v=e0a75244"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.0
+            FAIRMD Lipids v1.5.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.4.0</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.5.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -78,34 +78,67 @@
   <h1>Source code for fairmd.lipids.analib.formfactor</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Analysis module for FormFactor curve.&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.interpolate</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.signal</span>
 
 
 <div class="viewcode-block" id="get_mins_from_ffdata">
 <a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.formfactor.html#fairmd.lipids.analib.formfactor.get_mins_from_ffdata">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_mins_from_ffdata</span><span class="p">(</span><span class="n">ffdata</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the position of first minimum in form factor data.&quot;&quot;&quot;</span>
-    <span class="n">FFtmp</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ffdata</span><span class="p">:</span>
-        <span class="n">FFtmp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
+<span class="k">def</span><span class="w"> </span><span class="nf">get_mins_from_ffdata</span><span class="p">(</span><span class="n">ffdata</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the positions of minimums in form factor data.&quot;&quot;&quot;</span>
+    <span class="n">sg_window_q</span> <span class="o">=</span> <span class="mf">0.03</span>  <span class="c1"># Savitsky-Golay window (in Q)</span>
+    <span class="n">delta_q</span> <span class="o">=</span> <span class="n">ffdata</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ffdata</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Q step in FF data</span>
+    <span class="n">sg_window_n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">sg_window_q</span> <span class="o">/</span> <span class="n">delta_q</span><span class="p">))</span>  <span class="c1"># S-G window (in num frames)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">w</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">savgol_filter</span><span class="p">(</span><span class="n">FFtmp</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">filtered</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">savgol_filter</span><span class="p">(</span><span class="n">ffdata</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sg_window_n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FFtmp:&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">FFtmp</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="n">e</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Problems running Savitsky-Golay on data with d=</span><span class="si">{</span><span class="n">delta_q</span><span class="si">}</span><span class="s2"> using window </span><span class="si">{</span><span class="n">sg_window_n</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
-    <span class="n">minX</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">min_q_distance</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># Min distance btw peaks (in Q)</span>
+    <span class="n">mqd_n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">min_q_distance</span> <span class="o">/</span> <span class="n">delta_q</span><span class="p">))</span>  <span class="c1"># same in num frames</span>
+    <span class="n">peak_ind</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="o">-</span><span class="n">filtered</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="n">mqd_n</span><span class="p">)</span>
+    <span class="n">min_peak_q</span> <span class="o">=</span> <span class="mf">0.1</span>
 
-    <span class="n">peak_ind</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">ffdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">peak_ind</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ffdata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">min_peak_q</span><span class="p">]</span></div>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">peak_ind</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">ffdata</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
-            <span class="n">minX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ffdata</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="n">minX</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">minX</span></div>
+
+<div class="viewcode-block" id="calc_ff_scaling_distance">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.analib.formfactor.html#fairmd.lipids.analib.formfactor.calc_ff_scaling_distance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_ff_scaling_distance</span><span class="p">(</span><span class="n">ffd_exp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ffd_sim</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate scaling factor and Chi2-distance for exp SAXS values.</span>
+
+<span class="sd">    Scaling as defined by Kučerka et al. 2008b, doi:10.1529/biophysj.107.122465</span>
+<span class="sd">    Quality as defined by Kučerka et al. 2010, doi:10.1007/s00232-010-9254-5</span>
+
+<span class="sd">    :param ffd_sim: Simulation FF data (float 2D list)</span>
+<span class="sd">    :param ffd_exp: Experiment FF data (float 2D list)</span>
+
+<span class="sd">    :return: [scaling coeffitient, Chi2-distance] (floats)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">min_q</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ffd_sim</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">ffd_exp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+    <span class="n">max_q</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ffd_sim</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">ffd_exp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+    <span class="n">val_interpolator</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">ffd_exp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ffd_exp</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">err_interpolator</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">ffd_exp</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ffd_exp</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">min_i</span> <span class="o">=</span> <span class="n">ffd_sim</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">min_q</span><span class="p">)</span>
+    <span class="n">max_i</span> <span class="o">=</span> <span class="n">ffd_sim</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">max_q</span><span class="p">)</span>
+    <span class="n">exp_vals</span> <span class="o">=</span> <span class="n">val_interpolator</span><span class="p">(</span><span class="n">ffd_sim</span><span class="p">[</span><span class="n">min_i</span><span class="p">:</span><span class="n">max_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">exp_errs</span> <span class="o">=</span> <span class="n">err_interpolator</span><span class="p">(</span><span class="n">ffd_sim</span><span class="p">[</span><span class="n">min_i</span><span class="p">:</span><span class="n">max_i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">md_vals</span> <span class="o">=</span> <span class="n">ffd_sim</span><span class="p">[</span><span class="n">min_i</span><span class="p">:</span><span class="n">max_i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">sum1</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">md_vals</span> <span class="o">*</span> <span class="n">exp_vals</span><span class="p">)</span> <span class="o">/</span> <span class="n">exp_errs</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">sum2</span> <span class="o">=</span> <span class="p">(</span><span class="n">exp_vals</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">exp_errs</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="n">scf</span> <span class="o">=</span> <span class="n">sum1</span> <span class="o">/</span> <span class="n">sum2</span>
+
+    <span class="n">sum1</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">md_vals</span><span class="p">)</span> <span class="o">-</span> <span class="n">scf</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">exp_vals</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">scf</span> <span class="o">*</span> <span class="n">exp_errs</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="n">chi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sum1</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">max_i</span> <span class="o">-</span> <span class="n">min_i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">scf</span><span class="p">,</span> <span class="n">chi</span><span class="p">]</span></div>
 
 </pre></div>
 

@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.analyze &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
+  <title>fairmd.lipids.analyze &mdash; FAIRMD Lipids v1.5.0 1.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../../../_static/documentation_options.js?v=e0a75244"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.0
+            FAIRMD Lipids v1.5.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.4.0</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.5.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -97,7 +97,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">buildh</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">maicos.core.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnalysisCollection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">FMDL_DATA_PATH</span><span class="p">,</span>
@@ -106,6 +105,7 @@
     <span class="n">RCODE_COMPUTED</span><span class="p">,</span>
     <span class="n">RCODE_ERROR</span><span class="p">,</span>
     <span class="n">RCODE_SKIPPED</span><span class="p">,</span>
+    <span class="n">progress</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.analib</span><span class="w"> </span><span class="kn">import</span> <span class="n">analyze_nmrpca</span> <span class="k">as</span> <span class="n">nmrpca</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.analib.databankop</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_OP</span>
@@ -240,13 +240,13 @@
 
         <span class="c1"># this calculates the area per lipid as a function of time and stores it</span>
         <span class="c1"># in the databank</span>
-        <span class="n">apl</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">apl</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">nlipids</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">n_lipids</span>
-        <span class="k">for</span> <span class="n">_ts</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Scanning the trajectory&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_ts</span> <span class="ow">in</span> <span class="n">progress</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Scanning the trajectory&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">time</span> <span class="o">&gt;=</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;TIMELEFTOUT&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">:</span>
                 <span class="n">dims</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">dimensions</span>
                 <span class="n">apl_frame</span> <span class="o">=</span> <span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">nlipids</span>
-                <span class="n">apl</span><span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">apl_frame</span>
+                <span class="n">apl</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">apl_frame</span><span class="p">])</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">outfilename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">apl</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">CompactJSONEncoder</span><span class="p">)</span>
@@ -584,7 +584,7 @@
                     <span class="k">if</span> <span class="s2">&quot;openMM&quot;</span> <span class="ow">in</span> <span class="n">software</span> <span class="ow">or</span> <span class="s2">&quot;NAMD&quot;</span> <span class="ow">in</span> <span class="n">software</span><span class="p">:</span>
                         <span class="n">op_obj</span> <span class="o">=</span> <span class="n">find_OP</span><span class="p">(</span>
                             <span class="n">system</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">mapping_dict</span><span class="p">,</span>
-                            <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;struc&quot;</span><span class="p">],</span>
+                            <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">],</span>
                             <span class="n">uc</span><span class="o">.</span><span class="n">paths</span><span class="p">[</span><span class="s2">&quot;traj&quot;</span><span class="p">],</span>
                             <span class="n">resname</span><span class="p">,</span>
                         <span class="p">)</span>

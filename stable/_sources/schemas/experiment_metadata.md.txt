@@ -66,7 +66,7 @@ MEMBRANE_COMPOSITION:
 All the molecules should be registered in the [molecular inventory](molecule_record) in the ``membrane`` subfolder.
 
 6. **SOLUTION_COMPOSITION**  
-Dictionary of solution composition of the system (mass %), main solvent is not listed:
+Dictionary of solution composition of the system (mass %, **not mM!**), main solvent is not listed:
 ```
 SOLUTION_COMPOSITION:
   SOD: 0.5

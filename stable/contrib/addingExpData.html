@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adding experimental data &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
+  <title>Adding experimental data &mdash; FAIRMD Lipids v1.5.0 1.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../_static/documentation_options.js?v=e0a75244"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.0
+            FAIRMD Lipids v1.5.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -55,6 +55,9 @@
 <li class="toctree-l2"><a class="reference internal" href="addingSimulation.html">Adding simulations</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Adding experimental data</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../schemas/experiment_metadata.html">Experiment metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#steps-to-add-experimental-data">Steps to add experimental data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#guidelines-to-fill-experiment-metadata">Guidelines to fill experiment metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metanmr-guidelines">Guidelines to fill experiment metadata</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="addingMolecule.html">Adding new molecule</a></li>
@@ -69,7 +72,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.4.0</a>
+          <a href="../index.html">FAIRMD Lipids v1.5.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -90,11 +93,24 @@
              
   <section id="adding-experimental-data">
 <span id="addingexpdata"></span><h1>Adding experimental data<a class="headerlink" href="#adding-experimental-data" title="Link to this heading"></a></h1>
-<p>Experimental data is stored in <a class="reference internal" href="../dbstructure.html#dbstructure-exp"><span class="std std-ref">BilayerData/experiments</span></a> folder. C-H bond order parameters from NMR are in <code class="docutils literal notranslate"><span class="pre">OrderParameters</span></code> subfolder and X-ray scattering form factors in <code class="docutils literal notranslate"><span class="pre">FormFactors</span></code> subfolder.
-The keys of these dictionaries are summarized in the <a class="reference internal" href="../schemas/experiment_metadata.html#readmeexp"><span class="std std-ref">Experiment metadata description</span></a>.</p>
-<p><strong>Steps to add experimental data</strong></p>
+<p>Experimental data is stored in <a class="reference internal" href="../dbstructure.html#dbstructure-exp"><span class="std std-ref">BilayerData/experiments</span></a> folder. C-H bond
+order parameters from NMR are in <code class="docutils literal notranslate"><span class="pre">OrderParameters</span></code> subfolder and X-ray scattering form factors in
+<code class="docutils literal notranslate"><span class="pre">FormFactors</span></code> subfolder. The keys of these dictionaries are summarized in the <a class="reference internal" href="../schemas/experiment_metadata.html#readmeexp"><span class="std std-ref">Experiment
+metadata description</span></a>.</p>
+<p><strong>Additional material for the chapter:</strong></p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../schemas/experiment_metadata.html">Experiment metadata</a></li>
+</ul>
+</div>
+<section id="steps-to-add-experimental-data">
+<h2>Steps to add experimental data<a class="headerlink" href="#steps-to-add-experimental-data" title="Link to this heading"></a></h2>
 <ol class="arabic">
-<li><p>Create and fill the <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> file of your data.</p></li>
+<li><p>Fork the BilayerData repository in the GitHub interface and add+checkout the branch with an explicit
+naming, e.g., <code class="docutils literal notranslate"><span class="pre">add-exp-Smidth-2023-dpps</span></code>. Work only in this branch. You can add several experiments into
+one branch, it’s also fine.</p></li>
+<li><p>Create and fill the <code class="docutils literal notranslate"><span class="pre">README.yaml</span></code> file of your data. This is not as simple as it seems,
+please read the <a class="reference internal" href="#addexp-guidelines"><span class="std std-ref">experiment metadata guidelines</span></a> if you are not feeling familiar.</p></li>
 <li><p>Copy this README file data into a appropriate directory named as described above.</p></li>
 <li><p>If you have order parameter data, create a file named <code class="docutils literal notranslate"><span class="pre">{lipidname}_OrderParameters.json</span></code>
 where <code class="docutils literal notranslate"><span class="pre">{lipidname}</span></code> is the universal name of the lipid from which the data is measured
@@ -106,7 +122,8 @@ with the <code class="docutils literal notranslate"><span class="pre">README.yam
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>data_to_json.py<span class="w"> </span>path-to-dat.dat
 </pre></div>
 </div>
-<p>in folder <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters">experiments/OrderParameters</a>. You can see previously added experiments for examples.</p>
+<p>in folder <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters">experiments/OrderParameters</a>. You can see
+previously added experiments for examples.</p>
 </li>
 <li><p>If you have X-ray scattering form factor data, store the form factor into appropriate
 folders in ASCII format where first column in x-axis values (Å<sup>-1</sup>), second
@@ -114,24 +131,109 @@ column is y-axis value, and third is the error. Then create <code class="docutil
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>data_to_json.py<span class="w"> </span>ascii-file.txt
 </pre></div>
 </div>
-<p>in folder [experiments/FormFactors](<a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/experiments/FormFactors">https://github.com/NMRLipids/BilayerData/tree/main/experiments/FormFactors</a>).
-Please see previously added experiments for examples.</p>
+<p>in folder <a class="reference external" href="https://github.com/NMRLipids/BilayerData/tree/main/experiments/FormFactors">experiments/FormFactors</a>. Please see
+previously added experiments for examples.</p>
 </li>
 <li><p>Adding experiments can lead to recalculation of quality of some simulations and rankings.
-So, after the addition, please run</p>
+So, after the addition, you may want to run</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>fmdl_match_experiments
 fmdl_evaluate_quality
 fmdl_make_ranking
 </pre></div>
 </div>
+<p>This is not obligatory. We will do it anyway at the CI/CD stage; however, it’s useful to check that
+your experiments are properly paired and quality is recalculated.</p>
 </li>
 <li><p>Submit the files to your branch and make a pull-request.</p></li>
 </ol>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../schemas/experiment_metadata.html">Experiment metadata</a></li>
-</ul>
+</section>
+<section id="guidelines-to-fill-experiment-metadata">
+<span id="addexp-guidelines"></span><h2>Guidelines to fill experiment metadata<a class="headerlink" href="#guidelines-to-fill-experiment-metadata" title="Link to this heading"></a></h2>
+<p>Every field of the metadata file is <a class="reference internal" href="../schemas/experiment_metadata.html#readmeexp"><span class="std std-ref">explained here</span></a>. Our experience indicates that
+reading the original paper and filling in the fields is not very straightforward, because
+experimenters often use very different names to name the same things. Here, we will go through the
+most strange points.</p>
+<ol class="arabic">
+<li><p><strong>Hydration</strong></p>
+<p>We use water mass % for hydration, i.e., 10 mg in 100 ml water is <code class="docutils literal notranslate"><span class="pre">10/(10+100)*100</span></code> (%).
+Experimentators could use whatever - v/w %, lipid:water ratio, or molar concentration. They should
+be converted to water mass %.</p>
+</li>
+<li><p><strong>Membrane composition</strong></p>
+<p>We use molar fractions for membrane composition. It should not be mixed with mass fraction. E.g. if
+the experiment has 1:1 (mass) TOCL and POPC, which means that it has 1:2 (mol) because TOCL is
+almost two times harder than POPC.</p>
+</li>
+<li><p><strong>Solution composition</strong></p>
+<p>We use mass fraction for solution composition, and we count each ion separately. If the membrane
+is neutral, the solution composition should be converted to mass % and written. For example, we
+have 150 mM NaCl, which means that you have <code class="docutils literal notranslate"><span class="pre">0.150</span> <span class="pre">*</span> <span class="pre">35.5</span> <span class="pre">=</span> <span class="pre">5.33</span></code> (g) in 1L and <code class="docutils literal notranslate"><span class="pre">0.150</span> <span class="pre">*</span> <span class="pre">23</span> <span class="pre">=</span>
+<span class="pre">3.5</span></code> (g) in 1L. If it’s a diluted solution, then 1L is ~1000g, so we have 0.53% Cl- and 0.25%
+Na+.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">REAGENT_SOURCES</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">CLA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.53</span>
+<span class="w">   </span><span class="nt">SOD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.25</span>
+</pre></div>
 </div>
+<p>Life becomes more complex if you have an anionic lipid. Let’s imagine you have DOPS (sodium salt)
+added to 150 mM sodium chloride solution so that you have 50 mass % lipid. For a 1000 g lipid salt,
+you have 1000 g buffer. Na(DOPS) has MW=810 (g/mol), i.e., mass of Na in this salt is <code class="docutils literal notranslate"><span class="pre">23/810*1000=28.4</span></code> (g).
+So, in total, you have <code class="docutils literal notranslate"><span class="pre">3.5</span> <span class="pre">+</span> <span class="pre">28.4</span></code> (g) of Na+, i.e., the total amount of sodium is 3.2% and not 0.53%
+like in previous example. If the lipid solution is diluted, which is quite often in SAXS
+experiments, then the amount of cations from lipid salts is small. However, for solid-state NMR
+experiments, lipid concentration is always very high, as well as the abundance of counterions coming
+with them.</p>
+</li>
+<li><p><strong>Additional molecules</strong></p>
+<p>In the ideal world, all that we have in the sample vial, we should also have in the simulation box.
+However, this goal is not achievable. Some samples have additives, which are hard to simulate
+because of a lack of force fields or because they are too diluted to be added to a small simulation
+box. Molecules, which are hard to simulate but exist in the experiment, come into the category
+<code class="docutils literal notranslate"><span class="pre">ADDITIONAL_MOLECULES</span></code>. Typical examples are buffers, antioxidants, chelators like EDTA, etc.</p>
+</li>
+<li><p><strong>Reagent sources</strong></p>
+<p>We care about reagent sources. Lipids can be bought synthetic or isolated from crude lipid extracts.
+They can be bought isolated, but are almost pure. Lipids can be bought partly deuterated and can be
+synthesized locally in the paper from synthetic lipids. Note that the project does not distinguish
+deuteration, so whatever an experiment or simulation with a deuterated lipid is added, we use the
+entity of a usual lipid. However, we should mention deuteration in reagent sources. Lipid synthesis
+is usually described in the paper, and it is often quite large, so we do not copy the whole
+synthesis methodology to the metadata, but we mention <code class="docutils literal notranslate"><span class="pre">POPE:</span> <span class="pre">ethanolamine</span> <span class="pre">group</span> <span class="pre">is</span>
+<span class="pre">alpha-deuterated,</span> <span class="pre">synthesized</span> <span class="pre">according</span> <span class="pre">to</span> <span class="pre">(Vanco,</span> <span class="pre">1983)</span> <span class="pre">from</span> <span class="pre">POPA</span> <span class="pre">(Avanti</span> <span class="pre">Polar</span> <span class="pre">Lipids)</span></code>.</p>
+<p>Solubles, which we explicitly add, we also mention in sources, and for water too, e.g.:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">REAGENT_SOURCES</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">TOCL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Avanti Polar Lipids</span>
+<span class="w">   </span><span class="nt">water</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Type I Milli-Q, degassed by argon bubbling</span>
+<span class="w">   </span><span class="nt">TMACl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sigma-Aldrich</span>
+</pre></div>
+</div>
+<p>We do mention water as well. It can be Type I, distilled, degassed, deuterium-depleted. It’s
+important for reproducibility, and we appreciate a data curator mentioning it.</p>
+</li>
+</ol>
+</section>
+<section id="metanmr-guidelines">
+<span id="id1"></span><h2>Guidelines to fill experiment metadata<a class="headerlink" href="#metanmr-guidelines" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>Knowledge of real temperature</strong></p>
+<p>It is not clear if the experiment is performed with knowledge of the real temperature. The pulse
+program often imposes heating inside the sample rotor, which cannot be measured directly. The
+correction should be applied, but it is sometimes unclear whether it was. This must be reflected
+in the metadata field called <code class="docutils literal notranslate"><span class="pre">T_RF_HEATING</span></code>. If you cannot find any signs of temperature
+correction, use “UNKNOWN”.</p>
+</li>
+<li><p><strong>Knowledge of the sign</strong></p>
+<p>99.99% of experiments don’t give a sign of the order parameter, just the absolute value, and we
+should guess them when we add. The easiest way is to inherit this guess from MD. There are
+experiments where signs are measured, then we write them explicitly in <code class="docutils literal notranslate"><span class="pre">SIGN_MEASURED</span></code> field.</p>
+</li>
+<li><p><strong>Details of pulse sequence</strong></p>
+<p>Modern techniques like R-PDLF have a lot of settings in their pulse sequences. We want to reflect
+some of them in <code class="docutils literal notranslate"><span class="pre">DETAILS</span></code> field, but don’t make it too large. If some papers are cited, we can
+cite them as well in DETAILS. Let’s keep this field to a few-line paragraph.</p>
+</li>
+</ol>
+</section>
 </section>
 
 

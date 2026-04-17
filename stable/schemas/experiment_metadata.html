@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Experiment metadata &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
+  <title>Experiment metadata &mdash; FAIRMD Lipids v1.5.0 1.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=9172181d"></script>
+      <script src="../_static/documentation_options.js?v=e0a75244"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.0
+            FAIRMD Lipids v1.5.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -60,6 +60,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#scattering-specific-fields">Scattering-specific fields</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/addingExpData.html#steps-to-add-experimental-data">Steps to add experimental data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/addingExpData.html#guidelines-to-fill-experiment-metadata">Guidelines to fill experiment metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/addingExpData.html#metanmr-guidelines">Guidelines to fill experiment metadata</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../contrib/addingMolecule.html">Adding new molecule</a></li>
@@ -74,7 +77,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.4.0</a>
+          <a href="../index.html">FAIRMD Lipids v1.5.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -226,7 +229,7 @@ Dictionary of molar fractions of bilayer components. For example:</p></li>
 <p>All the molecules should be registered in the <a class="reference internal" href="../dbstructure.html#molecule-record"><span class="std std-ref">molecular inventory</span></a> in the <code class="docutils literal notranslate"><span class="pre">membrane</span></code> subfolder.</p>
 <ol class="arabic simple" start="6">
 <li><p><strong>SOLUTION_COMPOSITION</strong><br />
-Dictionary of solution composition of the system (mass %), main solvent is not listed:</p></li>
+Dictionary of solution composition of the system (mass %, <strong>not mM!</strong>), main solvent is not listed:</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SOLUTION_COMPOSITION</span><span class="p">:</span>
   <span class="n">SOD</span><span class="p">:</span> <span class="mf">0.5</span>

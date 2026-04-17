@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulation quality &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
+  <title>Simulation quality &mdash; FAIRMD Lipids v1.5.0 1.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=9172181d"></script>
+      <script src="_static/documentation_options.js?v=e0a75244"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
@@ -33,7 +33,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.0
+            FAIRMD Lipids v1.5.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -75,7 +75,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">FAIRMD Lipids v1.4.0</a>
+          <a href="index.html">FAIRMD Lipids v1.5.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -101,10 +101,11 @@
 <p>The simulations contained in the FairMD databank are quality evaluated against experiments.
 A simulation is connected to an experimental data set if the molar concentrations of all
 molecules are within <span class="math notranslate nohighlight">\(\pm 3\)</span> percentage units, charged lipids have the same
-counterions, and temperatures are within <span class="math notranslate nohighlight">\(\pm 2\,\mathrm{K}\)</span>.
+counterions, and temperatures are within <span class="math notranslate nohighlight">\(\pm 2.5\,\mathrm{K}\)</span>.
 For molar concentrations of water, the exact hydration level is considered only for
 systems with molar water-to-lipid ratio below 25; otherwise the systems are considered
-fully hydrated.</p>
+fully hydrated. For dehydrated systems the hydration has to agree with <span class="math notranslate nohighlight">\(\pm 15\)</span>
+percentages relative to the simulated value.</p>
 <p>Two types of experimental data are used in quality evaluation: SAXS form factors and
 C–H order parameters. For the latter, a quality is calculated both for the entire
 molecule and for molecular fragments, as described below.</p>
@@ -150,6 +151,7 @@ error of 0.02 are not included in the quality evaluation.</p>
 <p>We define the average qualities for different fragments
 (frag = <em>sn-1</em>, <em>sn-2</em>, <em>headgroup</em>, or <em>total</em>, with the last referring to all order
 parameters within a molecule) within each lipid type in a simulation as</p>
+<p>NOTE!!! it seems that total value is actually the average of fragemnst!!!</p>
 <div class="math notranslate nohighlight">
 \[P^\mathrm{frag}[\mathrm{lipid}]
 =
@@ -159,8 +161,14 @@ parameters within a molecule) within each lipid type in a simulation as</p>
 individual <span class="math notranslate nohighlight">\(S_\mathrm{CH}\)</span> qualities within the fragment, and
 <span class="math notranslate nohighlight">\(F_\mathrm{frag}[\mathrm{lipid}]\)</span> is the percentage of order parameters for which
 the quality is available within the fragment.</p>
-<p>The overall quality of different fragments in a simulation
-(frag = <em>tails</em>, <em>headgroup</em>, or <em>total</em>) is then defined as a molar-fraction–weighted
+<p>If multiple sources, the quality is averaged over them at the fragment level. If a
+molecule fragment has no corresponding experimental data, it gets assigned a NaN
+quality value.</p>
+<p>The order parameter quality value for the molecule (fragment=”total”) is the average
+of fragment values of the molecule subparts. If one of the fragments has a NaN value,
+the total quality of the molecule is also NaN.</p>
+<p>The overall quality of different fragments for the simulated system,
+(frag = <em>tails</em>, <em>headgroup</em>, or <em>total</em>) is defined as a molar-fraction–weighted
 average over different lipid components:</p>
 <div class="math notranslate nohighlight">
 \[P^\mathrm{frag}
@@ -169,7 +177,10 @@ average over different lipid components:</p>
 \chi_\mathrm{lipid}
 P^\mathrm{frag}[\mathrm{lipid}],\]</div>
 <p>where <span class="math notranslate nohighlight">\(\chi_\mathrm{lipid}\)</span> is the molar fraction of a lipid in the bilayer and
-<em>tails</em> refers to the average over all acyl chains.</p>
+<em>tails</em> refers to the average over all acyl chains. If for a lipid in the
+system a fragment quality is NaN, then the overal system quality for that fragment
+gets weighted with <span class="math notranslate nohighlight">\((1-w)\)</span> where <span class="math notranslate nohighlight">\(w\)</span> is the is the molar fraction of that
+lipid.</p>
 </section>
 <section id="quality-evaluation-of-x-ray-scattering-form-factors">
 <h2>Quality evaluation of X-ray scattering form factors<a class="headerlink" href="#quality-evaluation-of-x-ray-scattering-form-factors" title="Link to this heading"></a></h2>
@@ -188,6 +199,8 @@ locations:</p>
 \[FF_q
 =
 \left| FF_\mathrm{min}^\mathrm{sim} - FF_\mathrm{min}^\mathrm{exp} \right| \times 100.\]</div>
+<p>If a simulation is linked to multiple form factors, the experimental data that produces the
+best form factor quality is chosen.</p>
 </section>
 </section>
 

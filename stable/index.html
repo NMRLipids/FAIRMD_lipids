@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FAIRMD Lipids Project &mdash; FAIRMD Lipids v1.4.0 1.4.0 documentation</title>
+  <title>FAIRMD Lipids Project &mdash; FAIRMD Lipids v1.5.0 1.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=9172181d"></script>
+      <script src="_static/documentation_options.js?v=e0a75244"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
@@ -31,7 +31,7 @@
           
           
           <a href="#" class="icon icon-home">
-            FAIRMD Lipids v1.4.0
+            FAIRMD Lipids v1.5.0
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -59,7 +59,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">FAIRMD Lipids v1.4.0</a>
+          <a href="#">FAIRMD Lipids v1.5.0</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -109,7 +109,7 @@ machine learning models that predict membrane properties, to automatic analysis 
 virtually any property across all simulations in the Databank. For examples of novel
 analyses enabled by the FAIRMD Lipids API see the <a class="reference external" href="https://doi.org/10.1038/s41467-024-45189-z">FAIRMD Lipids manuscript</a>.</p>
 <p>Functions available for simulation analyses are described in <a class="reference internal" href="auto_gen/fairmd.lipids.core.html#module-fairmd.lipids.core" title="fairmd.lipids.core"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fairmd.lipids.core</span></code></a>
-and <code class="xref py py-mod docutils literal notranslate"><span class="pre">fairmd.lipids.databankLibrary</span></code>. A project <a class="reference external" href="https://github.com/NMRLipids/databank-template">Databank template</a> designed to intialize projects that
+and <code class="xref py py-mod docutils literal notranslate"><span class="pre">fairmd.lipids.databankLibrary</span></code>. A project <a class="reference external" href="https://github.com/NMRLipids/databank-template">Databank template</a> designed to initialize projects that
 analyse data from FAIRMD Lipids contains a <a class="reference external" href="https://github.com/NMRLipids/databank-template/blob/main/scripts/template.ipynb">minimum example for looping over available
 simulations</a>. For
 further examples, see codes called by <a class="reference internal" href="dbprograms.html#add-simulation-py"><span class="std std-ref">fmdl_add_simulation</span></a> that analyze the area per lipid (),
@@ -137,7 +137,7 @@ Mapping files are described in  <a class="reference internal" href="schemas/mole
 after the approval of your submission by one of the NMRlipids contributors.</p></li>
 </ol>
 <p>Experimental data addition is currently not automatized and should be performed manually
-via making pull request to the BilayerData repository. The instrutions are available at
+via making pull request to the BilayerData repository. The instructions are available at
 <a class="reference internal" href="contrib/addingExpData.html#addingexpdata"><span class="std std-ref">Adding experimental data</span></a>.</p>
 <p>Do not hesitate to ask assistance regarding data addition on the GitHub page of
 <a class="reference external" href="https://github.com/NMRLipids/BilayerData/issues">BilayerData Issues</a>.</p>
@@ -146,8 +146,8 @@ via making pull request to the BilayerData repository. The instrutions are avail
 <h2>Installation and system requirements<a class="headerlink" href="#installation-and-system-requirements" title="Link to this heading"></a></h2>
 <p>The code has been tested in Linux, MacOS and Windows environment with python 3.10 or
 newer and recent <a class="reference external" href="https://manual.gromacs.org/current/install-guide/index.html">Gromacs</a> version installed.</p>
-<p>Setup is straingforward using <code class="docutils literal notranslate"><span class="pre">pip</span></code> or <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>nmrlipids_databank
+<p>Setup is straightforward using <code class="docutils literal notranslate"><span class="pre">pip</span></code> or <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>fairmd-lipids
 fmdl_initialize_data<span class="w"> </span>dev
 <span class="nb">source</span><span class="w"> </span>databank_env.rc
 </pre></div>
@@ -225,6 +225,9 @@ fmdl_initialize_data<span class="w"> </span>dev
 </li>
 <li class="toctree-l2"><a class="reference internal" href="contrib/addingExpData.html">Adding experimental data</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="schemas/experiment_metadata.html">Experiment metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/addingExpData.html#steps-to-add-experimental-data">Steps to add experimental data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/addingExpData.html#guidelines-to-fill-experiment-metadata">Guidelines to fill experiment metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/addingExpData.html#metanmr-guidelines">Guidelines to fill experiment metadata</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="contrib/addingMolecule.html">Adding new molecule</a><ul>
@@ -235,7 +238,10 @@ fmdl_initialize_data<span class="w"> </span>dev
 <li class="toctree-l2"><a class="reference internal" href="schemas/moleculesAndMapping.html">Universal molecule and atom names</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="schemas/moleculesAndMapping.html#id1">Molecule names</a></li>
 <li class="toctree-l3"><a class="reference internal" href="schemas/moleculesAndMapping.html#universal-atom-names-in-mapping-files">Universal atom names in mapping files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="schemas/moleculesAndMapping.html#glycerolipids-naming-convention">Glycerolipids naming convention</a></li>
 <li class="toctree-l3"><a class="reference internal" href="schemas/moleculesAndMapping.html#cardiolipin-universal-naming-conventions">Cardiolipin universal naming conventions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="schemas/moleculesAndMapping.html#sphingolipids-naming-convention">Sphingolipids naming convention</a></li>
+<li class="toctree-l3"><a class="reference internal" href="schemas/moleculesAndMapping.html#cholesterol">Cholesterol</a></li>
 </ul>
 </li>
 </ul>
