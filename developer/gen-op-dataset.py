@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from abc import ABC, abstractmethod
+import argparse
 
 import numpy as np
 import pandas as pd
@@ -240,5 +241,12 @@ def main_sims() -> None:
 
 
 if __name__ == "__main__":
-    main_exps()
-    main_sims()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--exps", action="store_true", help="Run experiments")
+    parser.add_argument("--sims", action="store_true", help="Run simulations")
+    args = parser.parse_args()
+
+    if args.exps:
+        main_exps()
+    if args.sims:
+        main_sims()
