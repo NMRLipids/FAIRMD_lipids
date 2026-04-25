@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulation quality &mdash; FAIRMD Lipids v1.4.1.dev42+gf54002992 1.4.1.dev42+gf54002992 documentation</title>
+  <title>Simulation quality &mdash; FAIRMD Lipids v1.5.1.dev10+ga25c89113 1.5.1.dev10+ga25c89113 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=28fe11ac"></script>
+      <script src="_static/documentation_options.js?v=15fe67a4"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
@@ -33,7 +33,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.1.dev42+gf54002992
+            FAIRMD Lipids v1.5.1.dev10+ga25c89113
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -75,7 +75,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">FAIRMD Lipids v1.4.1.dev42+gf54002992</a>
+          <a href="index.html">FAIRMD Lipids v1.5.1.dev10+ga25c89113</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -151,7 +151,7 @@ error of 0.02 are not included in the quality evaluation.</p>
 <p>We define the average qualities for different fragments
 (frag = <em>sn-1</em>, <em>sn-2</em>, <em>headgroup</em>, or <em>total</em>, with the last referring to all order
 parameters within a molecule) within each lipid type in a simulation as</p>
-<p>NOTE!!! it seems that total value is actually the average of fragemnst!!!</p>
+<p>NOTE!!! it seems that total value is actually the average of fragments!!!</p>
 <div class="math notranslate nohighlight">
 \[P^\mathrm{frag}[\mathrm{lipid}]
 =
@@ -193,8 +193,32 @@ minima in some experimental data sets due to noise.</p>
 The first minimum at <span class="math notranslate nohighlight">\(q &gt; 0.1\,\mathrm{Å}^{-1}\)</span> is then located for both simulation
 (<span class="math notranslate nohighlight">\(FF_\mathrm{min}^\mathrm{sim}\)</span>) and experiment
 (<span class="math notranslate nohighlight">\(FF_\mathrm{min}^\mathrm{exp}\)</span>).</p>
-<p>The quality of a form factor is defined as the Euclidean distance between the minima
-locations:</p>
+<p>Currently, for both experiment and simulation, we determine minimum positions with an error estimated
+using the uncertainty of the parabolic fit to the minumum. <code class="docutils literal notranslate"><span class="pre">scipy.optimize.curve_fit</span></code> is used to fit
+a parabola to the minimum, and the covariance matrix of the fit is used to estimate the error of the minimum
+position. For the fit function <span class="math notranslate nohighlight">\(f(x) = ax^2 - bx + c\)</span>, the error of the minimum position is estimated as</p>
+<div class="math notranslate nohighlight">
+\[\sigma_\mathrm{min} = \frac{1}{4a^2}\mathrm{cov}[a, a] +
+\frac{b^2}{4a^4}\mathrm{cov}[b, b] - \frac{b}{2a^3}\mathrm{cov}[a, b].\]</div>
+<p>Then, the quality is computed using the product of penalties from distance, confidence,
+and experiment precision.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}FF_q &amp;
+= \exp{\left(
+     -\frac{(FF_\mathrm{min}^\mathrm{sim} - FF_\mathrm{min}^\mathrm{exp})^2}
+           {\sigma_\mathrm{dpos}^2} \right)} +
+  \exp{\left(
+     -\frac{\sigma_\mathrm{sim}^2+\sigma_\mathrm{exp}^2}
+           {4 \sigma_\mathrm{ref}^2}\right)} +
+\exp{(-w z^2)}, \\
+z &amp;
+= \frac{\left|FF_\mathrm{min}^\mathrm{sim} - FF_\mathrm{min}^\mathrm{exp}\right|}
+         {\sqrt{\sigma_\mathrm{sim}^2+\sigma_\mathrm{exp}^2}}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma_\mathrm{dpos} = 0.02\)</span> (meaningful distance between peak minima),
+<span class="math notranslate nohighlight">\(\sigma_\mathrm{ref} = 0.01\)</span> (meaningful average peak uncertainty), <span class="math notranslate nohighlight">\(w = 0.3\)</span>
+– free parameter that controls the weight to the significance of statistical confidence of peak
+difference.</p>
+<p>Previously, the default quality of a form factor was defined as the distance between the minima locations:</p>
 <div class="math notranslate nohighlight">
 \[FF_q
 =

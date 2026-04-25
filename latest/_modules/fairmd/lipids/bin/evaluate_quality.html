@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.bin.evaluate_quality &mdash; FAIRMD Lipids v1.4.1.dev42+gf54002992 1.4.1.dev42+gf54002992 documentation</title>
+  <title>fairmd.lipids.bin.evaluate_quality &mdash; FAIRMD Lipids v1.5.1.dev10+ga25c89113 1.5.1.dev10+ga25c89113 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=28fe11ac"></script>
+      <script src="../../../../_static/documentation_options.js?v=15fe67a4"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.1.dev42+gf54002992
+            FAIRMD Lipids v1.5.1.dev10+ga25c89113
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../../index.html">FAIRMD Lipids v1.4.1.dev42+gf54002992</a>
+          <a href="../../../../index.html">FAIRMD Lipids v1.5.1.dev10+ga25c89113</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -87,10 +87,12 @@
 
 <span class="sd">.. code-block:: console</span>
 
-<span class="sd">    fmdl_evaluate_quality</span>
+<span class="sd">    fmdl_evaluate_quality [--op-only | --ff-only] [ --idlist=414,536 ]</span>
 
-<span class="sd">No arguments are needed.</span>
+<span class="sd">No arguments means that both OP and FF qualities are evaluated for everything.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">fairmd.lipids.quality</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">qq</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentCollection</span>
@@ -111,6 +113,7 @@
     <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">ffexps</span> <span class="o">=</span> <span class="n">ExperimentCollection</span><span class="o">.</span><span class="n">load_from_data</span><span class="p">(</span><span class="s2">&quot;FFExperiment&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">simulation</span> <span class="ow">in</span> <span class="n">simulations</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evaluating Sim#</span><span class="si">%d</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="n">simulation</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">])</span>
         <span class="n">evaluator</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">FFQualityEvaluator</span><span class="p">(</span><span class="n">simulation</span><span class="p">,</span> <span class="n">ffexps</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">evaluate_one</span><span class="p">():</span>
             <span class="n">evaluator</span><span class="o">.</span><span class="n">save_results</span><span class="p">()</span>
@@ -118,16 +121,48 @@
     <span class="k">return</span> <span class="n">counter</span>
 
 
-<div class="viewcode-block" id="evaluate_quality">
-<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.evaluate_quality.html#fairmd.lipids.bin.evaluate_quality.evaluate_quality">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_quality</span><span class="p">():</span>
-    <span class="n">simulations</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">QualSimulation</span><span class="o">.</span><span class="n">load_all_paired</span><span class="p">()</span>
+<div class="viewcode-block" id="evaluate_quality_impl">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.evaluate_quality.html#fairmd.lipids.bin.evaluate_quality.evaluate_quality_impl">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_quality_impl</span><span class="p">(</span><span class="n">id_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">do_op</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">do_ff</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">simulations</span> <span class="o">=</span> <span class="n">qq</span><span class="o">.</span><span class="n">QualSimulation</span><span class="o">.</span><span class="n">load_all_paired</span><span class="p">(</span><span class="n">id_list</span><span class="p">)</span>
 
-    <span class="n">evaluated_op_counter</span> <span class="o">=</span> <span class="n">_evaluate_op_qualities</span><span class="p">(</span><span class="n">simulations</span><span class="p">)</span>
-    <span class="n">evaluated_ff_counter</span> <span class="o">=</span> <span class="n">_evaluate_ff_qualities</span><span class="p">(</span><span class="n">simulations</span><span class="p">)</span>
+    <span class="n">evaluated_op_counter</span> <span class="o">=</span> <span class="n">_evaluate_op_qualities</span><span class="p">(</span><span class="n">simulations</span><span class="p">)</span> <span class="k">if</span> <span class="n">do_op</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">evaluated_ff_counter</span> <span class="o">=</span> <span class="n">_evaluate_ff_qualities</span><span class="p">(</span><span class="n">simulations</span><span class="p">)</span> <span class="k">if</span> <span class="n">do_ff</span> <span class="k">else</span> <span class="mi">0</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The number of systems with evaluated order parameters:&quot;</span><span class="p">,</span> <span class="n">evaluated_op_counter</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The number of systems with evaluated form factors:&quot;</span><span class="p">,</span> <span class="n">evaluated_ff_counter</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="evaluate_quality">
+<a class="viewcode-back" href="../../../../auto_gen/fairmd.lipids.bin.evaluate_quality.html#fairmd.lipids.bin.evaluate_quality.evaluate_quality">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluate_quality</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--op-only&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Evaluate order parameters only (skip form factors)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--ff-only&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Evaluate form factors only (skip order parameters)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--idlist&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)],</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Comma-separated list of IDs to evaluate (e.g. 1,2,3)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">op_only</span> <span class="ow">and</span> <span class="n">args</span><span class="o">.</span><span class="n">ff_only</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Incompatible arguments. Please choose one.&quot;</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="n">evaluate_quality_impl</span><span class="p">(</span>
+        <span class="n">id_list</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">idlist</span><span class="p">,</span>
+        <span class="n">do_op</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">ff_only</span><span class="p">,</span>
+        <span class="n">do_ff</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">op_only</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 

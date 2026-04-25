@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.quality &mdash; FAIRMD Lipids v1.4.1.dev42+gf54002992 1.4.1.dev42+gf54002992 documentation</title>
+  <title>fairmd.lipids.quality &mdash; FAIRMD Lipids v1.5.1.dev10+ga25c89113 1.5.1.dev10+ga25c89113 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=28fe11ac"></script>
+      <script src="../../../_static/documentation_options.js?v=15fe67a4"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.4.1.dev42+gf54002992
+            FAIRMD Lipids v1.5.1.dev10+ga25c89113
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.4.1.dev42+gf54002992</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.5.1.dev10+ga25c89113</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -115,12 +115,14 @@
 <div class="viewcode-block" id="QualSimulation.load_all_paired">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.QualSimulation.load_all_paired">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">load_all_paired</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;QualSimulation&quot;</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_all_paired</span><span class="p">(</span><span class="n">id_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;QualSimulation&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load simulations with experimental pairings.&quot;&quot;&quot;</span>
         <span class="n">systems</span> <span class="o">=</span> <span class="n">initialize_databank</span><span class="p">()</span>
 
         <span class="n">simulations</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">system</span> <span class="ow">in</span> <span class="n">systems</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">id_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">id_list</span><span class="p">:</span>
+                <span class="k">continue</span>
             <span class="n">experiments</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">,</span> <span class="p">{})</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">experiments</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>  <span class="c1"># if experiments is not empty</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="n">QualSimulation</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
@@ -460,8 +462,12 @@
 
 <div class="viewcode-block" id="FFQualityEvaluator.evaluate_one">
 <a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.FFQualityEvaluator.evaluate_one">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;new&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">results_ff</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;new&quot;</span><span class="p">:</span>
+            <span class="n">method_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_new_ff_quality</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;old&quot;</span><span class="p">:</span>
+            <span class="n">method_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_ff_quality</span>
 
         <span class="k">if</span> <span class="s2">&quot;FORMFACTOR&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;FORMFACTOR&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -470,7 +476,7 @@
         <span class="k">for</span> <span class="n">expid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim</span><span class="p">[</span><span class="s2">&quot;EXPERIMENT&quot;</span><span class="p">][</span><span class="s2">&quot;FORMFACTOR&quot;</span><span class="p">]:</span>
             <span class="n">exp_ff_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exps</span><span class="o">.</span><span class="n">loc</span><span class="p">(</span><span class="n">expid</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
             <span class="n">results_ff</span><span class="p">[</span><span class="n">expid</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">calc_ff_quality</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sim</span><span class="o">.</span><span class="n">ff_data</span><span class="p">,</span> <span class="n">exp_ff_data</span><span class="p">),</span>
+                <span class="n">method_func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sim</span><span class="o">.</span><span class="n">ff_data</span><span class="p">,</span> <span class="n">exp_ff_data</span><span class="p">),</span>
                 <span class="n">ff</span><span class="o">.</span><span class="n">calc_ff_scaling_distance</span><span class="p">(</span><span class="n">exp_ff_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim</span><span class="o">.</span><span class="n">ff_data</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
             <span class="p">]</span>
 
@@ -483,7 +489,7 @@
             <span class="k">if</span> <span class="n">best_ep</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ffq_scf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">results_ff</span><span class="p">[</span><span class="n">best_ep</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
                 <span class="n">best_ep</span> <span class="o">=</span> <span class="n">expid</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Form factor quality used for experiment data from </span><span class="si">{</span><span class="n">best_ep</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Form factor quality used for experiment data from </span><span class="si">{</span><span class="n">best_ep</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ff_quality_output</span> <span class="o">=</span> <span class="n">results_ff</span><span class="p">[</span><span class="n">best_ep</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
@@ -523,6 +529,32 @@
         <span class="n">exp_min</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_mins_from_ffdata</span><span class="p">(</span><span class="n">ffd_exp</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sim_min</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">exp_min</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span></div>
+
+
+<div class="viewcode-block" id="FFQualityEvaluator.calc_new_ff_quality">
+<a class="viewcode-back" href="../../../auto_gen/fairmd.lipids.quality.html#fairmd.lipids.quality.FFQualityEvaluator.calc_new_ff_quality">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_new_ff_quality</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ffd_sim</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ffd_exp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate form factor quality via p-value of the difference between minima.&quot;&quot;&quot;</span>
+        <span class="n">sim_pos</span><span class="p">,</span> <span class="n">sim_err</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">calc_minpos_with_error</span><span class="p">(</span><span class="n">ffd_sim</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">exp_pos</span><span class="p">,</span> <span class="n">exp_err</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">calc_minpos_with_error</span><span class="p">(</span><span class="n">ffd_exp</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sim: </span><span class="si">{</span><span class="n">sim_pos</span><span class="si">}</span><span class="s2">+-</span><span class="si">{</span><span class="n">sim_err</span><span class="si">}</span><span class="s2">; Exp: </span><span class="si">{</span><span class="n">exp_pos</span><span class="si">}</span><span class="s2">+-</span><span class="si">{</span><span class="n">exp_err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sim_pos</span> <span class="o">-</span> <span class="n">exp_pos</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">sim_err</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">exp_err</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">dpos_ref</span> <span class="o">=</span> <span class="mf">0.02</span>  <span class="c1"># natural physical scale</span>
+        <span class="n">sigma_ref</span> <span class="o">=</span> <span class="mf">0.01</span>
+        <span class="n">consistency_weight</span> <span class="o">=</span> <span class="mf">0.3</span>
+
+        <span class="c1"># Term 1: are the positions close? (penalises large absolute difference)</span>
+        <span class="n">distance_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">sim_pos</span> <span class="o">-</span> <span class="n">exp_pos</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">dpos_ref</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Term 2: are the measurements precise? (penalises large uncertainty)</span>
+        <span class="n">precision_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">sim_err</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">exp_err</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">sigma_ref</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Term 3: are they statistically consistent? (penalises large z)</span>
+        <span class="n">consistency_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">consistency_weight</span> <span class="o">*</span> <span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">distance_score</span> <span class="o">*</span> <span class="n">precision_score</span> <span class="o">*</span> <span class="n">consistency_score</span></div>
 </div>
 
 </pre></div>
