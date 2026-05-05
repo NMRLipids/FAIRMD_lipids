@@ -8,6 +8,7 @@
 | ARTICLE_DOI | DOI of the of the original publication of the experimental data|
 | DATA_DOI | DOI of the dataset deposition with raw NMR data |
 | DATA_REF | Reference to deposited dataset |
+| DATE | Date when the data was recorded or published |
 | TEMPERATURE | Temperature (K) of the experiment |
 | MEMBRANE_COMPOSITION | Dictionary of molar fractions of membrane phase |
 | SOLUTION_COMPOSITION | Dictionary of ion concentrations in the system |
@@ -53,10 +54,13 @@ DOI of the dataset deposition with raw NMR data (e.g., nmrXive).
 3. **DATA_REF**
 If the dataset doesn't have DOI, we engage to add some persistent identifier or even URL if the first doesn't exist.
 
-3. **TEMPERATURE**  
+4. **DATE**
+Date in the standard format YYYY-MM-DD (e.g., 2023-08-24). A lot of date values have been automatically synchronized from the paper dates. If the data wasn't published, the date of recording should be used.
+
+5. **TEMPERATURE**  
 Temperature (K) of the experiment. For NMR experiment, if `NMR:T_RF_HEATING` is 'unknown' (or not given), the reported temperature from the probe is settet here. Otherwise, please insert RF-corrected temperature.
 
-5. **MEMBRANE_COMPOSITION**  
+6. **MEMBRANE_COMPOSITION**  
 Dictionary of molar fractions of bilayer components. For example:
 ```
 MEMBRANE_COMPOSITION:
@@ -65,7 +69,7 @@ MEMBRANE_COMPOSITION:
 ```
 All the molecules should be registered in the [molecular inventory](molecule_record) in the ``membrane`` subfolder.
 
-6. **SOLUTION_COMPOSITION**  
+7. **SOLUTION_COMPOSITION**  
 Dictionary of solution composition of the system (mass %, **not mM!**), main solvent is not listed:
 ```
 SOLUTION_COMPOSITION:
@@ -76,7 +80,7 @@ SOLUTION_COMPOSITION:
 All the molecules should be registered in the [molecular inventory](molecule_record) in the ``solution`` subfolder.
 Do not provide whole salts! Only separated ions. Remember that the counterions of charged lipids are also part of the solution.
 
-7. **ADDITIONAL_MOLECULES**
+8. **ADDITIONAL_MOLECULES**
 Dictionary of additional molecules in the format:
 ```
 ADDITIONAL_MOLECULES:
@@ -89,19 +93,19 @@ we can use INCHI-key, CAS number or just IUPAC name. If molecule is important fo
 the composition, it should get the metadata inside the databank and be mentioned under
 `SOLUTION_COMPOSITION` instead.
 
-8. **TOTAL_HYDRATION**  
+9. **TOTAL_HYDRATION**  
 Mass \% of water in the sample. For NMR experiment, it is better if measured by <sup>1</sup>H MAS NMR.
 
-9. **PH**  
+10. **PH**  
 pH of the system (number or UNKNOWN)
 
-10. **PH_METHOD**  
+11. **PH_METHOD**  
 How the pH value is got: measured by pH electrode or indicator paper, measured by NMR, set by buffer.
 
-11. **REAGENT_SOURCES**  
+12. **REAGENT_SOURCES**  
 Which reagents are used for lipids -- should be specified for every lipid.
 
-12. **SAMPLE_PROTOCOL**
+13. **SAMPLE_PROTOCOL**
 Protocol of liposome (or OS) preparation. A description of the preparation steps and
 conditions used to obtain the sample, such as lipid composition, hydration method, extrusion,
 alignment procedures, and any buffers used.

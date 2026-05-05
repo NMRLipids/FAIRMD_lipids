@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Experiment metadata &mdash; FAIRMD Lipids v1.5.1.dev11+g4275d9ba1 1.5.1.dev11+g4275d9ba1 documentation</title>
+  <title>Experiment metadata &mdash; FAIRMD Lipids v1.5.1.dev13+g7be6e3150 1.5.1.dev13+g7be6e3150 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5432a58b"></script>
+      <script src="../_static/documentation_options.js?v=9690779e"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -32,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.5.1.dev11+g4275d9ba1
+            FAIRMD Lipids v1.5.1.dev13+g7be6e3150
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -77,7 +77,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">FAIRMD Lipids v1.5.1.dev11+g4275d9ba1</a>
+          <a href="../index.html">FAIRMD Lipids v1.5.1.dev13+g7be6e3150</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -116,31 +116,34 @@
 <tr class="row-even"><td><p>DATA_REF</p></td>
 <td><p>Reference to deposited dataset</p></td>
 </tr>
-<tr class="row-odd"><td><p>TEMPERATURE</p></td>
+<tr class="row-odd"><td><p>DATE</p></td>
+<td><p>Date when the data was recorded or published</p></td>
+</tr>
+<tr class="row-even"><td><p>TEMPERATURE</p></td>
 <td><p>Temperature (K) of the experiment</p></td>
 </tr>
-<tr class="row-even"><td><p>MEMBRANE_COMPOSITION</p></td>
+<tr class="row-odd"><td><p>MEMBRANE_COMPOSITION</p></td>
 <td><p>Dictionary of molar fractions of membrane phase</p></td>
 </tr>
-<tr class="row-odd"><td><p>SOLUTION_COMPOSITION</p></td>
+<tr class="row-even"><td><p>SOLUTION_COMPOSITION</p></td>
 <td><p>Dictionary of ion concentrations in the system</p></td>
 </tr>
-<tr class="row-even"><td><p>ADDITIONAL_MOLECULES</p></td>
+<tr class="row-odd"><td><p>ADDITIONAL_MOLECULES</p></td>
 <td><p>Dictionary of molecules which are not in the databank</p></td>
 </tr>
-<tr class="row-odd"><td><p>TOTAL_HYDRATION</p></td>
+<tr class="row-even"><td><p>TOTAL_HYDRATION</p></td>
 <td><p>Total hydration of the system (water mass %)</p></td>
 </tr>
-<tr class="row-even"><td><p>PH</p></td>
+<tr class="row-odd"><td><p>PH</p></td>
 <td><p>pH of the system</p></td>
 </tr>
-<tr class="row-odd"><td><p>PH_METHOD</p></td>
+<tr class="row-even"><td><p>PH_METHOD</p></td>
 <td><p>Method of pH setting or measurement (buffer / measurement)</p></td>
 </tr>
-<tr class="row-even"><td><p>REAGENT_SOURCES</p></td>
+<tr class="row-odd"><td><p>REAGENT_SOURCES</p></td>
 <td><p>Description of lipid reagents. Source, purity, etc.</p></td>
 </tr>
-<tr class="row-odd"><td><p>SAMPLE_PROTOCOL</p></td>
+<tr class="row-even"><td><p>SAMPLE_PROTOCOL</p></td>
 <td><p>Protocol for sample preparation (in free format, references are welcome).</p></td>
 </tr>
 </tbody>
@@ -216,6 +219,8 @@ DOI of the original publication where the experimental data originates.</p></li>
 DOI of the dataset deposition with raw NMR data (e.g., nmrXive).</p></li>
 <li><p><strong>DATA_REF</strong>
 If the dataset doesn’t have DOI, we engage to add some persistent identifier or even URL if the first doesn’t exist.</p></li>
+<li><p><strong>DATE</strong>
+Date in the standard format YYYY-MM-DD (e.g., 2023-08-24). A lot of date values have been automatically synchronized from the paper dates. If the data wasn’t published, the date of recording should be used.</p></li>
 <li><p><strong>TEMPERATURE</strong><br />
 Temperature (K) of the experiment. For NMR experiment, if <code class="docutils literal notranslate"><span class="pre">NMR:T_RF_HEATING</span></code> is ‘unknown’ (or not given), the reported temperature from the probe is settet here. Otherwise, please insert RF-corrected temperature.</p></li>
 <li><p><strong>MEMBRANE_COMPOSITION</strong><br />
@@ -227,7 +232,7 @@ Dictionary of molar fractions of bilayer components. For example:</p></li>
 </pre></div>
 </div>
 <p>All the molecules should be registered in the <a class="reference internal" href="../dbstructure.html#molecule-record"><span class="std std-ref">molecular inventory</span></a> in the <code class="docutils literal notranslate"><span class="pre">membrane</span></code> subfolder.</p>
-<ol class="arabic simple" start="6">
+<ol class="arabic simple" start="7">
 <li><p><strong>SOLUTION_COMPOSITION</strong><br />
 Dictionary of solution composition of the system (mass %, <strong>not mM!</strong>), main solvent is not listed:</p></li>
 </ol>
@@ -239,7 +244,7 @@ Dictionary of solution composition of the system (mass %, <strong>not mM!</stron
 </div>
 <p>All the molecules should be registered in the <a class="reference internal" href="../dbstructure.html#molecule-record"><span class="std std-ref">molecular inventory</span></a> in the <code class="docutils literal notranslate"><span class="pre">solution</span></code> subfolder.
 Do not provide whole salts! Only separated ions. Remember that the counterions of charged lipids are also part of the solution.</p>
-<ol class="arabic simple" start="7">
+<ol class="arabic simple" start="8">
 <li><p><strong>ADDITIONAL_MOLECULES</strong>
 Dictionary of additional molecules in the format:</p></li>
 </ol>
@@ -253,7 +258,7 @@ Dictionary of additional molecules in the format:</p></li>
 <p>we can use INCHI-key, CAS number or just IUPAC name. If molecule is important for
 the composition, it should get the metadata inside the databank and be mentioned under
 <code class="docutils literal notranslate"><span class="pre">SOLUTION_COMPOSITION</span></code> instead.</p>
-<ol class="arabic simple" start="8">
+<ol class="arabic simple" start="9">
 <li><p><strong>TOTAL_HYDRATION</strong><br />
 Mass % of water in the sample. For NMR experiment, it is better if measured by <sup>1</sup>H MAS NMR.</p></li>
 <li><p><strong>PH</strong><br />
