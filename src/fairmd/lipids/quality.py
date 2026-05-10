@@ -18,7 +18,7 @@ from fairmd.lipids import FMDL_SIMU_PATH
 from fairmd.lipids.api import get_FF, get_OP
 from fairmd.lipids.auxiliary import CompactJSONEncoder, mollib
 from fairmd.lipids.core import System, initialize_databank
-from fairmd.lipids.experiment import ExperimentCollection
+from fairmd.lipids.experiment import ExperimentCollection, OPExperiment
 
 
 class QualSimulation(System):
@@ -215,7 +215,8 @@ class OPQualityEvaluator(QualityEvaluator):
 
         :return: dictionary of type {"nC nH": quality value}.
         """
-        exp_error = 0.02  # TODO: hardcoded error value, should be taken from experiment data when available
+        # TODO: hardcoded error value, should be taken from experiment data when available
+        exp_error = OPExperiment.DEFAULT_ERROR
 
         # union of keys in exp_op_data and sim_op_data
         all_keys = sorted(set(exp_op_data.keys()) | set(sim_op_data.keys()))

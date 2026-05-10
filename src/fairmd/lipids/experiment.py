@@ -194,6 +194,9 @@ class OPExperiment(Experiment):
     :meth:`verify_data` checks that all atom unique names in the data correspond to known atoms in the lipid mapping.
     """
 
+    DEFAULT_ERROR = 0.02
+    """Default error value to use when it is not provided"""
+
     @property
     def data(self) -> dict:
         if self._data is None:

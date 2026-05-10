@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import re
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -87,12 +88,7 @@ class ExpOPDataStorer(OPDataStorer):
         nmr_method = self._e.metadata.get("NMR", {}).get("METHOD", False)
         # store all vars and df to the HDF5 table
         group = "E"
-        group += (
-            unidecode(self._e.exp_id)
-            .replace("-", "_")  # prefer variable-like strs
-            .replace("/", "_")
-            .replace(".", "")
-        )
+        group += re.sub(r"[^A-Za-z0-9_]", "_", unidecode(self._e.exp_id))
         group += "__" + self._lname
         with pd.HDFStore(hdf_fname, "a") as store:
             # DataFrame table
@@ -128,7 +124,11 @@ class ExpOPDataStorer(OPDataStorer):
         """Call dataframe preparation"""
         mol = self._e.lipids[self._lname]
         opdict = self._e.data[self._lname]
-        self._prepare_df_common(mol, opdict, err_extractor=lambda x: 0.02 if len(x) == 1 else x[1])
+        self._prepare_df_common(
+            mol,
+            opdict,
+            err_extractor=lambda x: OPExperiment.DEFAULT_ERROR if len(x) == 1 else x[1],
+        )
 
 
 class SimOPDataStorer(OPDataStorer):

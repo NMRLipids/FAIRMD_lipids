@@ -25,6 +25,7 @@ cover/
 .vscode/
 
 # development
+developer/*.h5
 AddData-dev.ipynb
 test.py
 
