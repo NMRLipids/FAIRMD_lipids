@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from abc import ABC, abstractmethod
 import argparse
+from abc import ABC, abstractmethod
 
 import numpy as np
 import pandas as pd
@@ -10,6 +10,7 @@ from unidecode import unidecode
 from fairmd.lipids.api import get_OP
 from fairmd.lipids.core import System, initialize_databank
 from fairmd.lipids.experiment import ExperimentCollection, OPExperiment
+from fairmd.lipids.molecules import Molecule
 
 
 class OPDataError(Exception):
@@ -17,23 +18,23 @@ class OPDataError(Exception):
 
 
 class OPDataStorer(ABC):
+    """Abstract class for OP data storage"""
+
     @abstractmethod
-    def store_to_hdf5(self, hdf_fname: str):
+    def store_to_hdf5(self, hdf_fname: str) -> None:
         """Store the record"""
 
     @abstractmethod
-    def prepare_dataframe(self):
+    def prepare_dataframe(self) -> None:
         """Prepare dataframe for storing"""
 
     @property
     @abstractmethod
-    def ass_id(self):
+    def ass_id(self) -> str:
         """Get id of assoc object"""
 
-    def _prepare_df_common(self, mol, opdict, err_extractor):
-        """Common code for dataframe conditioning for storage"""
-        smiles = mol.metadata["bioschema_properties"]["smiles"]
-        print(smiles)
+    def _prepare_df_common(self, mol: Molecule, opdict: dict, err_extractor: callable) -> None:
+        """Condition the dataframe for storage"""
         smi2uname = {}
         for uname, aprops in mol.mapping_dict.items():
             if "SMILEIDX" in aprops:
@@ -44,21 +45,11 @@ class OPDataStorer(ABC):
             msg = f"Instance {self.ass_id} // {self._lname} cannot be stored: we don't have SMILEIDX."
             raise OPDataError(msg)
         smi2uname = dict(sorted(smi2uname.items()))
-        df = pd.DataFrame(
-            {
-                "id": np.full(len(opdict), -1, dtype=np.int64),  # int64, init NaN
-                "val": np.full(len(opdict), np.nan),
-                "err": np.full(len(opdict), np.nan),
-            }
-        )
+        df = pd.DataFrame(columns=["id", "val", "err"])
         cur_row = 0
         for id_, uname in smi2uname.items():
             for opdict_row in OPDataStorer.by_c_uname(opdict, uname):
-                if cur_row >= len(df):
-                    break
-                df.at[cur_row, "id"] = id_
-                df.at[cur_row, "val"] = opdict_row[0]
-                df.at[cur_row, "err"] = err_extractor(opdict_row)
+                df.loc[cur_row] = [id_, opdict_row[0], err_extractor(opdict_row)]
                 cur_row += 1
         self._df = df
 
@@ -73,11 +64,13 @@ class OPDataStorer(ABC):
 
 
 class ExpOPDataStorer(OPDataStorer):
+    """OP data storer for experiments"""
+
     @property
-    def ass_id(self):
+    def ass_id(self) -> str:
         return self._e.exp_id
 
-    def store_to_hdf5(self, hdf_fname: str):
+    def store_to_hdf5(self, hdf_fname: str) -> None:
         _mcontent = self._e.membrane_composition(basis="molar")
         mcontent = {"name": [], "inchikey": [], "fraction": []}
         for lname, frac in _mcontent.items():
@@ -126,11 +119,13 @@ class ExpOPDataStorer(OPDataStorer):
             for k, v in upd_attr.items():
                 sample_storer.attrs[k] = v
 
-    def __init__(self, e: OPExperiment, lname: str):
+    def __init__(self, e: OPExperiment, lname: str) -> None:
+        """Initialize with experiment object and lipid name"""
         self._e = e
         self._lname = lname
 
-    def prepare_dataframe(self):
+    def prepare_dataframe(self) -> None:
+        """Call dataframe preparation"""
         mol = self._e.lipids[self._lname]
         opdict = self._e.data[self._lname]
         self._prepare_df_common(mol, opdict, err_extractor=lambda x: 0.02 if len(x) == 1 else x[1])
