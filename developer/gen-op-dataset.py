@@ -68,6 +68,9 @@ class OPDataStorer(ABC):
 class ExpOPDataStorer(OPDataStorer):
     """OP data storer for experiments"""
 
+    DEFAULT_EXP_HDFNAME = "exp-op-dataset.h5"
+    """Default filename for the experimental dataset"""
+
     @property
     def ass_id(self) -> str:
         return self._e.exp_id
@@ -133,6 +136,9 @@ class ExpOPDataStorer(OPDataStorer):
 
 
 class SimOPDataStorer(OPDataStorer):
+    DEFAULT_SIMS_HDFNAME = "sims-op-dataset.h5"
+    """Default Dataset Filename"""
+
     @property
     def ass_id(self):
         return self._s["ID"]
@@ -195,9 +201,6 @@ class SimOPDataStorer(OPDataStorer):
         self._lname = lname
 
 
-H5_EXP_MASTER = "exp-op-dataset.h5"
-
-
 def main_exps() -> None:
     print("Generating OP datasets from experiments.")
     exps = ExperimentCollection.load_from_data("OPExperiment")
@@ -210,10 +213,7 @@ def main_exps() -> None:
             except OPDataError as e:
                 print("ERROR: ", e)
                 continue
-            ods.store_to_hdf5(H5_EXP_MASTER)
-
-
-H5_SIMS_MASTER = "sims-op-dataset.h5"
+            ods.store_to_hdf5(ExpOPDataStorer.DEFAULT_EXP_HDFNAME)
 
 
 def main_sims() -> None:
@@ -233,7 +233,7 @@ def main_sims() -> None:
             except OPDataError as e:
                 print("ERROR: ", e)
                 continue
-            ods.store_to_hdf5(H5_SIMS_MASTER)
+            ods.store_to_hdf5(SimOPDataStorer.DEFAULT_SIMS_HDFNAME)
 
 
 if __name__ == "__main__":
