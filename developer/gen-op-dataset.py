@@ -2,6 +2,7 @@
 
 import argparse
 import re
+import sys
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -236,12 +237,24 @@ def main_sims() -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--exps", action="store_true", help="Run experiments")
-    parser.add_argument("--sims", action="store_true", help="Run simulations")
+    parser = argparse.ArgumentParser(
+        prog="OP Dataset Generator",
+        description="""
+CI helper script for delivering dataset for Kaggle in HDF5 format.
+Two DataFrames are stored for each Sim/Exp-lipid pair:
+1. SMILES-aligned values for each atom of the molecule
+2. Composition table of membrane part of the system""",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("--exps", action="store_true", help="Generate DS from experiments")
+    parser.add_argument("--sims", action="store_true", help="Generate DS from simulations")
     args = parser.parse_args()
 
     if args.exps:
         main_exps()
     if args.sims:
         main_sims()
+
+    if not args.exps and not args.sims:
+        parser.print_usage()
+        sys.exit(1)
