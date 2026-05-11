@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import logging
 import re
 import sys
 from abc import ABC, abstractmethod
@@ -201,39 +202,52 @@ class SimOPDataStorer(OPDataStorer):
         self._lname = lname
 
 
-def main_exps() -> None:
-    print("Generating OP datasets from experiments.")
+def main_exps(log: logging.Logger) -> tuple[int, int]:
+    """Generate dataset for experiments"""
+    stat_ok, stat_fail = 0, 0
+    log.info("\n\nGenerating OP datasets from experiments.")
     exps = ExperimentCollection.load_from_data("OPExperiment")
     for exp in exps:
-        print(exp)
         for lname in exp.data:
+            log.info("%s // %s", str(exp), lname)
             ods = ExpOPDataStorer(exp, lname)
             try:
                 ods.prepare_dataframe()
             except OPDataError as e:
-                print("ERROR: ", e)
+                log.error("[from .prepare_dataframe] %s", str(e))  # noqa: TRY400
+                stat_fail += 1
                 continue
+            else:
+                stat_ok += 1
             ods.store_to_hdf5(ExpOPDataStorer.DEFAULT_EXP_HDFNAME)
+            log.info("..stored!")
+    return stat_ok, stat_fail
 
 
-def main_sims() -> None:
-    print("Generating OP dataset from simulations.")
+def main_sims(log: logging.Logger) -> tuple[int, int]:
+    """Generate dataset from simulations"""
+    stat_ok, stat_fail = 0, 0
+    log.info("\n\nGenerating OP dataset from simulations.")
     sims = initialize_databank()
     for sim in sims:
-        print(sim)
         opdata = get_OP(sim)
-        if opdata is None:
-            continue
         for lname in opdata:
-            if opdata[lname] is None:
+            if opdata is None or opdata[lname] is None:
+                stat_fail += 1
                 continue
+            log.info("%s // %s", str(sim), lname)
             ods = SimOPDataStorer(sim, lname)
             try:
                 ods.prepare_dataframe()
             except OPDataError as e:
-                print("ERROR: ", e)
+                log.error("[from .prepare_dataframe] %s", str(e))  # noqa: TRY400
+                stat_fail += 1
                 continue
+            else:
+                stat_ok += 1
             ods.store_to_hdf5(SimOPDataStorer.DEFAULT_SIMS_HDFNAME)
+            log.info("..stored!")
+    return stat_ok, stat_fail
 
 
 if __name__ == "__main__":
@@ -250,11 +264,23 @@ Two DataFrames are stored for each Sim/Exp-lipid pair:
     parser.add_argument("--sims", action="store_true", help="Generate DS from simulations")
     args = parser.parse_args()
 
-    if args.exps:
-        main_exps()
-    if args.sims:
-        main_sims()
-
     if not args.exps and not args.sims:
         parser.print_usage()
         sys.exit(1)
+
+    lg = logging.getLogger("cli")
+    lg.setLevel(logging.INFO)
+    h_stderr = logging.StreamHandler(sys.stderr)
+    h_stderr.setLevel(logging.INFO)
+    lg.addHandler(h_stderr)
+
+    if args.exps:
+        e_ok, e_fail = main_exps(lg)
+    if args.sims:
+        s_ok, s_fail = main_sims(lg)
+
+    lg.info("=======   STATISTICS   ========")
+    if args.exps:
+        lg.info(f"Stored experiment-lipid pairs: {e_ok} // failed: {e_fail}")
+    if args.sims:
+        lg.info(f"Stored simulation-lipid pairs: {s_ok} // failed: {s_fail}")
