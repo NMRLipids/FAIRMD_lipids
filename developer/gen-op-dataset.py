@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from unidecode import unidecode
 
+from fairmd.lipids._base import SampleComposition
 from fairmd.lipids.api import get_OP
 from fairmd.lipids.core import System, initialize_databank
 from fairmd.lipids.experiment import ExperimentCollection, OPExperiment
@@ -24,10 +25,6 @@ class OPDataStorer(ABC):
     """Abstract class for OP data storage"""
 
     @abstractmethod
-    def store_to_hdf5(self, hdf_fname: str) -> None:
-        """Store the record"""
-
-    @abstractmethod
     def prepare_dataframe(self) -> None:
         """Prepare dataframe for storing"""
 
@@ -35,6 +32,11 @@ class OPDataStorer(ABC):
     @abstractmethod
     def ass_id(self) -> str:
         """Get id of assoc object"""
+
+    @property
+    @abstractmethod
+    def sample(self) -> SampleComposition:
+        """Return sample instance"""
 
     def _prepare_df_common(self, mol: Molecule, opdict: dict, err_extractor: callable) -> None:
         """Condition the dataframe for storage"""
@@ -65,6 +67,58 @@ class OPDataStorer(ABC):
                 res.append(v)
         return sorted(res, key=lambda x: x[0])
 
+    def get_mcontent(self) -> dict:
+        """Generate membrane content dictionary"""
+        _mcontent = self.sample.membrane_composition(basis="molar")
+        rdict = {"name": [], "inchikey": [], "fraction": []}
+        for lname, frac in _mcontent.items():
+            k = lname
+            ik = self.sample.lipids[lname].metadata["bioschema_properties"]["inChIKey"]
+            rdict["name"] += [k]
+            rdict["inchikey"] += [ik]
+            rdict["fraction"] += [frac]
+        return rdict
+
+    def get_DF_attrs(self) -> tuple[dict, dict]:
+        """Genererate attributes for OP and Composition dataframes"""
+        inchikey = self.sample.lipids[self._lname].metadata["bioschema_properties"]["inChIKey"]
+        smiles = self.sample.lipids[self._lname].metadata["bioschema_properties"]["smiles"]
+        opt_attr = {
+            "inchikey": inchikey,
+            "smiles": smiles,
+        }
+        hydration = self.sample.get_hydration()
+        scontent = self.sample.solution_composition(basis="molar")
+        smp_attr = {
+            "hydration": hydration,
+            "solution": ", ".join([f"{k:<25} {v * 100:>6.1f}%" for k, v in sorted(scontent.items())]),
+        }
+        return opt_attr, smp_attr
+
+    @abstractmethod
+    def get_H5_gname(self) -> str:
+        """Generate name for the record in the H5 table"""
+
+    def store_to_hdf5(self, hdf_fname: str) -> None:
+        mcontent = self.get_mcontent()
+        opt_attr, smp_attr = self.get_DF_attrs()
+        # store all vars and df to the HDF5 table
+        group = self.get_H5_gname()
+        with pd.HDFStore(hdf_fname, "a") as store:
+            # DataFrame table
+            store.put(f"{group}/op_values", self._df, format="table", data_columns=True)
+            opdf = pd.DataFrame(mcontent)
+            print(opdf)
+            store.put(f"{group}/sample_table", opdf, format="table", data_columns=True)
+            # Metadata attributes - I
+            op_storer = store.get_storer(f"{group}/op_values")
+            for k, v in opt_attr.items():
+                op_storer.attrs[k] = v
+            # -//- II
+            sample_storer = store.get_storer(f"{group}/sample_table")
+            for k, v in smp_attr.items():
+                sample_storer.attrs[k] = v
+
 
 class ExpOPDataStorer(OPDataStorer):
     """OP data storer for experiments"""
@@ -76,53 +130,28 @@ class ExpOPDataStorer(OPDataStorer):
     def ass_id(self) -> str:
         return self._e.exp_id
 
-    def store_to_hdf5(self, hdf_fname: str) -> None:
-        _mcontent = self._e.membrane_composition(basis="molar")
-        mcontent = {"name": [], "inchikey": [], "fraction": []}
-        for lname, frac in _mcontent.items():
-            k = lname
-            ik = self._e.lipids[lname].metadata["bioschema_properties"]["inChIKey"]
-            mcontent["name"] += [k]
-            mcontent["inchikey"] += [ik]
-            mcontent["fraction"] += [frac]
-        hydration = self._e.get_hydration()
-        scontent = self._e.solution_composition(basis="molar")
-        temperature = self._e["TEMPERATURE"]
-        inchikey = self._e.lipids[self._lname].metadata["bioschema_properties"]["inChIKey"]
-        smiles = self._e.lipids[self._lname].metadata["bioschema_properties"]["smiles"]
-        nmr_method = self._e.metadata.get("NMR", {}).get("METHOD", False)
-        # store all vars and df to the HDF5 table
+    @property
+    def sample(self) -> SampleComposition:
+        return self._e
+
+    def get_H5_gname(self) -> str:
         group = "E"
         group += re.sub(r"[^A-Za-z0-9_]", "_", unidecode(self._e.exp_id))
         group += "__" + self._lname
-        with pd.HDFStore(hdf_fname, "a") as store:
-            # DataFrame table
-            store.put(f"{group}/op_values", self._df, format="table", data_columns=True)
-            store.put(f"{group}/sample_table", pd.DataFrame(mcontent), format="table", data_columns=True)
-            # Metadata attributes - I
-            op_storer = store.get_storer(f"{group}/op_values")
-            upd_attr = {
-                "inchikey": inchikey,
-                "smiles": smiles,
-                "fmdl_expid": self._e.exp_id,
-            }
-            if nmr_method:
-                upd_attr["nmr_method"] = nmr_method
-            for k, v in upd_attr.items():
-                op_storer.attrs[k] = v
-            # -//- II
-            sample_storer = store.get_storer(f"{group}/sample_table")
-            upd_attr = {
-                "temperature": temperature,
-                "hydration": hydration,
-                "solution": ", ".join([f"{k:<25} {v * 100:>6.1f}%" for k, v in sorted(scontent.items())]),
-            }
-            for k, v in upd_attr.items():
-                sample_storer.attrs[k] = v
+        return group
+
+    def get_DF_attrs(self) -> tuple[dict, dict]:
+        opt_attr, smp_attr = super().get_DF_attrs()
+        opt_attr ["fmdl_expid"] = self._e.exp_id
+        nmr_method = self._e.metadata.get("NMR", {}).get("METHOD", False)
+        if nmr_method:
+            opt_attr["nmr_method"] = nmr_method
+        smp_attr["temperature"] = self._e["TEMPERATURE"]
+        return opt_attr, smp_attr
 
     def __init__(self, e: OPExperiment, lname: str) -> None:
         """Initialize with experiment object and lipid name"""
-        self._e = e
+        self._e: OPExperiment = e
         self._lname = lname
 
     def prepare_dataframe(self) -> None:
@@ -144,60 +173,44 @@ class SimOPDataStorer(OPDataStorer):
     def ass_id(self):
         return self._s["ID"]
 
+    @property
+    def sample(self) -> SampleComposition:
+        return self._s
+
     def prepare_dataframe(self):
         mol = self._s.lipids[self._lname]
         opdict = get_OP(self._s)[self._lname]
         self._prepare_df_common(mol, opdict, err_extractor=lambda x: x[2])
 
-    def store_to_hdf5(self, hdf_fname: str):
-        _mcontent = self._s["COMPOSITION"]
-        mcontent = {"name": [], "inchikey": [], "number": [], "asymmetry": []}
-        for lname, lip in self._s.lipids.items():
-            ik = lip.metadata["bioschema_properties"]["inChIKey"]
-            cnt = _mcontent[lname]["COUNT"]
+    def get_H5_gname(self) -> str:
+        return f"SIM_{self._s['ID']}__{self._lname}"
+
+    def get_mcontent(self):
+        retdic = super().get_mcontent()
+        retdic["number"] = [0] * len(retdic["name"])
+        retdic["asymmetry"] = [0] * len(retdic["name"])
+        _simcomp = self._s["COMPOSITION"]
+        for i, lname in enumerate(retdic["name"]):
+            cnt = _simcomp[lname]["COUNT"]
             if isinstance(cnt, int):
                 asm = np.nan
                 cnt = [cnt / 2, cnt / 2]
             else:
                 asm = cnt[0] / sum(cnt)
-            mcontent["name"] += [lname]
-            mcontent["inchikey"] += [ik]
-            mcontent["number"] += [sum(cnt) / 2]
-            mcontent["asymmetry"] += [asm]
-        hydration = self._s.get_hydration()
-        scontent = self._s.solution_composition(basis="molar")
-        temperature = self._s["TEMPERATURE"]
-        inchikey = self._s.lipids[self._lname].metadata["bioschema_properties"]["inChIKey"]
-        smiles = self._s.lipids[self._lname].metadata["bioschema_properties"]["smiles"]
-        ff_name = self._s.readme.get("FF", False)
-        # store all vars and df to the HDF5 table
-        group = f"SIM_{self._s['ID']}__{self._lname}"
-        with pd.HDFStore(hdf_fname, "a") as store:
-            # DataFrame table
-            store.put(f"{group}/op_values", self._df, format="table", data_columns=True)
-            store.put(f"{group}/simulation_table", pd.DataFrame(mcontent), format="table", data_columns=True)
-            # Metadata attributes - I
-            op_storer = store.get_storer(f"{group}/op_values")
-            upd_attr = {
-                "inchikey": inchikey,
-                "smiles": smiles,
-                "fmdl_simid": self._s["ID"],
-            }
-            for k, v in upd_attr.items():
-                op_storer.attrs[k] = v
-            # -//- II
-            sample_storer = store.get_storer(f"{group}/simulation_table")
-            upd_attr = {
-                "temperature": temperature,
-                "hydration": hydration,
-                "solution": ", ".join([f"{k:<25} {v * 100:>6.1f}%" for k, v in sorted(scontent.items())]),
-            }
-            if ff_name:
-                upd_attr["ff_name"] = ff_name
-            for k, v in upd_attr.items():
-                sample_storer.attrs[k] = v
+            retdic["number"][i] = sum(cnt) / 2
+            retdic["asymmetry"][i] = asm
+        return retdic
 
-    def __init__(self, sim: System, lname: str):
+    def get_DF_attrs(self) -> tuple[dict, dict]:
+        opt_attr, smp_attr = super().get_DF_attrs()
+        opt_attr["fmdl_simid"] = self._s["ID"]
+        smp_attr["temperature"] =  self._s["TEMPERATURE"]
+        ff_name = self._s.readme.get("FF", False)
+        if ff_name:
+            smp_attr["ff_name"] = ff_name
+        return opt_attr, smp_attr
+
+    def __init__(self, sim: System, lname: str) -> None:
         self._s = sim
         self._lname = lname
 
