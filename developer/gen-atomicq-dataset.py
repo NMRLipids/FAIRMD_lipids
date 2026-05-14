@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from abc import ABC
-
 import numpy as np
 import pandas as pd
 
@@ -14,7 +12,7 @@ class OPQDataError(Exception):
     """Our specific exception"""
 
 
-class OPQDataStorer(ABC):
+class OPQDataStorer():
     def __init__(self, s: System, lname: str) -> None:
         self._s = s
         self._lname = lname
@@ -34,7 +32,7 @@ class OPQDataStorer(ABC):
             _c_dict_len = len(_c_dict)
             if _c_dict_len == 0:
                 continue
-            vearr = np.array([_c_dict.popitem()[1] for _ in range(_c_dict_len)])
+            vearr = np.array(list(_c_dict.values()))
             if _c_dict_len == 1:  # one H
                 op_clean.loc[len(op_clean)] = [smid, 1, vearr[0, 0], vearr[0, 1]]
             elif _c_dict_len == 3:  # three H. They are always symmetric.
@@ -60,8 +58,6 @@ class OPQDataStorer(ABC):
 
     def _get_smi2uname(self) -> dict:
         mol = self._s.lipids[self._lname]
-        smiles = mol.metadata["bioschema_properties"]["smiles"]
-        print(smiles)
         s2u = {}
         for uname, aprops in mol.mapping_dict.items():
             if "SMILEIDX" in aprops:
