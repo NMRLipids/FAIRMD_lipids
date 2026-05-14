@@ -18,6 +18,7 @@ class OPQDataStorer(ABC):
     def __init__(self, s: System, lname: str) -> None:
         self._s = s
         self._lname = lname
+        self._exp_opdicts = []
 
     def _cvt_op_df(self, opdict: dict, err_pos: int) -> pd.DataFrame:
         op_clean = pd.DataFrame(
@@ -74,8 +75,6 @@ class OPQDataStorer(ABC):
 
     def add_experiment_data(self, exp_opdict: dict) -> None:
         """Add experimental OP data to the storer. We will use it for Q estimation."""
-        if not hasattr(self, "_exp_opdict"):
-            self._exp_opdicts = []
         self._exp_opdicts.append(self._cvt_op_df(exp_opdict, 1))
 
     def average_experiment_data(self) -> None:
@@ -145,6 +144,7 @@ class OPQDataStorer(ABC):
 
 
 H5_QSIMS_MASTER = "atomic-opq-dataset.h5"
+
 
 def load_sims() -> None:
     print("Generating OP dataset from simulations.")
