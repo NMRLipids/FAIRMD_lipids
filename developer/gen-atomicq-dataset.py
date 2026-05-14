@@ -39,10 +39,10 @@ class OPQDataStorer(ABC):
                 op_clean.loc[len(op_clean)] = [smid, 1, vearr[0, 0], vearr[0, 1]]
             elif _c_dict_len == 3:  # three H. They are always symmetric.
                 op_clean.loc[len(op_clean)] = [smid, 1, np.mean(vearr[:, 0]), np.mean(vearr[:, 1])]
-            elif _c_dict_len == 2:  # four H. They could be asymmetric.
+            elif _c_dict_len == 2:  # two H. They could be asymmetric.
                 vearr = vearr[np.argsort(np.abs(vearr[:, 0]))]
-                op_clean.loc[len(op_clean)] = [smid, 1, vearr[0, 0], np.mean(vearr[0, 1])]
-                op_clean.loc[len(op_clean)] = [smid, 2, vearr[1, 0], np.mean(vearr[1, 1])]
+                op_clean.loc[len(op_clean)] = [smid, 1, vearr[0, 0], vearr[0, 1]]
+                op_clean.loc[len(op_clean)] = [smid, 2, vearr[1, 0], vearr[1, 1]]
             else:
                 msg = f"Unexpected number of H for {uname} in instance {self.ass_id} // {self._lname}: {_c_dict_len}. Cannot store."
                 raise OPQDataError(msg)
