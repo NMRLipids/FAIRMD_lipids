@@ -5,7 +5,7 @@ import pandas as pd
 
 from fairmd.lipids.api import get_OP
 from fairmd.lipids.core import System, initialize_databank
-from fairmd.lipids.experiment import ExperimentCollection
+from fairmd.lipids.experiment import ExperimentCollection, OPExperiment
 
 
 class OPQDataError(Exception):
@@ -16,7 +16,7 @@ class OPQDataStorer():
     def __init__(self, s: System, lname: str) -> None:
         self._s = s
         self._lname = lname
-        self._exp_opdicts = []
+        self._exp_opdicts: list[pd.DataFrame] = []
 
     def _cvt_op_df(self, opdict: dict, err_pos: int) -> pd.DataFrame:
         op_clean = pd.DataFrame(
@@ -25,7 +25,7 @@ class OPQDataStorer():
         smi2uname = self._get_smi2uname()
         for smid, uname in smi2uname.items():
             _c_dict = {
-                k: [v[0], 0.02 if err_pos >= len(v) else v[err_pos]]  # check
+                k: [v[0], OPExperiment.DEFAULT_ERROR if err_pos >= len(v) else v[err_pos]]  # check
                 for k, v in opdict.items()
                 if k.split()[0] == uname
             }
@@ -42,7 +42,11 @@ class OPQDataStorer():
                 op_clean.loc[len(op_clean)] = [smid, 1, vearr[0, 0], vearr[0, 1]]
                 op_clean.loc[len(op_clean)] = [smid, 2, vearr[1, 0], vearr[1, 1]]
             else:
-                msg = f"Unexpected number of H for {uname} in instance {self.ass_id} // {self._lname}: {_c_dict_len}. Cannot store."
+                msg = (
+                    f"Unexpected number of H for {uname} in "
+                    f"instance {self.ass_id} // {self._lname}: {_c_dict_len}."
+                    " Cannot store."
+                )
                 raise OPQDataError(msg)
         return op_clean.astype({"c": np.int64, "h": np.int64, "val": np.float64, "err": np.float64})
 
@@ -76,12 +80,12 @@ class OPQDataStorer():
     def average_experiment_data(self) -> None:
         """Average experimental OP data if we have more than one."""
         concdf = pd.concat(self._exp_opdicts, ignore_index=True)
-        self._exp_opdict = concdf.groupby(["c", "h"]).mean().reset_index()
+        self._exp_opdict_one: pd.DataFrame = concdf.groupby(["c", "h"]).mean().reset_index()
 
     def compute_q_points(self) -> None:
-        """Compute shift btw simulation and mean(exp) datapoints"""
+        """Compute mean(exp) datapoints and inherit sign from simulation OP value"""
         df1 = self._sim_op.merge(
-            self._exp_opdict,
+            self._exp_opdict_one,
             on=["c", "h"],
             how="inner",
             suffixes=("_s", "_e"),
