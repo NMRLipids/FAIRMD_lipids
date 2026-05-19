@@ -1,0 +1,7 @@
+developer.gen\-atomicq\-dataset module
+======================================
+
+.. automodule:: developer.gen-atomicq-dataset
+   :members:
+   :show-inheritance:
+   :undoc-members:
