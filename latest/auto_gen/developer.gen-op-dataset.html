@@ -3,9 +3,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview: module code &mdash; FAIRMD Lipids v1.5.1.dev15+ge6d5bddd7 1.5.1.dev15+ge6d5bddd7 documentation</title>
+  <title>developer.gen-op-dataset module &mdash; FAIRMD Lipids v1.5.1.dev15+ge6d5bddd7 1.5.1.dev15+ge6d5bddd7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
@@ -17,7 +18,9 @@
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="developer.process_info_file module" href="developer.process_info_file.html" />
+    <link rel="prev" title="developer.autocomplete_metadata module" href="developer.autocomplete_metadata.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,10 +43,26 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Python Interface</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dbprograms.html">fairmd-lipids CLI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Overview.html">Project structure</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../Overview.html">Project structure</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="fairmd.lipids.html">fairmd.lipids</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="developer.html">developer</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="developer.html#python-files">Python files</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="developer.align_mapping.html">developer.align_mapping module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.autocomplete_metadata.html">developer.autocomplete_metadata module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">developer.gen-op-dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.process_info_file.html">developer.process_info_file module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.run_global_analysis.html">developer.run_global_analysis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer.validate_data.html">developer.validate_data module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../miscsrc/unittesting.html">Project testing</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Membrane Databank</span></p>
 <ul>
@@ -65,8 +84,11 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Overview: module code</li>
+          <li class="breadcrumb-item"><a href="../Overview.html">Project structure</a></li>
+          <li class="breadcrumb-item"><a href="developer.html">developer</a></li>
+      <li class="breadcrumb-item active">developer.gen-op-dataset module</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/auto_gen/developer.gen-op-dataset.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -74,44 +96,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="developer/align_mapping.html">developer.align_mapping</a></li>
-<li><a href="developer/autocomplete_metadata.html">developer.autocomplete_metadata</a></li>
-<li><a href="developer/process_info_file.html">developer.process_info_file</a></li>
-<li><a href="developer/run_global_analysis.html">developer.run_global_analysis</a></li>
-<li><a href="developer/validate_data.html">developer.validate_data</a></li>
-<li><a href="fairmd/lipids/_base.html">fairmd.lipids._base</a></li>
-<li><a href="fairmd/lipids/analib/analyze_nmrpca.html">fairmd.lipids.analib.analyze_nmrpca</a></li>
-<li><a href="fairmd/lipids/analib/databankop.html">fairmd.lipids.analib.databankop</a></li>
-<li><a href="fairmd/lipids/analib/formfactor.html">fairmd.lipids.analib.formfactor</a></li>
-<li><a href="fairmd/lipids/analib/maicos.html">fairmd.lipids.analib.maicos</a></li>
-<li><a href="fairmd/lipids/analyze.html">fairmd.lipids.analyze</a></li>
-<li><a href="fairmd/lipids/api.html">fairmd.lipids.api</a></li>
-<li><a href="fairmd/lipids/auxiliary/jsonEncoders.html">fairmd.lipids.auxiliary.jsonEncoders</a></li>
-<li><a href="fairmd/lipids/auxiliary/mollib.html">fairmd.lipids.auxiliary.mollib</a></li>
-<li><a href="fairmd/lipids/auxiliary/opconvertor.html">fairmd.lipids.auxiliary.opconvertor</a></li>
-<li><a href="fairmd/lipids/auxiliary/routines.html">fairmd.lipids.auxiliary.routines</a></li>
-<li><a href="fairmd/lipids/bin/add_simulation.html">fairmd.lipids.bin.add_simulation</a></li>
-<li><a href="fairmd/lipids/bin/compute_databank.html">fairmd.lipids.bin.compute_databank</a></li>
-<li><a href="fairmd/lipids/bin/evaluate_quality.html">fairmd.lipids.bin.evaluate_quality</a></li>
-<li><a href="fairmd/lipids/bin/initialize_data.html">fairmd.lipids.bin.initialize_data</a></li>
-<li><a href="fairmd/lipids/bin/make_ranking.html">fairmd.lipids.bin.make_ranking</a></li>
-<li><a href="fairmd/lipids/bin/match_experiments.html">fairmd.lipids.bin.match_experiments</a></li>
-<li><a href="fairmd/lipids/core.html">fairmd.lipids.core</a></li>
-<li><a href="fairmd/lipids/databankio.html">fairmd.lipids.databankio</a></li>
-<li><a href="fairmd/lipids/experiment.html">fairmd.lipids.experiment</a></li>
-<li><a href="fairmd/lipids/ipylib/plottings.html">fairmd.lipids.ipylib.plottings</a></li>
-<li><a href="fairmd/lipids/molecules.html">fairmd.lipids.molecules</a></li>
-<li><a href="fairmd/lipids/quality.html">fairmd.lipids.quality</a></li>
-<li><a href="fairmd/lipids/schema_validation/engines.html">fairmd.lipids.schema_validation.engines</a></li>
-<li><a href="fairmd/lipids/schema_validation/validate_info_dict.html">fairmd.lipids.schema_validation.validate_info_dict</a></li>
-<li><a href="fairmd/lipids/schema_validation/validate_yaml.html">fairmd.lipids.schema_validation.validate_yaml</a></li>
-<li><a href="fairmd/lipids/utils.html">fairmd.lipids.utils</a></li>
-</ul>
+  <section id="developer-gen-op-dataset-module">
+<h1>developer.gen-op-dataset module<a class="headerlink" href="#developer-gen-op-dataset-module" title="Link to this heading"></a></h1>
+</section>
+
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="developer.autocomplete_metadata.html" class="btn btn-neutral float-left" title="developer.autocomplete_metadata module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="developer.process_info_file.html" class="btn btn-neutral float-right" title="developer.process_info_file module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

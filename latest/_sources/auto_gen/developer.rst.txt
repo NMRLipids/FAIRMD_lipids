@@ -12,6 +12,7 @@ Python files
 
    developer.align_mapping
    developer.autocomplete_metadata
+   developer.gen-op-dataset
    developer.process_info_file
    developer.run_global_analysis
    developer.validate_data

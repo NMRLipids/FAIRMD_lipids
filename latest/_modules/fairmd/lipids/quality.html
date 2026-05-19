@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fairmd.lipids.quality &mdash; FAIRMD Lipids v1.5.1.dev14+gbe9bc966b 1.5.1.dev14+gbe9bc966b documentation</title>
+  <title>fairmd.lipids.quality &mdash; FAIRMD Lipids v1.5.1.dev15+ge6d5bddd7 1.5.1.dev15+ge6d5bddd7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a7cfb5f4"></script>
+      <script src="../../../_static/documentation_options.js?v=31664f82"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -29,7 +29,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            FAIRMD Lipids v1.5.1.dev14+gbe9bc966b
+            FAIRMD Lipids v1.5.1.dev15+ge6d5bddd7
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -57,7 +57,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">FAIRMD Lipids v1.5.1.dev14+gbe9bc966b</a>
+          <a href="../../../index.html">FAIRMD Lipids v1.5.1.dev15+ge6d5bddd7</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -96,7 +96,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_FF</span><span class="p">,</span> <span class="n">get_OP</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.auxiliary</span><span class="w"> </span><span class="kn">import</span> <span class="n">CompactJSONEncoder</span><span class="p">,</span> <span class="n">mollib</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span><span class="p">,</span> <span class="n">initialize_databank</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentCollection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fairmd.lipids.experiment</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExperimentCollection</span><span class="p">,</span> <span class="n">OPExperiment</span>
 
 
 <div class="viewcode-block" id="QualSimulation">
@@ -321,7 +321,8 @@
 
 <span class="sd">        :return: dictionary of type {&quot;nC nH&quot;: quality value}.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">exp_error</span> <span class="o">=</span> <span class="mf">0.02</span>  <span class="c1"># TODO: hardcoded error value, should be taken from experiment data when available</span>
+        <span class="c1"># TODO: hardcoded error value, should be taken from experiment data when available</span>
+        <span class="n">exp_error</span> <span class="o">=</span> <span class="n">OPExperiment</span><span class="o">.</span><span class="n">DEFAULT_ERROR</span>
 
         <span class="c1"># union of keys in exp_op_data and sim_op_data</span>
         <span class="n">all_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">exp_op_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">sim_op_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
