@@ -13,6 +13,10 @@ class OPQDataError(Exception):
 
 
 class OPQDataStorer():
+
+
+    DEFAULT_OPQ_HDFNAME = "atomic-opq-dataset.h5"
+
     def __init__(self, s: System, lname: str) -> None:
         self._s = s
         self._lname = lname
@@ -143,7 +147,6 @@ class OPQDataStorer():
                 sample_storer.attrs[k] = v
 
 
-H5_QSIMS_MASTER = "atomic-opq-dataset.h5"
 
 
 def load_sims() -> None:
@@ -170,7 +173,7 @@ def load_sims() -> None:
             ods.average_experiment_data()
 
             ods.compute_q_points()
-            ods.store_to_hdf5(H5_QSIMS_MASTER)
+            ods.store_to_hdf5(OPQDataStorer.DEFAULT_OPQ_HDFNAME)
 
 
 if __name__ == "__main__":
