@@ -139,4 +139,4 @@ Data contribution rules are moved there accordingly.
 
 # Contributing data
 
-If you would like to contribute simulations or experiments, please consult instructions for [Data Contribution](https://nmrlipids.github.io/FAIRMD_lipids/stable/dbcontribute.html).
+If you would like to contribute simulations or experiments, please consult instructions for [Data Contribution](https://databank.readthedocs.io/stable/dbcontribute.html).

@@ -53,7 +53,7 @@ parallel = ["joblib"]
 
 [project.urls]
 homepage = "https://FAIRMD_lipids.nmrlipids.fi"
-documentation = "https://nmrlipids.github.io/FAIRMD_lipids/latest/"
+documentation = "https://databank.readthedocs.io/"
 repository = "https://github.com/NMRLipids/FAIRMD_lipids"
 # changelog = ""
 issues = "https://github.com/NMRLipids/FAIRMD_lipids/issues"

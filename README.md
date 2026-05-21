@@ -1,8 +1,8 @@
 # FAIRMD Lipids
 
 [![tests status](https://img.shields.io/github/checks-status/NMRLipids/FAIRMD_lipids/main)](https://github.com/NMRLipids/FAIRMD_lipids/actions?query=branch%3Amain)
-[![documentation-stable](https://img.shields.io/badge/📚_documentation-stable-sucess)](https://nmrlipids.github.io/FAIRMD_lipids/)
-[![documentation-latest](https://img.shields.io/badge/📒_documentation-latest-yellow)](https://nmrlipids.github.io/FAIRMD_lipids/latest/index.html)
+[![documentation-stable](https://img.shields.io/badge/📚_documentation-stable-sucess)](https://databank.readthedocs.io/stable/)
+[![documentation-latest](https://img.shields.io/badge/📒_documentation-latest-yellow)](https://databank.readthedocs.io/latest/index.html)
 [![coverage](https://codecov.io/gh/NMRLipids/FAIRMD_lipids/branch/main/graph/badge.svg)](https://codecov.io/gh/NMRLipids/FAIRMD_lipids)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18679885.svg)](https://doi.org/10.5281/zenodo.18679885)
 
@@ -54,7 +54,7 @@ your python code.
 # Documentation
 
 The FAIRMD Lipids project documentation is available in
-[here](https://nmrlipids.github.io/FAIRMD_lipids/latest/). More information and example
+[here](https://databank.readthedocs.io/). More information and example
 applications are available from the [FAIRMD Lipids
 manuscript](https://doi.org/10.1038/s41467-024-45189-z).
 
@@ -71,7 +71,7 @@ notebook](https://github.com/NMRLipids/databank-template/blob/main/scripts/templ
 can be used to get started with the analyses utilizing the FAIRMD Lipids.
 
 Connection of [Universal molecule and atom naming
-conventions](https://nmrlipids.github.io/FAIRMD_lipids/latest/schemas/moleculesAndMapping.html)
+conventions](https://databank.readthedocs.io/stable/schemas/moleculesAndMapping.html)
 with simulation specific names delivered by mapping files can be used to perform
 automatic analyses over large sets of simulations. The results for large analyses can be
 stored using the same structure as used for `README.yaml` files as done, for example,
@@ -102,7 +102,7 @@ The [FAIRMD Upload-Portal](https://upload-portal.nmrlipids.fi) enables researche
 
 The project is open for contributions! 
 
-Please consult [CONTRIBUTION.md](./CONTRIBUTION.md) and [Data Contribution](https://nmrlipids.github.io/FAIRMD_lipids/stable/dbcontribute.html) for further information.
+Please consult [CONTRIBUTION.md](./CONTRIBUTION.md) and [Data Contribution](https://databank.readthedocs.io/stable/dbcontribute.html) for further information.
 
 Do not hesitate contacting us via [databank@nmrlipids.fi](email:databank@nmrlipids.fi) if 
 you have any questions or inquiries!
