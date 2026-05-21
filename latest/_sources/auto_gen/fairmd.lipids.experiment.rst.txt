@@ -1,7 +1,0 @@
-fairmd.lipids.experiment module
-===============================
-
-.. automodule:: fairmd.lipids.experiment
-   :members:
-   :show-inheritance:
-   :undoc-members:

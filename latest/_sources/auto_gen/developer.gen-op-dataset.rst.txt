@@ -1,7 +1,0 @@
-developer.gen\-op\-dataset module
-=================================
-
-.. automodule:: developer.gen-op-dataset
-   :members:
-   :show-inheritance:
-   :undoc-members:

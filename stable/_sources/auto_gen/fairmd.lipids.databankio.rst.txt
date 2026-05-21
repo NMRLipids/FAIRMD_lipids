@@ -1,7 +1,0 @@
-fairmd.lipids.databankio module
-===============================
-
-.. automodule:: fairmd.lipids.databankio
-   :members:
-   :show-inheritance:
-   :undoc-members:

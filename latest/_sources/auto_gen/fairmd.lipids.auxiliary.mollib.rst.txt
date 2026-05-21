@@ -1,7 +1,0 @@
-fairmd.lipids.auxiliary.mollib module
-=====================================
-
-.. automodule:: fairmd.lipids.auxiliary.mollib
-   :members:
-   :show-inheritance:
-   :undoc-members:

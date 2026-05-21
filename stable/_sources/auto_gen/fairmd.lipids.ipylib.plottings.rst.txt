@@ -1,7 +1,0 @@
-fairmd.lipids.ipylib.plottings module
-=====================================
-
-.. automodule:: fairmd.lipids.ipylib.plottings
-   :members:
-   :show-inheritance:
-   :undoc-members:

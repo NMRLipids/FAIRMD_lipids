@@ -1,7 +1,0 @@
-fairmd.lipids.schema\_validation.validate\_yaml module
-======================================================
-
-.. automodule:: fairmd.lipids.schema_validation.validate_yaml
-   :members:
-   :show-inheritance:
-   :undoc-members:
