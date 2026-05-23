@@ -1,7 +1,0 @@
-developer.process\_info\_file module
-====================================
-
-.. automodule:: developer.process_info_file
-   :members:
-   :show-inheritance:
-   :undoc-members:

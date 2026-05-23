@@ -1,7 +1,0 @@
-fairmd.lipids.analib.formfactor module
-======================================
-
-.. automodule:: fairmd.lipids.analib.formfactor
-   :members:
-   :show-inheritance:
-   :undoc-members:

@@ -1,7 +1,0 @@
-fairmd.lipids.auxiliary.jsonEncoders module
-===========================================
-
-.. automodule:: fairmd.lipids.auxiliary.jsonEncoders
-   :members:
-   :show-inheritance:
-   :undoc-members:
