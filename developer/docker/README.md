@@ -28,7 +28,7 @@ Go to the directory where you have the fairmd-lipids repository. Then,
 
 1. Download the latest fairmd-lipids core image:
    ```
-   docker pull fairmd-lipids/core:latest
+   docker pull nmrlipids/core:latest
    ```
 
 2. Alternatively the Docker image can be built locally:
