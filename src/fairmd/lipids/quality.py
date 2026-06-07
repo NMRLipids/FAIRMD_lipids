@@ -292,22 +292,17 @@ class OPQualityEvaluator(QualityEvaluator):
 
         :return: dictionary of type {macrofragment: quality} where macrofragmetn is headgroup|tails|total.
         """
-        system_fragment_qualities = self.lipid_fragment_qualities
         molar_composition = self._sim.membrane_composition(basis="molar")
 
         system_dict = {}
         lipid_dict = {}
-        w_nan = []
 
-        for lname, lqual in system_fragment_qualities.items():
+        for lname, lqual in self.lipid_fragment_qualities.items():
             lipid_dict = dict.fromkeys(lqual.keys(), 0)
             w = molar_composition[lname]
             for key, value in lqual.items():
                 if not np.isnan(value):
                     lipid_dict[key] += w * value
-                else:
-                    # save 1 - w of a lipid into a list if the fragment quality is nan
-                    w_nan.append(1 - w)
             system_dict[lname] = lipid_dict
 
         system_quality = {}
@@ -316,22 +311,34 @@ class OPQualityEvaluator(QualityEvaluator):
         tails = 0
         total = 0
 
-        for ldict in system_dict.values():
+        penalty = {"headgroup": 1.0, "tails": 1.0, "total": 1.0}
+        for lname, ldict in system_dict.items():
+            lip_total = 0
+            lip_head = 0
+            lip_tails = 0
             for key, value in ldict.items():
                 if key == "total":
-                    total += value
+                    lip_total += value
                 elif key == "headgroup":
-                    headgroup += value
+                    lip_head += value
                 elif key in {"sn-1", "sn-2"}:
-                    tails += value / 2
+                    lip_tails += value / 2
                 else:
-                    tails += value  # everything non head is tail??
+                    lip_tails += value  # everything non head is tail??
+            w = molar_composition[lname]
+            if lip_total == 0:
+                penalty["total"] *= (1-w)
+            total += lip_total
+            if lip_head == 0:
+                penalty["headgroup"] *= (1-w)
+            headgroup += lip_head
+            if lip_tails == 0:
+                penalty["tails"] *= (1-w)
+            tails += lip_tails
 
-        penalty = np.prod(w_nan) if w_nan else 1
-
-        system_quality["headgroup"] = headgroup * penalty
-        system_quality["tails"] = tails * penalty
-        system_quality["total"] = total * penalty
+        system_quality["headgroup"] = headgroup * penalty["headgroup"]
+        system_quality["tails"] = tails * penalty["tails"]
+        system_quality["total"] = total * penalty["total"]
 
         return system_quality
 
