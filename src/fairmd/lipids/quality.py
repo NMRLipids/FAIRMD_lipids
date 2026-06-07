@@ -327,13 +327,13 @@ class OPQualityEvaluator(QualityEvaluator):
                     lip_tails += value  # everything non head is tail??
             w = molar_composition[lname]
             if lip_total == 0:
-                penalty["total"] *= (1-w)
+                penalty["total"] *= 1 - w
             total += lip_total
             if lip_head == 0:
-                penalty["headgroup"] *= (1-w)
+                penalty["headgroup"] *= 1 - w
             headgroup += lip_head
             if lip_tails == 0:
-                penalty["tails"] *= (1-w)
+                penalty["tails"] *= 1 - w
             tails += lip_tails
 
         system_quality["headgroup"] = headgroup * penalty["headgroup"]
