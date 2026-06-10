@@ -130,4 +130,3 @@ def test_autocomplete_sameas_from_live_apis():
         cas_rn = mod.get_cas(inchikey)
         if cas_rn:
             assert re.match(r"^\d{1,7}-\d{2}-\d$", cas_rn), f"unexpected CAS format: {cas_rn!r}"
-
