@@ -230,8 +230,7 @@ def sanitize_sameas(sameas):
             sanitized[key] = value
         else:
             print(
-                f"Warning: discarding sameAs '{key}' value {value!r}: does not match expected "
-                f"pattern {pattern!r}.",
+                f"Warning: discarding sameAs '{key}' value {value!r}: does not match expected pattern {pattern!r}.",
                 file=sys.stderr,
             )
     return sanitized
