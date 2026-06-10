@@ -86,6 +86,7 @@ markers = [
     "rdkit: tests features requiring RDKit installation",
     "all: run all tests",
     "min: run tests not requiring GROMACS installation",
+    "network: tests that require live internet access to external APIs",
 ]
 
 [tool.ruff]

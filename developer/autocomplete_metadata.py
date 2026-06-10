@@ -8,6 +8,7 @@ queried with the inchikey from:
 - ChEMBL
 - ChEBI
 - PubChem
+- CAS Common Chemistry (requires the ``CAS_API_KEY`` environment variable)
 
 .. note::
    This file is meant to be used by automated workflows.
@@ -17,6 +18,7 @@ import json
 import os
 import re
 import sys
+import urllib.parse
 import urllib.request
 from html import unescape
 
@@ -91,6 +93,43 @@ def get_chebi(chebi_id):
     return {}
 
 
+def get_metabolights(chebi_id):
+    # MetaboLights reference compounds use the accession MTBLC<chebi numeric id>.
+    # Return the identifier only if the compound exists in MetaboLights.
+    if not chebi_id:
+        return ""
+    mtbl_id = f"MTBLC{chebi_id}"
+    if check_api(f"https://www.ebi.ac.uk/metabolights/ws/compounds/{mtbl_id}"):
+        return mtbl_id
+    return ""
+
+
+def get_cas(inchikey):
+    # CAS Registry Numbers are not exposed by UniChem. They can be retrieved from
+    # CAS Common Chemistry, which requires an API token supplied via the
+    # CAS_API_KEY environment variable. Returns "" when the token is missing,
+    # the service is unreachable, or no match is found.
+    if not inchikey:
+        return ""
+    api_key = os.environ.get("CAS_API_KEY")
+    if not api_key:
+        return ""
+    # CAS Common Chemistry requires field-qualified queries; a bare InChIKey
+    # does not match, whereas "InChIKey=<value>" does.
+    query = urllib.parse.quote(f"InChIKey={inchikey}")
+    url = f"https://commonchemistry.cas.org/api/search?q={query}"
+    try:
+        req = urllib.request.Request(url, headers={"X-Api-Key": api_key})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.status == 200:
+                results = json.loads(response.read().decode("utf-8")).get("results", [])
+                if results:
+                    return results[0].get("rn", "") or ""
+    except Exception:
+        pass
+    return ""
+
+
 def get_unichem(inchikey):
     url = "https://www.ebi.ac.uk/unichem/api/v1/compounds"
     if check_api("https://www.ebi.ac.uk/unichem/api/v1/sources"):
@@ -117,8 +156,9 @@ def extract_sameas(sources):
         "lipidmaps": "lipidmaps",
         "metabolights": "metabolights",
         "swisslipids": "slm",
-        "pdb": "pdb.ligand",
-        "unii": "unii",
+        "rcsb_pdb": "pdb.ligand",
+        "pdbe": "pdb.ligand",
+        "fdasrs": "unii",
         "cas": "cas",
     }
     result = {}
@@ -127,7 +167,10 @@ def extract_sameas(sources):
         if prefix:
             value = src["compoundId"]
             if prefix == "ChEBI":
-                value = f"CHEBI:{value}" if value else ""
+                if value:
+                    value = value if str(value).startswith("CHEBI:") else f"CHEBI:{value}"
+                else:
+                    value = ""
             elif prefix == "pubchem.compound":
                 try:
                     value = int(value)
@@ -177,10 +220,20 @@ def sanitize_sameas(sameas):
                 try:
                     sanitized[key] = int(value)
                 except (TypeError, ValueError):
-                    pass
+                    print(
+                        f"Warning: discarding sameAs '{key}' value {value!r}: not a valid integer.",
+                        file=sys.stderr,
+                    )
             continue
-        if isinstance(value, str) and re.match(patterns.get(key, r".+"), value):
+        pattern = patterns.get(key, r".+")
+        if isinstance(value, str) and re.match(pattern, value):
             sanitized[key] = value
+        else:
+            print(
+                f"Warning: discarding sameAs '{key}' value {value!r}: does not match expected "
+                f"pattern {pattern!r}.",
+                file=sys.stderr,
+            )
     return sanitized
 
 
@@ -238,6 +291,19 @@ def main():
     # First, check if there's a ChEBI ID from unichem
     chebi_id = sameas.get("ChEBI", "").replace("CHEBI:", "")
     chebi_data = get_chebi(chebi_id) if chebi_id else {}
+
+    # MetaboLights is not exposed by UniChem; derive it from the ChEBI id.
+    if chebi_id and "metabolights" not in sameas:
+        metabolights_id = get_metabolights(chebi_id)
+        if metabolights_id:
+            sameas["metabolights"] = metabolights_id
+
+    # CAS Registry Numbers are not exposed by UniChem; fetch them from CAS
+    # Common Chemistry (requires the CAS_API_KEY environment variable).
+    if "cas" not in sameas:
+        cas_rn = get_cas(inchikey)
+        if cas_rn and re.match(r"^\d{1,7}-\d{2}-\d$", cas_rn):
+            sameas["cas"] = cas_rn
 
     # Collect alternate names with priority
     alternate_names = []
