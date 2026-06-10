@@ -15,8 +15,10 @@ queried with the inchikey from:
 
 import json
 import os
+import re
 import sys
 import urllib.request
+from html import unescape
 
 import yaml
 
@@ -142,6 +144,46 @@ def get_chembl_id_from_unichem(sources):
     return None
 
 
+def clean_text(value):
+    if not isinstance(value, str):
+        return value
+    return re.sub(r"<[^>]+>", "", unescape(value)).strip()
+
+
+def safe_float(value):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def sanitize_sameas(sameas):
+    patterns = {
+        "ChEBI": r"^CHEBI:\d+$",
+        "ChEMBL": r"^CHEMBL\d+$",
+        "lipidmaps": r"^LM(FA|GL|GP|SP|ST|PR|SL|PK)[0-9]{4}([0-9a-zA-Z]{4,6})?$",
+        "metabolights": r"^MTBL[CS]\d+$",
+        "slm": r"^SLM:\d+$",
+        "pdb.ligand": r"^[A-Za-z0-9]+$",
+        "unii": r"^[A-Z0-9]+$",
+        "cas": r"^\d{1,7}-\d{2}-\d$",
+    }
+    sanitized = {}
+    for key, value in sameas.items():
+        if key == "pubchem.compound":
+            if isinstance(value, int):
+                sanitized[key] = value
+            else:
+                try:
+                    sanitized[key] = int(value)
+                except (TypeError, ValueError):
+                    pass
+            continue
+        if isinstance(value, str) and re.match(patterns.get(key, r".+"), value):
+            sanitized[key] = value
+    return sanitized
+
+
 def load_existing_metadata(path):
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
@@ -188,7 +230,7 @@ def main():
     chembl = get_chembl(inchikey)
     pubchem = get_pubchem(inchikey)
     sources = get_unichem(inchikey)
-    sameas = extract_sameas(sources)
+    sameas = sanitize_sameas(extract_sameas(sources))
 
     cid = pubchem.get("CID", sameas.get("pubchem.compound"))
     synonyms = get_pubchem_synonyms(cid) if cid else []
@@ -216,6 +258,7 @@ def main():
     # 3. If still no synonyms, try PubChem synonyms
     if not alternate_names and synonyms:
         alternate_names = synonyms
+    alternate_names = [clean_text(name) for name in alternate_names if clean_text(name)]
 
     molecule_props = chembl.get("molecule_properties", {})
     molecule_structures = chembl.get("molecule_structures", {})
@@ -229,14 +272,23 @@ def main():
     else:
         image_url = ""
 
+    nmr_name = (
+        existing.get("NMRlipids", {}).get("name")
+        or clean_text(chembl.get("pref_name", ""))
+        or clean_text(molecule_props.get("iupac_name", ""))
+        or clean_text(pubchem.get("IUPACName", ""))
+        or nmr_id
+    )
+
     bioschema = {
-        "name": molecule_props.get("iupac_name") or pubchem.get("IUPACName", ""),
-        "iupacName": molecule_props.get("iupac_name") or pubchem.get("IUPACName", ""),
+        "name": clean_text(molecule_props.get("iupac_name")) or clean_text(pubchem.get("IUPACName", "")),
+        "iupacName": clean_text(molecule_props.get("iupac_name")) or clean_text(pubchem.get("IUPACName", "")),
         "molecularFormula": molecule_props.get("full_molformula") or pubchem.get("MolecularFormula", ""),
-        "molecularWeight": float(molecule_props.get("full_mwt") or pubchem.get("MolecularWeight", 0)),
-        "inChI": molecule_structures.get("standard_inchi") or pubchem.get("InChI", ""),
-        "inChIKey": molecule_structures.get("standard_inchi_key") or pubchem.get("InChIKey", ""),
-        "smiles": molecule_structures.get("canonical_smiles") or pubchem.get("SMILES", ""),
+        "molecularWeight": safe_float(molecule_props.get("full_mwt") or pubchem.get("MolecularWeight")),
+        "inChI": clean_text(molecule_structures.get("standard_inchi")) or clean_text(pubchem.get("InChI", "")),
+        "inChIKey": clean_text(molecule_structures.get("standard_inchi_key"))
+        or clean_text(pubchem.get("InChIKey", "")),
+        "smiles": clean_text(molecule_structures.get("canonical_smiles")) or clean_text(pubchem.get("SMILES", "")),
         "image": image_url,
         "description": "",
     }
@@ -245,7 +297,7 @@ def main():
         bioschema["alternateName"] = alternate_names
 
     new_data = {
-        "NMRlipids": {"id": nmr_id, "name": "", "charge": ""},
+        "NMRlipids": {"id": nmr_id, "name": nmr_name},
         "sameAs": sameas,
         "bioschema_properties": bioschema,
     }
