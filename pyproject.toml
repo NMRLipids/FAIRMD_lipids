@@ -87,6 +87,7 @@ markers = [
     "all: run all tests",
     "min: run tests not requiring GROMACS installation",
     "network: tests that require live internet access to external APIs",
+    "develop: out-of-package tests for developer/ scripts (not part of the distributed package)",
 ]
 
 [tool.ruff]

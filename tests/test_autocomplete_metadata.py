@@ -9,6 +9,11 @@ import pytest
 import yaml
 from jsonschema import Draft7Validator
 
+# These tests exercise developer/autocomplete_metadata.py, which lives in the
+# `developer/` folder and is not part of the distributed package. Mark the whole
+# module as `develop` so it is isolated from the package test suite.
+pytestmark = pytest.mark.develop
+
 
 def load_autocomplete_module():
     module_path = Path(__file__).resolve().parents[1] / "developer" / "autocomplete_metadata.py"

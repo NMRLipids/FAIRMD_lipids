@@ -31,7 +31,7 @@ jobs:
 
     - name: run Python tests
       run: |
-        tox -e tests-all
+        tox -e tests-package
         
     - name: generate coverage.xml
       run: coverage xml
@@ -42,3 +42,22 @@ jobs:
         fail_ci_if_error: true
         files: tests/coverage.xml
         token: ${{ secrets.CODECOV_TOKEN }}
+
+  tests-develop:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.13"
+        check-latest: true
+
+    - run: python -m pip install tox
+
+    - name: run develop (out-of-package) tests
+      run: |
+        tox -e tests-develop

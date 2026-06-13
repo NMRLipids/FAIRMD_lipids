@@ -99,7 +99,8 @@ If you wish to test only specific functionalities, for example:
 ```bash
   tox -e lint          # code style
   tox -e tests-min     # unit tests of the main library
-  tox -e tests-all     # regression tests
+  tox -e tests-package # full package regression tests (requires GROMACS)
+  tox -e tests-develop # out-of-package tests for developer/ scripts
 ```
 
 You can also use `tox -e format` to use tox to do actual formatting instead of just

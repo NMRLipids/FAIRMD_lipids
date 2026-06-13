@@ -15,7 +15,7 @@ Tests are organized via `tox <https://tox.wiki/>`_.
 
 .. code-block:: bash
 
- tox -e tests-all -- tests/test_load.py
+ tox -e tests-package -- tests/test_load.py
 
 During setting up the environment, tox will replicate ``ToyData`` from ``src/data/ToyData``
 to ``tests`` folder. You can remove ``tests/ToyData`` if you don't need it for debugging.
