@@ -44,7 +44,7 @@ def header_module_scope(request):
         cmdopt = request.config.getoption("--cmdopt")
         sim_key = cmdopt if cmdopt in SIM_MAP else "nodata"
 
-    data_root = os.path.join(os.path.dirname(__file__), "ToyData")
+    data_root = os.path.join(os.path.dirname(os.path.dirname(__file__)), "ToyData")
     os.environ["FMDL_DATA_PATH"] = data_root
     sim_dir = SIM_MAP[sim_key]
     if sim_dir:

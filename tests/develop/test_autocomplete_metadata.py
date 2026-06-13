@@ -1,3 +1,4 @@
+from importlib.resources import files
 import importlib.util
 import json
 import os
@@ -16,7 +17,7 @@ pytestmark = pytest.mark.develop
 
 
 def load_autocomplete_module():
-    module_path = Path(__file__).resolve().parents[1] / "developer" / "autocomplete_metadata.py"
+    module_path = Path(__file__).resolve().parents[2] / "developer" / "autocomplete_metadata.py"
     spec = importlib.util.spec_from_file_location("autocomplete_metadata", module_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -75,16 +76,10 @@ def test_autocomplete_output_is_schema_compliant(tmp_path, monkeypatch):
     mod.main()
 
     generated = yaml.safe_load(metadata_path.read_text(encoding="utf-8"))
-    schema_path = (
-        Path(__file__).resolve().parents[1]
-        / "src"
-        / "fairmd"
-        / "lipids"
-        / "schema_validation"
-        / "schema"
-        / "metadata_schema.json"
-    )
-    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    with files("fairmd.lipids.schema_validation.schema").joinpath(
+        "metadata_schema.json"
+    ).open("r", encoding="utf-8") as f:
+        schema = json.load(f)
 
     errors = sorted(Draft7Validator(schema).iter_errors(generated), key=lambda e: e.path)
     assert not errors
