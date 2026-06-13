@@ -98,7 +98,6 @@ def test_autocomplete_output_is_schema_compliant(tmp_path, monkeypatch):
     assert generated["sameAs"]["cas"] == "29836-26-8"
 
 
-@pytest.mark.network
 def test_autocomplete_sameas_from_live_apis():
     """Live end-to-end check that the real APIs yield the expected cross references.
 
