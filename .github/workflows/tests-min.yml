@@ -1,21 +1,22 @@
 name: Unit Tests
 
-push:
-  branches: [main]
-  paths:
-    - "src/**"
-    - "tests/package/**"
-    - "tox.ini"
-    - "pyproject.toml"
-    - "MANIFEST.in"
-pull_request_target:
-  branches: [main]
-  paths:
-    - "src/**"
-    - "tests/package/**"
-    - "tox.ini"
-    - "pyproject.toml"
-    - "MANIFEST.in"
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/package/**"
+      - "tox.ini"
+      - "pyproject.toml"
+      - "MANIFEST.in"
+  pull_request_target:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/package/**"
+      - "tox.ini"
+      - "pyproject.toml"
+      - "MANIFEST.in"
 
 permissions:
   contents: read
