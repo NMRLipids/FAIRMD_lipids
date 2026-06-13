@@ -1,21 +1,22 @@
 name: Testing Developmental Scripts
 
-push:
-  branches: [main]
-  paths:
-    - "develop/**"
-    - "tests/develop/**"
-    - "tox.ini"
-    - "pyproject.toml"
-    - "MANIFEST.in"
-pull_request_target:
-  branches: [main]
-  paths:
-    - "develop/**"
-    - "tests/develop/**"
-    - "tox.ini"
-    - "pyproject.toml"
-    - "MANIFEST.in"
+on:
+  push:
+    branches: [main]
+    paths:
+      - "developer/**"
+      - "tests/develop/**"
+      - "tox.ini"
+      - "pyproject.toml"
+      - "MANIFEST.in"
+  pull_request_target:
+    branches: [main]
+    paths:
+      - "developer/**"
+      - "tests/develop/**"
+      - "tox.ini"
+      - "pyproject.toml"
+      - "MANIFEST.in"
 
 permissions:
   contents: read
