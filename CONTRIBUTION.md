@@ -20,11 +20,11 @@ We are using automatic testing with `pytest` please consult (test-README)[Script
 # Repository rules
 
 1. Please create an issue, and then pull-request, not vice versa.
-2. Please keep main branch in your fork updated so that it can be rebased (we prefer rebasing over merging).
+2. Please keep the main branch in your fork updated so that it can be rebased (we prefer rebasing over merging).
 3. Once you address an issue, please refer it in the commit message by using a phrase such a 'Partially fixes #000'.
 4. You must make sure that the tests don't break before you make a PR.
 5. We don't oblige contributors to squash commits. We appreciate if the commit has a considerable size.
-6. We require at least one review from organisation member to accept a pull-request.
+6. We require at least one review from an organization member to accept a pull-request.
 7. Check representation of yourself in the `AUTHORS.md` and `CITATION.cff` files.
 8. You are always welcome to participate in repository discussions and NMRlipids community events to develop code together.
 
@@ -99,7 +99,8 @@ If you wish to test only specific functionalities, for example:
 ```bash
   tox -e lint          # code style
   tox -e tests-min     # unit tests of the main library
-  tox -e tests-all     # regression tests
+  tox -e tests-package # full package regression tests (requires GROMACS)
+  tox -e tests-develop # out-of-package tests for developer/ scripts
 ```
 
 You can also use `tox -e format` to use tox to do actual formatting instead of just
@@ -131,12 +132,25 @@ following command (or open the :file:`docs/build/html/index.html` file manually)
     open docs/build/html/index.html
 ```
 
+# Versioning and releasing rules
+
+We use semantic versioning vX.Y.Z where 
+- *X* is the major version that changes only with a completely refactored design
+- *Y* is the minor version that changes when data storage rules change
+- *Z* is the patch that means that we added some features or fixed bugs that didn't affect storage rules
+
+**Releases** should always come when changes are big enough to increase the minor version.
+When the patch is committed, the maintainers can decide whether to release it now or a bit later.
+Please always check the *RELEASE NOTES* and don't forget to build the version on [readthedocs.io](https://app.readthedocs.org/projects/databank/).
+
+**Documentation** 
+
 # Data handling
 
 FAIRMD Lipids separates codespace from
 [the Database](https://github.com/NMRLipids/BilayerData) since June 2025 (v.1.1.0). 
 Data contribution rules are moved there accordingly.
 
-# Contributing data
+**Contributing data**
 
-If you would like to contribute simulations or experiments, please consult instructions for [Data Contribution](https://nmrlipids.github.io/FAIRMD_lipids/stable/dbcontribute.html).
+If you would like to contribute simulations or experiments, please consult instructions for [Data Contribution](https://databank.readthedocs.io/stable/dbcontribute.html).

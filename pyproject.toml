@@ -53,7 +53,7 @@ parallel = ["joblib"]
 
 [project.urls]
 homepage = "https://FAIRMD_lipids.nmrlipids.fi"
-documentation = "https://nmrlipids.github.io/FAIRMD_lipids/latest/"
+documentation = "https://databank.readthedocs.io/"
 repository = "https://github.com/NMRLipids/FAIRMD_lipids"
 # changelog = ""
 issues = "https://github.com/NMRLipids/FAIRMD_lipids/issues"
@@ -73,9 +73,6 @@ ignore = ["src/fairmd/lipids/_version.py"]
 testpaths = "tests"
 addopts = [
     "-ra",
-    "--cov=fairmd.lipids",
-    "--cov-append",
-    "--cov-report=",
     "--import-mode=append",
 ]
 markers = [
@@ -86,6 +83,7 @@ markers = [
     "rdkit: tests features requiring RDKit installation",
     "all: run all tests",
     "min: run tests not requiring GROMACS installation",
+    "develop: out-of-package tests for developer/ scripts (not part of the distributed package)",
 ]
 
 [tool.ruff]

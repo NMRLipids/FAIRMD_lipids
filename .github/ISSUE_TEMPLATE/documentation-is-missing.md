@@ -11,4 +11,4 @@ assignees: ''
 If you know, please cite an issue.
 
 **Where it should appear**
-Please point to a file or a link to a particular page in https://nmrlipids.github.io/
+Please point to a file or a link to a particular page in https://databank.readthedocs.io/stable/

@@ -1,11 +1,11 @@
-name: Unit Tests
+name: Testing Developmental Scripts
 
 on:
   push:
     branches: [main]
     paths:
-      - "src/**"
-      - "tests/package/**"
+      - "developer/**"
+      - "tests/develop/**"
       - "tests/conftest.py"
       - "tox.ini"
       - "pyproject.toml"
@@ -13,8 +13,8 @@ on:
   pull_request_target:
     branches: [main]
     paths:
-      - "src/**"
-      - "tests/package/**"
+      - "developer/**"
+      - "tests/develop/**"
       - "tests/conftest.py"
       - "tox.ini"
       - "pyproject.toml"
@@ -35,10 +35,6 @@ jobs:
             python-version: "3.10"
           - os: ubuntu-24.04
             python-version: "3.13"
-          - os: macos-15
-            python-version: "3.13"
-          - os: windows-2025
-            python-version: "3.13"
     steps:
     - uses: actions/checkout@v6
       with:
@@ -52,17 +48,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
         check-latest: true
 
-    - run: python -m pip install tox coverage[toml]
+    - run: python -m pip install tox
 
     - name: run Python tests
-      run: tox -e tests-min
+      run: tox -e tests-develop
 
-    - name: generate coverage.xml
-      run: coverage xml
-
-    - name: upload to codecov.io
-      uses: codecov/codecov-action@v6
-      with:
-        fail_ci_if_error: true
-        files: tests/coverage.xml
-        token: ${{ secrets.CODECOV_TOKEN }}

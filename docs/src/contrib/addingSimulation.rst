@@ -41,7 +41,7 @@ graphical GitHub interface. To run the basic analyses and quality evaluation fro
 
 #. Create an ``info.yaml`` file containing the essential information on your simulation
    by filling the `info template
-   <https://github.com/NMRLipids/FAIRMD_lipids/blob/main/src/fairmd/lipids/SchemaValidateion/Schema/info_template.yaml>`_.
+   <https://github.com/NMRLipids/FAIRMD_lipids/blob/main/src/fairmd/lipids/schema_validation/schema/info_template.yaml>`_.
    For instructions, see :ref:`readmesimu` and `examples
    <https://github.com/NMRLipids/BilayerData/tree/main/info_files>`_. Mapping files are
    described in  :ref:`molecule_names` and are located in the :ref:`molecule_record`

@@ -48,7 +48,7 @@ SAMPLE_PROTOCOL: string  # Protocol for sample preparation (in free format, refe
 NMR:
   T_RF_HEATING: string  # Correction of the temperature according to RF heating
   INSTRUMENT: string    # Instrument name (including field)
-  METHOD: string        # NMR method (e.g., "2H:QE") check https://nmrlipids.github.io/FAIRMD_lipids/stable/schemas/experiment_metadata.html#nmr-specific-fields for options
+  METHOD: string        # NMR method (e.g., "2H:QE") check https://databank.readthedocs.io/stable/schemas/experiment_metadata.html#nmr-specific-fields for options
   SIGN_MEASURED: string # Method of OP measurement "abbr1:abbr2" (see detailed explaining below)
   DETAILS: string       # Additional experiment details
 

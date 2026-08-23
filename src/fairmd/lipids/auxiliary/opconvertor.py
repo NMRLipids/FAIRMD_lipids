@@ -59,6 +59,7 @@ class NamingRegistry:
     # initialize the registry
     @classmethod
     def _initialize(cls):
+        # usual FA (glycerolipids)
         def _snX_c_renamer(row: dict) -> dict:  # noqa: N802
             match = re.match(r"M_G[12]C([0-9]{1,2})_M", row["C"])
             if match and len(match.groups()) == 1:
@@ -69,6 +70,20 @@ class NamingRegistry:
         cls._register("sn-1", _snX_c_renamer)
         cls._register("sn-2", _snX_c_renamer)
 
+        # usual FA (cardiolipins)
+        def _snXX_c_renamer(row: dict) -> dict:  # noqa: N802
+            match = re.match(r"M_G[12][12]C([0-9]{1,2})_M", row["C"])
+            if match and len(match.groups()) == 1:
+                idx = int(match[1])
+                row["C"] = str(idx - 1)
+            return row
+
+        cls._register("sn-1 1", _snXX_c_renamer)
+        cls._register("sn-1 2", _snXX_c_renamer)
+        cls._register("sn-2 1", _snXX_c_renamer)
+        cls._register("sn-2 2", _snXX_c_renamer)
+
+        # FA (sphingolipids)
         def _fa_c_renamer(row: dict) -> dict:
             match = re.match(r"M_N1C([0-9]{1,2})_M", row["C"])
             if match and len(match.groups()) == 1:
@@ -78,6 +93,7 @@ class NamingRegistry:
 
         cls._register("fa", _fa_c_renamer)
 
+        # glycerol backbone (glycerolipids)
         def _gbb_c_renamer(row: dict) -> dict:
             match = re.match(r"M_G([1-3])_M", row["C"])
             if match and len(match.groups()) == 1:
@@ -87,6 +103,18 @@ class NamingRegistry:
 
         cls._register("glycerol backbone", _gbb_c_renamer)
 
+        # glycerol bb (cardiolipins)
+        def _gbbX_c_renamer(row: dict) -> dict:
+            match = re.match(r"M_G[1-2]([1-3])_M", row["C"])
+            if match and len(match.groups()) == 1:
+                idx = int(match[1])
+                row["C"] = f"g{idx}"
+            return row
+
+        cls._register("glycerol backbone 1", _gbbX_c_renamer)
+        cls._register("glycerol backbone 2", _gbbX_c_renamer)
+
+        # usual headgroup (phospholipids)
         def _headgroup_c_renamer(row: dict) -> dict:
             if row["C"] == "M_G3C4_M":
                 row["C"] = "α"
@@ -98,6 +126,17 @@ class NamingRegistry:
 
         cls._register("headgroup", _headgroup_c_renamer)
 
+        # intermediate glycerol (CL)
+        def _midglyc_c_renamer(row: dict) -> dict:
+            match = re.match(r"M_G0([1-3])_M", row["C"])
+            if match and len(match.groups()) == 1:
+                idx = int(match[1])
+                row["C"] = f"g{idx}'"
+            return row
+
+        cls._register("headgroup", _midglyc_c_renamer)
+
+        # universal H renamer
         def _h_renamer(row: dict) -> dict:
             match = re.match(r"M_.+H([1-4])_M", row["H"])
             if match and len(match.groups()) == 1:
@@ -107,6 +146,7 @@ class NamingRegistry:
 
         cls._register("_all_", _h_renamer)
 
+        # universal plain C renamer
         def _plain_c_renamer(row: dict) -> dict:
             match = re.match(r"M_C([0-9]+)_M", row["C"])
             if match and len(match.groups()) == 1:
