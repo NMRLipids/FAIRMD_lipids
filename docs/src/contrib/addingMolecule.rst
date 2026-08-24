@@ -54,10 +54,10 @@ obtain most of the other metadata from the `PubChem API
 <https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest>`_ and the `UniChem API
 <https://www.ebi.ac.uk/unichem/api/docs>`_ using the InChIKey. 
 
-The ``AutocompleteMetadata``
-<https://github.com/NMRLipids/BilayerData/workflows/AutocompleteMetadata.yml>`_ will 
-add information from these APIs to your PR, as long as you provide an ``InChIKey`` as
-a suggestions.
+The `AutocompleteMetadata workflow
+<https://github.com/NMRLipids/BilayerData/actions/workflows/AutocompleteMetadata.yml>`_
+will add information from these APIs to your PR, as long as you provide an ``InChIKey`` as
+a suggestion.
 
 Mapping especially to
 LIPID MAPS and SwissLipids might be incomplete in some cases and can be completed
