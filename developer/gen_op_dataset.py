@@ -5,7 +5,8 @@ import logging
 import sys
 
 import _bootstrap
-from datasets.pureop import gen_op_from_exps, gen_op_from_sims, gen_opq_ds
+from datasets.pureop import gen_op_from_exps, gen_op_from_sims
+from datasets.opqual import gen_opq_ds
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -25,7 +26,7 @@ Two DataFrames are stored for each record:
     parser.add_argument("--qual", action="store_true", help="Generate DS with quality from paired simulations")
     args = parser.parse_args()
 
-    if not args.exps and not args.sims:
+    if not args.exps and not args.sims and not args.qual:
         parser.print_usage()
         sys.exit(1)
 

@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 import pandas as pd
 
@@ -148,8 +149,9 @@ class OPQDataStorer():
 
 
 def gen_opq_ds(log: logging.Logger) -> tuple[int, int]:
+    """Generate dataset with atomic qualities"""
     stat_ok, stat_fail = 0, 0
-    log.info("\n\nGenerating OP dataset from simulations.")
+    log.info("\n\nGenerating OP dataset with atomic qualities from experiment-simulation pairs.")
     exps = ExperimentCollection.load_from_data("OPExperiment")
     sims = initialize_databank()
     for sim in sims:
@@ -175,8 +177,5 @@ def gen_opq_ds(log: logging.Logger) -> tuple[int, int]:
             ods.compute_q_points()
             ods.store_to_hdf5(OPQDataStorer.DEFAULT_OPQ_HDFNAME)
             stat_ok += 1
-    return stat_ok, stat_faill
+    return stat_ok, stat_fail
 
-
-if __name__ == "__main__":
-    load_sims()
