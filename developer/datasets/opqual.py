@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+import logging
 import numpy as np
 import pandas as pd
 
@@ -149,8 +148,10 @@ class OPQDataStorer():
 
 
 
-def load_sims() -> None:
-    print("Generating OP dataset from simulations.")
+def gen_opq_ds(log: logging.Logger) -> tuple[int, int]:
+    """Generate dataset with atomic qualities"""
+    stat_ok, stat_fail = 0, 0
+    log.info("\n\nGenerating OP dataset with atomic qualities from experiment-simulation pairs.")
     exps = ExperimentCollection.load_from_data("OPExperiment")
     sims = initialize_databank()
     for sim in sims:
@@ -164,7 +165,8 @@ def load_sims() -> None:
             try:
                 ods.prepare_sim_dataframe()
             except OPQDataError as e:
-                print("ERROR: ", e)
+                log.error("[from prepare_dataframe] %s", e)
+                stat_fail += 1
                 continue
 
             for expid in paired_opedict[lname]:
@@ -174,7 +176,6 @@ def load_sims() -> None:
 
             ods.compute_q_points()
             ods.store_to_hdf5(OPQDataStorer.DEFAULT_OPQ_HDFNAME)
+            stat_ok += 1
+    return stat_ok, stat_fail
 
-
-if __name__ == "__main__":
-    load_sims()
