@@ -51,6 +51,25 @@ bioschema_properties:
   smiles: string
   # Either a url or a file path to the 2D or 3D structure of the molecule
   image: string
+  # Credit for that depiction, following the Creative Commons recommended
+  # practices for attribution
+  # https://wiki.creativecommons.org/wiki/Recommended_practices_for_attribution
+  # Written by the autocomplete tooling together with `image`; the two belong
+  # together, so a hand-set image needs a hand-written credit as well.
+  imageAttribution:
+    # Plain-text credit line, with the licence and source URLs spelled out
+    creditText: string
+    license:
+      # SPDX identifier, omitted when the terms are not an SPDX-listed licence
+      spdx: string
+      name: string
+      url: string
+    source:
+      # The database that published the depiction, e.g. LIPID MAPS®
+      name: string
+      url: string
+      # The record page the depiction belongs to
+      sameAs: string
   description: string
   alternateName:
     - string

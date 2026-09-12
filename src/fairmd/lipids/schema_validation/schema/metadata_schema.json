@@ -107,6 +107,62 @@
           "type": "string",
           "description": "URL or file path to the 2D or 3D structure of the molecule"
         },
+        "imageAttribution": {
+          "$comment": "Local extension: not a schema.org property of MolecularEntity. When serialising JSON-LD, express `image` as an ImageObject and map `creditText`, `license` and `source` onto it, or drop this block.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["creditText", "license", "source"],
+          "description": "Credit for the depiction in `image`: who published it, where it came from and under what terms. Follows the Creative Commons recommended practices for attribution, https://wiki.creativecommons.org/wiki/Recommended_practices_for_attribution",
+          "properties": {
+            "creditText": {
+              "type": "string",
+              "description": "Ready-to-use plain-text credit line, with the licence and source URLs spelled out so it stands alone where markup cannot follow it"
+            },
+            "license": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "url"],
+              "description": "The terms the depiction is offered under",
+              "properties": {
+                "spdx": {
+                  "type": "string",
+                  "description": "SPDX licence identifier, e.g. CC-BY-4.0. Absent when the terms are not an SPDX-listed licence, as for PubChem's web policy"
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Full name of the licence or usage terms"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Link to the licence deed or the usage terms"
+                }
+              }
+            },
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "url"],
+              "description": "The database that published the depiction",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the source database, e.g. LIPID MAPS®, ChEMBL, PubChem"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Home page of the source database"
+                },
+                "sameAs": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "The record page the depiction belongs to"
+                }
+              }
+            }
+          }
+        },
         "description": {
           "type": "string",
           "description": "Description of the molecule"
@@ -142,5 +198,5 @@
     }
   ],
   "description": "Molecule Metadata Schema for NMRlipids",
-  "$comment": "Schema version 1.0.0, Last updated: 2025-10-30"
+  "$comment": "Schema version 1.1.0, Last updated: 2026-09-09"
 }

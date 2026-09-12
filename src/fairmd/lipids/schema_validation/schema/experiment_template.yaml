@@ -1,13 +1,19 @@
 # Experiment Metadata Template
 
 # Global Metadata
+# At least one of ARTICLE_DOI / DATA_DOI is required. They decide what ends up as
+# the citation of the generated `bioschema_properties` block: if DATA_DOI is given
+# it becomes the citation (cite the data), otherwise ARTICLE_DOI does.
+# Example: DATA_DOI 10.18710/ETWNCU -> bioschema_properties.citation: [10.18710/ETWNCU]
+# Both are bare DOIs (10.xxxx/yyyy), without a doi: prefix or a https://doi.org/ URL.
+# Data that has no DOI at all is referenced with DATA_REF instead.
 ARTICLE_DOI: string  # DOI of the of the original publication of the experimental data
-DATA_DOI: string     # DOI of the dataset deposition with raw data 
-DATA_REF: string     # reference to deposited dataset
+DATA_DOI: string     # DOI of the dataset deposition with raw data
+DATA_REF: string     # reference to deposited dataset, for data without a DOI
 
 DATE: date #Date as YYYY-MM-DD of the dataset publication - can be retrieved from crossref or datacite
 
-TEMPERATURE: number  # Temperature (K) of the experiment
+TEMPERATURE: number  # Temperature (K) of the experiment, strictly positive
 
 # Membrane Composition dictionary of molar fractions of membrane phase
 MEMBRANE_COMPOSITION: object
@@ -23,14 +29,13 @@ SOLUTION_COMPOSITION: object
   # CLA: 0.24
   # GLUCOSE: 0.1
 
-# Additional Molecules dictionary of molecules which are not in the databank
+# Additional Molecules dictionary of molecules which are not in the databank.
+# One line per molecule, naming it and its concentration in free text.
 ADDITIONAL_MOLECULES: object
   # Example:
-  # TFA: 
-  #   name: trifluoroacetic acid
-  #   concentration: 0.1
+  # TFA: trifluoroacetic acid, 0.1%
 
-TOTAL_HYDRATION: number  # Total hydration of the system (water mass %)
+TOTAL_HYDRATION: number  # Total hydration of the system (water mass %), within (0, 100]
 PH: string              # pH of the system (number or UNKNOWN)
 PH_METHOD: string       # Method of pH setting or measurement (buffer / measurement)
 
@@ -56,7 +61,7 @@ NMR:
 XRAY:
   SOURCE: string        # X-ray source name
   LAMBDA: number        # Source wavelength or range. Wavelength (and/or range) of the X-ray beam used (in Ångstroms)
-  QRANGE: number        # Scattering detection range (Q-range). The accessible scattering vector range, typically given in 1/Å.
+  QRANGE: string        # Scattering detection range (Q-range). The accessible scattering vector range, typically given in 1/Å.
   DETECTOR: string      # Detector type (e.g., CCD camera, PILATUS, or other detector model).
   DISTANCE: number      # Distance to detector (m)
   DATATYPE: string      # Measurement data type. Batch mode or size-exclusion chromatography (SEC) mode.

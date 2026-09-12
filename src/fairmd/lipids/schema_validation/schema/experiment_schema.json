@@ -4,16 +4,18 @@
   "additionalProperties": false,
   "properties": {
     "ARTICLE_DOI": {
-      "type": "string",
-      "description": "DOI of the original publication of the experimental data"
+      "$comment": "Wrapped in allOf rather than a bare $ref: in draft-07 a $ref makes its sibling keywords, description included, be ignored.",
+      "allOf": [{ "$ref": "#/definitions/doi" }],
+      "description": "DOI of the original publication of the experimental data. Becomes bioschema_properties.citation when no DATA_DOI is given"
     },
     "DATA_DOI": {
-      "type": "string",
-      "description": "DOI of the dataset deposition with raw NMR data"
+      "allOf": [{ "$ref": "#/definitions/doi" }],
+      "description": "DOI of the dataset deposition with raw NMR data. When present, this is the DOI that becomes bioschema_properties.citation - cite the data, not the article"
     },
     "DATA_REF": {
       "type": "string",
-      "description": "Reference to deposited dataset"
+      "minLength": 1,
+      "description": "Reference to deposited dataset, for data without a DOI"
     },
     "DATE": {
       "type": "string",
@@ -23,64 +25,113 @@
     },
     "TEMPERATURE": {
       "type": "number",
-      "description": "Temperature (K) of the experiment"
+      "exclusiveMinimum": 0,
+      "description": "Temperature (K) of the experiment. Absolute temperature, so strictly positive"
     },
     "MEMBRANE_COMPOSITION": {
       "type": "object",
       "description": "Dictionary of molar fractions of membrane phase",
+      "minProperties": 1,
+      "propertyNames": {
+        "$comment": "Shape check only. Membership of the molecule inventory (Molecules/membrane) is a directory listing, so it is checked in code (fairmd.lipids.molecules.lipids_set), not here.",
+        "pattern": "^[A-Z0-9_]+$"
+      },
       "additionalProperties": {
-        "type": "number"
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 1
       }
     },
     "SOLUTION_COMPOSITION": {
       "type": "object",
       "description": "Dictionary of ion concentrations in the system",
+      "minProperties": 1,
+      "propertyNames": {
+        "$comment": "Shape check only, as for MEMBRANE_COMPOSITION; the inventory here is Molecules/solution (fairmd.lipids.molecules.solubles_set).",
+        "pattern": "^[A-Z0-9_]+$"
+      },
       "additionalProperties": {
-        "type": "number"
+        "$comment": "A concentration, not a fraction - no upper bound.",
+        "type": "number",
+        "exclusiveMinimum": 0
       }
     },
     "ADDITIONAL_MOLECULES": {
       "type": "object",
-      "description": "Dictionary of molecules which are not in the databank",
-      "additionalProperties": true
+      "description": "Dictionary of molecules which are not in the databank, as free text naming the molecule and its concentration",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "TOTAL_HYDRATION": {
       "type": "number",
-      "description": "Total hydration of the system (water mass %)"
+      "exclusiveMinimum": 0,
+      "maximum": 100,
+      "description": "Total hydration of the system (water mass %), so within (0, 100]"
     },
     "PH": {
       "anyOf": [
         { "type": "number", "minimum": 0, "maximum": 14 },
         { "type": "string", "enum": ["UNKNOWN"] },
-        { "type": "string", "pattern": "^[0-9]+([.][0-9]+)?-[0-9]+([.][0-9]+)?" }
+        {
+          "$comment": "A pH range, e.g. 8-10. Anchored and bounded to 0-14, like the numeric branch above.",
+          "type": "string",
+          "pattern": "^(?:1[0-4]|[0-9])(?:\\.[0-9]+)?-(?:1[0-4]|[0-9])(?:\\.[0-9]+)?$"
+        }
       ],
       "description": "pH of the system"
     },
     "PH_METHOD": {
       "type": "string",
+      "minLength": 1,
       "description": "Method of pH setting or measurement (buffer / measurement)"
     },
     "REAGENT_SOURCES": {
       "type": "object",
       "description": "Description of lipid reagents. Source, purity, etc.",
       "additionalProperties": {
-        "type": "string"
+        "type": "string",
+        "minLength": 1
       }
     },
     "SAMPLE_PROTOCOL": {
       "type": "string",
+      "minLength": 1,
       "description": "Protocol for sample preparation (in free format, references are welcome)"
     },
     "NMR": {
       "type": "object",
       "description": "NMR-Specific Metadata",
       "additionalProperties": false,
+      "required": [
+        "METHOD",
+        "INSTRUMENT",
+        "SIGN_MEASURED",
+        "T_RF_HEATING"
+      ],
+      "allOf": [
+        {
+          "$comment": "The docs make an explanation obligatory when METHOD uses see_comments for SUBMETHOD.",
+          "if": {
+            "required": ["METHOD"],
+            "properties": { "METHOD": { "pattern": "see_comments$" } }
+          },
+          "then": {
+            "required": ["DETAILS"]
+          }
+        }
+      ],
       "properties": {
         "T_RF_HEATING": {
-          "type": "string"
+          "$comment": "UNKNOWN / measured / guessed, or a free-text description of how the heating was checked - deliberately not an enum.",
+          "type": "string",
+          "minLength": 1
         },
         "INSTRUMENT": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "METHOD": {
           "type": "string",
@@ -98,10 +149,13 @@
           "pattern": "^(2H:(SP|QE|see_comments)|CDLF:(REDOR|DIPSHIFT|recDIPSHIFT|see_comments)|PDLF:(DROSS|R[0-9]+(_[0-9]+)?\\^[0-9]+|see_comments))$"
         },
         "SIGN_MEASURED": {
-          "type": "string"
+          "$comment": "The method name if the order parameter sign was measured, NONE otherwise - deliberately not an enum.",
+          "type": "string",
+          "minLength": 1
         },
         "DETAILS": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
       }
     },
@@ -109,21 +163,31 @@
       "type": "object",
       "description": "X-ray Specific Metadata",
       "additionalProperties": false,
+      "required": [
+        "SOURCE",
+        "LAMBDA",
+        "SAMPLE_TYPE"
+      ],
       "properties": {
         "SOURCE": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "LAMBDA": {
-          "type": "number"
+          "type": "number",
+          "exclusiveMinimum": 0
         },
         "QRANGE": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "DETECTOR": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "DISTANCE": {
-          "type": "number"
+          "type": "number",
+          "exclusiveMinimum": 0
         },
         "DATATYPE": {
           "type": "string",
@@ -133,10 +197,12 @@
           ]
         },
         "EXPOSURE": {
-          "type": "number"
+          "type": "number",
+          "exclusiveMinimum": 0
         },
         "FRAMES": {
-          "type": "number"
+          "type": "integer",
+          "minimum": 1
         },
         "SAMPLE_TYPE": {
           "type": "string",
@@ -149,6 +215,88 @@
           ]
         }
       }
+    },
+    "bioschema_properties": {
+      "$comment": "Bioschemas Dataset profile 1.0-RELEASE (https://bioschemas.org/profiles/Dataset/1.0-RELEASE). Written by the metadata enrichment tooling, not user-given. Only properties of that profile are accepted, plus dct:-prefixed DCMI terms and the local _source key. Not required, because the profile Minimum properties @context, @type, @id, dct:conformsTo, url and identifier are not emitted yet. Keep in sync with the identical block in readme_yaml_schema.json.",
+      "type": "object",
+      "required": ["name", "description"],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^dct:": {}
+      },
+      "properties": {
+        "@context": { "type": ["string", "object", "array"] },
+        "@type": { "type": ["string", "array"] },
+        "@id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "identifier": { "type": ["string", "array", "object"] },
+        "url": { "type": "string" },
+        "keywords": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/textOrDefinedTerm" }
+        },
+        "license": { "$ref": "#/definitions/creativeWorkRef" },
+        "alternateName": {
+          "type": ["string", "array"],
+          "items": { "type": "string" }
+        },
+        "citation": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/creativeWorkRef" }
+        },
+        "creator": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/agent" }
+        },
+        "datePublished": { "$ref": "#/definitions/partialDate" },
+        "distribution": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/dataDownload" }
+        },
+        "includedInDataCatalog": {
+          "type": ["string", "object", "array"]
+        },
+        "isBasedOn": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/creativeWorkRef" }
+        },
+        "measurementTechnique": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/textOrDefinedTerm" }
+        },
+        "publisher": { "$ref": "#/definitions/textOrAgent" },
+        "variableMeasured": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/textOrPropertyValue" }
+        },
+        "version": { "type": ["string", "number"] },
+        "dateCreated": { "$ref": "#/definitions/partialDate" },
+        "dateModified": { "$ref": "#/definitions/partialDate" },
+        "hasPart": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/creativeWorkRef" }
+        },
+        "isAccessibleForFree": { "type": "boolean" },
+        "isPartOf": { "$ref": "#/definitions/creativeWorkRef" },
+        "maintainer": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/agent" }
+        },
+        "sameAs": {
+          "type": ["string", "array"],
+          "items": { "type": "string" }
+        },
+        "accessRights": {
+          "$comment": "Not a schema.org term (this is DCMI dct:accessRights). Accepted for now; migrate to dct:accessRights, or to schema.org conditionsOfAccess / isAccessibleForFree.",
+          "type": "string"
+        },
+        "articleLicense": {
+          "$comment": "Not a schema.org term. The licence of the article the data belongs to should live on isPartOf.license - remap when the enrichment tooling is next touched.",
+          "$ref": "#/definitions/creativeWorkRef"
+        },
+        "_source": { "$ref": "#/definitions/sourceProvenance" }
+      }
     }
   },
   "required": [
@@ -157,37 +305,160 @@
     "TOTAL_HYDRATION",
     "PH"
   ],
-  "anyOf": [
+  "allOf": [
     {
-      "required": ["ARTICLE_DOI"]
-    },
-    {
-      "required": ["DATA_DOI"]
-    }
-  ],
-  "oneOf": [
-    {
-      "required": [
-        "NMR"
+      "$comment": "At least one of the two DOIs has to be given; DATA_DOI wins when both are present.",
+      "anyOf": [
+        { "required": ["ARTICLE_DOI"] },
+        { "required": ["DATA_DOI"] }
       ]
     },
     {
-      "required": [
-        "XRAY"
+      "$comment": "An entry describes exactly one kind of measurement.",
+      "oneOf": [
+        { "required": ["NMR"] },
+        { "required": ["XRAY"] }
       ]
+    },
+    {
+      "$comment": "How the pH was set or measured has to be stated whenever the pH itself is known.",
+      "if": {
+        "required": ["PH"],
+        "properties": {
+          "PH": { "not": { "const": "UNKNOWN" } }
+        }
+      },
+      "then": {
+        "required": ["PH_METHOD"]
+      }
     }
   ],
-  "if": {
-    "properties": {
-      "PH": { "type": "string", "enum": ["UNKNOWN"] }
+  "definitions": {
+    "doi": {
+      "$comment": "Bare DOI: no doi: prefix and no https://doi.org/ URL. Mirrors DOI_RE in developer/autocomplete_expsim_metadata.py. Experiment-local - not part of the bioschema_properties block mirrored in readme_yaml_schema.json.",
+      "type": "string",
+      "pattern": "^10\\.\\d{4,9}/\\S+$"
+    },
+    "definedTerm": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "@type": { "const": "DefinedTerm" },
+        "name": { "type": "string" },
+        "termCode": { "type": "string" },
+        "inDefinedTermSet": { "type": "string" },
+        "url": { "type": "string" },
+        "alternateName": { "type": "string" },
+        "description": { "type": "string" },
+        "identifier": { "type": "string" }
+      }
+    },
+    "textOrDefinedTerm": {
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/definitions/definedTerm" }
+      ]
+    },
+    "agent": {
+      "$comment": "schema.org Person or Organization. Used for creator, publisher and maintainer.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "@type": { "type": "string", "enum": ["Person", "Organization"] },
+        "name": { "type": "string" },
+        "identifier": { "type": "string" },
+        "url": { "type": "string" },
+        "affiliation": { "type": ["string", "object"] },
+        "givenName": { "type": "string" },
+        "familyName": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    },
+    "textOrAgent": {
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/definitions/agent" }
+      ]
+    },
+    "creativeWorkRef": {
+      "$comment": "A schema.org CreativeWork node, or a bare string (DOI or URL). Used for license, citation, isBasedOn, isPartOf and hasPart.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "@type": { "type": "string" },
+            "@id": { "type": "string" },
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "url": { "type": "string" },
+            "sameAs": { "type": "string" },
+            "identifier": { "type": "string" },
+            "datePublished": { "$ref": "#/definitions/partialDate" },
+            "publisher": { "$ref": "#/definitions/textOrAgent" },
+            "isPartOf": { "$ref": "#/definitions/creativeWorkRef" },
+            "license": { "$ref": "#/definitions/creativeWorkRef" },
+            "spdx": {
+              "$comment": "Local extension: SPDX licence identifier. Not a schema.org property of CreativeWork; identifier is the conformant home for it.",
+              "type": ["string", "null"]
+            }
+          }
+        }
+      ]
+    },
+    "dataDownload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "@type": { "const": "DataDownload" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "contentUrl": { "type": "string" },
+        "contentSize": { "type": ["integer", "string"] },
+        "encodingFormat": { "type": "string" },
+        "sameAs": { "type": "string" },
+        "hasPart": {
+          "type": "array",
+          "items": { "type": ["string", "object"] }
+        }
+      }
+    },
+    "propertyValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "@type": { "const": "PropertyValue" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "value": { "type": ["string", "number", "boolean"] },
+        "unitText": { "type": "string" },
+        "unitCode": { "type": "string" },
+        "propertyID": { "type": "string" }
+      }
+    },
+    "textOrPropertyValue": {
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/definitions/propertyValue" }
+      ]
+    },
+    "partialDate": {
+      "$comment": "YYYY, YYYY-MM or YYYY-MM-DD. Must stay quoted in YAML: PyYAML parses an unquoted YYYY-MM-DD into datetime.date, which check-jsonschema then rejects as a non-string.",
+      "type": "string",
+      "pattern": "^[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?$"
+    },
+    "sourceProvenance": {
+      "$comment": "Local bookkeeping written by the metadata enrichment tooling: which API the record came from and when. Not a schema.org term - strip it before serialising JSON-LD.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "api": { "type": ["string", "null"] },
+        "doi": { "type": ["string", "null"] },
+        "spdxLicenseList": { "type": "string" },
+        "retrieved": { "type": "string" }
+      }
     }
-  },
-  "then": {
-    "required": []
-  },
-  "else": {
-    "required": [
-      "PH_METHOD"
-    ]
   }
 }

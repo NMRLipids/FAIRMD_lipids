@@ -5,9 +5,9 @@
 
 |             key           | description |
 |---------------------------|-----------------------------------------|
-| ARTICLE_DOI | DOI of the of the original publication of the experimental data|
-| DATA_DOI | DOI of the dataset deposition with raw NMR data |
-| DATA_REF | Reference to deposited dataset |
+| ARTICLE_DOI | DOI of the of the original publication of the experimental data. Becomes the citation when no DATA_DOI is given |
+| DATA_DOI | DOI of the dataset deposition with raw NMR data. When present, this is the DOI that becomes the citation |
+| DATA_REF | Reference to deposited dataset, for data without a DOI |
 | DATE | Date when the data was recorded or published |
 | TEMPERATURE | Temperature (K) of the experiment |
 | MEMBRANE_COMPOSITION | Dictionary of molar fractions of membrane phase |
@@ -18,6 +18,7 @@
 | PH_METHOD | Method of pH setting or measurement (buffer / measurement) |
 | REAGENT_SOURCES | Description of lipid reagents. Source, purity, etc. |
 | SAMPLE_PROTOCOL | Protocol for sample preparation (in free format, references are welcome). |
+| bioschema_properties | Generated Bioschemas Dataset block, see [below](bioschemaexp) |
 
 **NMR specific metadata**
 
@@ -45,6 +46,14 @@
 
 ## General fields
 
+At least one of `ARTICLE_DOI` and `DATA_DOI` has to be given, and the two decide what the
+generated `bioschema_properties.citation` holds: **if a `DATA_DOI` is present, that is the DOI
+that becomes the citation** — the data is what should be cited — and only when `ARTICLE_DOI` is
+the sole DOI does the article become the citation.
+
+Both are given as bare DOIs — `10.1016/j.bbamem.2011.07.022`, not `doi:10.1016/...` and not
+`https://doi.org/10.1016/...`. Data that has no DOI at all is referenced with `DATA_REF` instead.
+
 1. **ARTICLE_DOI**  
 DOI of the original publication where the experimental data originates.
 
@@ -58,10 +67,10 @@ If the dataset doesn't have DOI, we engage to add some persistent identifier or 
 Date in the standard format YYYY-MM-DD (e.g., 2023-08-24). A lot of date values have been automatically synchronized from the paper dates. If the data wasn't published, the date of recording should be used.
 
 5. **TEMPERATURE**  
-Temperature (K) of the experiment. For NMR experiment, if `NMR:T_RF_HEATING` is 'unknown' (or not given), the reported temperature from the probe is settet here. Otherwise, please insert RF-corrected temperature.
+Temperature (K) of the experiment, so strictly positive. For NMR experiment, if `NMR:T_RF_HEATING` is 'unknown' (or not given), the reported temperature from the probe is settet here. Otherwise, please insert RF-corrected temperature.
 
 6. **MEMBRANE_COMPOSITION**  
-Dictionary of molar fractions of bilayer components. For example:
+Dictionary of molar fractions of bilayer components, each within (0, 1]. For example:
 ```
 MEMBRANE_COMPOSITION:
   POPC: 0.93
@@ -94,7 +103,7 @@ the composition, it should get the metadata inside the databank and be mentioned
 `SOLUTION_COMPOSITION` instead.
 
 9. **TOTAL_HYDRATION**  
-Mass \% of water in the sample. For NMR experiment, it is better if measured by <sup>1</sup>H MAS NMR.
+Mass \% of water in the sample, so within (0, 100]. For NMR experiment, it is better if measured by <sup>1</sup>H MAS NMR.
 
 10. **PH**  
 pH of the system (number or UNKNOWN)
@@ -113,9 +122,93 @@ For NMR sample, it is important to mention how the targeted hydration level is r
 lyophilised powder is hydrated, liposome suspension is dehydrated, or liposome suspension
 is ultracentrifugated to get lipid-rich phase.
 
+(bioschemaexp)=
+## The `bioschema_properties` block
+
+Enriched entries carry an extra top-level `bioschema_properties:` block, a machine-readable
+description of the entry following the
+[Bioschemas Dataset profile 1.0-RELEASE](https://bioschemas.org/profiles/Dataset/1.0-RELEASE),
+from which schema.org JSON-LD is published. It is **written by the metadata enrichment tooling**
+from the deposition record (CrossRef or DataCite) — contributors do not fill it in, and it is
+optional as far as the schema is concerned.
+
+Only properties of that Bioschemas profile are accepted (`name`, `description`, `identifier`,
+`keywords`, `license`, `url`, `citation`, `creator`, `datePublished`, `distribution`,
+`isBasedOn`, `measurementTechnique`, `publisher`, `variableMeasured`, `isPartOf`, `sameAs`, …),
+plus `dct:`-prefixed DCMI terms. Anything else is rejected, so a typo in a property name is
+caught rather than silently published. Two extras are tolerated for now and will be remapped:
+`accessRights` (properly DCMI `dct:accessRights`) and `articleLicense` (belongs on
+`isPartOf.license`).
+
+The block also carries `_source`, local bookkeeping recording which API the record came from
+and when it was retrieved. It is not a schema.org term and is stripped before serialising
+JSON-LD.
+
+Dates (`datePublished`) are `YYYY`, `YYYY-MM` or `YYYY-MM-DD` and **must stay quoted** in the
+YAML — an unquoted `YYYY-MM-DD` is parsed as a date object and then fails validation as a
+non-string.
+
+```yaml
+bioschema_properties:
+  name: Fluid phase lipid areas and bilayer thicknesses of commonly used phosphatidylcholines
+  description: Experimental X-ray scattering form factor for a lipid bilayer containing POPC ...
+  sameAs: https://doi.org/10.1016/j.bbamem.2011.07.022
+  datePublished: '2011-11'
+  license:
+    spdx: CC-BY-4.0
+    name: Creative Commons Attribution 4.0 International
+    url: https://spdx.org/licenses/CC-BY-4.0.html
+    sameAs: https://creativecommons.org/licenses/by/4.0/
+  articleLicense:
+    url: http://www.elsevier.com/open-access/userlicense/1.0/
+    spdx: null
+  publisher: Elsevier BV
+  creator:
+  - name: Norbert Kucerka
+  citation:
+  - 10.1016/j.bbamem.2011.07.022
+  keywords:
+  - '@type': DefinedTerm
+    name: X-ray diffraction
+    termCode: topic_2828
+    inDefinedTermSet: http://edamontology.org
+    url: http://edamontology.org/topic_2828
+  - POPC
+  measurementTechnique:
+  - '@type': DefinedTerm
+    name: small-angle X-ray scattering
+    termCode: CHMO_0000204
+    inDefinedTermSet: http://purl.obolibrary.org/obo/chmo.owl
+    url: http://purl.obolibrary.org/obo/CHMO_0000204
+  - X-ray scattering (SUV)
+  variableMeasured:
+  - '@type': PropertyValue
+    name: X-ray scattering form factor
+    unitText: A^-1
+  distribution:
+  - '@type': DataDownload
+    name: POPC_ULV_20Cin0D_FormFactor.json
+    encodingFormat: application/json
+  isPartOf:
+    '@type': ScholarlyArticle
+    '@id': https://doi.org/10.1016/j.bbamem.2011.07.022
+    identifier: 10.1016/j.bbamem.2011.07.022
+    url: https://doi.org/10.1016/j.bbamem.2011.07.022
+    name: Fluid phase lipid areas and bilayer thicknesses of commonly used phosphatidylcholines
+    isPartOf:
+      '@type': Periodical
+      name: Biochimica et Biophysica Acta (BBA) - Biomembranes
+  _source:
+    api: crossref
+    doi: 10.1016/j.bbamem.2011.07.022
+    retrieved: '2026-09-08'
+```
+
 ## NMR-specific fields
 
-All the following fields are subfields of `NMR:` block.
+All the following fields are subfields of `NMR:` block. **INSTRUMENT**, **METHOD**,
+**SIGN_MEASURED** and **T_RF_HEATING** are all required whenever the block is given;
+**DETAILS** is required on top of those when **METHOD** uses `see_comments`.
 
 1. **INSTRUMENT**  
 Name of the instrument and field strength.
@@ -146,7 +239,8 @@ Obligatory explanation if **NMR:METHOD** uses "see_comments" for SUBMETHOD.
 
 ## Scattering-specific fields
 
-All the following fields are subfields of `XRAY:` block.
+All the following fields are subfields of `XRAY:` block. **SOURCE**, **LAMBDA** and
+**SAMPLE_TYPE** are required whenever the block is given.
 
 1. **SOURCE**
 X-ray source description. Name of the core facilities or instrument name if laboratory source was used. Name of beamline and source if synchrotron data (e.g. EMBL P12, PETRA III).
