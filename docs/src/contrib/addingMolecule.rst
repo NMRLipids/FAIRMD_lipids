@@ -52,7 +52,7 @@ Please ensure that the InChI represents your molecule. The named tools might del
 imperfect results. Provided your molecule is not fully synthetic or novel, you can
 obtain most of the other metadata from the `PubChem API
 <https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest>`_ and the `UniChem API
-<https://www.ebi.ac.uk/unichem/api/docs>`_ using the InChIKey. 
+<https://www.ebi.ac.uk/unichem/api/docs>`_ using the InChIKey.
 
 The `AutocompleteMetadata workflow
 <https://github.com/NMRLipids/BilayerData/actions/workflows/AutocompleteMetadata.yml>`_
