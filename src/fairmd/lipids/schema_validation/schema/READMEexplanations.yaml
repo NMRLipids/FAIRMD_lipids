@@ -17,7 +17,7 @@ COMPOSITION:
 TYPEOFSYSTEM:
  Lipid bilayer or something else
 PUBLICATION:
- Give reference to a publication(s) related to the data. | User given (optional)
+ Give reference to a publication(s) related to the data. | User given (optional). Legacy field: in enriched entries the publication DOIs are carried by bioschema_properties.citation instead.
 AUTHORS_CONTACT:
  Name and email of the main author(s) of the data. 
 SYSTEM:
@@ -43,12 +43,12 @@ GRO:
 TRAJECTORY_SIZE:
  Size of the trajectory file in bytes | automatically extracted data. 
 TRJLENGTH:
- Lenght of the trajectory (ps).
+ Length of the trajectory (ps).
 TEMPERATURE:
  Temperature of the simulation.
 NUMBER_OF_ATOMS:
  Number of atoms in the simulation.
-DATEOFRUNNIG:
+DATEOFRUNNING:
  Date when added into the databank.
 EXPERIMENT:
  Potentially connected experimental data.
@@ -56,6 +56,8 @@ WARNINGS:
  Warnings related to potential issues with the simulation (eg. non-standar orientation of membrane or old Gromacs version)
 ID:
  FAIRMD Lipids ID number of the simulation.
+bioschema_properties:
+ Machine-readable description of the entry following the Bioschemas Dataset profile 1.0-RELEASE (https://bioschemas.org/profiles/Dataset/1.0-RELEASE), used to publish the entry as schema.org JSON-LD. Written by the metadata enrichment tooling from the deposition record (DataCite/CrossRef), not user given. Only properties of that profile are accepted; publication references live here as bioschema_properties.citation, a list of bare DOIs. The bookkeeping key _source records which API the record came from and when, and is stripped before serialising JSON-LD.
 
 
 

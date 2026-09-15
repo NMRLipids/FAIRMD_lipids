@@ -5,9 +5,9 @@
 
 |             key           | description |
 |---------------------------|-----------------------------------------|
-| ARTICLE_DOI | DOI of the of the original publication of the experimental data|
-| DATA_DOI | DOI of the dataset deposition with raw NMR data |
-| DATA_REF | Reference to deposited dataset |
+| ARTICLE_DOI | DOI of the original publication of the experimental data. Becomes the citation when no DATA_DOI is given, and the parent work either way |
+| DATA_DOI | DOI of the dataset deposition with raw NMR data. When present, this is the DOI that becomes the citation |
+| DATA_REF | Reference to a deposited dataset that has no DOI. Free text, not resolved and not a substitute for a DOI |
 | DATE | Date when the data was recorded or published |
 | TEMPERATURE | Temperature (K) of the experiment |
 | MEMBRANE_COMPOSITION | Dictionary of molar fractions of membrane phase |
@@ -18,6 +18,7 @@
 | PH_METHOD | Method of pH setting or measurement (buffer / measurement) |
 | REAGENT_SOURCES | Description of lipid reagents. Source, purity, etc. |
 | SAMPLE_PROTOCOL | Protocol for sample preparation (in free format, references are welcome). |
+| bioschema_properties | Generated Bioschemas Dataset block, see [below](bioschemaexp) |
 
 **NMR specific metadata**
 
@@ -45,23 +46,61 @@
 
 ## General fields
 
+### The two DOI fields
+
+**Validation requires at least one of `ARTICLE_DOI` and `DATA_DOI`.** An entry with neither is
+rejected by [the schema](https://github.com/NMRLipids/FAIRMD_lipids/blob/main/src/fairmd/lipids/schema_validation/schema/experiment_schema.json);
+`DATA_REF` does not satisfy the requirement, because it is free text rather than a resolvable
+identifier.
+
+Both are given as bare DOIs — `10.1016/j.bbamem.2011.07.022`, not `doi:10.1016/...` and not
+`https://doi.org/10.1016/...`.
+
+Which of the two is given decides what the generated `bioschema_properties` block says, and the
+rule is **data first**: cite the data, not the paper describing it.
+
+| given | `citation` and `sameAs` | `isPartOf` |
+|-------|-------------------------|------------|
+| `ARTICLE_DOI` only | the article | the article, with its journal nested inside |
+| `DATA_DOI` only | the deposition | the deposition |
+| both | the **deposition** | the article, with its journal nested inside |
+
+The last row is the one worth reading twice: with both fields given, the record **cites** the
+deposition and is **part of** the article. Those are different relations, not a contradiction —
+the values were digitised from a paper, so the paper is the parent work, while the raw data is
+what a reuser should cite. Nothing is dropped; the block states both. A block generated before
+this rule existed, which cited the article, has the article removed from `citation` on the next
+run of the enrichment tooling, since `isPartOf` already records it.
+
+The article DOI is also the one *looked up* in the registries when both are given: CrossRef
+carries the authors, the journal and the publication date that a raw-data deposition record
+usually lacks, and those become `creator`, `datePublished` and `publisher`.
+
+A handful of entries under `experiments/*/unpublished/` predate this requirement and carry no
+DOI at all. The enrichment tooling still describes them — their `description` ends *"Unpublished
+data contributed to the NMRlipids Databank"* and they get no `citation`, `sameAs` or `isPartOf` —
+but they do not validate against the schema, and new entries must give a DOI.
+
 1. **ARTICLE_DOI**  
 DOI of the original publication where the experimental data originates.
 
 2. **DATA_DOI**  
-DOI of the dataset deposition with raw NMR data (e.g., nmrXive).
+DOI of the dataset deposition with raw NMR data (e.g., nmrXiv).
 
-3. **DATA_REF**
-If the dataset doesn't have DOI, we engage to add some persistent identifier or even URL if the first doesn't exist.
+3. **DATA_REF**  
+Reference to the deposited dataset for data that has **no DOI at all** — a persistent identifier
+where one exists, otherwise a URL. It is a plain string that the enrichment tooling does not
+resolve, so it neither becomes a citation nor satisfies the DOI requirement above: an entry whose
+raw data has no DOI still needs an `ARTICLE_DOI`.
 
 4. **DATE**
 Date in the standard format YYYY-MM-DD (e.g., 2023-08-24). A lot of date values have been automatically synchronized from the paper dates. If the data wasn't published, the date of recording should be used.
 
 5. **TEMPERATURE**  
-Temperature (K) of the experiment. For NMR experiment, if `NMR:T_RF_HEATING` is 'unknown' (or not given), the reported temperature from the probe is settet here. Otherwise, please insert RF-corrected temperature.
+Temperature (K) of the experiment, so strictly positive. For NMR experiment, if `NMR:T_RF_HEATING` is 'unknown' (or not given), the temperature reported by the probe is the value to give here. Otherwise, please insert RF-corrected temperature.
 
 6. **MEMBRANE_COMPOSITION**  
-Dictionary of molar fractions of bilayer components. For example:
+Dictionary of molar fractions of bilayer components, each within (0, 1]. For example:
 ```
 MEMBRANE_COMPOSITION:
   POPC: 0.93
@@ -94,7 +133,7 @@ the composition, it should get the metadata inside the databank and be mentioned
 `SOLUTION_COMPOSITION` instead.
 
 9. **TOTAL_HYDRATION**  
-Mass \% of water in the sample. For NMR experiment, it is better if measured by <sup>1</sup>H MAS NMR.
+Mass \% of water in the sample, so within (0, 100]. For NMR experiment, it is better if measured by <sup>1</sup>H MAS NMR.
 
 10. **PH**  
 pH of the system (number or UNKNOWN)
@@ -113,9 +152,104 @@ For NMR sample, it is important to mention how the targeted hydration level is r
 lyophilised powder is hydrated, liposome suspension is dehydrated, or liposome suspension
 is ultracentrifugated to get lipid-rich phase.
 
+(bioschemaexp)=
+## The `bioschema_properties` block
+
+Enriched entries carry an extra top-level `bioschema_properties:` block, a machine-readable
+description of the entry following the
+[Bioschemas Dataset profile 1.0-RELEASE](https://bioschemas.org/profiles/Dataset/1.0-RELEASE),
+from which schema.org JSON-LD is published. It is **written by the metadata enrichment tooling**
+from the deposition record (CrossRef or DataCite) — contributors do not fill it in, and it is
+optional as far as the schema is concerned.
+
+Only properties of that Bioschemas profile are accepted (`name`, `description`, `identifier`,
+`keywords`, `license`, `url`, `citation`, `creator`, `datePublished`, `distribution`,
+`isBasedOn`, `measurementTechnique`, `publisher`, `variableMeasured`, `isPartOf`, `sameAs`, …),
+plus `dct:`-prefixed DCMI terms. Anything else is rejected, so a typo in a property name is
+caught rather than silently published. Two extras are tolerated for now and will be remapped:
+`accessRights` (properly DCMI `dct:accessRights`) and `articleLicense` (belongs on
+`isPartOf.license`).
+
+The block also carries `_source`, local bookkeeping recording which API the record came from
+and when it was retrieved. It is not a schema.org term and is stripped before serialising
+JSON-LD.
+
+Dates (`datePublished`) are `YYYY`, `YYYY-MM` or `YYYY-MM-DD` and **must stay quoted** in the
+YAML — an unquoted `YYYY-MM-DD` is parsed as a date object and then fails validation as a
+non-string.
+
+`name` and `description` are **composed from the entry's own fields** — composition,
+temperature, hydration, ions, technique — and never taken from the registry. A fetched title
+names the paper, not the one measurement this entry holds, so it describes the wrong thing and
+does not tell sibling entries apart. The fetched title is kept where it is true, as
+`isPartOf.name`. Every composed title ends in a bracketed tag (first author and year) that keeps
+near-identical entries apart.
+
+```yaml
+bioschema_properties:
+  name: X-ray scattering form factor of a POPC bilayer at 303 K, 99% water (SAXS, ULV) [Kucerka
+    2011]
+  description: Experimental X-ray scattering form factor for a lipid bilayer of POPC
+    (1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine) at 303 K, hydrated to 99% water. Measured
+    by small-angle X-ray scattering on ULV samples at Cornell High Energy Synchrotron Source.
+    Values digitised into the NMRlipids Databank from https://doi.org/10.1016/j.bbamem.2011.07.022.
+  sameAs: https://doi.org/10.1016/j.bbamem.2011.07.022
+  datePublished: '2011-11'
+  license:
+    spdx: CC-BY-4.0
+    name: Creative Commons Attribution 4.0 International
+    url: https://spdx.org/licenses/CC-BY-4.0.html
+    sameAs: https://creativecommons.org/licenses/by/4.0/
+  articleLicense:
+    url: http://www.elsevier.com/open-access/userlicense/1.0/
+    spdx: null
+  publisher: Elsevier BV
+  creator:
+  - name: Norbert Kucerka
+  citation:
+  - 10.1016/j.bbamem.2011.07.022
+  keywords:
+  - '@type': DefinedTerm
+    name: X-ray diffraction
+    termCode: topic_2828
+    inDefinedTermSet: http://edamontology.org
+    url: http://edamontology.org/topic_2828
+  - POPC
+  measurementTechnique:
+  - '@type': DefinedTerm
+    name: small-angle X-ray scattering
+    termCode: CHMO_0000204
+    inDefinedTermSet: http://purl.obolibrary.org/obo/chmo.owl
+    url: http://purl.obolibrary.org/obo/CHMO_0000204
+  - X-ray scattering (SUV)
+  variableMeasured:
+  - '@type': PropertyValue
+    name: X-ray scattering form factor
+    unitText: A^-1
+  distribution:
+  - '@type': DataDownload
+    name: POPC_ULV_20Cin0D_FormFactor.json
+    encodingFormat: application/json
+  isPartOf:
+    '@type': ScholarlyArticle
+    '@id': https://doi.org/10.1016/j.bbamem.2011.07.022
+    identifier: 10.1016/j.bbamem.2011.07.022
+    url: https://doi.org/10.1016/j.bbamem.2011.07.022
+    name: Fluid phase lipid areas and bilayer thicknesses of commonly used phosphatidylcholines
+    isPartOf:
+      '@type': Periodical
+      name: Biochimica et Biophysica Acta (BBA) - Biomembranes
+  _source:
+    api: crossref
+    doi: 10.1016/j.bbamem.2011.07.022
+    retrieved: '2026-09-08'
+```
+
 ## NMR-specific fields
 
-All the following fields are subfields of `NMR:` block.
+All the following fields are subfields of `NMR:` block. **INSTRUMENT**, **METHOD**,
+**SIGN_MEASURED** and **T_RF_HEATING** are all required whenever the block is given;
+**DETAILS** is required on top of those when **METHOD** uses `see_comments`.
 
 1. **INSTRUMENT**  
 Name of the instrument and field strength.
@@ -146,7 +280,8 @@ Obligatory explanation if **NMR:METHOD** uses "see_comments" for SUBMETHOD.
 
 ## Scattering-specific fields
 
-All the following fields are subfields of `XRAY:` block.
+All the following fields are subfields of `XRAY:` block. **SOURCE**, **LAMBDA** and
+**SAMPLE_TYPE** are required whenever the block is given.
 
 1. **SOURCE**
 X-ray source description. Name of the core facilities or instrument name if laboratory source was used. Name of beamline and source if synchrotron data (e.g. EMBL P12, PETRA III).

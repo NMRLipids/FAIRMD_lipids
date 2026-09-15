@@ -1,5 +1,5 @@
 """
-Script for membrane metadata autocomplete.
+Script for molecule metadata autocomplete.
 
 This script will try to fill further attributes in a
 :ref:`membrane metadata file <addnewmol>` based on the information

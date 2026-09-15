@@ -266,6 +266,207 @@
     "WARNINGS": {
       "additionalProperties": true,
       "type": ["null", "object", "string"]
+    },
+    "bioschema_properties": {
+      "$comment": "Bioschemas Dataset profile 1.0-RELEASE (https://bioschemas.org/profiles/Dataset/1.0-RELEASE). Written by the metadata enrichment tooling, not user-given. Only properties of that profile are accepted, plus dct:-prefixed DCMI terms and the local _source key. Not required, because the profile Minimum properties @context, @type, @id, dct:conformsTo, url and identifier are not emitted yet (identifier was dropped from the data in BilayerData 03b09b394 although the profile lists it as Minimum). Kept in sync with the same block in experiment_schema.json, whose experiment-only articleLicense is the one accepted difference; test_the_two_schemas_agree_on_the_bioschema_block enforces it.",
+      "type": "object",
+      "required": ["name", "description"],
+      "additionalProperties": false,
+      "patternProperties": {
+        "^dct:": {}
+      },
+      "properties": {
+        "@context": { "type": ["string", "object", "array"] },
+        "@type": { "type": ["string", "array"] },
+        "@id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "identifier": { "type": ["string", "array", "object"] },
+        "url": { "type": "string" },
+        "keywords": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/textOrDefinedTerm" }
+        },
+        "license": { "$ref": "#/definitions/creativeWorkRef" },
+        "alternateName": {
+          "type": ["string", "array"],
+          "items": { "type": "string" }
+        },
+        "citation": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/creativeWorkRef" }
+        },
+        "creator": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/agent" }
+        },
+        "datePublished": { "$ref": "#/definitions/partialDate" },
+        "distribution": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/dataDownload" }
+        },
+        "includedInDataCatalog": {
+          "type": ["string", "object", "array"]
+        },
+        "isBasedOn": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/creativeWorkRef" }
+        },
+        "measurementTechnique": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/textOrDefinedTerm" }
+        },
+        "publisher": { "$ref": "#/definitions/textOrAgent" },
+        "variableMeasured": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/textOrPropertyValue" }
+        },
+        "version": { "type": ["string", "number"] },
+        "dateCreated": { "$ref": "#/definitions/partialDate" },
+        "dateModified": { "$ref": "#/definitions/partialDate" },
+        "hasPart": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/creativeWorkRef" }
+        },
+        "isAccessibleForFree": { "type": "boolean" },
+        "isPartOf": { "$ref": "#/definitions/creativeWorkRef" },
+        "maintainer": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/agent" }
+        },
+        "sameAs": {
+          "type": ["string", "array"],
+          "items": { "type": "string" }
+        },
+        "accessRights": {
+          "$comment": "Not a schema.org term (this is DCMI dct:accessRights). Accepted for now; migrate to dct:accessRights, or to schema.org conditionsOfAccess / isAccessibleForFree.",
+          "type": "string"
+        },
+        "_source": { "$ref": "#/definitions/sourceProvenance" }
+      }
+    }
+  },
+  "definitions": {
+    "definedTerm": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "@type": { "const": "DefinedTerm" },
+        "name": { "type": "string" },
+        "termCode": { "type": "string" },
+        "inDefinedTermSet": { "type": "string" },
+        "url": { "type": "string" },
+        "alternateName": { "type": "string" },
+        "description": { "type": "string" },
+        "identifier": { "type": "string" }
+      }
+    },
+    "textOrDefinedTerm": {
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/definitions/definedTerm" }
+      ]
+    },
+    "agent": {
+      "$comment": "schema.org Person or Organization. Used for creator, publisher and maintainer.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "@type": { "type": "string", "enum": ["Person", "Organization"] },
+        "name": { "type": "string" },
+        "identifier": { "type": "string" },
+        "url": { "type": "string" },
+        "affiliation": { "type": ["string", "object"] },
+        "givenName": { "type": "string" },
+        "familyName": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    },
+    "textOrAgent": {
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/definitions/agent" }
+      ]
+    },
+    "creativeWorkRef": {
+      "$comment": "A schema.org CreativeWork node, or a bare string (DOI or URL). Used for license, citation, isBasedOn, isPartOf and hasPart.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "@type": { "type": "string" },
+            "@id": { "type": "string" },
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "url": { "type": "string" },
+            "sameAs": { "type": "string" },
+            "identifier": { "type": "string" },
+            "datePublished": { "$ref": "#/definitions/partialDate" },
+            "publisher": { "$ref": "#/definitions/textOrAgent" },
+            "isPartOf": { "$ref": "#/definitions/creativeWorkRef" },
+            "license": { "$ref": "#/definitions/creativeWorkRef" },
+            "spdx": {
+              "$comment": "Local extension: SPDX licence identifier. Not a schema.org property of CreativeWork; identifier is the conformant home for it.",
+              "type": ["string", "null"]
+            }
+          }
+        }
+      ]
+    },
+    "dataDownload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "@type": { "const": "DataDownload" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "contentUrl": { "type": "string" },
+        "contentSize": { "type": ["integer", "string"] },
+        "encodingFormat": { "type": "string" },
+        "sameAs": { "type": "string" },
+        "hasPart": {
+          "type": "array",
+          "items": { "type": ["string", "object"] }
+        }
+      }
+    },
+    "propertyValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "@type": { "const": "PropertyValue" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "value": { "type": ["string", "number", "boolean"] },
+        "unitText": { "type": "string" },
+        "unitCode": { "type": "string" },
+        "propertyID": { "type": "string" }
+      }
+    },
+    "textOrPropertyValue": {
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/definitions/propertyValue" }
+      ]
+    },
+    "partialDate": {
+      "$comment": "YYYY, YYYY-MM or YYYY-MM-DD. Must stay quoted in YAML: PyYAML parses an unquoted YYYY-MM-DD into datetime.date, which check-jsonschema then rejects as a non-string.",
+      "type": "string",
+      "pattern": "^[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?$"
+    },
+    "sourceProvenance": {
+      "$comment": "Local bookkeeping written by the metadata enrichment tooling: which API the record came from and when. Not a schema.org term - strip it before serialising JSON-LD.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "api": { "type": ["string", "null"] },
+        "doi": { "type": ["string", "null"] },
+        "spdxLicenseList": { "type": "string" },
+        "retrieved": { "type": "string" }
+      }
     }
   }
 }

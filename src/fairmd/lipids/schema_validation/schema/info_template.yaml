@@ -26,6 +26,8 @@ COMPOSITION:
   NAME: TIP3
   MAPPING: mappingTIP3PCHARMMgui.yaml
 
+# Publication(s) related to the data. Feeds bioschema_properties.citation in the
+# generated README.yaml, where the citation is kept as a list of bare DOIs.
 PUBLICATION: https://doi.org/00.00/acs.jctc.0000
 AUTHORS_CONTACT: Doe, John
 

@@ -10,15 +10,15 @@ import pytest
 import yaml
 from jsonschema import Draft7Validator
 
-# These tests exercise developer/autocomplete_metadata.py, which lives in the
+# These tests exercise developer/autocomplete_mol_metadata.py, which lives in the
 # `developer/` folder and is not part of the distributed package. Mark the whole
 # module as `develop` so it is isolated from the package test suite.
 pytestmark = [pytest.mark.develop, pytest.mark.nodata]
 
 
 def load_autocomplete_module():
-    module_path = Path(__file__).resolve().parents[2] / "developer" / "autocomplete_metadata.py"
-    spec = importlib.util.spec_from_file_location("autocomplete_metadata", module_path)
+    module_path = Path(__file__).resolve().parents[2] / "developer" / "autocomplete_mol_metadata.py"
+    spec = importlib.util.spec_from_file_location("autocomplete_mol_metadata", module_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -72,7 +72,7 @@ def test_autocomplete_output_is_schema_compliant(tmp_path, monkeypatch):
     monkeypatch.setattr(mod, "get_metabolights", lambda _: "MTBLC1234")
     monkeypatch.setattr(mod, "get_cas", lambda _: "29836-26-8")
 
-    monkeypatch.setattr(sys, "argv", ["autocomplete_metadata.py", str(metadata_path)])
+    monkeypatch.setattr(sys, "argv", ["autocomplete_mol_metadata.py", str(metadata_path)])
     mod.main()
 
     generated = yaml.safe_load(metadata_path.read_text(encoding="utf-8"))
