@@ -12,9 +12,12 @@ queried with the inchikey from:
 - LIPID MAPS (the structure depiction)
 
 Structure depictions carry an ``imageAttribution`` block naming the source and its
-licence, since all three image providers require a credit line. Pass
-``--images-only`` to refresh just the depiction and its credit from the identifiers
-already in the file, leaving every other field and its formatting alone.
+licence, since all three image providers require a credit line. LIPID MAPS and
+ChEMBL are credited under their Creative Commons licences; PubChem, which grants no
+CC licence, is credited as its citation guidelines prescribe -- the sectioned record
+URL, the CID and the primary PubChem paper. Pass ``--images-only`` to refresh just
+the depiction and its credit from the identifiers already in the file, leaving every
+other field and its formatting alone.
 
 .. note::
    This file is meant to be used by automated workflows.
@@ -55,16 +58,26 @@ USER_AGENT = "FAIRMD-lipids-autocomplete (+https://github.com/NMRLipids/FAIRMD_l
 # terms it is offered under. All three providers ask to be credited, so an image
 # URL is never written without one.
 #
-# ``credit`` is the plain-text attribution, built to the Creative Commons
-# recommended practices -- title, author, licence, source, every URL spelled out so
-# the sentence stands on its own where markup cannot follow it:
+# ``credit`` is the plain-text attribution. For the two Creative Commons sources it
+# follows the CC recommended practices -- title, author, licence, source, every URL
+# spelled out so the sentence stands on its own where markup cannot follow it:
 # https://wiki.creativecommons.org/wiki/Recommended_practices_for_attribution
+# PubChem is not under a CC licence and publishes its own citation guidelines
+# instead, so its entry follows those rather than the CC phrasing.
+#
+# Optional keys, written only by the sources that define them:
+#   ``depiction``  what the picture is called in the credit; PubChem asks for the
+#                  "2D structure image" to be named as such.
+#   ``identifier`` the source's own citable form of the id, e.g. ``CID 2244``.
+#   ``usageInfo``  the terms-of-reuse page, when it is not the licence deed.
+#   ``citation``   the paper the source asks to be cited alongside its data.
 IMAGE_SOURCES = {
     "lipidmaps": {
         "name": "LIPID MAPS®",
         "url": "https://www.lipidmaps.org/",
         "image": "https://lipidmaps.org/api/molecules/{id}/svg",
         "record": "https://www.lipidmaps.org/databases/lmsd/{id}",
+        "depiction": "structure depiction",
         "credit": (
             '"{title}" by LIPID MAPS® is licensed under CC BY 4.0 '
             "(https://creativecommons.org/licenses/by/4.0/). Source: {record}"
@@ -80,6 +93,7 @@ IMAGE_SOURCES = {
         "url": "https://www.ebi.ac.uk/chembl/",
         "image": "https://www.ebi.ac.uk/chembl/api/data/image/{id}?dimensions=200",
         "record": "https://www.ebi.ac.uk/chembl/explore/compound/{id}",
+        "depiction": "structure depiction",
         "credit": (
             '"{title}" by ChEMBL is licensed under CC BY-SA 3.0 '
             "(https://creativecommons.org/licenses/by-sa/3.0/). Source: {record}"
@@ -94,17 +108,38 @@ IMAGE_SOURCES = {
         "name": "PubChem",
         "url": "https://pubchem.ncbi.nlm.nih.gov/",
         "image": "https://pubchem.ncbi.nlm.nih.gov/image/imgsrv.fcgi?cid={id}&t=l",
-        "record": "https://pubchem.ncbi.nlm.nih.gov/compound/{id}",
-        # NLM prescribes this sentence verbatim, so it is reproduced rather than
-        # fitted to the CC phrasing used above.
+        # PubChem asks that a structure image be referenced as a section of the
+        # compound record rather than as the record itself, hence the suffix:
+        # https://pubchem.ncbi.nlm.nih.gov/docs/citation-guidelines
+        # #section=Reusing-the-2D-or-3D-structure-image-of-a-compound-or-substance-record
+        "record": "https://pubchem.ncbi.nlm.nih.gov/compound/{id}#section=2D-Structure",
+        "identifier": "CID {id}",
+        "depiction": "2D structure depiction",
+        # Built from PubChem's citation guidelines rather than the CC phrasing: it
+        # names the record the way PubChem asks (identifier plus sectioned URL),
+        # states the permission it grants for structure images, and carries the
+        # primary PubChem citation the guidelines ask for.
         "credit": (
-            '"{title}". Source: PubChem, National Library of Medicine '
-            "(https://www.nlm.nih.gov/web_policies.html). {record}"
+            '"{title}" from PubChem {identifier} ({record}), National Center for '
+            "Biotechnology Information, U.S. National Library of Medicine. "
+            "PubChem 2D and 3D structure images may be reused without special "
+            "permission; see https://pubchem.ncbi.nlm.nih.gov/docs/citation-guidelines. "
+            "Cite: {citation[name]} {citation[identifier]}"
         ),
         # Not a licence grant but a web policy, hence no SPDX identifier.
         "license": {
             "name": "NLM Copyright and Privacy Policies",
             "url": "https://www.nlm.nih.gov/web_policies.html",
+        },
+        "usageInfo": (
+            "https://pubchem.ncbi.nlm.nih.gov/docs/citation-guidelines"
+            "#section=Reusing-the-2D-or-3D-structure-image-of-a-compound-or-substance-record"
+        ),
+        # The primary PubChem citation, in the AMA form the guidelines print.
+        "citation": {
+            "name": "Kim S, Chen J, Cheng T, et al. PubChem 2025 update. Nucleic Acids Res. 2025;53(D1):D1516-D1525.",
+            "identifier": "doi:10.1093/nar/gkae1059",
+            "url": "https://doi.org/10.1093/nar/gkae1059",
         },
     },
 }
@@ -255,15 +290,35 @@ def lipidmaps_image(lm_id):
     return url if fetch(url) is not None else ""
 
 
-def image_attribution(source_key, identifier, title):
-    """The credit that has to travel with a depiction from ``source_key``."""
+def image_attribution(source_key, identifier, nmr_id):
+    """The credit that has to travel with a depiction from ``source_key``.
+
+    Every source contributes ``creditText``, ``license`` and ``source``; the
+    optional ``usageInfo``, ``source.identifier`` and ``citation`` appear only
+    where the provider asks for them, as PubChem's citation guidelines do.
+    """
     source = IMAGE_SOURCES[source_key]
     record = source["record"].format(id=identifier)
-    return {
-        "creditText": source["credit"].format(title=title, record=record),
+    title = f"{nmr_id} {source['depiction']}"
+    citation = source.get("citation")
+    # The source's own citable spelling of the id, e.g. ``CID 2244``. Empty for
+    # sources that ask for nothing beyond the record URL.
+    credited_id = source.get("identifier", "").format(id=identifier)
+
+    attribution = {
+        "creditText": source["credit"].format(
+            title=title, record=record, identifier=credited_id, citation=citation or {}
+        ),
         "license": dict(source["license"]),
-        "source": {"name": source["name"], "url": source["url"], "sameAs": record},
     }
+    if "usageInfo" in source:
+        attribution["usageInfo"] = source["usageInfo"]
+    attribution["source"] = {"name": source["name"], "url": source["url"], "sameAs": record}
+    if credited_id:
+        attribution["source"]["identifier"] = credited_id
+    if citation:
+        attribution["citation"] = dict(citation)
+    return attribution
 
 
 def select_image(sameas, chembl_id, cid, nmr_id):
@@ -274,17 +329,15 @@ def select_image(sameas, chembl_id, cid, nmr_id):
     of the three sets of terms. ChEMBL and PubChem stand in where it has nothing.
     Returns ``("", None)`` when no source can depict the molecule.
     """
-    title = f"{nmr_id} structure depiction"
-
     lipidmaps_id = sameas.get("lipidmaps")
     url = lipidmaps_image(lipidmaps_id)
     if url:
-        return url, image_attribution("lipidmaps", lipidmaps_id, title)
+        return url, image_attribution("lipidmaps", lipidmaps_id, nmr_id)
 
     for source_key, identifier in (("chembl", chembl_id), ("pubchem", cid)):
         if identifier:
             url = IMAGE_SOURCES[source_key]["image"].format(id=identifier)
-            return url, image_attribution(source_key, identifier, title)
+            return url, image_attribution(source_key, identifier, nmr_id)
 
     return "", None
 

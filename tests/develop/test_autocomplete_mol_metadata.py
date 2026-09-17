@@ -181,6 +181,10 @@ def test_lipidmaps_is_preferred_and_replaces_an_existing_image(tmp_path, monkeyp
             "sameAs": "https://www.lipidmaps.org/databases/lmsd/LMGP01010005",
         },
     }
+    # The CC-licensed sources ask for nothing beyond the deed, so the keys PubChem
+    # needs are absent rather than empty.
+    assert "usageInfo" not in bioschema["imageAttribution"]
+    assert "citation" not in bioschema["imageAttribution"]
     assert not list(Draft7Validator(load_schema()).iter_errors(generated))
 
 
@@ -211,10 +215,40 @@ def test_lipidmaps_id_without_a_structure_falls_back(tmp_path, monkeypatch):
     bioschema = generated["bioschema_properties"]
 
     assert bioschema["image"] == PUBCHEM_IMAGE
-    # NLM prescribes this sentence, so it is credited word for word.
-    assert "Source: PubChem, National Library of Medicine" in bioschema["imageAttribution"]["creditText"]
-    assert "spdx" not in bioschema["imageAttribution"]["license"]
-    assert bioschema["imageAttribution"]["license"]["url"] == "https://www.nlm.nih.gov/web_policies.html"
+    # PubChem grants no CC licence, so the credit follows its citation guidelines
+    # instead: the 2D-Structure section of the record, the CID spelled the way
+    # PubChem cites it, the reuse permission and the primary PubChem paper.
+    assert bioschema["imageAttribution"] == {
+        "creditText": (
+            '"TMCL 2D structure depiction" from PubChem CID 7906 '
+            "(https://pubchem.ncbi.nlm.nih.gov/compound/7906#section=2D-Structure), "
+            "National Center for Biotechnology Information, U.S. National Library of Medicine. "
+            "PubChem 2D and 3D structure images may be reused without special permission; "
+            "see https://pubchem.ncbi.nlm.nih.gov/docs/citation-guidelines. "
+            "Cite: Kim S, Chen J, Cheng T, et al. PubChem 2025 update. "
+            "Nucleic Acids Res. 2025;53(D1):D1516-D1525. doi:10.1093/nar/gkae1059"
+        ),
+        # A web policy rather than a licence grant, hence no SPDX identifier.
+        "license": {
+            "name": "NLM Copyright and Privacy Policies",
+            "url": "https://www.nlm.nih.gov/web_policies.html",
+        },
+        "usageInfo": (
+            "https://pubchem.ncbi.nlm.nih.gov/docs/citation-guidelines"
+            "#section=Reusing-the-2D-or-3D-structure-image-of-a-compound-or-substance-record"
+        ),
+        "source": {
+            "name": "PubChem",
+            "url": "https://pubchem.ncbi.nlm.nih.gov/",
+            "sameAs": "https://pubchem.ncbi.nlm.nih.gov/compound/7906#section=2D-Structure",
+            "identifier": "CID 7906",
+        },
+        "citation": {
+            "name": "Kim S, Chen J, Cheng T, et al. PubChem 2025 update. Nucleic Acids Res. 2025;53(D1):D1516-D1525.",
+            "identifier": "doi:10.1093/nar/gkae1059",
+            "url": "https://doi.org/10.1093/nar/gkae1059",
+        },
+    }
     assert not list(Draft7Validator(load_schema()).iter_errors(generated))
 
 
