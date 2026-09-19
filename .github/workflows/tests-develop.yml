@@ -7,19 +7,17 @@ on:
       - "developer/**"
       - "tests/develop/**"
       - "tests/conftest.py"
-      - "docs/src/schemas/**"
-      - "src/fairmd/lipids/schema_validation/schema/**"
+      - "src/fairmd/lipids/**"
       - "tox.ini"
       - "pyproject.toml"
       - "MANIFEST.in"
-  pull_request_target:
+  pull_request:
     branches: [main]
     paths:
       - "developer/**"
       - "tests/develop/**"
       - "tests/conftest.py"
-      - "docs/src/schemas/**"
-      - "src/fairmd/lipids/schema_validation/schema/**"
+      - "src/fairmd/lipids/**"
       - "tox.ini"
       - "pyproject.toml"
       - "MANIFEST.in"
@@ -43,8 +41,6 @@ jobs:
     - uses: actions/checkout@v7
       with:
         fetch-depth: 0
-        repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v7
@@ -56,4 +52,3 @@ jobs:
 
     - name: run Python tests
       run: tox -e tests-develop
-
