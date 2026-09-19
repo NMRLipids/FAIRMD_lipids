@@ -21,7 +21,6 @@ you should make it clear).
 
    ./ ├── Simulations/
       ├── experiments/
-      ├── info_files/
       ├── lipid_json_buildH/
       ├── Ranking/
       └── Molecules/
@@ -80,4 +79,3 @@ different force fields, you can use more general naming.
 
 Specific cases:
 - TODO: mapping for UA
-
