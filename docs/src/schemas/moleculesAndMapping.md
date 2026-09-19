@@ -11,29 +11,50 @@ Note that the content of the table is loaded dynamically from [FAIRMD Lipids web
 <iframe src="https://databank2.nmrlipids.fi/lipids?items_per_page=all&embed=1" width="100%" height="400px" frameborder="0"></iframe>
 
 ## Universal atom names in mapping files
-To enable automatic analyses over all simulations, universal atom names for each molecule are defined in the FAIRMD Lipids using the **mapping files**. In these files, universal atom names are connected to simulation specific atom names using python dictionaries stored in yaml file format. The first key in the mapping file dictionary is the universal atom name, second keys define the simulation specific atom name (`ATOMNAME`) and molecule fragment (`FRAGMENT:` head group, glycerol backbone, sn-1 or sn-2). For example, the beginning of the mapping file for CHARMM36 POPC looks like this:
+To enable automatic analyses over all simulations, universal atom names for each molecule are
+defined in the FAIRMD Lipids using the **mapping files**. In these files, universal atom names are
+connected to simulation specific atom names using python dictionaries stored in yaml file format.
+The first key in the mapping file dictionary is the universal atom name, second keys define the
+simulation specific atom name (`ATOMNAME`) and molecule fragment (`FRAGMENT:` head group, glycerol
+backbone, sn-1 or sn-2). For example, the beginning of the mapping file for CHARMM36 POPC looks like
+this:
 
-     M_G1_M:
-      ATOMNAME: C3
-      FRAGMENT: glycerol backbone
-    M_G1H1_M:
-      ATOMNAME: HX
-      FRAGMENT: glycerol backbone
-    M_G1H2_M:
-      ATOMNAME: HY
-      FRAGMENT: glycerol backbone
-    M_G1O1_M:
-      ATOMNAME: O31
-      FRAGMENT: glycerol backbone
-    M_G1C2_M:
-      ATOMNAME: C31
-      FRAGMENT: sn-1
-    M_G1C2O1_M:
-      ATOMNAME: O32
-      FRAGMENT: sn-1
-    .
-    .
-    .
+```yaml
+M_G1_M:
+  ATOMNAME: C3
+  FRAGMENT: glycerol backbone
+M_G1H1_M:
+  ATOMNAME: HX
+  FRAGMENT: glycerol backbone
+M_G1H2_M:
+  ATOMNAME: HY
+  FRAGMENT: glycerol backbone
+M_G1O1_M:
+  ATOMNAME: O31
+  FRAGMENT: glycerol backbone
+M_G1C2_M:
+  ATOMNAME: C31
+  FRAGMENT: sn-1
+M_G1C2O1_M:
+  ATOMNAME: O32
+  FRAGMENT: sn-1
+# ...
+```
+
+If lipid consists of few residues, the universal name should be mapped to the pair of `ATOMNAME` and
+`RESIDUE`; then it looks in turn as following:
+
+```yaml
+M_G1_M:
+  ATOMNAME: C1
+  RESIDUE: PE
+  FRAGMENT: glycerol backbone
+M_G1H1_M:
+  ATOMNAME: HS
+  RESIDUE: PE
+  FRAGMENT: glycerol backbone
+# ...
+```
 
 Universal atom names start with "M_" flag and ends with "_M" flag. 
 
