@@ -1,11 +1,11 @@
 (readmesimu)=
 # Simulation metadata (README.yaml)
 
-Each simulation in the FAIRMD Lipids is assigned with a `README.yaml` metadata file which contains all the essential information of the simulation. These files are created from the manually contributed [info.yaml](info_files) files as described in [Adding simulations](addSimulation). The `README.yaml` files are stored as described in [Data organisation](dbstructure). 
+Each simulation in the FAIRMD Lipids is assigned with a `README.yaml` metadata file which contains all the essential information of the simulation. These files are created from manually supplied `info.yaml` input files as described in [Adding simulations](addSimulation). Info files are not stored in BilayerData. The `README.yaml` files are stored as described in [Data organisation](dbstructure).
 
 You can view examples in the [BilayerData GitHub repository](https://github.com/NMRLipids/BilayerData/tree/main/Simulations). 
 
-README files contain information that is manually entered into [info.yaml](info_files) files and automatically extracted information by the [fmdl_add_simulation](add_simulation_py) program. 
+README files contain information that is manually entered into `info.yaml` input files and automatically extracted information by the [fmdl_add_simulation](add_simulation_py) program.
 Table below lists the manually entered compulsory and optional parameters, as well as automatically extracted information from simulation files.  
 
 --------------------
