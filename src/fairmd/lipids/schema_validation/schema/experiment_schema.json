@@ -5,19 +5,11 @@
   "properties": {
     "ARTICLE_DOI": {
       "$comment": "Wrapped in allOf rather than a bare $ref: in draft-07 a $ref makes its sibling keywords, description included, be ignored.",
-      "allOf": [
-        {
-          "$ref": "#/definitions/doi"
-        }
-      ],
+      "allOf": [{ "$ref": "#/definitions/doi" }],
       "description": "DOI of the original publication of the experimental data. Becomes bioschema_properties.citation when no DATA_DOI is given, and bioschema_properties.isPartOf either way"
     },
     "DATA_DOI": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/doi"
-        }
-      ],
+      "allOf": [{ "$ref": "#/definitions/doi" }],
       "description": "DOI of the dataset deposition with raw NMR data. When present, this is the DOI that becomes bioschema_properties.citation and sameAs - cite the data, not the article. The article is not lost: it stays the parent work in bioschema_properties.isPartOf"
     },
     "DATA_REF": {
@@ -81,17 +73,8 @@
     },
     "PH": {
       "anyOf": [
-        {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 14
-        },
-        {
-          "type": "string",
-          "enum": [
-            "UNKNOWN"
-          ]
-        },
+        { "type": "number", "minimum": 0, "maximum": 14 },
+        { "type": "string", "enum": ["UNKNOWN"] },
         {
           "$comment": "A pH range, e.g. 8-10 or 1.3-13.2. Anchored, and each endpoint is bounded to 0-14 like the numeric branch above: a decimal part is allowed everywhere below 14, and at 14 only when it is zero, so 14.5 is rejected the way the numeric branch rejects it.",
           "type": "string",
@@ -132,19 +115,11 @@
         {
           "$comment": "The docs make an explanation obligatory when METHOD uses see_comments for SUBMETHOD.",
           "if": {
-            "required": [
-              "METHOD"
-            ],
-            "properties": {
-              "METHOD": {
-                "pattern": "see_comments$"
-              }
-            }
+            "required": ["METHOD"],
+            "properties": { "METHOD": { "pattern": "see_comments$" } }
           },
           "then": {
-            "required": [
-              "DETAILS"
-            ]
+            "required": ["DETAILS"]
           }
         }
       ],
@@ -242,154 +217,75 @@
       }
     },
     "bioschema_properties": {
-      "$comment": "Bioschemas Dataset profile 1.0-RELEASE (https://bioschemas.org/profiles/Dataset/1.0-RELEASE). Written by the metadata enrichment tooling, not user-given. Only properties of that profile are accepted, plus dct:-prefixed DCMI terms and the local _source key. Not required, because the profile Minimum properties @context, @type, @id, dct:conformsTo, url and identifier are not emitted yet. Kept in sync with the same block in simulation_schema.json, articleLicense aside, which is experiment-only; test_the_two_schemas_agree_on_the_bioschema_block enforces it.",
+      "$comment": "Bioschemas Dataset profile 1.0-RELEASE (https://bioschemas.org/profiles/Dataset/1.0-RELEASE). Written by the metadata enrichment tooling, not user-given. Only properties of that profile are accepted, plus dct:-prefixed DCMI terms and the local _source key. Not required, because the profile Minimum properties @context, @type, @id, dct:conformsTo, url and identifier are not emitted yet. Kept in sync with the same block in readme_yaml_schema.json, articleLicense aside, which is experiment-only; test_the_two_schemas_agree_on_the_bioschema_block enforces it.",
       "type": "object",
-      "required": [
-        "name",
-        "description"
-      ],
+      "required": ["name", "description"],
       "additionalProperties": false,
       "patternProperties": {
         "^dct:": {}
       },
       "properties": {
-        "@context": {
-          "type": [
-            "string",
-            "object",
-            "array"
-          ]
-        },
-        "@type": {
-          "type": [
-            "string",
-            "array"
-          ]
-        },
-        "@id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "identifier": {
-          "type": [
-            "string",
-            "array",
-            "object"
-          ]
-        },
-        "url": {
-          "type": "string"
-        },
+        "@context": { "type": ["string", "object", "array"] },
+        "@type": { "type": ["string", "array"] },
+        "@id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "identifier": { "type": ["string", "array", "object"] },
+        "url": { "type": "string" },
         "keywords": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/textOrDefinedTerm"
-          }
+          "items": { "$ref": "#/definitions/textOrDefinedTerm" }
         },
-        "license": {
-          "$ref": "#/definitions/creativeWorkRef"
-        },
+        "license": { "$ref": "#/definitions/creativeWorkRef" },
         "alternateName": {
-          "type": [
-            "string",
-            "array"
-          ],
-          "items": {
-            "type": "string"
-          }
+          "type": ["string", "array"],
+          "items": { "type": "string" }
         },
         "citation": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/creativeWorkRef"
-          }
+          "items": { "$ref": "#/definitions/creativeWorkRef" }
         },
         "creator": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/agent"
-          }
+          "items": { "$ref": "#/definitions/agent" }
         },
-        "datePublished": {
-          "$ref": "#/definitions/partialDate"
-        },
+        "datePublished": { "$ref": "#/definitions/partialDate" },
         "distribution": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/dataDownload"
-          }
+          "items": { "$ref": "#/definitions/dataDownload" }
         },
         "includedInDataCatalog": {
-          "type": [
-            "string",
-            "object",
-            "array"
-          ]
+          "type": ["string", "object", "array"]
         },
         "isBasedOn": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/creativeWorkRef"
-          }
+          "items": { "$ref": "#/definitions/creativeWorkRef" }
         },
         "measurementTechnique": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/textOrDefinedTerm"
-          }
+          "items": { "$ref": "#/definitions/textOrDefinedTerm" }
         },
-        "publisher": {
-          "$ref": "#/definitions/textOrAgent"
-        },
+        "publisher": { "$ref": "#/definitions/textOrAgent" },
         "variableMeasured": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/textOrPropertyValue"
-          }
+          "items": { "$ref": "#/definitions/textOrPropertyValue" }
         },
-        "version": {
-          "type": [
-            "string",
-            "number"
-          ]
-        },
-        "dateCreated": {
-          "$ref": "#/definitions/partialDate"
-        },
-        "dateModified": {
-          "$ref": "#/definitions/partialDate"
-        },
+        "version": { "type": ["string", "number"] },
+        "dateCreated": { "$ref": "#/definitions/partialDate" },
+        "dateModified": { "$ref": "#/definitions/partialDate" },
         "hasPart": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/creativeWorkRef"
-          }
+          "items": { "$ref": "#/definitions/creativeWorkRef" }
         },
-        "isAccessibleForFree": {
-          "type": "boolean"
-        },
-        "isPartOf": {
-          "$ref": "#/definitions/creativeWorkRef"
-        },
+        "isAccessibleForFree": { "type": "boolean" },
+        "isPartOf": { "$ref": "#/definitions/creativeWorkRef" },
         "maintainer": {
           "type": "array",
-          "items": {
-            "$ref": "#/definitions/agent"
-          }
+          "items": { "$ref": "#/definitions/agent" }
         },
         "sameAs": {
-          "type": [
-            "string",
-            "array"
-          ],
-          "items": {
-            "type": "string"
-          }
+          "type": ["string", "array"],
+          "items": { "type": "string" }
         },
         "accessRights": {
           "$comment": "Not a schema.org term (this is DCMI dct:accessRights). Accepted for now; migrate to dct:accessRights, or to schema.org conditionsOfAccess / isAccessibleForFree.",
@@ -399,9 +295,7 @@
           "$comment": "Not a schema.org term. The licence of the article the data belongs to should live on isPartOf.license - remap when the enrichment tooling is next touched.",
           "$ref": "#/definitions/creativeWorkRef"
         },
-        "_source": {
-          "$ref": "#/definitions/sourceProvenance"
-        }
+        "_source": { "$ref": "#/definitions/sourceProvenance" }
       }
     }
   },
@@ -415,57 +309,33 @@
     {
       "$comment": "At least one of the two DOIs has to be given. DATA_REF does not count: it is free text rather than a resolvable identifier. Where both DOIs are given, DATA_DOI wins as the DOI to cite and ARTICLE_DOI stays the parent work - see docs/src/schemas/experiment_metadata.md and record_dois() in developer/expsim_metadata/fields.py.",
       "anyOf": [
-        {
-          "required": [
-            "ARTICLE_DOI"
-          ]
-        },
-        {
-          "required": [
-            "DATA_DOI"
-          ]
-        }
+        { "required": ["ARTICLE_DOI"] },
+        { "required": ["DATA_DOI"] }
       ]
     },
     {
       "$comment": "An entry describes exactly one kind of measurement.",
       "oneOf": [
-        {
-          "required": [
-            "NMR"
-          ]
-        },
-        {
-          "required": [
-            "XRAY"
-          ]
-        }
+        { "required": ["NMR"] },
+        { "required": ["XRAY"] }
       ]
     },
     {
       "$comment": "How the pH was set or measured has to be stated whenever the pH itself is known.",
       "if": {
-        "required": [
-          "PH"
-        ],
+        "required": ["PH"],
         "properties": {
-          "PH": {
-            "not": {
-              "const": "UNKNOWN"
-            }
-          }
+          "PH": { "not": { "const": "UNKNOWN" } }
         }
       },
       "then": {
-        "required": [
-          "PH_METHOD"
-        ]
+        "required": ["PH_METHOD"]
       }
     }
   ],
   "definitions": {
     "doi": {
-      "$comment": "Bare DOI: no doi: prefix and no https://doi.org/ URL. Mirrors DOI_RE in developer/expsim_metadata/constants.py. Experiment-local - not part of the bioschema_properties block mirrored in simulation_schema.json.",
+      "$comment": "Bare DOI: no doi: prefix and no https://doi.org/ URL. Mirrors DOI_RE in developer/expsim_metadata/constants.py. Experiment-local - not part of the bioschema_properties block mirrored in readme_yaml_schema.json.",
       "type": "string",
       "pattern": "^10\\.\\d{4,9}/\\S+$"
     },
@@ -473,142 +343,66 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "@type": {
-          "const": "DefinedTerm"
-        },
-        "name": {
-          "type": "string"
-        },
-        "termCode": {
-          "type": "string"
-        },
-        "inDefinedTermSet": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        },
-        "alternateName": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "identifier": {
-          "type": "string"
-        }
+        "@type": { "const": "DefinedTerm" },
+        "name": { "type": "string" },
+        "termCode": { "type": "string" },
+        "inDefinedTermSet": { "type": "string" },
+        "url": { "type": "string" },
+        "alternateName": { "type": "string" },
+        "description": { "type": "string" },
+        "identifier": { "type": "string" }
       }
     },
     "textOrDefinedTerm": {
       "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/definedTerm"
-        }
+        { "type": "string" },
+        { "$ref": "#/definitions/definedTerm" }
       ]
     },
     "agent": {
       "$comment": "schema.org Person or Organization. Used for creator, publisher and maintainer.",
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "name"
-      ],
+      "required": ["name"],
       "properties": {
-        "@type": {
-          "type": "string",
-          "enum": [
-            "Person",
-            "Organization"
-          ]
-        },
-        "name": {
-          "type": "string"
-        },
-        "identifier": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        },
-        "affiliation": {
-          "type": [
-            "string",
-            "object"
-          ]
-        },
-        "givenName": {
-          "type": "string"
-        },
-        "familyName": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        }
+        "@type": { "type": "string", "enum": ["Person", "Organization"] },
+        "name": { "type": "string" },
+        "identifier": { "type": "string" },
+        "url": { "type": "string" },
+        "affiliation": { "type": ["string", "object"] },
+        "givenName": { "type": "string" },
+        "familyName": { "type": "string" },
+        "email": { "type": "string" }
       }
     },
     "textOrAgent": {
       "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/agent"
-        }
+        { "type": "string" },
+        { "$ref": "#/definitions/agent" }
       ]
     },
     "creativeWorkRef": {
       "$comment": "A schema.org CreativeWork node, or a bare string (DOI or URL). Used for license, citation, isBasedOn, isPartOf and hasPart.",
       "oneOf": [
-        {
-          "type": "string"
-        },
+        { "type": "string" },
         {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "@type": {
-              "type": "string"
-            },
-            "@id": {
-              "type": "string"
-            },
-            "name": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "url": {
-              "type": "string"
-            },
-            "sameAs": {
-              "type": "string"
-            },
-            "identifier": {
-              "type": "string"
-            },
-            "datePublished": {
-              "$ref": "#/definitions/partialDate"
-            },
-            "publisher": {
-              "$ref": "#/definitions/textOrAgent"
-            },
-            "isPartOf": {
-              "$ref": "#/definitions/creativeWorkRef"
-            },
-            "license": {
-              "$ref": "#/definitions/creativeWorkRef"
-            },
+            "@type": { "type": "string" },
+            "@id": { "type": "string" },
+            "name": { "type": "string" },
+            "description": { "type": "string" },
+            "url": { "type": "string" },
+            "sameAs": { "type": "string" },
+            "identifier": { "type": "string" },
+            "datePublished": { "$ref": "#/definitions/partialDate" },
+            "publisher": { "$ref": "#/definitions/textOrAgent" },
+            "isPartOf": { "$ref": "#/definitions/creativeWorkRef" },
+            "license": { "$ref": "#/definitions/creativeWorkRef" },
             "spdx": {
               "$comment": "Local extension: SPDX licence identifier. Not a schema.org property of CreativeWork; identifier is the conformant home for it.",
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": ["string", "null"]
             }
           }
         }
@@ -618,38 +412,16 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "@type": {
-          "const": "DataDownload"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "contentUrl": {
-          "type": "string"
-        },
-        "contentSize": {
-          "type": [
-            "integer",
-            "string"
-          ]
-        },
-        "encodingFormat": {
-          "type": "string"
-        },
-        "sameAs": {
-          "type": "string"
-        },
+        "@type": { "const": "DataDownload" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "contentUrl": { "type": "string" },
+        "contentSize": { "type": ["integer", "string"] },
+        "encodingFormat": { "type": "string" },
+        "sameAs": { "type": "string" },
         "hasPart": {
           "type": "array",
-          "items": {
-            "type": [
-              "string",
-              "object"
-            ]
-          }
+          "items": { "type": ["string", "object"] }
         }
       }
     },
@@ -657,41 +429,19 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "@type": {
-          "const": "PropertyValue"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "value": {
-          "type": [
-            "string",
-            "number",
-            "boolean"
-          ]
-        },
-        "unitText": {
-          "type": "string"
-        },
-        "unitCode": {
-          "type": "string"
-        },
-        "propertyID": {
-          "type": "string"
-        }
+        "@type": { "const": "PropertyValue" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "value": { "type": ["string", "number", "boolean"] },
+        "unitText": { "type": "string" },
+        "unitCode": { "type": "string" },
+        "propertyID": { "type": "string" }
       }
     },
     "textOrPropertyValue": {
       "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "$ref": "#/definitions/propertyValue"
-        }
+        { "type": "string" },
+        { "$ref": "#/definitions/propertyValue" }
       ]
     },
     "partialDate": {
@@ -704,24 +454,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "api": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "doi": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "spdxLicenseList": {
-          "type": "string"
-        },
-        "retrieved": {
-          "type": "string"
-        }
+        "api": { "type": ["string", "null"] },
+        "doi": { "type": ["string", "null"] },
+        "spdxLicenseList": { "type": "string" },
+        "retrieved": { "type": "string" }
       }
     }
   }

@@ -78,7 +78,7 @@ def test_autocomplete_output_is_schema_compliant(tmp_path, monkeypatch):
     generated = yaml.safe_load(metadata_path.read_text(encoding="utf-8"))
     with (
         files("fairmd.lipids.schema_validation.schema")
-        .joinpath("molecule_schema.json")
+        .joinpath("metadata_schema.json")
         .open("r", encoding="utf-8") as f
     ):
         schema = json.load(f)

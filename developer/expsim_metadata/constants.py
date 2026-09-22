@@ -148,7 +148,7 @@ TRAILING = ".,;:)]}’\"'"
 # hand-written content, which this tool does not make -- it is done in the data
 # repository.
 #
-# DOI is deprecated for experiments only: simulation_schema.json declares DOI
+# DOI is deprecated for experiments only: readme_yaml_schema.json declares DOI
 # for a simulation, where it names the Zenodo deposition and is the right key.
 DEPRECATED_EXPERIMENT_KEYS = {
     "DOI": "ARTICLE_DOI, or DATA_DOI where the value is a data deposition",
@@ -172,7 +172,7 @@ NULLISH = frozenset({"null", "none", "na", "n/a", "??", "?", ""})
 # are left exactly as they are; both fields still get quoted when already ISO,
 # which is what the schemas need (unquoted, YAML yields a date object).
 #
-# A simulation's DATE is not declared in simulation_schema.json at all, so it
+# A simulation's DATE is not declared in readme_yaml_schema.json at all, so it
 # is left as YAML parses it rather than rewritten for tidiness.
 DATE_FIELDS = {
     "simulations": {"DATEOFRUNNING": True, "FF_DATE": False},

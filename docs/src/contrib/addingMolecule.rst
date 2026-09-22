@@ -36,7 +36,7 @@ Metadata file creation
 Please provide metadata about the molecule in a :file:`metadata.yaml` in the same
 subfolder of :file:`Molecules/membrane/YOURMOLECULE`. You can find
 :ref:`the metadata template <molmetadata_schema>` in
-:file:`SchemaValidation/Schema/molecule_template.yaml` inside the package directory.
+:file:`SchemaValidation/Schema/metadata_template.yaml` inside the package directory.
 
 The recommended workflow is to start from the `InChI
 <https://en.wikipedia.org/wiki/International_Chemical_Identifier>`_. You can obtain the

@@ -142,7 +142,7 @@ def deprecated_keys(readme, kind):
 
     A simulation has none: ``DOI`` is the deprecated *experiment* spelling, and
     the same key on a simulation is the Zenodo deposition that
-    ``simulation_schema.json`` declares.
+    ``readme_yaml_schema.json`` declares.
     """
     if kind != "experiments":
         return {}

@@ -34,8 +34,8 @@ from jsonschema import Draft7Validator, FormatChecker, SchemaError, ValidationEr
 
 logger = logging.getLogger(__name__)
 
-default_info_schema_path = os.path.join(os.path.dirname(__file__), "schema", "info_schema.json")
-default_readme_yaml_schema_path = os.path.join(os.path.dirname(__file__), "schema", "simulation_schema.json")
+default_info_schema_path = os.path.join(os.path.dirname(__file__), "schema", "info_yml_schema.json")
+default_readme_yaml_schema_path = os.path.join(os.path.dirname(__file__), "schema", "readme_yaml_schema.json")
 
 
 schema_type_options = Literal["info", "readme"]

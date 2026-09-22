@@ -25,7 +25,7 @@ SYSTEM | System description in the free text format | User-given
 TEMPERATURE | Temperature of the simulation. | User-given 
 COMPOSITION | Molecules' names, mappings, number. | Mixed*
 ||
-PUBLICATION | Reference to a publication(s) related to the data. Legacy: retired by enrichment, which carries it as bioschema\_properties.citation | User-given
+PUBLICATION | Reference to a publication(s) related to the data. Legacy: enriched entries carry it as bioschema\_properties.citation | User-given
 AUTHORS\_CONTACT | Name and email of the main author(s) of the data. |  User-given
 BATCHID | Identifier for a series of related simulations |  User-given
 SOFTWARE\_VERSION | Version of the used software |  User-given
@@ -125,11 +125,8 @@ Give description of system in free format. For example ''POPC with cholesterol a
 
 12. **PUBLICATION**  
 Give reference to a publication(s) related to the data.
-This is a legacy field, accepted on upload and then retired: enrichment moves the
-references into `bioschema_properties.citation` (bare DOIs where extractable, otherwise
-preserved citation text) and removes the top-level field, so an enriched record carries
-them in one place only. The field is removed only once `citation` demonstrably carries
-everything it held.
+This is a legacy field: in enriched entries the publication references are carried by
+`bioschema_properties.citation` as a list of bare DOIs.
 
 13. **AUTHORS\_CONTACT** (compulsory) 
 Give the name and email of the main author(s) of the data.
@@ -237,9 +234,8 @@ caught rather than silently published. One extra is tolerated for now and will b
 `accessRights` (properly DCMI `dct:accessRights`).
 
 Publication references live here as `citation`, a list of bare DOIs, superseding the legacy
-top-level `PUBLICATION` field, which enrichment removes once this list carries its
-content. The block also carries `_source`, local bookkeeping recording which API the
-record came from and when it was retrieved; it is not a schema.org term and is
+top-level `PUBLICATION` field. The block also carries `_source`, local bookkeeping recording
+which API the record came from and when it was retrieved; it is not a schema.org term and is
 stripped before serialising JSON-LD.
 
 Dates (`datePublished`) are `YYYY`, `YYYY-MM` or `YYYY-MM-DD` and **must stay quoted** in the
