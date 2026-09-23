@@ -28,12 +28,32 @@ Usage::
 """
 
 import argparse
+import importlib.util
 import sys
 from pathlib import Path
 
 import yaml
 
-from fairmd.lipids.auxiliary import encode_canonical_yaml
+
+def _load_encoder():
+    """Load the formatter module without importing ``fairmd.lipids``."""
+    module_path = (
+        Path(__file__).resolve().parents[1]
+        / "src"
+        / "fairmd"
+        / "lipids"
+        / "auxiliary"
+        / "yaml_format.py"
+    )
+    spec = importlib.util.spec_from_file_location("fairmd_yaml_format", module_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Cannot load YAML formatter from {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.encode_canonical_yaml
+
+
+encode_canonical_yaml = _load_encoder()
 
 
 def main():

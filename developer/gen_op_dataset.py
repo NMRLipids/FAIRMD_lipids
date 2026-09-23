@@ -4,9 +4,9 @@ import argparse
 import logging
 import sys
 
-import _bootstrap
-from datasets.pureop import gen_op_from_exps, gen_op_from_sims
+import _bootstrap  # noqa: F401
 from datasets.opqual import gen_opq_ds
+from datasets.pureop import gen_op_from_exps, gen_op_from_sims
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
