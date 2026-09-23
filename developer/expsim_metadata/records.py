@@ -19,7 +19,7 @@ from pathlib import Path
 import yaml
 
 from .bioschema import enrich
-from .constants import BLOCK_KEY_RE, BLOCK_ORDER, DATE_FIELDS, FOLD_WIDTH, LEGACY_SENTINEL
+from .constants import BLOCK_KEY_RE, BLOCK_ORDER, DATE_FIELDS, FOLD_WIDTH, FOLDABLE, LEGACY_SENTINEL
 from .fields import deprecated_keys, record_dois, record_kind
 from .helpers import parse_publication
 from .licenses import compact_license, dataset_license
@@ -64,11 +64,6 @@ def strip_existing_block(text):
     if index == -1:
         return text if text.endswith("\n") else text + "\n"
     return text[:index]
-
-
-# Words separated by single spaces: the only text a fold reads back unchanged,
-# since the parser turns each line break back into exactly one space.
-FOLDABLE = re.compile(r"\S+( \S+)+")
 
 
 class BlockDumper(yaml.SafeDumper):

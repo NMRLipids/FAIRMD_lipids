@@ -137,6 +137,9 @@ BLOCK_ORDER = [
 # Prose in the generated block that would run past this column -- composed names
 # and descriptions, registry titles -- is folded into a ``>-`` block scalar.
 FOLD_WIDTH = 100
+# Words separated by single spaces: the only text a fold reads back unchanged,
+# since the parser turns each line break back into exactly one space.
+FOLDABLE = re.compile(r"\S+( \S+)+")
 
 DOI_RE = re.compile(r"10\.\d{4,9}/[^\s;,\"']+")
 ORCID_RE = re.compile(r"(\d{4}-\d{4}-\d{4}-\d{3}[\dX])", re.IGNORECASE)
