@@ -849,6 +849,48 @@ def test_a_multi_line_publication_the_rule_kept_is_left_intact(tmp_path):
     assert out == readme
 
 
+def test_long_values_are_folded_under_the_width():
+    """Prose that would run past the width is folded into ``>-`` and reads back unchanged.
+
+    The width counts the whole line, key and indentation included, and a value
+    with no space in it cannot be folded, so it is left on its line.
+    """
+    records = load_expsim_module("expsim_metadata.records")
+    unbreakable = (
+        "(innerleaflet,76CHOL,30POPC,52POPE,26POPS,6SAPI24)"
+        "(outerleaflet,76CHOL,52POPC,6POPE,2POPS,57PSM),13495SOL,52SOD"
+    )
+    block = {
+        # Under the width on its own; over it once the key is written in front.
+        "name": "Pure POPC membrane simulations with 1000 mM NaCl with the CHARMM-Drude2023 force field (OpenMM)",
+        "alternateName": unbreakable,
+        "description": (
+            "Molecular dynamics trajectory of a lipid bilayer of 200 DPPC "
+            "(1,2-dipalmitoyl-sn-glycero-3-phosphocholine) at 319 K. Simulated with prosECCo 75 paper "
+            "related data in GROMACS 2022.5-plumed_2.8.2 for 1000 ns (53000 atoms). Deposited as NMRlipids "
+            "Databank simulation 930 and available from https://doi.org/10.5281/zenodo.10635500."
+        ),
+        "sameAs": "https://doi.org/10.5281/zenodo.10635500",
+        "measurementTechnique": [
+            "CHARMM36 (center of mass removed independently for upper leaflet, lower leaflet and water+ions) "
+            "force field",
+        ],
+        "isPartOf": {
+            "@type": "Dataset",
+            "name": "MD simulation trajectory and related files for POPC/cholesterol bilayers "
+            "with varying cholesterol content at 310 K",
+        },
+    }
+    out = records.render_block(block)
+    lines = out.splitlines()
+
+    assert yaml.safe_load(out)["bioschema_properties"] == block
+    assert [line for line in lines if len(line) > records.FOLD_WIDTH] == [f"  alternateName: {unbreakable}"]
+    for folded in ("  name: >-", "  description: >-", "  - >-", "    name: >-"):
+        assert folded in lines
+    assert "  sameAs: https://doi.org/10.5281/zenodo.10635500" in lines
+
+
 # ---------------------------------------------------------------------------
 # Where a record sits
 # ---------------------------------------------------------------------------

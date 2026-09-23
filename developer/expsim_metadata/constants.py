@@ -134,6 +134,10 @@ BLOCK_ORDER = [
     "isBasedOn", "isPartOf", "accessRights", "_source",
 ]
 
+# Prose in the generated block that would run past this column -- composed names
+# and descriptions, registry titles -- is folded into a ``>-`` block scalar.
+FOLD_WIDTH = 100
+
 DOI_RE = re.compile(r"10\.\d{4,9}/[^\s;,\"']+")
 ORCID_RE = re.compile(r"(\d{4}-\d{4}-\d{4}-\d{3}[\dX])", re.IGNORECASE)
 DATE_RE = re.compile(r"^\d{4}(-\d{2}(-\d{2})?)?$")
