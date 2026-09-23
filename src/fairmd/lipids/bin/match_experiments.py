@@ -24,7 +24,6 @@ from copy import copy
 from typing import IO
 
 import numpy as np
-import yaml
 
 from fairmd.lipids import FMDL_SIMU_PATH, progress
 from fairmd.lipids.auxiliary import encode_canonical_yaml

@@ -33,9 +33,10 @@ def _value_scalars(node, parent_column=None):
 
 
 def _wrap(text, indent):
-    return [" " * indent + line + "\n"
-            for line in textwrap.wrap(text, FOLD_WIDTH - indent,
-                                      break_long_words=False, break_on_hyphens=False)]
+    return [
+        " " * indent + line + "\n"
+        for line in textwrap.wrap(text, FOLD_WIDTH - indent, break_long_words=False, break_on_hyphens=False)
+    ]
 
 
 def _too_long(line):
@@ -52,10 +53,10 @@ def _fold_single_line(node, indent, lines):
         return "written over several lines"
     if not FOLDABLE.fullmatch(node.value):
         return "no space to fold at"
-    comment = line[end.column:].strip()
+    comment = line[end.column :].strip()
     if comment and not comment.startswith("#"):
         return "unexpected text after the value"
-    head = line[:start.column] + ">-" + (f"  {comment}" if comment else "") + "\n"
+    head = line[: start.column] + ">-" + (f"  {comment}" if comment else "") + "\n"
     return start.line, start.line + 1, [head] + _wrap(node.value, indent)
 
 
@@ -92,8 +93,11 @@ def _fold_file(text):
         if node.style == ">":
             result = _rewrap_folded(node, lines)
         elif node.style == "|":
-            result = "literal block" if any(_too_long(line) for line in lines[
-                node.start_mark.line + 1:node.end_mark.line]) else None
+            result = (
+                "literal block"
+                if any(_too_long(line) for line in lines[node.start_mark.line + 1 : node.end_mark.line])
+                else None
+            )
         else:
             result = _fold_single_line(node, indent, lines)
         if isinstance(result, str):
@@ -114,6 +118,5 @@ def _fold_file(text):
 
 def encode_canonical_yaml(data) -> str:
     """Serialize data using the project YAML formatting rules."""
-    text = yaml.dump(data, sort_keys=False, allow_unicode=True,
-                     default_flow_style=False, width=4096)
+    text = yaml.dump(data, sort_keys=False, allow_unicode=True, default_flow_style=False, width=4096)
     return _fold_file(text)[0]
