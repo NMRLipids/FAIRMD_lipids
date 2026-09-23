@@ -27,6 +27,7 @@ import numpy as np
 import yaml
 
 from fairmd.lipids import FMDL_SIMU_PATH, progress
+from fairmd.lipids.auxiliary import encode_canonical_yaml
 from fairmd.lipids.core import System, SystemsCollection, initialize_databank
 from fairmd.lipids.experiment import Experiment, ExperimentCollection
 
@@ -224,10 +225,10 @@ def match_experiments() -> None:
     # save changed simulations
     for simulation in progress(simulations, desc="Saving READMEs"):
         outfile_dict = os.path.join(FMDL_SIMU_PATH, simulation["path"], "README.yaml")
-        with open(outfile_dict, "w") as f:
-            if "path" in simulation:
-                del simulation["path"]
-            yaml.dump(simulation.readme, f, sort_keys=False, allow_unicode=True)
+        if "path" in simulation:
+            del simulation["path"]
+        with open(outfile_dict, "w", encoding="utf-8") as f:
+            f.write(encode_canonical_yaml(simulation.readme))
 
     print("Found order parameter data for " + str(len(pairs_op)) + " pairs")
     print("Found form factor data for " + str(len(pairs_ff)) + " pairs")
