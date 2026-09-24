@@ -34,10 +34,6 @@ It is connected into the FAIRMD Lipids repository as a submodule into :file:`./D
    │   │               ├── lipid1-data.json
    │   │               ├── lipid2-data.json
    │   │               └── README.yaml
-   ├── info_files/
-   │   └── some-folder/
-   │       ├── info1.yaml
-   │       └── info2.yaml
    ├── lipid_json_buildH/
    │   ├── ua-dictionary-1.json
    │   └── ua-dictionary-2.json
@@ -214,14 +210,11 @@ TODO: write the block
 
 .. _info_files:
 
-info.yaml
-~~~~~~~~~
-Contains information given by contributor when adding data into the FAIRMD Lipids, i.e.
-all non-recomputable fields of simulation ``README.yaml``. This file is given as an
-input to :ref:`add_simulation_py` to create ``README.yaml`` files:
-:code:`fmdl_add_simulation -f info.yaml`. These files are not required but currently are
-stored historically in ``info_files`` subfolder of
-:py:data:`fairmd.lipids.FMDL_DATA_PATH`.
+Info files
+~~~~~~~~~~
+Info files are used as input when adding simulation data, but they are not stored in
+BilayerData. The information they contain is incorporated into the simulation's
+``README.yaml`` file instead. To create a ``README.yaml`` file from an info file, run
+:code:`fmdl_add_simulation -f info.yaml`.
 
 For more information see :ref:`readmesimu` and :ref:`addSimulation`.
-

@@ -21,7 +21,6 @@ you should make it clear).
 
    ./ ├── Simulations/
       ├── experiments/
-      ├── info_files/
       ├── lipid_json_buildH/
       ├── Ranking/
       └── Molecules/
@@ -74,10 +73,18 @@ add the residue name to ``RESIDUE`` key of each atom in the mapping file. In thi
 give the name of the head group residue in the ``COMPOSITION`` dictionary in
 :ref:`the README.yaml file <readmesimu>`.
 
-The mapping file should contain all the atoms of the molecules and should be named ``mapping-YOURMOL-usecase.yaml``.
-Very often, the usecase is the force field name, however, if the naming convention is the same between
-different force fields, you can use more general naming.
+The mapping file should contain all the atoms of the molecules and should be named
+``mapping-YOURMOL-usecase.yaml``. Very often, the usecase is the force field name, however, if the
+naming convention is the same between different force fields, you can use more general naming.
+
+.. warning::
+
+   Every atom must be uniquely identifiable by its simulation-specific ``ATOMNAME`` and ``RESIDUE``
+   combination. This requirement is especially important for mappings used with lipid force fields
+   that split a molecule into several residues. If a new molecule is added, and it has atoms with
+   identical names, we don't accept this molecule and this simulation into the databank. We require
+   in this case that the names are changed in the topology file, the file is reuploaded, and the
+   system is resubmitted.
 
 Specific cases:
 - TODO: mapping for UA
-
