@@ -563,6 +563,27 @@ def test_duplicate_simulation_names_only_warn(generated_simulation):
     assert "duplicate name" in found[0][1]
 
 
+def test_check_mode_allows_duplicate_simulation_names(generated_simulation, capsys):
+    mod, path, _ = generated_simulation
+    twin = path.parent.parent / "twin" / "README.yaml"
+    twin.parent.mkdir()
+    twin.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+
+    cache = path.parents[5] / "cache"
+    argv = ["autocomplete_expsim_metadata.py", "--check", "--cache", str(cache), str(path), str(twin)]
+    original_argv = sys.argv
+    sys.argv = argv
+    try:
+        with pytest.raises(SystemExit) as excinfo:
+            mod.main()
+    finally:
+        sys.argv = original_argv
+
+    assert excinfo.value.code == 0
+    captured = capsys.readouterr()
+    assert "WARNING: duplicate name" in captured.out
+
+
 def test_simulation_deposition_is_not_cited_as_a_publication(generated_simulation):
     """The deposition is this record, so it belongs in isPartOf, not in citation."""
     _, _, readme = generated_simulation
