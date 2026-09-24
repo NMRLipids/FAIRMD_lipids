@@ -125,10 +125,11 @@ def main():
         duplicates = duplicate_names(paths)
         for _, message in duplicates:
             print(message)
+        clashes = [message for level, message in duplicates if level == "ERROR"]
         print(f"\n{len(paths) - len(failed)} of {len(paths)} records valid"
               + (f", {len(failed)} failing" if failed else "")
               + (f", {len(duplicates)} duplicated names" if duplicates else ""))
-        sys.exit(1 if failed or duplicates else 0)
+        sys.exit(1 if failed or clashes else 0)
 
     names = molecule_names(root)
     changed = sum(process(p, spdx, names, cache_dir, args.dry_run) for p in paths)

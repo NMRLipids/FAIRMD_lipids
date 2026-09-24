@@ -165,15 +165,14 @@ def surname(name):
 def source_tag(block, readme, path, kind):
     """The trailing bracket that keeps two similar records apart.
 
-    Simulations use their databank ``ID``, which BilayerData's own ``CheckIDs.sh``
-    keeps unique. Experiments have no such field, so they use the first author and
-    year -- which distinguishes the systems that two different groups measured
-    independently -- falling back to the record's own directory when there is no
-    publication to name.
+    Simulations carry none: their databank ``ID`` is assigned only after merge,
+    and the website's JSON-LD identifies each one by its page rather than by its
+    name. Experiments use the first author and year -- which distinguishes the
+    systems that two different groups measured independently -- falling back to
+    the record's own directory when there is no publication to name.
     """
     if kind == "simulations":
-        identifier = readme.get("ID")
-        return f"NMRlipids simulation {identifier}" if identifier is not None else None
+        return None
 
     creators = block.get("creator") or []
     family = surname(creators[0].get("name")) if creators else None
@@ -265,9 +264,7 @@ def simulation_description(readme, dois, names):
     if readme.get("NUMBER_OF_ATOMS"):
         method += f" ({readme['NUMBER_OF_ATOMS']} atoms)"
 
-    identifier = readme.get("ID")
-    origin = ("Part of the NMRlipids Databank" if identifier is None
-              else f"Deposited as NMRlipids Databank simulation {identifier}")
+    origin = "Part of the NMRlipids Databank"
     if dois.cited:
         origin += f" and available from https://doi.org/{dois.cited}"
     return _sentences(system, method, origin)

@@ -106,10 +106,13 @@ def check(path, spdx, strict=False):
 def duplicate_names(paths):
     """Records sharing a ``name``. Returns ``(level, message)`` pairs.
 
-    Titles are composed rather than fetched precisely so that no two records
-    share one, and a catalogue listing them is unusable if two do. Only a run
-    over the whole databank can prove that, so this is worth pointing at
-    everything rather than at a pull request's changed files.
+    An experiment's title ends in its source tag precisely so that no two
+    experiments share one, so a clash there is an ERROR. A simulation's title
+    carries no tag -- its databank ``ID`` is assigned only after merge -- and
+    similar simulations can share one; the website's JSON-LD identifies them by
+    their page, so a clash there is only a WARNING. Only a run over the whole
+    databank can find either, so this is worth pointing at everything rather
+    than at a pull request's changed files.
     """
     claimed = {}
     for path in paths:
@@ -126,6 +129,8 @@ def duplicate_names(paths):
     for name, holders in sorted(claimed.items()):
         if len(holders) > 1:
             listed = ", ".join(str(p) for p in holders)
-            found.append(("ERROR", f"ERROR: duplicate name {name!r} in {len(holders)} "
-                                   f"records: {listed}"))
+            simulations = all(record_kind(p) == "simulations" for p in holders)
+            level = "WARNING" if simulations else "ERROR"
+            found.append((level, f"{level}: duplicate name {name!r} in {len(holders)} "
+                                 f"records: {listed}"))
     return found

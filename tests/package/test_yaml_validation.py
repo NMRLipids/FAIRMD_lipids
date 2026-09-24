@@ -274,17 +274,17 @@ def only_error(errors):
 
 
 bioschema = {
-    # As the generator writes it: composed from the entry's own fields and tagged
-    # with the databank ID, never the deposition title.
+    # As the generator writes it: composed from the entry's own fields, never the
+    # deposition title.
     "name": (
         "Molecular dynamics trajectory of a POPC bilayer at 313 K "
-        "(CHARMM36, GROMACS 5.0.4, 200 ns) [NMRlipids simulation 566]"
+        "(CHARMM36, GROMACS 5.0.4, 200 ns)"
     ),
     "alternateName": "200POPC_9000SOL_313K",
     "description": (
         "Molecular dynamics trajectory of a lipid bilayer of 200 POPC at 313 K. "
         "Simulated with CHARMM36 in GROMACS 5.0.4 for 200 ns (40000 atoms). "
-        "Deposited as NMRlipids Databank simulation 566 and available from "
+        "Part of the NMRlipids Databank and available from "
         "https://doi.org/10.5281/zenodo.4040423."
     ),
     "sameAs": "https://doi.org/10.5281/zenodo.4040423",

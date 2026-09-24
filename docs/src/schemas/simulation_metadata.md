@@ -250,17 +250,19 @@ non-string.
 temperature, force field, engine, trajectory length — and never taken from the deposition
 record. A Zenodo title names the deposition, which up to 27 entries share, so it does not tell
 them apart; the free-text `SYSTEM` is kept as `alternateName`, and the deposition title as
-`isPartOf.name`. Every composed title ends in the databank `ID` in brackets, which is unique.
+`isPartOf.name`. The name describes the system; it is not an identifier, and similar
+simulations can share one. The databank `ID` is assigned only after merge, and the website's
+JSON-LD identifies each simulation by its databank page.
 
 ```yaml
 bioschema_properties:
   name: Molecular dynamics trajectory of a POPC bilayer at 313 K (CHARMM36, GROMACS 5.0.4,
-    200 ns) [NMRlipids simulation 566]
+    200 ns)
   alternateName: 200POPC_9000SOL_313K
   description: Molecular dynamics trajectory of a lipid bilayer of 200 POPC
     (1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine) at 313 K. Simulated with CHARMM36 in
-    GROMACS 5.0.4 for 200 ns (40000 atoms). Deposited as NMRlipids Databank simulation 566 and
-    available from https://doi.org/10.5281/zenodo.4040423.
+    GROMACS 5.0.4 for 200 ns (40000 atoms). Part of the NMRlipids Databank and available from
+    https://doi.org/10.5281/zenodo.4040423.
   sameAs: https://doi.org/10.5281/zenodo.4040423
   datePublished: '2020-09-21'
   license:

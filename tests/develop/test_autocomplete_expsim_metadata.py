@@ -539,7 +539,8 @@ def test_generated_simulation_block_is_populated(generated_simulation):
     """A file that validates but carries nothing would pass the test above."""
     _, _, readme = generated_simulation
     block = readme["bioschema_properties"]
-    assert block["name"].endswith("[NMRlipids simulation 566]")
+    assert block["name"].startswith("Molecular dynamics trajectory of a DMPC bilayer")
+    assert "NMRlipids simulation" not in block["name"]
     assert DEPOSITION_TITLE not in block["name"]
     assert block["alternateName"] == "128DMPC_5000SOL_303K"
     assert block["sameAs"] == f"https://doi.org/{SIMULATION_DOI}"
@@ -547,6 +548,19 @@ def test_generated_simulation_block_is_populated(generated_simulation):
     assert block["isPartOf"]["identifier"] == SIMULATION_DOI
     # The deposition title names the parent, not this record.
     assert block["isPartOf"]["name"] == DEPOSITION_TITLE
+
+
+def test_duplicate_simulation_names_only_warn(generated_simulation):
+    """Similar simulations may share a name; their ID only exists after merge."""
+    mod, path, _ = generated_simulation
+    twin = path.parent.parent / "twin" / "README.yaml"
+    twin.parent.mkdir()
+    twin.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+
+    found = mod.duplicate_names([path, twin])
+    assert len(found) == 1
+    assert found[0][0] == "WARNING"
+    assert "duplicate name" in found[0][1]
 
 
 def test_simulation_deposition_is_not_cited_as_a_publication(generated_simulation):
@@ -638,11 +652,18 @@ def test_documented_example_validates(page, schema_file):
     assert not errors, f"{page}: {[f'{list(e.absolute_path)}: {e.message}' for e in errors]}"
 
 
-@pytest.mark.parametrize("page", ["experiment_metadata.md", "simulation_metadata.md"])
-def test_documented_example_shows_a_composed_name(page):
+@pytest.mark.parametrize(
+    ("page", "ending"),
+    [
+        # Experiments end in their source tag, simulations in their method detail.
+        ("experiment_metadata.md", "]"),
+        ("simulation_metadata.md", ")"),
+    ],
+)
+def test_documented_example_shows_a_composed_name(page, ending):
     """The examples must not go back to showing a fetched registry title."""
     block = documented_block(page)
-    assert block["name"].rstrip().endswith("]"), block["name"]
+    assert block["name"].rstrip().endswith(ending), block["name"]
     # The composed description ends by naming where the record came from.
     assert block["description"].rstrip().endswith("."), block["description"]
 
