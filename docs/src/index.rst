@@ -123,6 +123,12 @@ More detailed instructions are coming soon.
    dbstructure
    dbcontribute
 
+.. toctree::
+   :maxdepth: 3
+   :caption: Curation
+
+   curation/curatingSimulation
+
 Indices and tables
 ==================
 
