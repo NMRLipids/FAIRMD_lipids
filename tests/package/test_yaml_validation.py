@@ -276,10 +276,7 @@ def only_error(errors):
 bioschema = {
     # As the generator writes it: composed from the entry's own fields, never the
     # deposition title.
-    "name": (
-        "Molecular dynamics trajectory of a POPC bilayer at 313 K "
-        "(CHARMM36, GROMACS 5.0.4, 200 ns)"
-    ),
+    "name": ("Molecular dynamics trajectory of a POPC bilayer at 313 K (CHARMM36, GROMACS 5.0.4, 200 ns)"),
     "alternateName": "200POPC_9000SOL_313K",
     "description": (
         "Molecular dynamics trajectory of a lipid bilayer of 200 POPC at 313 K. "
