@@ -13,7 +13,7 @@ The script adds a simulation into the Databank based on ``info.yaml`` file.
 -n, --no-cache         Always redownload repository files
 -w WORK_DIR, --work-dir=WORK_DIR  Set custom temporary working directory
                                   [not set = read from YAML]
---dru-run              Download only 50MB of big files. Very usefull when
+--dry-run              Download only 50MB of big files. Very usefull when
                        user is testing the addition.
 --non-interactive      Answer N to all interactive questions. Exit if meet
                        any uncertainty

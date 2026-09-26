@@ -3,8 +3,8 @@ Simulation Curation
 
 Curation follows the workflow below. The first step is to determine whether the submission is
 automated or manual: an automated pull request (PR) initially contains only ``info.yaml``, its name
-starts with _"Upload Portal:"_ while a manual submission already contains the complete record,
-including ``README.yaml`` metadata and computed properties (apl, eqtimes, OP, etc).
+starts with "Upload Portal:" while a manual submission already contains the complete record,
+including :ref:`README.yaml metadata <readmesimu>` and computed properties (apl, eqtimes, OP, etc).
 
 .. graphviz::
 
@@ -55,10 +55,11 @@ Automated submissions
 
 An automated submission starts when the PR contains only ``info.yaml``. The initial validation runs
 with a 50 MB restriction, so it checks the metadata and processing setup without processing the full
-trajectory. Typical problems include an incorrect mapping file, missing molecules in the composition, or
-wrong residue names. The curator should fix these problems or ask the contributor to do so. If a
-problem cannot be fixed in the repository, the PR should be rejected and the contributor should
-correct the deposition before submitting again.
+trajectory (``--dry-run`` option in :ref:`add_simulation_py`). Typical problems include an incorrect
+:ref:`mapping file <molecule_names>`, missing molecules in the composition, or wrong residue names.
+The curator should fix these problems or ask the contributor to do so. If a problem cannot be fixed
+in the repository, the PR should be rejected and the contributor should correct the deposition
+before submitting again.
 
 After validation, the curator manually approves the full processing GitHub deployment that will run
 on the dedicated runner. Once approved, the PR indicates that it is being deployed. Processing
@@ -77,9 +78,9 @@ should accept these suggestions unless they contain obvious errors.
 
 After all checks pass, merge the PR with a temporary ID (``< 0``). The post-merge ``UpdateID``
 workflow assigns the next available unique ID, while ``GlobalAnalysis`` searches for
-simulation--experiment matches, adds relationships, and calculates simulation quality where
-applicable. These workflows do not require manual execution, but their results should be
-sanity-checked occasionally.
+simulation--experiment matches (see :ref:`match_experiments_py`), adds relationships, and calculates
+simulation quality (see :ref:`quality_evaluation_py`) where applicable. These workflows do not require manual execution, but their
+results should be sanity-checked occasionally.
 
 Manual submissions
 ------------------
