@@ -9,11 +9,11 @@ on:
 jobs:
   tests-package:
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    name: unit+integration tests / ${{ matrix.os }} / Python ${{ matrix.python-version }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15, windows-2025]
+        os: [ubuntu-24.04, macos-15]
         python-version: ["3.10", "3.13"]
     permissions:
       contents: write
@@ -32,13 +32,29 @@ jobs:
       if: runner.os == 'macOS'
       run: brew install gromacs
 
-    - name: Install GROMACS (Windows)
-      if: runner.os == 'Windows'
-      shell: bash
-      run: |
-        curl -L https://github.com/gromacs/gromacs/releases/download/v2024.4/GROMACS-2024.4-AMD64.exe -o gromacs-installer.exe
-        ./gromacs-installer.exe /SILENT /NORESTART
-        echo 'C:\Program Files\GROMACS\bin' >> "$GITHUB_PATH"
+    - name: setup Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: ${{ matrix.python-version }}
+        check-latest: true
+
+    - run: python -m pip install tox coverage[toml]
+
+    - name: run package tests
+      run: tox -e tests-package
+
+  tests-unit-windows:
+    runs-on: ${{ matrix.os }}
+    name: unit tests / ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025]
+        python-version: ["3.10", "3.13"]
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
 
     - name: setup Python
       uses: actions/setup-python@v7
@@ -48,13 +64,12 @@ jobs:
 
     - run: python -m pip install tox coverage[toml]
 
-    - name: run Python tests
-      run: |
-        tox -e tests-package
+    - name: run unit tests
+      run: tox -e tests-min
 
   tests-develop:
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    name: develop tests / ${{ matrix.os }} / Python ${{ matrix.python-version }}
     strategy:
       fail-fast: false
       matrix:
