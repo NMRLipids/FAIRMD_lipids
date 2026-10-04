@@ -21,7 +21,7 @@ bond_len_max_sq = bond_len_max**2
 
 class _OrderParameter:
     """
-    Atomic dipole order parameter (OP) class.
+    Atomic dipole with order parameter.
 
     Allows to store and manipulating OP related metadata (definition, name, etc.), OP trajectories,
     and methods to evaluate OPs.
@@ -29,27 +29,22 @@ class _OrderParameter:
 
     def __init__(
         self,
-        resname,
-        atom_name_a,
-        atom_name_b,
-        univ_atom_name_a,
-        univ_atom_name_b,
+        resname: str,
+        atom_name_a: str,
+        atom_name_b: str,
+        univ_atom_name_a: str,
+        univ_atom_name_b: str,
         *args,
-    ):
+    ) -> None:
         """Initialize the OrderParameter object.
 
         It doesn't matter which atom (A or B) comes first for the OP calculation.
 
         :param resname: Name of the residue the atoms are in.
-        :type resname: str
         :param atom_name_a: Name of the first atom in the topology.
-        :type atom_name_a: str
         :param atom_name_b: Name of the second atom in the topology.
-        :type atom_name_b: str
         :param univ_atom_name_a: Generic/mapping name for atom A.
-        :type univ_atom_name_a: str
         :param univ_atom_name_b: Generic/mapping name for atom B.
-        :type univ_atom_name_b: str
         :param args: Optional positional arguments. If provided, should be a pair of (avg, std).
         :type args: tuple
         :raises RuntimeError: If any of the provided names are empty strings.
@@ -95,11 +90,10 @@ class _OrderParameter:
         self.atomgroup = None  # A single AtomGroup containing all atoms for this OP.
 
     @property
-    def get_avg_std_stem_OP(self):  # noqa: N802 (API compliance)
+    def get_avg_std_stem_OP(self) -> tuple[float, float, float]:  # noqa: N802 (API compliance)
         """Provides average, stddev, and standard error of the mean of OPs.
 
         :return: A tuple containing (average, stddev, stem).
-        :rtype: tuple[float, float, float]
         """
         std = np.std(self.traj)
         n = len(self.traj)
