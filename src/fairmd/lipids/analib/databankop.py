@@ -92,21 +92,19 @@ class _OrderParameter:
 
 def _read_trajs_calc_OPs(  # noqa: N802
     op_obj_list: list[_OrderParameter],
-    top: str,
-    traj: str,
+    universe: mda.Universe,
 ) -> None:
-    """Create an MDAnalysis Universe, reads trajectories, and calculates Order Parameters ("S").
+    """Read a Universe trajectory and calculate Order Parameters ("S").
 
     This function calculates the order parameters for each definition in ``op_obj_list``.
     This version is optimized for single-core performance using vectorized calculations.
     The results are stored in-place in the ``traj`` attribute of the objects in ``op_obj_list``.
 
     :param op_obj_list: A list of _OrderParameter objects to be processed.
-    :param top: Path to the topology file (e.g., .gro, .tpr).
-    :param traj: A path to trajectory file (e.g., .xtc).
+    :param universe: MDAnalysis Universe containing topology and trajectory.
     """
     # --- 1. Setup Universe and Atom Selections ---
-    mol = mda.Universe(top, traj)
+    mol = universe
     improper_ops = []
 
     for i, op in enumerate(op_obj_list):
@@ -272,19 +270,17 @@ def _parse_op_input(mapping_dict: dict, lipid_resname: str) -> list[_OrderParame
 
 def find_OP(  # noqa: N802
     mdict: dict,
-    top_fname: str,
-    traj_fname: str,
+    universe: mda.Universe,
     lipid_name: str,
 ) -> list[_OrderParameter]:
     """Externally used function for computing OP values.
 
     :param mdict: The mapping dictionary.
-    :param top_fname: Filename of the topology file (e.g., .gro, .tpr).
-    :param traj_fname: Filename(s) of the trajectory file(s).
+    :param universe: MDAnalysis Universe containing topology and trajectory.
     :param lipid_name: The residue name of the lipid.
 
     :return: A list of _OrderParameter instances with calculated data.
     """
     op_pairs = _parse_op_input(mdict, lipid_name)
-    _read_trajs_calc_OPs(op_pairs, top_fname, traj_fname)
+    _read_trajs_calc_OPs(op_pairs, universe)
     return op_pairs

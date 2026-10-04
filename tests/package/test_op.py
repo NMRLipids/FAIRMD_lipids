@@ -12,9 +12,11 @@ NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
 """
 
 import copy
+import logging
 import os
 import sys
 import warnings
+import MDAnalysis as mda
 import numpy as np
 import pytest
 import pytest_check as check
@@ -104,3 +106,57 @@ class TestBuildNiceOPdict:
         check.is_true(c_order == sorted(c_order), "sn-1 C ordering is not sorted")
         h_order = [int(x["H"]) for x in rdict["sn-1"]]
         check.is_true(h_order[:6] == [1, 2, 1, 2, 1, 2], "sn-1 H ordering is not sorted")
+
+
+def test_find_op_rotating_ethylene(rotating_ethylene) -> None:
+    """Calculate C-H OPs for ethylene rotating in the YZ plane."""
+    from fairmd.lipids.analib.databankop import find_OP
+
+    mapping, universe = rotating_ethylene
+    result = find_OP(mapping, universe, "ETH")
+    check.equal(len(result), 4)
+    check.is_true(all(np.isfinite(op.avg_std_stem[0]) for op in result))
+    check.is_true(all(np.isfinite(op.avg_std_stem[1]) for op in result))
+    check.is_true(all(np.isfinite(op.avg_std_stem[2]) for op in result))
+    check.almost_equal(result[0].avg_std_stem[0], 0.53535093, rel=1e-4)
+    check.almost_equal(result[1].avg_std_stem[0], 0.65017423, rel=1e-4)
+    logger = logging.getLogger(__name__)
+    logger.debug("C-H OPs for ethylene rotating in the YZ plane:")
+    logger.debug("".join(f"\n{op.name}: {op.avg_std_stem[0]:.8f}" for op in result))
+
+@pytest.fixture
+def rotating_ethylene() -> tuple[dict, mda.Universe]:
+    """Create a mock Universe of ethylene rotating in the YZ plane. Returns mapping + Universe"""
+    ethylene = {
+        "C1": (-0.67, 0.0),
+        "H1": (-1.23, 0.92),
+        "H2": (-1.23, -0.92),
+        "C2": (0.67, 0.0),
+        "H3": (1.23, 0.92),
+        "H4": (1.23, -0.92),
+    }
+    mapping = {
+        "M_C1_M": {"ATOMNAME": "C1"},
+        "M_C1H1_M": {"ATOMNAME": "H1"},
+        "M_C1H2_M": {"ATOMNAME": "H2"},
+        "M_C2_M": {"ATOMNAME": "C2"},
+        "M_C2H1_M": {"ATOMNAME": "H3"},
+        "M_C2H2_M": {"ATOMNAME": "H4"},
+    }
+    names = list(ethylene)
+    universe = mda.Universe.empty(
+        len(names), n_residues=1, atom_resindex=np.zeros(len(names), dtype=int),
+        trajectory=True,
+    )
+    universe.add_TopologyAttr("name", names)
+    universe.add_TopologyAttr("resname", ["ETH"])
+    universe.add_TopologyAttr("resid", [1])
+    angles = np.deg2rad(0.05 * np.arange(100))
+    positions = np.zeros((100, len(names), 3), dtype=np.float32)
+    for frame, angle in enumerate(angles):
+        rotation = np.array([[np.cos(angle), -np.sin(angle)],
+                             [np.sin(angle), np.cos(angle)]])
+        positions[frame, :, 1:3] = np.array([rotation @ ethylene[name] for name in names])
+    universe.load_new(positions, order="fac")
+    return mapping,universe
+

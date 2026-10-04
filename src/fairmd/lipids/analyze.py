@@ -17,6 +17,7 @@ import sys
 from logging import Logger
 
 import buildh
+import MDAnalysis as mda
 import numpy as np
 from maicos.core.base import AnalysisCollection
 
@@ -319,7 +320,8 @@ def computeOP(  # noqa: N802 (API)
                     check=True,
                 )
             except subprocess.CalledProcessError as e:
-                raise RuntimeError("trjconv exited with error (see above)") from e
+                msg = "trjconv exited with error (see above)"
+                raise RuntimeError(msg) from e
 
             for key in system["UNITEDATOM_DICT"]:
                 # construct order parameter definition file for CH bonds from
@@ -476,8 +478,7 @@ def computeOP(  # noqa: N802 (API)
                         try:
                             op_obj = find_OP(
                                 system.content[key].mapping_dict,
-                                uc.paths["top"],
-                                xtcwhole,
+                                mda.Universe(uc.paths["top"], xtcwhole),
                                 resname,
                             )
                         except Exception as e:
@@ -487,16 +488,14 @@ def computeOP(  # noqa: N802 (API)
                             )
                             op_obj = find_OP(
                                 system.content[key].mapping_dict,
-                                gro,
-                                xtcwhole,
+                                mda.Universe(gro, xtcwhole),
                                 resname,
                             )
 
                     if "openMM" in software or "NAMD" in software:
                         op_obj = find_OP(
                             system.content[key].mapping_dict,
-                            uc.paths["top"],
-                            uc.paths["traj"],
+                            uc.build_universe(),
                             resname,
                         )
 
