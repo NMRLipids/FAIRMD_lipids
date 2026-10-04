@@ -11,11 +11,7 @@ NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
       breaks the substitution of global path folders
 """
 
-import copy
 import logging
-import os
-import sys
-import warnings
 import MDAnalysis as mda
 import numpy as np
 import pytest
@@ -124,6 +120,7 @@ def test_find_op_rotating_ethylene(rotating_ethylene) -> None:
     logger.debug("C-H OPs for ethylene rotating in the YZ plane:")
     logger.debug("".join(f"\n{op.name}: {op.avg_std_stem[0]:.8f}" for op in result))
 
+
 @pytest.fixture
 def rotating_ethylene() -> tuple[dict, mda.Universe]:
     """Create a mock Universe of ethylene rotating in the YZ plane. Returns mapping + Universe"""
@@ -145,7 +142,9 @@ def rotating_ethylene() -> tuple[dict, mda.Universe]:
     }
     names = list(ethylene)
     universe = mda.Universe.empty(
-        len(names), n_residues=1, atom_resindex=np.zeros(len(names), dtype=int),
+        len(names),
+        n_residues=1,
+        atom_resindex=np.zeros(len(names), dtype=int),
         trajectory=True,
     )
     universe.add_TopologyAttr("name", names)
@@ -154,9 +153,7 @@ def rotating_ethylene() -> tuple[dict, mda.Universe]:
     angles = np.deg2rad(0.05 * np.arange(100))
     positions = np.zeros((100, len(names), 3), dtype=np.float32)
     for frame, angle in enumerate(angles):
-        rotation = np.array([[np.cos(angle), -np.sin(angle)],
-                             [np.sin(angle), np.cos(angle)]])
+        rotation = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
         positions[frame, :, 1:3] = np.array([rotation @ ethylene[name] for name in names])
     universe.load_new(positions, order="fac")
-    return mapping,universe
-
+    return mapping, universe
