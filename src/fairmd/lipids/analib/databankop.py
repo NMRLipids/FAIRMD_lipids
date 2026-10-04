@@ -1,6 +1,5 @@
 """
-Module for calculation of order parameters of lipid bilayers
-from a MD trajectory
+Module for calculation of order parameters of lipid bilayers from a MD trajectory
 
 **Authors:**
 - Made by Joe,  Last edit 2017/02/02
@@ -22,8 +21,10 @@ bond_len_max_sq = bond_len_max**2
 
 class _OrderParameter:
     """
-    Class for storing and manipulating order parameter (OP) related metadata
-    (definition, name, etc.), OP trajectories, and methods to evaluate OPs.
+    Atomic dipole order parameter (OP) class.
+
+    Allows to store and manipulating OP related metadata (definition, name, etc.), OP trajectories,
+    and methods to evaluate OPs.
     """
 
     def __init__(
@@ -35,7 +36,7 @@ class _OrderParameter:
         univ_atom_name_b,
         *args,
     ):
-        """Initializes the OrderParameter object.
+        """Initialize the OrderParameter object.
 
         It doesn't matter which atom (A or B) comes first for the OP calculation.
 
@@ -63,10 +64,11 @@ class _OrderParameter:
         for field_name, field_value in self.__dict__.items():
             if isinstance(field_value, str):
                 if not field_value.strip():
-                    raise RuntimeError(
+                    msg = (
                         f"Provided name for field '{field_name}' is empty! "
-                        "Cannot use empty names for atoms and OP definitions.",
+                        "Cannot use empty names for atoms and OP definitions."
                     )
+                    raise RuntimeError(msg)
             else:
                 warnings.warn(
                     f"Provided value for '{field_name}' is not a string: {field_value}. "
@@ -105,23 +107,20 @@ class _OrderParameter:
         return np.mean(self.traj), std, stem
 
 
-def _read_trajs_calc_OPs(
+def _read_trajs_calc_OPs(  # noqa: N802
     op_obj_list: list[_OrderParameter],
     top: str,
     trajs: list[str],
-):
-    """Creates an MDAnalysis Universe, reads trajectories, and calculates Order Parameters ("S").
+) -> None:
+    """Create an MDAnalysis Universe, reads trajectories, and calculates Order Parameters ("S").
 
     This function calculates the order parameters for each definition in ``op_obj_list``.
     This version is optimized for single-core performance using vectorized calculations.
     The results are stored in-place in the ``traj`` attribute of the objects in ``op_obj_list``.
 
     :param op_obj_list: A list of _OrderParameter objects to be processed.
-    :type op_obj_list: list[_OrderParameter]
     :param top: Path to the topology file (e.g., .gro, .tpr).
-    :type top: str
     :param trajs: A list of paths to trajectory files (e.g., .xtc).
-    :type trajs: list[str]
     """
     # --- 1. Setup Universe and Atom Selections ---
     mol = mda.Universe(top, trajs)
@@ -143,7 +142,7 @@ def _read_trajs_calc_OPs(
         # Validate that each residue selection contains exactly two atoms
         valid_selection = []
         for res in selection_by_residue:
-            if res.n_atoms != 2:
+            if res.n_atoms != 2:  # noqa: PLR2004
                 warnings.warn(
                     f"Selection 'name {op.aname_a} {op.aname_b}' in residue "
                     f"{res.resids[0]} contains {res.n_atoms} atoms, but should be 2. "
@@ -189,7 +188,7 @@ def _read_trajs_calc_OPs(
                 continue
 
             # Get all atom positions for this OP in one go
-            # Shape: (n_residues * 2, 3)
+            # Shape is n_residues*2 x 3
             positions = op.atomgroup.positions
 
             # Reshape to easily access atom pairs
@@ -235,15 +234,12 @@ def _read_trajs_calc_OPs(
         op.traj = op.traj.tolist()
 
 
-def _parse_op_input(mapping_dict: dict, lipid_resname: str):
-    """Parses a mapping dictionary to form a list of C-H pairs for OP calculation.
+def _parse_op_input(mapping_dict: dict, lipid_resname: str) -> list[_OrderParameter]:
+    """Parse a mapping dictionary to form a list of C-H pairs for OP calculation.
 
     :param mapping_dict: The mapping dictionary.
-    :type mapping_dict: dict
     :param lipid_resname: The default lipid residue name.
-    :type lipid_resname: str
     :return: A list of _OrderParameter instances.
-    :rtype: list[_OrderParameter]
     """
     opvals = []
     atom_c = []
@@ -286,12 +282,12 @@ def _parse_op_input(mapping_dict: dict, lipid_resname: str):
     return opvals
 
 
-def find_OP(
+def find_OP(  # noqa: N802
     mdict: dict,
     top_fname: str,
     traj_fname: str,
     lipid_name: str,
-):
+) -> list[_OrderParameter]:
     """Externally used function for computing OP values.
 
     :param mdict: The mapping dictionary.

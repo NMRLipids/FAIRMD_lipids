@@ -10,7 +10,8 @@ ignore = ["TD", "FIX002",
           "PTH",                # until we migrate to Pathlib
           "T201", "G004", # logging currently ignored
           "S603", "S607", # subprocess security issues
-          "CPY001" # we don't enforce copyright headers
+          "CPY001", # we don't enforce copyright headers
+          "N813" # MDAnalysis should be imported as mda, its OK
          ]
 [lint.pydocstyle]
 convention = "pep257"
