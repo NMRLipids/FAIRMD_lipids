@@ -83,7 +83,6 @@ class _OrderParameter:
         self._avg = np.mean(self.traj)
         self._stem = self._std / np.sqrt(n - 1) if n > 1 else 0
 
-
     @property
     def avg_std_stem(self) -> tuple[float, float, float]:
         """Average, stddev, and standard error of the mean of OPs."""
