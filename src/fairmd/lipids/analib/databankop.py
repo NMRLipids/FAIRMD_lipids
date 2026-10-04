@@ -34,7 +34,6 @@ class _OrderParameter:
         atom_name_b: str,
         univ_atom_name_a: str,
         univ_atom_name_b: str,
-        *args,
     ) -> None:
         """Initialize the OrderParameter object.
 
@@ -45,8 +44,6 @@ class _OrderParameter:
         :param atom_name_b: Name of the second atom in the topology.
         :param univ_atom_name_a: Generic/mapping name for atom A.
         :param univ_atom_name_b: Generic/mapping name for atom B.
-        :param args: Optional positional arguments. If provided, should be a pair of (avg, std).
-        :type args: tuple
         :raises RuntimeError: If any of the provided names are empty strings.
         """
         self.resname = resname
@@ -65,40 +62,32 @@ class _OrderParameter:
                     )
                     raise RuntimeError(msg)
             else:
-                warnings.warn(
-                    f"Provided value for '{field_name}' is not a string: {field_value}. "
-                    "Unexpected behaviour might occur.",
-                    stacklevel=2,
-                )
+                msg = f"Provided value for '{field_name}' is not a string: {field_value}. "
+                raise TypeError(msg)
 
-        if len(args) == 0:
-            self.avg = None
-            self.std = None
-            self.stem = None
-        elif len(args) == 2:
-            self.avg = args[0]
-            self.std = args[1]
-            self.stem = None
-        else:
-            warnings.warn(
-                f"Number of optional positional arguments is {len(args)}, not 0 or 2. Args: {args}\nWrong file format?",
-                stacklevel=2,
-            )
+        self._avg = None
+        self._std = None
+        self._stem = None
 
         self.traj = []  # For storing final OP results.
         self.selection = []  # List of AtomGroups, one for each residue.
         self.atomgroup = None  # A single AtomGroup containing all atoms for this OP.
 
-    @property
-    def get_avg_std_stem_OP(self) -> tuple[float, float, float]:  # noqa: N802 (API compliance)
-        """Provides average, stddev, and standard error of the mean of OPs.
-
-        :return: A tuple containing (average, stddev, stem).
-        """
-        std = np.std(self.traj)
+    def finalize(self) -> None:
+        """Finalize the OP object by calculating average, stddev, and stem."""
         n = len(self.traj)
-        stem = std / np.sqrt(n - 1) if n > 1 else 0
-        return np.mean(self.traj), std, stem
+        if n == 0:
+            msg = f"No trajectory data available for OP '{self.name}'. Cannot finalize."
+            raise RuntimeError(msg)
+        self._std = np.std(self.traj)
+        self._avg = np.mean(self.traj)
+        self._stem = self._std / np.sqrt(n - 1) if n > 1 else 0
+
+
+    @property
+    def avg_std_stem(self) -> tuple[float, float, float]:
+        """Average, stddev, and standard error of the mean of OPs."""
+        return self._avg, self._std, self._stem
 
 
 def _read_trajs_calc_OPs(  # noqa: N802
@@ -199,17 +188,20 @@ def _read_trajs_calc_OPs(  # noqa: N802
             # and warnings for atoms that are too far apart (e.g., due to PBC issues).
             valid_mask = d2 <= bond_len_max_sq
 
-            # Initialize cos2 array. We only compute for valid pairs.
+            # Initialize cos2 array. Invalid long bonds remain zero and are
+            # excluded by the existing valid-mask policy.
             cos2 = np.zeros_like(d2)
 
             # Safely calculate cosine-squared of the angle with the z-axis
             # for all valid vectors simultaneously.
-            # np.divide handles potential division by zero if d2 is 0.
+            # Zero-length pairs are represented as NaN: their direction is
+            # undefined and must not silently contribute to the result.
             d2_valid = d2[valid_mask]
             vec_valid = vec[valid_mask]
             cos2[valid_mask] = np.divide(
                 vec_valid[:, 2] ** 2,
                 d2_valid,
+                out=np.full_like(d2_valid, np.nan),
                 where=d2_valid != 0,
             )
 
@@ -217,7 +209,8 @@ def _read_trajs_calc_OPs(  # noqa: N802
             op_values = 0.5 * (3.0 * cos2 - 1.0)
 
             # Add the results for the current frame to the running sum.
-            # We only add the valid ones, others remain 0 for this frame.
+            # Invalid long bonds remain 0; undefined zero-length pairs make
+            # the accumulated result NaN, exposing the bad input.
             op.traj += op_values
 
     # Average the accumulated sums over all frames
@@ -226,6 +219,7 @@ def _read_trajs_calc_OPs(  # noqa: N802
             op.traj /= n_frames
         # Convert back to a list to maintain original API behavior
         op.traj = op.traj.tolist()
+        op.finalize()
 
 
 def _parse_op_input(mapping_dict: dict, lipid_resname: str) -> list[_OrderParameter]:

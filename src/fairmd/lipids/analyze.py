@@ -506,11 +506,11 @@ def computeOP(  # noqa: N802 (API)
                         outfile.write("Atom     Average OP     OP stem\n")
 
                         for _i, op in enumerate(op_obj):
-                            (op.avg, op.std, op.stem) = op.get_avg_std_stem_OP
-                            outfile.write(f"{op.name} {op.avg!s} {op.stem!s}\n")
+                            _avg, _, _stem = op.avg_std_stem
+                            outfile.write(f"{op.name} {_avg!s} {_stem!s}\n")
 
                             data[str(op.name)] = []
-                            data[str(op.name)].append(op.get_avg_std_stem_OP)
+                            data[str(op.name)].append(op.avg_std_stem)
 
                     with open(outfilename2, "w") as f:
                         json.dump(data, f, cls=CompactJSONEncoder)
