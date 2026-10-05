@@ -26,8 +26,8 @@ permissions:
 jobs:
   tests:
     if: github.repository == 'NMRLipids/FAIRMD_lipids' 
-    runs-on: ubuntu-24.04
-    name: ubuntu-24.04 / Python 3.13
+    runs-on: ubuntu-26.04
+    name: ubuntu-26.04 / Python 3.13
     steps:
     - uses: actions/checkout@v7
       with:

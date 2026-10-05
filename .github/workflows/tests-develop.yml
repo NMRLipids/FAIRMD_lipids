@@ -33,7 +33,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             python-version: "3.13"
     steps:
     - uses: actions/checkout@v7

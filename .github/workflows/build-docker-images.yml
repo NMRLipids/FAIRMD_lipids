@@ -7,7 +7,7 @@ on:
 
 jobs:
   build_gromacs_and_core:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     if: github.repository == 'NMRLipids/FAIRMD_lipids'
     steps:
       - name: Log in to Docker Hub

@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15]
+        os: [ubuntu-26.04, macos-26]
         python-version: ["3.10", "3.13"]
     permissions:
       contents: write
@@ -73,7 +73,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-26.04]
         python-version: ["3.10", "3.13"]
     steps:
     - uses: actions/checkout@v7
