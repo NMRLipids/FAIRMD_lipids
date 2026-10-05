@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-26.04, macos-26]
+        os: [ubuntu-24.04, macos-26] # GROMACS has an issue with Ubuntu 26.04, so we wait for now
         python-version: ["3.10", "3.13"]
     permissions:
       contents: write
