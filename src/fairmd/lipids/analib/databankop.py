@@ -185,9 +185,9 @@ def _read_trajs_calc_OPs(  # noqa: N802
             # and warnings for atoms that are too far apart (e.g., due to PBC issues).
             valid_mask = d2 <= bond_len_max_sq
 
-            # Initialize cos2 array. Invalid long bonds remain zero and are
+            # Initialize cos2 array. Invalid long bonds remain nan and are
             # excluded by the existing valid-mask policy.
-            cos2 = np.zeros_like(d2)
+            cos2 = np.full_like(d2, np.nan, dtype=np.float64)
 
             # Safely calculate cosine-squared of the angle with the z-axis
             # for all valid vectors simultaneously.

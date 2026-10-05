@@ -68,10 +68,11 @@ profiles, together with a nearly complete ``README.yaml``.
 
 The curator then performs scientific sanity checks. In particular, the membrane should not have
 collapsed, the equilibration time should be plausible, and the order parameters and other results
-should not show obvious anomalies. Fixable problems in metadata should be corrected and checked
-again. If a new trajectory upload is required, the current PR should be closed and the contributor
-asked to create a new submission. Unfixable problems should be documented in a PR comment and the PR
-rejected or closed; other contributors may be asked for assistance when appropriate.
+should not show obvious anomalies. NaNs in order parameters is also a very bad indicator. Fixable
+problems in metadata should be corrected and checked again. If a new trajectory upload is required,
+the current PR should be closed and the contributor asked to create a new submission. Unfixable
+problems should be documented in a PR comment and the PR rejected or closed; other contributors may
+be asked for assistance when appropriate.
 
 The metadata bot will suggest corrections and additions, including Bioschema metadata. The curator
 should accept these suggestions unless they contain obvious errors.
