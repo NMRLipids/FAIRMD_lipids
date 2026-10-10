@@ -5,6 +5,7 @@ Helps to build a nicely formatted OP dictionary from raw OP data.
 Fragmentation is handled.
 """
 
+import math
 import re
 
 from natsort import natsorted
@@ -157,7 +158,7 @@ class NamingRegistry:
         cls._register("_all_", _plain_c_renamer)
 
 
-def build_nice_OPdict(src: dict, lipid: Lipid) -> dict:
+def build_nice_OPdict(src: dict, lipid: Lipid) -> dict:  # noqa: N802
     """Build nicely formatted OP dictionary from raw OP data.
 
     Handles fragmentation of lipids.
@@ -167,10 +168,10 @@ def build_nice_OPdict(src: dict, lipid: Lipid) -> dict:
     :return: nicely formatted OP dictionary
     """
 
-    # Helper function to convert NaN to None for better
+    # Helper function to convert NaN/None to None for better
     # JSON compatibility in output
-    def _rnan(x: float) -> float | None:
-        return None if x != x else x
+    def _rnan(x: float | None) -> float | None:
+        return None if x is None or math.isnan(x) else x
 
     def _fragmentize(src: dict, mdict: dict) -> dict:
         r = {}
@@ -193,7 +194,7 @@ def build_nice_OPdict(src: dict, lipid: Lipid) -> dict:
             r[frag_c].sort(key=lambda x: x["C"])
         return r
 
-    nice_OPdict: dict = _fragmentize(src, lipid.mapping_dict)
+    nicedict: dict = _fragmentize(src, lipid.mapping_dict)
     # rename C and H atoms for registry fragments
-    NamingRegistry.apply(nice_OPdict)
-    return nice_OPdict
+    NamingRegistry.apply(nicedict)
+    return nicedict
