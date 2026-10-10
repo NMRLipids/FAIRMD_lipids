@@ -37,7 +37,6 @@ from fairmd.lipids.analib.maicos import (
     DielectricPlanar,
     DiporderPlanar,
     FormFactorPlanar,
-    first_last_carbon,
     is_system_suitable_4_maicos,
     traj_centering_for_maicos_gromacs,
     traj_centering_for_maicos_mda,
@@ -594,7 +593,7 @@ def computeMAICOS(  # noqa: N802 (API)
 
     try:
         eq_time = float(system["TIMELEFTOUT"]) * 1000
-        last_atom, g3_atom = first_last_carbon(system, logger)
+        last_atom, g3_atom = mollib.find_terminal_tail_and_g3_atoms(system, logger)
 
         # Center around one lipid tail CH3 to guarantee all lipids in the same box
         u = uc.build_universe()

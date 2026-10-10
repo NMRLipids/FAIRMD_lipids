@@ -8,13 +8,43 @@ from existing mapping files and element guesser.
 import json
 import os
 import re
+from logging import Logger
 
 import MDAnalysis as mda
 import periodictable
 
 from fairmd.lipids import FMDL_DATA_PATH
 from fairmd.lipids.core import System
-from fairmd.lipids.molecules import Lipid
+from fairmd.lipids.molecules import Lipid, lipids_set
+
+
+def find_terminal_tail_and_g3_atoms(system: System, logger: Logger) -> tuple[str, str]:
+    """Find the last carbon of the sn-1 tail and the glycerol g3 carbon."""
+    g3_atom = ""
+    last_atom = ""
+    for molecule in system["COMPOSITION"]:
+        if molecule in lipids_set:
+            mapping = system.content[molecule].mapping_dict
+
+            for name in ["M_G3_M", "M_G13_M", "M_C32_M"]:
+                atom_name = mapping.get(name, {}).get("ATOMNAME")
+                g3_atom = atom_name if atom_name else g3_atom
+
+            for carbon_index in range(4, 30):
+                if "M_G1C4_M" in mapping:
+                    atom = f"M_G1C{carbon_index}_M"
+                elif "M_N1C4_M" in mapping:
+                    atom = f"M_N1C{carbon_index}_M"
+                elif "M_G11C4_M" in mapping:
+                    atom = f"M_G11C{carbon_index}_M"
+                elif "M_CA4_M" in mapping:
+                    atom = f"M_CA{carbon_index}_M"
+                else:
+                    break
+                atom_name = mapping.get(atom, {}).get("ATOMNAME")
+                last_atom = atom_name if atom_name else last_atom
+    logger.info(f"Found last atom {last_atom} and g3 atom {g3_atom} for system {system['ID']}")
+    return last_atom, g3_atom
 
 
 def uname2element(mapping_name: str) -> str:

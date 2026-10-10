@@ -12,6 +12,7 @@ from contextlib import contextmanager
 import os
 import shutil
 import json
+import logging
 
 import numpy as np
 import numpy.testing as npt
@@ -36,6 +37,59 @@ def test_uname2element():
 
     with pytest.raises(KeyError):
         uname2element("UnknownElement")
+
+
+@pytest.mark.parametrize(
+    ("mappings", "composition", "expected"),
+    [
+        (
+            {"DPPC": {"M_G1C4_M": {"ATOMNAME": "C4"}, "M_G1C5_M": {"ATOMNAME": "C5"}}},
+            ("DPPC",),
+            ("C5", ""),
+        ),
+        (
+            {"DPPC": {"M_G3_M": {"ATOMNAME": "GLY3"}}},
+            ("DPPC",),
+            ("", "GLY3"),
+        ),
+        ({"DPPC": {"M_C1_M": {"ATOMNAME": "C1"}}}, ("DPPC",), ("", "")),
+        (
+            {
+                "OTHER": {"M_G3_M": {"ATOMNAME": "OTHER_G3"}},
+                "DPPC": {
+                    "M_G3_M": {"ATOMNAME": "GLY3"},
+                    "M_G1C4_M": {"ATOMNAME": "C4"},
+                    "M_G1C5_M": {"ATOMNAME": "C5"},
+                },
+            },
+            ("OTHER", "DPPC"),
+            ("C5", "GLY3"),
+        ),
+    ],
+)
+def test_find_terminal_tail_and_g3_atoms(logger, mappings, composition, expected):
+    """Test finding tail and glycerol carbon names for mapping scenarios."""
+    from fairmd.lipids.auxiliary.mollib import find_terminal_tail_and_g3_atoms
+
+    class MockLipid:
+        def __init__(self, mapping_dict):
+            self.mapping_dict = mapping_dict
+
+    class MockSystem(dict):
+        ID = 9999
+
+        @property
+        def content(self):
+            return self["CONTENT"]
+
+    content = {molecule: MockLipid(mapping) for molecule, mapping in mappings.items()}
+    system = MockSystem(
+        ID=9999,
+        COMPOSITION={molecule: {"COUNT": 1} for molecule in composition},
+        CONTENT=content,
+    )
+
+    assert find_terminal_tail_and_g3_atoms(system, logger) == expected
 
 
 @pytest.fixture

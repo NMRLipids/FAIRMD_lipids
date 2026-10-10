@@ -27,7 +27,6 @@ from maicos.lib.weights import density_weights
 from fairmd.lipids import progress
 from fairmd.lipids.auxiliary import CompactJSONEncoder
 from fairmd.lipids.core import System
-from fairmd.lipids.molecules import lipids_set
 
 
 def is_system_suitable_4_maicos(system: System) -> bool:
@@ -58,39 +57,6 @@ def is_system_suitable_4_maicos(system: System) -> bool:
     except (KeyError, TypeError):
         pass
     return True
-
-
-def first_last_carbon(system: System, logger: Logger) -> tuple[str, str]:
-    """Find last carbon of sn-1 tail and g3 carbon."""
-    g3_atom = ""
-    last_atom = ""
-    for molecule in system["COMPOSITION"]:
-        if molecule in lipids_set:
-            mapping = system.content[molecule].mapping_dict
-
-            # TODO: rewrite via lipid dictionary!
-            for nm in ["M_G3_M", "M_G13_M", "M_C32_M"]:
-                _ga = mapping.get(nm, {}).get("ATOMNAME")
-                g3_atom = _ga if _ga else g3_atom
-
-            # TODO: rewrite via lipid dictionary
-            for c_idx in range(4, 30):
-                if "M_G1C4_M" in mapping:  # glycerolipids
-                    atom = "M_G1C" + str(c_idx) + "_M"
-                elif "M_N1C4_M" in mapping:  # sphingomyelins
-                    atom = "M_N1C" + str(c_idx) + "_M"
-                elif "M_G11C4_M" in mapping:  # other spec.cases
-                    atom = "M_G11C" + str(c_idx) + "_M"
-                elif "M_CA4_M" in mapping:  # other spec.cases
-                    atom = "M_CA" + str(c_idx) + "_M"
-                else:
-                    # cannot be determined for this particular lipid. Maybe another ..
-                    break
-                _la = mapping.get(atom, {}).get("ATOMNAME")
-                last_atom = _la if _la else last_atom
-    logger.info(f"Found last atom {last_atom} and g3 atom {g3_atom} for system {system['ID']}")
-
-    return (last_atom, g3_atom)
 
 
 def traj_centering_for_maicos_gromacs(

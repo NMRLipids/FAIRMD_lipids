@@ -32,6 +32,33 @@ def test_get_mins_from_ffdata():
     check.almost_equal(p[1], np.pi / 4, abs=1e-3)
 
 
+def test_get_mins_from_ffdata_rejects_data_with_too_few_points():
+    """A Savitzky-Golay quadratic cannot be fitted to the resulting window."""
+    from fairmd.lipids.analib.formfactor import get_mins_from_ffdata
+
+    ffdata = np.array([[0.0, 1.0], [0.1, 0.5], [0.2, 1.0]])
+    with pytest.raises(ValueError, match="Problems running Savitsky-Golay"):
+        get_mins_from_ffdata(ffdata)
+
+
+def test_calc_ff_scaling_distance():
+    """
+    Test when simulation values are twice the experimental values.
+
+    The least-squares scaling coefficient is two and the residual is zero.
+    """
+    from fairmd.lipids.analib.formfactor import calc_ff_scaling_distance
+
+    q = np.linspace(0.1, 0.4, 4)
+    exp = np.column_stack((q, [1.0, 2.0, 3.0, 4.0], [0.5] * 4))
+    sim = np.column_stack((q, [2.0, 4.0, 6.0, 8.0]))
+
+    scaling, chi = calc_ff_scaling_distance(exp, sim)
+
+    check.almost_equal(scaling, 2.0)
+    check.almost_equal(chi, 0.0, abs=1e-12)
+
+
 def test_estimate_error_of_min():
     from fairmd.lipids.analib.formfactor import calc_minpos_with_error, get_mins_from_ffdata
 
