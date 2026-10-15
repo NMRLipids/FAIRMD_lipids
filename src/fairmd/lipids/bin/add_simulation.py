@@ -614,7 +614,7 @@ Returns error codes:
     # dictionary saved in yaml format
     outfile_dict = os.path.join(dir_tmp, "README.yaml")
     with open(outfile_dict, "w") as f:
-        yaml.dump(sim.readme, f, sort_keys=False, allow_unicode=True)
+        yaml.dump(sim.metadata, f, sort_keys=False, allow_unicode=True)
     logger.info(f"Databank README was saved to '{outfile_dict}'")
 
     # Try to create final directory

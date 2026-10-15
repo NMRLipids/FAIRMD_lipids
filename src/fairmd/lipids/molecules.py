@@ -18,6 +18,7 @@ import MDAnalysis as mda
 import yaml
 
 from fairmd.lipids import _HAS_RDKIT, FMDL_MOL_PATH
+from fairmd.lipids.metadata import MetadataProvider
 
 
 class MoleculeError(Exception):
@@ -51,8 +52,9 @@ class MoleculeMappingError(MoleculeError):
         super().__init__(msg, mol=mol)
 
 
-class Molecule(ABC):
+class Molecule(MetadataProvider, ABC):
     """
+
     Abstract base class representing a molecule and its related operations.
 
     This class is designed to provide an interface for interacting with
@@ -61,6 +63,7 @@ class Molecule(ABC):
     specific operations for handling molecule data.
     """
 
+    _metadata_cache: dict[str, dict] = {}
     _molname: str | None = None
 
     @abstractmethod
@@ -184,6 +187,7 @@ class Molecule(ABC):
         :param name: The name of the molecule.
         :type name: str
         """
+        MetadataProvider.__init__(self)
         self.__check_name(name)
         self._molname = name
         self._mapping_fpath = None
@@ -208,19 +212,24 @@ class Molecule(ABC):
             msg = f"Only {pat} symbols are allowed in Molecule name."
             raise MoleculeError(msg)
 
-    @abstractmethod
-    def _populate_meta_data(self) -> None:
-        """
-        Populate metadata for the molecule from its YAML file.
-
-        This method should be implemented in subclasses to load specific
-        metadata related to the molecule.
-        """
+    @classmethod
+    def _read_class_metadata(cls, path: str) -> dict:
+        if path in cls._metadata_cache:
+            return cls._metadata_cache[path]
+        if not os.path.isfile(path):
+            return {}
+        with open(path) as yaml_file:
+            metadata = yaml.safe_load(yaml_file) or {}
+        cls._metadata_cache[path] = metadata
+        return cls._metadata_cache[path]
 
     @property
-    @abstractmethod
-    def metadata(self) -> dict:
-        """Metadata for the molecule"""
+    def _parent_metadata(self) -> dict:
+        return {}
+
+    @property
+    def _current_metadata(self) -> dict:
+        return self._read_class_metadata(os.path.join(FMDL_MOL_PATH, "metadata.yaml"))
 
     @property
     def name(self) -> str:
@@ -257,16 +266,18 @@ class Lipid(Molecule):
     def _get_path(self) -> str:
         return os.path.join(self._lipids_dir, self.name)
 
-    def _populate_meta_data(self) -> None:
-        """Populate metadata for the lipid from its YAML file."""
-        self._metadata = {}
-        meta_path = os.path.join(self._get_path(), "metadata.yaml")
-        if os.path.isfile(meta_path):
-            with open(meta_path) as yaml_file:
-                self._metadata = yaml.load(yaml_file, Loader=yaml.FullLoader)
-        else:
-            msg = f"Metadata file not found for {self.name}."
-            raise FileNotFoundError(msg)
+    @property
+    def _parent_metadata(self) -> dict:
+        return self._merge_mappings(
+            Molecule._current_metadata.fget(self),  # noqa: SLF001
+            self._read_class_metadata(os.path.join(self._lipids_dir, "metadata.yaml")),
+        )
+
+    @property
+    def _current_metadata(self) -> dict:
+        path = os.path.join(self._get_path(), "metadata.yaml")
+        with open(path) as yaml_file:
+            return yaml.safe_load(yaml_file)
 
     def _can_load_mapping(self) -> bool:
         super_is_reg = super()._can_load_mapping()
@@ -302,17 +313,6 @@ class Lipid(Molecule):
             frags.add(frag)
         return sorted(frags)
 
-    @property
-    def metadata(self) -> dict:
-        """
-        Return metadata for the lipid.
-
-        :return: dict with metadata
-        """
-        if not hasattr(self, "_metadata"):
-            self._populate_meta_data()
-        return self._metadata
-
     def __init__(self, name: str) -> None:
         """
         Create the lipid.
@@ -321,7 +321,6 @@ class Lipid(Molecule):
         :type name: str
         """
         super().__init__(name)
-        self._populate_meta_data()
 
     def smi2uan(self, smile_id: int) -> str:
         """Convert SMILEIDX to universal atomname"""
@@ -409,12 +408,20 @@ class NonLipid(Molecule):
     def _get_path(self) -> str:
         return os.path.join(self._nonlipids_dir, self.name)
 
-    def _populate_meta_data(self) -> None:
-        pass
+    @property
+    def _parent_metadata(self) -> dict:
+        return self._merge_mappings(
+            Molecule._current_metadata.fget(self),  # noqa: SLF001
+            self._read_class_metadata(os.path.join(self._nonlipids_dir, "metadata.yaml")),
+        )
 
     @property
-    def metadata(self) -> dict:
-        return {}
+    def _current_metadata(self) -> dict:
+        path = os.path.join(self._get_path(), "metadata.yaml")
+        if not os.path.isfile(path):
+            return {}
+        with open(path) as yaml_file:
+            return yaml.safe_load(yaml_file) or {}
 
 
 class MoleculeSet(MutableSet[Molecule], ABC):

@@ -24,12 +24,12 @@ write a code from the scratch. The minimum python code to intialize FAIRMD Lipid
 
    systems = initialize_databank()
 
-After running this, ``systems`` is an instance of
-:class:`fairmd.lipids.core.SystemsCollection` which works like a list but with added
-functionality and contains dictionaries where each dictionary is a simulation in the
-FAIRMD Lipids. A simulation dictionary contains the content of the README.yaml for that
-simulation. The content of README.yaml files is described in :ref:`Simulation metadata
-<readmesimu>`. ``systems`` can be then used to loop over all simulations:
+After running this, ``systems`` is an instance of :class:`fairmd.lipids.core.SystemsCollection`
+which works like a list but with added functionality and contains simulation instances
+(:class:`fairmd.lipids.core.System`). A simulation instance contains the metadata loaded from its
+README.yaml (you can access this data through the ``metadata`` property). The content of README.yaml
+files is described in :ref:`Simulation metadata <readmesimu>`. ``systems`` can be then used to loop
+over all simulations:
 
 .. code-block:: python
 

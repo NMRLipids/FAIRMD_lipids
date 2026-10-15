@@ -176,7 +176,7 @@ def log_pairs(pairs, fd: IO[str]) -> None:
         # The two DOI fields an experiment may give. The deprecated plain `DOI:`
         # key is deliberately not read here: renaming it is what the deprecation
         # asks for, and a log line is not a reason to keep it alive.
-        expd = exp.readme.get("ARTICLE_DOI") or exp.readme.get("DATA_DOI") or "[no DOI]"
+        expd = exp.metadata.get("ARTICLE_DOI") or exp.metadata.get("DATA_DOI") or "[no DOI]"
 
         fd.write(f"""
 --------------------------------------------------------------------------------
@@ -227,7 +227,7 @@ def match_experiments() -> None:
         if "path" in simulation:
             del simulation["path"]
         with open(outfile_dict, "w", encoding="utf-8") as f:
-            f.write(encode_canonical_yaml(simulation.readme))
+            f.write(encode_canonical_yaml(simulation.metadata))
 
     print("Found order parameter data for " + str(len(pairs_op)) + " pairs")
     print("Found form factor data for " + str(len(pairs_ff)) + " pairs")

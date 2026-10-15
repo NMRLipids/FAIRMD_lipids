@@ -15,6 +15,7 @@ import tempfile
 import MDAnalysis as mda
 import pytest
 import pytest_check as check
+
 # Global fixtures
 # ----------------------------------------------------------------
 
@@ -53,7 +54,7 @@ def test_uc_cleardata(systems, capsys):
 
 def test_uc_build_wo_download(systems):
     """You must run `download` first even for predownloaded systems."""
-    from fairmd.lipids.api import UniverseConstructor, UniverseConstructError
+    from fairmd.lipids.api import UniverseConstructError, UniverseConstructor
 
     for i in [243, 566]:
         s = systems.loc(i)
@@ -155,7 +156,7 @@ def test_options_of_universe_construction(systems):
 
     # check what happends if we don't have TPR
     s = copy.deepcopy(s0)
-    del s._store["TPR"]
+    del s._metadata["TPR"]
     uc = UniverseConstructor(s)
     uc.download_mddata()  # now it will be "without" TPR
     u = uc.build_universe()
@@ -210,8 +211,8 @@ def test_universe_566_gro_tpr(uconstructor566):
 
 
 def test_deal_with_corrupted_tpr(systems):
-    from fairmd.lipids.api import UniverseConstructor
     from fairmd.lipids import FMDL_SIMU_PATH
+    from fairmd.lipids.api import UniverseConstructor
 
     s = copy.deepcopy(systems.loc(86))
     with open(os.path.join(FMDL_SIMU_PATH, s["path"], f"86.tpr"), "w") as fd:
@@ -245,7 +246,7 @@ def uconstructor566nogro(systems):
     from fairmd.lipids.api import UniverseConstructor
 
     s = copy.deepcopy(systems.loc(566))
-    del s._store["GRO"]
+    del s._metadata["GRO"]
     uc = UniverseConstructor(s)
     yield uc
     # TEARDOWN

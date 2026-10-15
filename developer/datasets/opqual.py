@@ -117,7 +117,7 @@ class OPQDataStorer():
         temperature = self._s["TEMPERATURE"]
         inchikey = self._s.lipids[self._lname].metadata["bioschema_properties"]["inChIKey"]
         smiles = self._s.lipids[self._lname].metadata["bioschema_properties"]["smiles"]
-        ff_name = self._s.readme.get("FF", False)
+        ff_name = self._s.metadata.get("FF", False)
         # store all vars and df to the HDF5 table
         group = f"SIM_{self._s['ID']}__{self._lname}"
         with pd.HDFStore(hdf_fname, "a") as store:
@@ -178,4 +178,3 @@ def gen_opq_ds(log: logging.Logger) -> tuple[int, int]:
             ods.store_to_hdf5(OPQDataStorer.DEFAULT_OPQ_HDFNAME)
             stat_ok += 1
     return stat_ok, stat_fail
-

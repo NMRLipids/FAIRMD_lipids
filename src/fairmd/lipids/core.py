@@ -12,18 +12,22 @@ from collections.abc import MutableMapping
 from typing import Any
 
 import yaml
+from deprecated import deprecated
 
 from fairmd.lipids import FMDL_SIMU_PATH
 from fairmd.lipids._base import CollectionSingleton, SampleComposition
+from fairmd.lipids.metadata import MetadataProvider
 from fairmd.lipids.molecules import Lipid, NonLipid, lipids_set, solubles_set
 
 
-class System(MutableMapping, SampleComposition):
+class System(MutableMapping, SampleComposition, MetadataProvider):
     """
     Main Databank single object.
 
     It is an extension of a dictionary with additional functionality.
     """
+
+    _high_level_metadata_cache: dict[str, dict] = {}
 
     def __init__(self, data: dict | typing.Mapping) -> None:
         """
@@ -34,42 +38,75 @@ class System(MutableMapping, SampleComposition):
         :raises ValueError: If a molecule key in the "COMPOSITION" data does not
                             belong to the predefined set of lipids or molecules.
         """
-        self._store: dict = {}
+        MetadataProvider.__init__(self)
+        self._readme_metadata: dict = {}
         if isinstance(data, dict):
-            self._store.update(data)
+            self._readme_metadata.update(data)
         elif isinstance(data, typing.Mapping):
-            self._store.update(dict(data))
+            self._readme_metadata.update(dict(data))
         else:
-            expect_type_msg = "Expected dict or Mapping"
-            raise TypeError(expect_type_msg)
+            msg = "Expected dict or Mapping"
+            raise TypeError(msg)
 
         self._initialize_content()
 
+    @classmethod
+    def from_directory(cls, path: str | os.PathLike) -> "System":
+        """Create a system by loading ``README.yaml`` from *path*."""
+        with open(os.path.join(os.fspath(path), "README.yaml")) as yaml_file:
+            return cls(yaml.safe_load(yaml_file) or {})
+
     def __getitem__(self, key: str):  # noqa: ANN204
-        return self._store[key]
+        return self.metadata[key]
 
     def __setitem__(self, key: str, value) -> None:
-        self._store[key] = value
+        self._metadata[key] = value
 
     def __delitem__(self, key: str) -> None:
-        del self._store[key]
+        del self.metadata[key]
 
     def __iter__(self) -> typing.Iterator:
-        return iter(self._store)
+        return iter(self.metadata)
 
     def __len__(self) -> int:
-        return len(self._store)
+        return len(self.metadata)
 
     def __repr__(self) -> str:
-        return f"System({self._store['ID']}): {self._store['path']}"
+        return f"System({self.metadata['ID']}): {self.metadata['path']}"
 
     @property
+    @deprecated(version="1.7.0", reason="Use the metadata property instead.")
     def readme(self) -> dict:
-        """Get the README dictionary of the system in true dict format.
+        """Get the system metadata.
+
+        .. deprecated::
+           Use :attr:`metadata` instead.
 
         :return: dict-type README (dict)
         """
-        return self._store
+        return self.metadata
+
+    @property
+    def _parent_metadata(self) -> typing.Mapping:
+        return type(self)._high_level_metadata()  # noqa: SLF001
+
+    @property
+    def _current_metadata(self) -> typing.Mapping:
+        # NOTE: _readme_metadata is populated by constructor!
+        return self._readme_metadata
+
+    @classmethod
+    def _high_level_metadata(cls) -> dict:
+        """Load metadata shared by simulations in the configured data set."""
+        metadata_path = os.path.join(FMDL_SIMU_PATH, "metadata.yaml")
+        if metadata_path not in cls._high_level_metadata_cache:
+            if not os.path.isfile(metadata_path):
+                metadata = {}
+            else:
+                with open(metadata_path) as metadata_file:
+                    metadata = yaml.safe_load(metadata_file) or {}
+            cls._high_level_metadata_cache[metadata_path] = metadata
+        return cls._high_level_metadata_cache[metadata_path]
 
     @property
     def n_lipids(self) -> int:
@@ -175,34 +212,29 @@ class SystemsCollection(CollectionSingleton[System]):
         systems = SystemsCollection()
         for subdir, _dirs, files in os.walk(FMDL_SIMU_PATH):
             for filename in files:
-                filepath = os.path.join(subdir, filename)
-                if filename == "README.yaml":
-                    ydict = {}
-                    try:
-                        with open(filepath) as yaml_file:
-                            ydict.update(yaml.load(yaml_file, Loader=yaml.FullLoader))
-                    except (FileNotFoundError, PermissionError) as e:
-                        sys.stderr.write(f"""
+                if filename != "README.yaml":
+                    continue
+                try:
+                    content = System.from_directory(subdir)
+                except (FileNotFoundError, PermissionError) as e:
+                    sys.stderr.write(f"""
 !!README LOAD ERROR!!
 Problems while loading on of the files required for the system: {e}
-System path: {subdir}
-System: {ydict!s}\n""")
-                    try:
-                        content = System(ydict)
-                    except Exception as e:
-                        sys.stderr.write(f"""
+System path: {subdir}\n""")
+                except Exception as e:
+                    sys.stderr.write(f"""
 !!README LOAD ERROR!!
 Unexpected error: {e}
-System: {ydict!s}\n""")
-                    else:
-                        content["path"] = os.path.relpath(subdir, FMDL_SIMU_PATH)
-                        systems.add(content)
+                System path: {subdir}\n""")
+                else:
+                    content["path"] = os.path.relpath(subdir, FMDL_SIMU_PATH)
+                    systems.add(content)
         return systems
 
 
 def initialize_databank() -> SystemsCollection:
     """
-    Returns Simulation collection (an alias).
+    Return Simulation collection (an alias).
 
     :return: list of dictionaries that contain the content of README.yaml files for
              each system.

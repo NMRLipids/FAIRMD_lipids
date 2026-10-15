@@ -201,7 +201,7 @@ class SimOPDataStorer(OPDataStorer):
         opt_attr, smp_attr = super().get_DF_attrs()
         opt_attr["fmdl_simid"] = self._s["ID"]
         smp_attr["temperature"] =  self._s["TEMPERATURE"]
-        ff_name = self._s.readme.get("FF", False)
+        ff_name = self._s.metadata.get("FF", False)
         if ff_name:
             smp_attr["ff_name"] = ff_name
         return opt_attr, smp_attr
@@ -257,4 +257,3 @@ def gen_op_from_sims(log: logging.Logger) -> tuple[int, int]:
             ods.store_to_hdf5(SimOPDataStorer.DEFAULT_SIMS_HDFNAME)
             log.info("..stored!")
     return stat_ok, stat_fail
-

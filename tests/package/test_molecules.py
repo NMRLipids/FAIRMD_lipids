@@ -213,3 +213,22 @@ def test_lipids_metadata():
         "CCCCCCCCCCCCCCCC(=O)OC[C@H](COP(=O)(O)OCCN)OC(=O)CCCCCCC/C=C\\CCCCCCCC",
         "POPE bioschema_properties smiles should match expected value",
     )
+
+
+def test_inherited_metadata():
+    """Test inherited metadata of membrane molecules and solution molecules."""
+    from fairmd.lipids.molecules import lipids_set, solubles_set
+
+    pope = lipids_set.get("POPE")
+    assert pope is not None, "POPE should not be None"
+    # check that metadata inherited from Molecule is present
+    check.equal(pope.metadata["bioschema_properties"]["license"]["spdx"], "CC-BY-4.0")
+    # check that metadata inherited from MembraneMolecule is present
+    check.equal(pope.metadata["NMRlipids"]["moleculeType"], "MembraneMolecule")
+
+    sod = solubles_set.get("SOD")
+    assert sod is not None, "SOD should not be None"
+    # check that metadata inherited from Molecule is present
+    check.equal(sod.metadata["bioschema_properties"]["license"]["spdx"], "CC-BY-4.0")
+    # check that metadata inherited from SolutionMolecule is present
+    check.equal(sod.metadata["NMRlipids"]["moleculeType"], "SolutionMolecule")
