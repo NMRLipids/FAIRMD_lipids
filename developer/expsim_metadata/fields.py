@@ -55,6 +55,23 @@ def experiment_kind(path):
     return "xray" if "FormFactors" in Path(path).resolve().parts else "nmr"
 
 
+EXPERIMENTS_DIR = "experiments"
+
+
+def kind_base_of(path):
+    """The folder a record inherits its ``bioschema_properties.yaml`` templates from.
+
+    The nearest ``Simulations*`` or ``experiments`` ancestor -- the folders the
+    package resolves blocks against, as ``FMDL_SIMU_PATH`` and ``FMDL_EXP_PATH``.
+    A path under neither inherits nothing, so its own folder is returned.
+    """
+    path = Path(path).resolve()
+    for parent in path.parents:
+        if _is_simulations_dir(parent.name) or parent.name == EXPERIMENTS_DIR:
+            return parent
+    return path.parent
+
+
 def data_root_of(path):
     """Walk up from a README.yaml to the databank root."""
     for parent in Path(path).resolve().parents:

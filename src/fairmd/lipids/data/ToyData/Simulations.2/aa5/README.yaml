@@ -26,10 +26,43 @@ FF_DATE: Dec20222
 TRAJECTORY_SIZE: 8192360
 TRJLENGTH: 360000.0
 NUMBER_OF_ATOMS: 51408
-DATEOFRUNNING: 03/02/2023
+DATEOFRUNNING: '2023-02-03'
 TYPEOFSYSTEM: lipid bilayer
 ID: 731
 EXPERIMENT:
   ORDERPARAMETER:
     POPE: []
   FORMFACTOR: []
+bioschema_properties:
+  name: Molecular dynamics trajectory of a POPE bilayer at 310 K (Charmm-Drude, OPENMM, 360 ns)
+  alternateName: POPE_303K
+  description: >-
+    Molecular dynamics trajectory of a lipid bilayer of 144 POPE
+    (1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoethanolamine) at 310 K. Simulated with Charmm-Drude in
+    OPENMM for 360 ns (51408 atoms). Part of the NMRlipids Databank.
+  keywords:
+  - POPE
+  - 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoethanolamine
+  measurementTechnique:
+  - Molecular dynamics simulation (openMM)
+  - Charmm-Drude force field
+  variableMeasured:
+  - '@type': PropertyValue
+    name: total density profile
+    unitText: nm⁻³
+  - '@type': PropertyValue
+    name: X-ray scattering form factor
+    unitCode: http://qudt.org/vocab/unit/PER-ANGSTROM
+    unitText: Å⁻¹
+  distribution:
+  - '@type': DataDownload
+    name: POPE_303K
+    contentSize: 8192360
+    encodingFormat: application/x-xtc
+    hasPart:
+    - cut.xtc
+    - step3_charmm2omm.psf
+  _source:
+    api: null
+    doi: null
+    retrieved: '2026-09-24'

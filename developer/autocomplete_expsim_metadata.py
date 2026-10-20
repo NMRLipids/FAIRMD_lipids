@@ -44,6 +44,16 @@ title. These are enriched from data already in the repository (composition,
 force field, NMR/X-ray method, the analysis outputs present beside the README)
 with terms from EDAM, CHMO and UO.
 
+What the record's *kind* alone decides -- the EDAM keywords and technique
+terms, an experiment's measured variable, the databank's own licence -- is not
+written into any README. The data repository states it once, in a
+``bioschema_properties.yaml`` template in the kind's folder, and every record
+below inherits it: the block a README stores is the *compact* one, holding only
+what is specific to that record, and the complete block is that applied on top
+of the templates, a recursive dict update whose rules live in
+``src/fairmd/lipids/bioschema_inheritance.py``. ``--check`` judges the resolved
+block, and given a template path it validates the template.
+
 Properties that depend on where the databank is deployed -- ``identifier``,
 ``url``, ``@id``, ``@type``, ``@context``, ``dct:conformsTo`` and
 ``includedInDataCatalog`` -- are deliberately *not* written here; the web
@@ -82,18 +92,30 @@ from pathlib import Path
 try:  # run as a script: developer/ is on sys.path
     from expsim_metadata.checks import check, duplicate_names
     from expsim_metadata.fields import data_root_of, molecule_names
+    from expsim_metadata.inheritance import is_template
     from expsim_metadata.licenses import load_spdx
     from expsim_metadata.records import process
 except ImportError:  # imported as developer.autocomplete_expsim_metadata, e.g. by autodoc
     from developer.expsim_metadata.checks import check, duplicate_names
     from developer.expsim_metadata.fields import data_root_of, molecule_names
+    from developer.expsim_metadata.inheritance import is_template
     from developer.expsim_metadata.licenses import load_spdx
     from developer.expsim_metadata.records import process
 
 
+def without_templates(paths):
+    """Drop ``bioschema_properties.yaml`` templates: they are validated, never enriched."""
+    for path in paths:
+        if is_template(path):
+            print(f"skipping {path}: a template is not enriched; validate it with --check")
+    return [path for path in paths if not is_template(path)]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("files", nargs="+", help="README.yaml paths to enrich")
+    parser.add_argument("files", nargs="+",
+                        help="README.yaml paths to enrich; with --check, bioschema_properties.yaml "
+                             "templates too")
     parser.add_argument("--cache", type=Path, default=None,
                         help="directory for cached API responses")
     parser.add_argument("--dry-run", action="store_true",
@@ -108,6 +130,11 @@ def main():
     missing = [p for p in paths if not p.is_file()]
     if missing:
         sys.exit(f"error: no such file: {missing[0]}")
+
+    if not args.check:
+        paths = without_templates(paths)
+        if not paths:
+            return
 
     root = data_root_of(paths[0])
     cache_dir = args.cache or Path(os.environ.get("RUNNER_TEMP", root)) / ".cache" / "bioschema"

@@ -258,6 +258,10 @@ them apart; the free-text `SYSTEM` is kept as `alternateName`, and the depositio
 simulations can share one. The databank `ID` is assigned only after merge, and the website's
 JSON-LD identifies each simulation by its databank page.
 
+The block a README stores leaves out everything every simulation shares, such as the EDAM
+keywords; those are [inherited](bioschemainherit) from the `Simulations/` folder. The example is
+such a stored block:
+
 ```yaml
 bioschema_properties:
   name: Molecular dynamics trajectory of a POPC bilayer at 313 K (CHARMM36, GROMACS 5.0.4,
@@ -281,11 +285,6 @@ bioschema_properties:
   citation:
   - 10.1021/acs.jctc.5b00935
   keywords:
-  - '@type': DefinedTerm
-    name: Molecular dynamics
-    termCode: topic_0176
-    inDefinedTermSet: http://edamontology.org
-    url: http://edamontology.org/topic_0176
   - POPC
   measurementTechnique:
   - Molecular dynamics simulation (gromacs 5)
@@ -318,4 +317,54 @@ bioschema_properties:
     doi: 10.5281/zenodo.4040423
     spdxLicenseList: 3.28.0
     retrieved: '2026-09-08'
+```
+
+(bioschemainherit)=
+### Inherited properties
+
+Much of the block follows from the kind of entry alone: every simulation carries the same EDAM
+keywords and the same EDAM technique term, and every experiment the databank's licence. Those are
+written once, in a `bioschema_properties.yaml` template in a folder of the data repository, and
+every README below that folder inherits them. The templates are `Simulations/`,
+`experiments/` (the licence), `experiments/OrderParameters/` and `experiments/FormFactors/`
+(keywords, technique and measured variable). A README stores only what is specific to its entry,
+and the enrichment tooling leaves the inherited values out when it writes one.
+
+The complete block is resolved by applying the templates of every folder from the kind's folder
+(`Simulations/` or `experiments/`) down to the entry's parent folder, outermost first, and the
+README's own block last. Each step is a recursive dict update:
+
+- a mapping is merged key by key, at every depth, and a scalar is replaced by the closer value;
+- a list is *extended*: inherited items first, then the closer level's own, without duplicates.
+  An entry's own `keywords` (its molecules) therefore add to the inherited EDAM terms rather than
+  replacing them;
+- `license`, `articleLicense`, `isPartOf`, `creator`, `citation`, `distribution` and `isBasedOn`
+  belong to one entry and are never merged into: a closer value replaces the inherited one whole.
+  Merged key by key, an entry's own CC0 licence would keep the inherited CC-BY `name` and
+  `sameAs`;
+- `name`, `alternateName`, `description`, `sameAs` and `_source` identify one entry and are never
+  inherited. A template setting one is rejected by `autocomplete_expsim_metadata.py --check`,
+  which validates templates as well as READMEs.
+
+A template states only what is true of every entry below it, since an entry cannot remove an
+inherited list item. In Python, `System.bioschema` (and `Experiment.bioschema`) returns the
+resolved block, while `system.readme["bioschema_properties"]` stays the stored one, so writing a
+README back never bakes inherited values into it. The rules are in
+`fairmd.lipids.bioschema_inheritance`.
+
+```yaml
+# Simulations/bioschema_properties.yaml (abridged)
+keywords:
+- '@type': DefinedTerm
+  name: Biomolecular simulation
+  termCode: topic_3892
+  inDefinedTermSet: http://edamontology.org
+  url: http://edamontology.org/topic_3892
+# ... four more EDAM terms
+measurementTechnique:
+- '@type': DefinedTerm
+  name: Molecular dynamics
+  termCode: operation_2476
+  inDefinedTermSet: http://edamontology.org
+  url: http://edamontology.org/operation_2476
 ```

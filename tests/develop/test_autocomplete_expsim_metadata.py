@@ -1,6 +1,8 @@
 import importlib
 import importlib.util
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -47,6 +49,72 @@ def load_expsim_module(name):
 
 SCHEMA_DIR = Path(__file__).resolve().parents[2] / "src" / "fairmd" / "lipids" / "schema_validation" / "schema"
 
+# ---------------------------------------------------------------------------
+# The templates a record inherits from
+#
+# BilayerData states the properties a whole kind of record shares once, in a
+# bioschema_properties.yaml in the kind's folder. The simulation template is the
+# ToyData copy, so the two cannot drift apart; ToyData has no experiments, so the
+# experiment templates are spelled out here as BilayerData has them.
+# ---------------------------------------------------------------------------
+
+TEMPLATE = "bioschema_properties.yaml"
+TOY_SIMULATION_TEMPLATE = (
+    Path(__file__).resolve().parents[2] / "src" / "fairmd" / "lipids" / "data" / "ToyData" / "Simulations.1" / TEMPLATE
+)
+
+
+def edam(code, name):
+    return {
+        "@type": "DefinedTerm",
+        "name": name,
+        "termCode": code,
+        "inDefinedTermSet": "http://edamontology.org",
+        "url": f"http://edamontology.org/{code}",
+    }
+
+
+DATASET_LICENSE = {
+    "spdx": "CC-BY-4.0",
+    "name": "Creative Commons Attribution 4.0 International",
+    "url": "https://spdx.org/licenses/CC-BY-4.0.html",
+    "sameAs": "https://creativecommons.org/licenses/by/4.0/",
+}
+ORDER_PARAMETER = {
+    "@type": "PropertyValue",
+    "name": "C-H bond order parameter",
+    "unitCode": "http://purl.obolibrary.org/obo/UO_0000186",
+    "unitText": "dimensionless",
+}
+EXPERIMENT_TEMPLATES = {
+    "experiments": {"license": DATASET_LICENSE},
+    "experiments/OrderParameters": {
+        "keywords": [
+            edam("topic_0593", "NMR"),
+            edam("topic_0820", "Membrane and lipoproteins"),
+            edam("topic_3306", "Biophysics"),
+        ],
+        "measurementTechnique": [edam("topic_0593", "NMR")],
+        "variableMeasured": [ORDER_PARAMETER],
+    },
+}
+
+
+def write_templates(root):
+    """The templates BilayerData keeps in its kind folders."""
+    (root / "Simulations").mkdir(parents=True, exist_ok=True)
+    shutil.copy(TOY_SIMULATION_TEMPLATE, root / "Simulations" / TEMPLATE)
+    for folder, template in EXPERIMENT_TEMPLATES.items():
+        (root / folder).mkdir(parents=True, exist_ok=True)
+        (root / folder / TEMPLATE).write_text(yaml.safe_dump(template, sort_keys=False), encoding="utf-8")
+
+
+def resolved(path):
+    """A README's complete block: what it inherits, updated by its own."""
+    inheritance = load_expsim_module("expsim_metadata.inheritance")
+    block = yaml.safe_load(Path(path).read_text(encoding="utf-8"))["bioschema_properties"]
+    return inheritance.resolved_for(path, block)
+
 
 def build_databank(root, records):
     """A minimal databank tree: ``data_root_of`` needs both top-level folders."""
@@ -55,7 +123,7 @@ def build_databank(root, records):
         yaml.safe_dump({"NMRlipids": {"name": "1,2-dimyristoyl-sn-glycero-3-phosphocholine"}}),
         encoding="utf-8",
     )
-    (root / "Simulations").mkdir()
+    write_templates(root)
 
     paths = []
     for index, record in enumerate(records, start=1):
@@ -433,6 +501,7 @@ def build_simulation(root, record):
         yaml.safe_dump({"NMRlipids": {"name": "1,2-dimyristoyl-sn-glycero-3-phosphocholine"}}),
         encoding="utf-8",
     )
+    write_templates(root)
     directory = root / "Simulations" / "aa0" / "bb1" / "cc2" / "dd3"
     directory.mkdir(parents=True)
     path = directory / "README.yaml"
@@ -440,7 +509,7 @@ def build_simulation(root, record):
     return path
 
 
-def seed_datacite_cache(cache_dir):
+def seed_datacite_cache(cache_dir, subjects=("lipid bilayer",)):
     cache_dir.mkdir(parents=True, exist_ok=True)
     payload = {
         "data": {
@@ -467,7 +536,7 @@ def seed_datacite_cache(cache_dir):
                         "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
                     }
                 ],
-                "subjects": [{"subject": "lipid bilayer"}],
+                "subjects": [{"subject": subject} for subject in subjects],
                 "relatedIdentifiers": [],
             }
         }
@@ -499,13 +568,13 @@ SIMULATION_RECORD = {
 }
 
 
-def run_simulation(tmp_path, **overrides):
+def run_simulation(tmp_path, subjects=("lipid bilayer",), **overrides):
     """Enrich one simulation README; returns the module, its path and its content."""
     mod = load_autocomplete_module()
     path = build_simulation(tmp_path, {**SIMULATION_RECORD, **overrides})
     cache = tmp_path / "cache"
     seed_cache(cache)
-    seed_datacite_cache(cache)
+    seed_datacite_cache(cache, subjects)
 
     argv = ["autocomplete_expsim_metadata.py", "--cache", str(cache), str(path)]
     original_argv = sys.argv
@@ -654,10 +723,7 @@ def documented_block(page):
 
 def block_schema(filename):
     """The bioschema_properties subschema, made standalone so it can be validated."""
-    schema = json.loads((SCHEMA_DIR / filename).read_text(encoding="utf-8"))
-    block = schema["properties"]["bioschema_properties"]
-    block["definitions"] = schema["definitions"]
-    return block
+    return load_expsim_module("expsim_metadata.checks").block_schema(filename)
 
 
 @pytest.mark.parametrize(
@@ -793,10 +859,12 @@ def test_a_deposition_licence_is_not_called_an_article_licence(tmp_path):
     finally:
         sys.argv = original_argv
 
-    block = yaml.safe_load(paths[0].read_text(encoding="utf-8"))["bioschema_properties"]
+    block = resolved(paths[0])
     assert "articleLicense" not in block
-    # What this repository distributes stays the dataset licence ...
-    assert block["license"]["spdx"] == "CC-BY-4.0"
+    # What this repository distributes stays the dataset licence, which the
+    # record inherits rather than stores ...
+    assert block["license"] == DATASET_LICENSE
+    assert "license" not in yaml.safe_load(paths[0].read_text(encoding="utf-8"))["bioschema_properties"]
     # ... and the deposition keeps its own, on the deposition.
     parent = block["isPartOf"]
     assert parent["identifier"] == DEPOSITION_ONLY_DOI
@@ -969,3 +1037,162 @@ def test_a_ph_range_is_bounded_to_the_ph_scale():
         assert validator.is_valid(value), value
     for value in ("14.5-14.5", "15-16", "-1-5", "10-", "7,4", "8 - 10"):
         assert not validator.is_valid(value), value
+
+
+# ---------------------------------------------------------------------------
+# Inheritance
+#
+# A README stores only what is specific to its record; what its kind shares is
+# inherited from the bioschema_properties.yaml templates above it. The rules are
+# the package's, src/fairmd/lipids/bioschema_inheritance.py, loaded by path.
+# ---------------------------------------------------------------------------
+
+CHMO_SSNMR = {
+    "@type": "DefinedTerm",
+    "name": "solid-state nuclear magnetic resonance spectroscopy",
+    "termCode": "CHMO_0000614",
+    "inDefinedTermSet": "http://purl.obolibrary.org/obo/chmo.owl",
+    "url": "http://purl.obolibrary.org/obo/CHMO_0000614",
+}
+SIMULATION_KEYWORDS = [
+    edam("topic_3892", "Biomolecular simulation"),
+    edam("topic_0176", "Molecular dynamics"),
+    edam("topic_0820", "Membrane and lipoproteins"),
+    edam("topic_3306", "Biophysics"),
+    edam("data_3870", "Trajectory data"),
+]
+
+
+def test_written_experiment_blocks_hold_nothing_they_inherit(generated):
+    _, _, blocks = generated
+    for block in blocks:
+        assert not [k for k in block["keywords"] if isinstance(k, dict)]
+        # The record's own method term stays, CHMO per NMR METHOD.
+        assert block["measurementTechnique"][0]["termCode"].startswith("CHMO_")
+        assert edam("topic_0593", "NMR") not in block["measurementTechnique"]
+        assert "license" not in block
+        assert "variableMeasured" not in block
+
+
+def test_the_resolved_experiment_block_is_complete(generated):
+    _, paths, _ = generated
+    block = resolved(paths[0])
+    assert block["keywords"] == [
+        edam("topic_0593", "NMR"),
+        edam("topic_0820", "Membrane and lipoproteins"),
+        edam("topic_3306", "Biophysics"),
+        "DMPC",
+        "1,2-dimyristoyl-sn-glycero-3-phosphocholine",
+    ]
+    assert block["measurementTechnique"] == [
+        edam("topic_0593", "NMR"),
+        CHMO_SSNMR,
+        "NMR: 2H:QE",
+        "Bruker MSL-300",
+    ]
+    assert block["license"] == DATASET_LICENSE
+    assert block["variableMeasured"] == [ORDER_PARAMETER]
+    errors = sorted(Draft7Validator(block_schema("experiment_schema.json")).iter_errors(block), key=lambda e: e.path)
+    assert not errors, [e.message for e in errors]
+
+
+def test_the_resolved_simulation_block_is_complete(generated_simulation):
+    _, path, readme = generated_simulation
+    stored = readme["bioschema_properties"]
+    assert stored["keywords"] == ["DMPC", "1,2-dimyristoyl-sn-glycero-3-phosphocholine", "lipid bilayer"]
+    assert stored["measurementTechnique"] == ["Molecular dynamics simulation (gromacs 5.0.4)", "CHARMM36 force field"]
+
+    block = resolved(path)
+    assert block["keywords"] == [*SIMULATION_KEYWORDS, *stored["keywords"]]
+    assert block["measurementTechnique"] == [
+        edam("operation_2476", "Molecular dynamics"),
+        *stored["measurementTechnique"],
+    ]
+    errors = sorted(Draft7Validator(block_schema("simulation_schema.json")).iter_errors(block), key=lambda e: e.path)
+    assert not errors, [e.message for e in errors]
+
+
+def test_a_subject_naming_an_inherited_term_is_not_repeated(tmp_path):
+    """Zenodo subjects are free text, and often name a term every simulation inherits."""
+    _, path, readme = run_simulation(tmp_path, subjects=("molecular dynamics", "lipid bilayer"))
+    assert readme["bioschema_properties"]["keywords"][-1] == "lipid bilayer"
+    names = [k["name"] if isinstance(k, dict) else k for k in resolved(path)["keywords"]]
+    assert [n for n in names if n.lower() == "molecular dynamics"] == ["Molecular dynamics"]
+
+
+def test_a_full_block_from_before_inheritance_is_compacted_and_keeps_its_date(generated_simulation):
+    """The migration run: only the storage changes, so the retrieval date stays."""
+    mod, path, readme = generated_simulation
+    records = load_expsim_module("expsim_metadata.records")
+    compact = readme["bioschema_properties"]
+
+    full = resolved(path)
+    full["_source"]["retrieved"] = "2020-01-01"
+    path.write_text(
+        records.strip_existing_block(path.read_text(encoding="utf-8")) + records.render_block(full),
+        encoding="utf-8",
+    )
+
+    root = mod.data_root_of(path)
+    cache = root / "cache"
+    assert mod.process(path, mod.load_spdx(cache), mod.molecule_names(root), cache) is True
+    rewritten = yaml.safe_load(path.read_text(encoding="utf-8"))["bioschema_properties"]
+    assert rewritten["_source"]["retrieved"] == "2020-01-01"
+    rewritten["_source"]["retrieved"] = compact["_source"]["retrieved"]
+    assert rewritten == compact
+
+
+def test_a_record_with_no_template_above_it_fails_check(generated):
+    mod, paths, _ = generated
+    root = paths[0].resolve().parents[5]
+    for template in root.glob(f"**/{TEMPLATE}"):
+        template.unlink()
+
+    errors = [message for level, message in mod.check(paths[0], None) if level == "ERROR"]
+    assert any(f"no {TEMPLATE} above this record" in m for m in errors)
+
+
+def test_check_validates_a_template(tmp_path):
+    checks = load_expsim_module("expsim_metadata.checks")
+    write_templates(tmp_path)
+    for template in tmp_path.glob(f"**/{TEMPLATE}"):
+        assert checks.check(template, None) == [], template
+
+    typo = tmp_path / "Simulations" / TEMPLATE
+    typo.write_text(yaml.safe_dump({"keyword": ["POPC"]}), encoding="utf-8")
+    errors = [message for level, message in checks.check(typo, None) if level == "ERROR"]
+    assert any("'keyword'" in m for m in errors), errors
+
+    record_only = tmp_path / "experiments" / "OrderParameters" / TEMPLATE
+    record_only.write_text(yaml.safe_dump({"name": "every NMR record", "_source": {"api": None}}), encoding="utf-8")
+    errors = [message for level, message in checks.check(record_only, None) if level == "ERROR"]
+    assert any("name belongs to one record" in m for m in errors), errors
+    assert any("_source belongs to one record" in m for m in errors), errors
+
+
+def test_write_mode_leaves_templates_alone(tmp_path, capsys):
+    mod = load_autocomplete_module()
+    write_templates(tmp_path)
+    template = tmp_path / "Simulations" / TEMPLATE
+    before = template.read_text(encoding="utf-8")
+
+    original_argv = sys.argv
+    sys.argv = ["autocomplete_expsim_metadata.py", "--cache", str(tmp_path / "cache"), str(template)]
+    try:
+        mod.main()
+    finally:
+        sys.argv = original_argv
+
+    assert f"skipping {template}" in capsys.readouterr().out
+    assert template.read_text(encoding="utf-8") == before
+
+
+def test_the_inheritance_rules_load_without_the_package():
+    """The generator runs from a plain checkout: the rules file must not import fairmd."""
+    code = (
+        "import sys; sys.path.insert(0, sys.argv[1]); "
+        "import expsim_metadata.inheritance as rules; "
+        "assert rules.merge_blocks({'keywords': ['a']}, {'keywords': ['b']}) == {'keywords': ['a', 'b']}; "
+        "assert not [m for m in sys.modules if m.split('.')[0] == 'fairmd'], 'fairmd was imported'"
+    )
+    subprocess.run([sys.executable, "-I", "-c", code, str(DEVELOPER_DIR)], check=True)

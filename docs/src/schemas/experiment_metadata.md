@@ -208,6 +208,12 @@ does not tell sibling entries apart. The fetched title is kept where it is true,
 `isPartOf.name`. Every composed title ends in a bracketed tag (first author and year) that keeps
 near-identical entries apart.
 
+The block a README stores leaves out everything its kind shares: the databank's licence, the EDAM
+keywords and technique term, and the measured variable are
+[inherited](bioschemainherit) from the `experiments/` folder and its `OrderParameters/` or
+`FormFactors/` subfolder. Its own `measurementTechnique` adds the CHMO term for the method. The
+example is such a stored block:
+
 ```yaml
 bioschema_properties:
   name: X-ray scattering form factor of a POPC bilayer at 303 K, 99% water (SAXS, ULV) [Kucerka
@@ -218,11 +224,6 @@ bioschema_properties:
     Values digitised into the NMRlipids Databank from https://doi.org/10.1016/j.bbamem.2011.07.022.
   sameAs: https://doi.org/10.1016/j.bbamem.2011.07.022
   datePublished: '2011-11'
-  license:
-    spdx: CC-BY-4.0
-    name: Creative Commons Attribution 4.0 International
-    url: https://spdx.org/licenses/CC-BY-4.0.html
-    sameAs: https://creativecommons.org/licenses/by/4.0/
   articleLicense:
     url: http://www.elsevier.com/open-access/userlicense/1.0/
     spdx: null
@@ -232,11 +233,6 @@ bioschema_properties:
   citation:
   - 10.1016/j.bbamem.2011.07.022
   keywords:
-  - '@type': DefinedTerm
-    name: X-ray diffraction
-    termCode: topic_2828
-    inDefinedTermSet: http://edamontology.org
-    url: http://edamontology.org/topic_2828
   - POPC
   measurementTechnique:
   - '@type': DefinedTerm
@@ -245,10 +241,6 @@ bioschema_properties:
     inDefinedTermSet: http://purl.obolibrary.org/obo/chmo.owl
     url: http://purl.obolibrary.org/obo/CHMO_0000204
   - X-ray scattering (SUV)
-  variableMeasured:
-  - '@type': PropertyValue
-    name: X-ray scattering form factor
-    unitText: A^-1
   distribution:
   - '@type': DataDownload
     name: POPC_ULV_20Cin0D_FormFactor.json

@@ -14,6 +14,7 @@ It is connected into the FAIRMD Lipids repository as a submodule into :file:`./D
 
    Data/
    ├── Simulations/
+   │   ├── bioschema_properties.yaml
    │   └── rw5/
    │       └── g8v/
    │           └── au3/
@@ -21,13 +22,16 @@ It is connected into the FAIRMD Lipids repository as a submodule into :file:`./D
    │                   ├── data-piece.json
    │                   └── README.yaml
    ├── experiments/
+   │   ├── bioschema_properties.yaml
    │   ├── FormFactors/
+   │   │   ├── bioschema_properties.yaml
    │   │   └── 10.1001/
    │   │       └── j.some.thing.3242.11/
    │   │           └── 1/
    │   │               ├── form-factor-data.json
    │   │               └── README.yaml
    │   └── OrderParameter/
+   │   │   ├── bioschema_properties.yaml
    │   │   └── 10.1001/
    │   │       └── j.some.thing.3242.11/
    │   │           └── 1/
@@ -61,6 +65,14 @@ A file containing all the relevant information of each simulation entry. These f
 stored at :py:data:`fairmd.lipids.FMDL_SIMU_PATH`.
 
 For more information see :doc:`schemas/simulation_metadata`.
+
+Inherited Bioschemas properties
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A :file:`bioschema_properties.yaml` in a folder holds the Bioschemas properties that every
+``README.yaml`` below that folder shares -- for instance the ontology terms every simulation
+carries. Each ``README.yaml`` then stores only what is specific to its own entry, and
+:py:attr:`fairmd.lipids.core.System.bioschema` returns the two merged. The rules are in
+:py:mod:`fairmd.lipids.bioschema_inheritance`; see :ref:`bioschemainherit`.
 
 Simulation computed properties
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

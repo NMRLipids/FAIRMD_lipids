@@ -20,7 +20,6 @@ COMPOSITION:
     MAPPING: mappingSPCwater.yaml
     COUNT: 3552
 DIR_WRK: /home/lara/Databank
-PUBLICATION: null
 AUTHORS_CONTACT: Thomas Piggot
 SYSTEM: 128POPE_3552SOL_313K_v1
 SOFTWARE_VERSION: 4.0.7
@@ -36,10 +35,83 @@ TRAJECTORY_SIZE: 14000000
 TRJLENGTH: 100005.0
 TEMPERATURE: 313.0
 NUMBER_OF_ATOMS: 17312
-DATEOFRUNNING: 24/05/2022
+DATEOFRUNNING: '2022-05-24'
 TYPEOFSYSTEM: lipid bilayer
 EXPERIMENT:
   ORDERPARAMETER:
-    POPE: {}
-  FORMFACTOR: {}
+    POPE: []
+  FORMFACTOR: []
 ID: 86
+bioschema_properties:
+  name: >-
+    Molecular dynamics trajectory of a POPE bilayer at 313 K (GROMOS 43A1-S3, GROMACS 4.0.7, 100 ns)
+  alternateName: 128POPE_3552SOL_313K_v1
+  description: >-
+    Molecular dynamics trajectory of a lipid bilayer of 128 POPE
+    (1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoethanolamine) at 313 K. Simulated with GROMOS 43A1-S3
+    in GROMACS 4.0.7 for 100 ns (17312 atoms). Part of the NMRlipids Databank and available from
+    https://doi.org/10.5281/zenodo.11614468.
+  sameAs: https://doi.org/10.5281/zenodo.11614468
+  datePublished: '2024-06-13'
+  license:
+    spdx: CC-BY-4.0
+    name: Creative Commons Attribution 4.0 International
+    url: https://spdx.org/licenses/CC-BY-4.0.html
+    sameAs: https://creativecommons.org/licenses/by/4.0/legalcode
+  publisher: Zenodo
+  creator:
+  - name: Hörstel, Ferdinand
+  - name: Nesterenko, Alexey
+    identifier: https://orcid.org/0000-0003-1592-257X
+  keywords:
+  - POPE
+  - 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoethanolamine
+  measurementTechnique:
+  - Molecular dynamics simulation (gromacs 4.0.7)
+  - GROMOS 43A1-S3 force field
+  variableMeasured:
+  - '@type': PropertyValue
+    name: area per lipid
+    unitCode: http://purl.obolibrary.org/obo/UO_0000324
+    unitText: Å²
+  - '@type': PropertyValue
+    name: membrane thickness
+    unitCode: http://purl.obolibrary.org/obo/UO_0000018
+    unitText: nm
+  - '@type': PropertyValue
+    name: total density profile
+    unitText: nm⁻³
+  - '@type': PropertyValue
+    name: X-ray scattering form factor
+    unitCode: http://qudt.org/vocab/unit/PER-ANGSTROM
+    unitText: Å⁻¹
+  - '@type': PropertyValue
+    name: equilibration time
+    unitCode: http://purl.obolibrary.org/obo/UO_0000150
+    unitText: ns
+  - '@type': PropertyValue
+    name: C-H bond order parameter
+    unitCode: http://purl.obolibrary.org/obo/UO_0000186
+    unitText: dimensionless
+  distribution:
+  - '@type': DataDownload
+    contentUrl: https://doi.org/10.5281/zenodo.11614468
+    name: 128POPE_3552SOL_313K_v1
+    contentSize: 14000000
+    encodingFormat: application/x-xtc
+    hasPart:
+    - 86.xtc
+    - 86.tpr
+    - 86.gro
+  isPartOf:
+    '@type': Dataset
+    '@id': https://doi.org/10.5281/zenodo.11614468
+    identifier: 10.5281/zenodo.11614468
+    url: https://doi.org/10.5281/zenodo.11614468
+    name: Test Dataset for calculation of order parameters and form factors
+    publisher: Zenodo
+  _source:
+    api: datacite
+    doi: 10.5281/zenodo.11614468
+    spdxLicenseList: 3.29.0
+    retrieved: '2026-09-24'

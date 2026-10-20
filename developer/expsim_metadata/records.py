@@ -6,8 +6,12 @@ block is rewritten, so the hand-written comments most experiment records carry
 survive a run. What is normalised beyond the block are the date fields, which
 YAML would otherwise parse into date objects the schemas reject.
 
-``process`` is one record end to end -- read, resolve the DOI, enrich, write --
-and is what the command line maps over the databank.
+``process`` is one record end to end -- read, resolve the DOI, enrich, compact,
+write -- and is what the command line maps over the databank.
+
+What is written is the *compact* block: everything the record would inherit
+from the ``bioschema_properties.yaml`` templates above it is left out, so a
+README states only what is specific to it (see ``expsim_metadata.inheritance``).
 """
 
 import json
@@ -22,7 +26,8 @@ from .bioschema import enrich
 from .constants import BLOCK_KEY_RE, BLOCK_ORDER, DATE_FIELDS, FOLD_WIDTH, FOLDABLE, LEGACY_SENTINEL
 from .fields import deprecated_keys, record_dois, record_kind
 from .helpers import parse_publication
-from .licenses import compact_license, dataset_license
+from .inheritance import TEMPLATE_FILENAME, compact_block, inherited_for, merge_blocks, templates_for
+from .licenses import compact_license
 from .registries import from_crossref, from_datacite, resolve_doi, with_dataset_license
 
 
@@ -116,7 +121,10 @@ def render_block(block):
 def volatile_stripped(block):
     """A block with ``retrieved`` removed, for change detection.
 
-    Without this the retrieval date alone would make every rerun a diff.
+    Without this the retrieval date alone would make every rerun a diff. Callers
+    compare *resolved* blocks, so a block that only changed how much of itself
+    it inherits -- the full blocks written before inheritance, say -- keeps its
+    date too.
     """
     if not isinstance(block, dict):
         return block
@@ -222,6 +230,11 @@ def process(path, spdx, names, cache_dir, dry_run=False):
     for key, replacement in deprecated_keys(readme, kind).items():
         print(f"  deprecated: {key} is no longer accepted; rename it to {replacement}")
 
+    inherited = inherited_for(path)
+    if not templates_for(path):
+        print(f"  warning: no {TEMPLATE_FILENAME} above this record; "
+              "the properties its kind shares will be missing")
+
     existing = readme.get("bioschema_properties")
 
     block, notes = None, []
@@ -241,15 +254,15 @@ def process(path, spdx, names, cache_dir, dry_run=False):
             block, notes = mapper(payload, doi, readme, spdx)
     if block is None:
         # unpublished/<slug> records have nothing to look up, but they are still
-        # data this repository distributes, so they carry the dataset licence.
+        # data this repository distributes, so they inherit the dataset licence.
         block = {"_source": {"api": None, "doi": None}}
     for note in notes:
         print(f"  note: {note}")
 
-    block = enrich(block, readme, path, kind, dois, names)
+    block = enrich(block, readme, path, kind, dois, names, inherited)
     if kind == "experiments":
-        block = with_dataset_license(block, dataset_license(spdx), dois.article)
-    block = ordered(prune(block))
+        block = with_dataset_license(block, inherited.get("license"), dois.article)
+    block = compact_block(ordered(prune(block)), inherited)
 
     text, dates_changed = normalize_dates(original, kind)
     # Both kinds: the field is retired once ``citation`` carries its content, and
@@ -257,7 +270,8 @@ def process(path, spdx, names, cache_dir, dry_run=False):
     # additionalProperties: false, so a record keeping it would not validate.
     text, _ = drop_publication(text, block)
 
-    if volatile_stripped(existing) == volatile_stripped(block):
+    if (isinstance(existing, dict) and volatile_stripped(merge_blocks(inherited, existing))
+            == volatile_stripped(merge_blocks(inherited, block))):
         block.setdefault("_source", {})["retrieved"] = (
             ((existing or {}).get("_source") or {}).get("retrieved") or date.today().isoformat()
         )
