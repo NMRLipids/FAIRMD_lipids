@@ -1,8 +1,9 @@
 """
 A library for formatting YAML files according to the project's style guide.
 
-Exports one main function, :func:`encode_canonical_yaml`, which serializes a Python object to YAML
-and folds any values that run past ``FOLD_WIDTH`` columns into ``>`` blocks.
+Exports :func:`encode_canonical_yaml`, which serializes a Python object to YAML and folds any
+values that run past ``FOLD_WIDTH`` columns into ``>`` blocks, and :func:`fold_long_lines`, which
+does the folding alone on existing YAML text.
 """
 
 import re
@@ -80,7 +81,7 @@ def _rewrap_folded(node, lines):
     return first, stop, new
 
 
-def _fold_file(text):
+def fold_long_lines(text):
     """The text with overlong values folded, and ``(line, reason)`` for those left."""
     root = yaml.compose(text, Loader=yaml.SafeLoader)
     if root is None:
@@ -119,4 +120,4 @@ def _fold_file(text):
 def encode_canonical_yaml(data) -> str:
     """Serialize data using the project YAML formatting rules."""
     text = yaml.dump(data, sort_keys=False, allow_unicode=True, default_flow_style=False, width=4096)
-    return _fold_file(text)[0]
+    return fold_long_lines(text)[0]

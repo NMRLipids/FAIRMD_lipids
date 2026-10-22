@@ -32,10 +32,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
-import yaml
 
-
-def _load_encoder():
+def _load_folder():
     """Load the formatter module without importing ``fairmd.lipids``."""
     module_path = (
         Path(__file__).resolve().parents[1]
@@ -50,10 +48,10 @@ def _load_encoder():
         raise ImportError(f"Cannot load YAML formatter from {module_path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return module.encode_canonical_yaml
+    return module.fold_long_lines
 
 
-encode_canonical_yaml = _load_encoder()
+fold_long_lines = _load_folder()
 
 
 def main():
@@ -65,7 +63,9 @@ def main():
     changed = 0
     for path in args.files:
         original = path.read_text(encoding="utf-8")
-        folded = encode_canonical_yaml(yaml.safe_load(original))
+        folded, left = fold_long_lines(original)
+        for line, reason in left:
+            print(f"{path}:{line}: left as is: {reason}")
         if folded != original:
             changed += 1
             if not args.check:
