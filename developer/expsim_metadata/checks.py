@@ -17,9 +17,9 @@ import yaml
 from jsonschema import Draft7Validator
 
 from .constants import DATE_RE, ORCID_RE
-from .fields import deprecated_keys, record_dois, record_kind
+from .fields import deprecated_keys, record_dois, record_kind, template_dir_of
 from .helpers import clean_text, normalize_doi
-from .inheritance import NOT_INHERITED, TEMPLATE_FILENAME, is_template, load_template, resolved_for, templates_for
+from .inheritance import NOT_INHERITED, TEMPLATE_FILENAME, is_template, load_template, resolved_for, template_for
 
 # Read from the source tree rather than the installed package, like the
 # inheritance rules: this tool runs from a plain checkout.
@@ -40,9 +40,15 @@ def check_template(path):
 
     A template is a partial block, so it is held to the block schema of its
     kind with nothing required. What it may not hold are the properties that
-    identify one record, which the inheritance ignores in a template: setting
-    one there is a mistake that would otherwise pass silently.
+    identify one record, which the inheritance ignores in a template, and it
+    must sit in a kind folder -- ``Simulations``, ``experiments/OrderParameters``,
+    ``experiments/FormFactors`` -- since no other folder is read. Either mistake
+    would otherwise pass silently.
     """
+    if template_dir_of(path) != Path(path).resolve().parent:
+        return [("ERROR", f"ERROR: {path}: only a kind folder's template is inherited "
+                          "(Simulations, experiments/OrderParameters, experiments/FormFactors); "
+                          "no record reads this one")]
     try:
         template = load_template(path)
     except (yaml.YAMLError, ValueError) as exc:
@@ -70,8 +76,8 @@ def check(path, spdx, strict=False):
     record the workflow has not reached yet.
 
     The checks read the resolved block, so an inherited licence counts. A record
-    with no template above it fails: its stored block lacks everything its kind
-    shares, and nothing would supply it.
+    whose kind folder holds no template fails: its stored block lacks everything
+    its kind shares, and nothing would supply it.
     """
     if is_template(path):
         return check_template(path)
@@ -93,8 +99,8 @@ def check(path, spdx, strict=False):
     def warn(message):
         found.append(("WARNING", f"WARNING: {path}: {message}"))
 
-    if not templates_for(path):
-        error(f"no {TEMPLATE_FILENAME} above this record: the properties its kind shares are missing")
+    if template_for(path) is None:
+        error(f"no {TEMPLATE_FILENAME} in this record's kind folder: the properties its kind shares are missing")
 
     resolved = (block.get("_source") or {}).get("doi") is not None
     # name and description are composed from the record itself, so unlike the

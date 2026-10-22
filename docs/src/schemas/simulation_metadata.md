@@ -324,32 +324,32 @@ bioschema_properties:
 
 Much of the block follows from the kind of entry alone: every simulation carries the same EDAM
 keywords and the same EDAM technique term, and every experiment the databank's licence. Those are
-written once, in a `bioschema_properties.yaml` template in a folder of the data repository, and
-every README below that folder inherits them. The templates are `Simulations/`,
-`experiments/` (the licence), `experiments/OrderParameters/` and `experiments/FormFactors/`
-(keywords, technique and measured variable). A README stores only what is specific to its entry,
-and the enrichment tooling leaves the inherited values out when it writes one.
+written once per kind, in a `bioschema_properties.yaml` template in the kind's folder of the data
+repository: `Simulations/`, `experiments/OrderParameters/` and `experiments/FormFactors/`. The
+experiment templates hold the licence, keywords, technique term and measured variable. A README
+stores only what is specific to its entry, and the enrichment tooling leaves the inherited values
+out when it writes one.
 
-The complete block is resolved by applying the templates of every folder from the kind's folder
-(`Simulations/` or `experiments/`) down to the entry's parent folder, outermost first, and the
-README's own block last. Each step is a recursive dict update:
+The complete block has two layers and no more: the kind's template, and the README's own block
+applied on top of it. No other folder is read, and a template anywhere else is rejected by
+`autocomplete_expsim_metadata.py --check`, which validates templates as well as READMEs. Applying
+the README on top is a recursive dict update:
 
-- a mapping is merged key by key, at every depth, and a scalar is replaced by the closer value;
-- a list is *extended*: inherited items first, then the closer level's own, without duplicates.
-  An entry's own `keywords` (its molecules) therefore add to the inherited EDAM terms rather than
+- a mapping is merged key by key, at every depth, and a scalar is replaced by the entry's value;
+- a list is *extended*: inherited items first, then the entry's own, without duplicates. An
+  entry's own `keywords` (its molecules) therefore add to the inherited EDAM terms rather than
   replacing them;
 - `license`, `articleLicense`, `isPartOf`, `creator`, `citation`, `distribution` and `isBasedOn`
-  belong to one entry and are never merged into: a closer value replaces the inherited one whole.
-  Merged key by key, an entry's own CC0 licence would keep the inherited CC-BY `name` and
+  belong to one entry and are never merged into: the entry's value replaces the inherited one
+  whole. Merged key by key, an entry's own CC0 licence would keep the inherited CC-BY `name` and
   `sameAs`;
 - `name`, `alternateName`, `description`, `sameAs` and `_source` identify one entry and are never
-  inherited. A template setting one is rejected by `autocomplete_expsim_metadata.py --check`,
-  which validates templates as well as READMEs.
+  inherited; a template setting one fails `--check`.
 
-A template states only what is true of every entry below it, since an entry cannot remove an
-inherited list item. In Python, `System.bioschema` (and `Experiment.bioschema`) returns the
-resolved block, while `system.readme["bioschema_properties"]` stays the stored one, so writing a
-README back never bakes inherited values into it. The rules are in
+A template states only what is true of every entry of its kind, since an entry cannot remove an
+inherited list item. In Python, `System` and `Experiment` are both a `MetadataProvider`:
+`metadata` is the README as stored, with nothing inherited into it, so writing it back never bakes
+inherited values in, and `bioschema` is the resolved two-layer block. The rules are in
 `fairmd.lipids.bioschema_inheritance`.
 
 ```yaml

@@ -98,8 +98,10 @@ VARIABLES = dict(_DATA["variables"])
 TRAJECTORY_FORMATS = dict(_DATA["trajectory_formats"])
 
 # The generated block carries no marker comment: it is found by its own
-# top-level key, always the last thing in the file. LEGACY_SENTINEL is kept only
-# so an older banner is stripped along with the block rather than stranded.
+# top-level key. It is appended, so it starts out as the last thing in the file,
+# but it does not always stay there -- GlobalAnalysis re-serialises a README
+# with the keys it adds after it. LEGACY_SENTINEL is kept only so an older
+# banner is stripped along with the block rather than stranded.
 BLOCK_KEY = "bioschema_properties:"
 BLOCK_KEY_RE = re.compile(rf"^{re.escape(BLOCK_KEY)}", re.MULTILINE)
 LEGACY_SENTINEL = "# --- bioschema_properties:"

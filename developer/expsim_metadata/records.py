@@ -10,8 +10,8 @@ YAML would otherwise parse into date objects the schemas reject.
 write -- and is what the command line maps over the databank.
 
 What is written is the *compact* block: everything the record would inherit
-from the ``bioschema_properties.yaml`` templates above it is left out, so a
-README states only what is specific to it (see ``expsim_metadata.inheritance``).
+from its kind's ``bioschema_properties.yaml`` template is left out, so a README
+states only what is specific to it (see ``expsim_metadata.inheritance``).
 """
 
 import json
@@ -26,7 +26,7 @@ from .bioschema import enrich
 from .constants import BLOCK_KEY_RE, BLOCK_ORDER, DATE_FIELDS, FOLD_WIDTH, FOLDABLE, LEGACY_SENTINEL
 from .fields import deprecated_keys, record_dois, record_kind
 from .helpers import parse_publication
-from .inheritance import TEMPLATE_FILENAME, compact_block, inherited_for, merge_blocks, templates_for
+from .inheritance import TEMPLATE_FILENAME, compact_block, inherited_for, merge_blocks, template_for
 from .licenses import compact_license
 from .registries import from_crossref, from_datacite, resolve_doi, with_dataset_license
 
@@ -69,6 +69,27 @@ def strip_existing_block(text):
     if index == -1:
         return text if text.endswith("\n") else text + "\n"
     return text[:index]
+
+
+def replace_block(text, rendered):
+    """``text`` with its generated block replaced by ``rendered``; nothing else changes.
+
+    A README without a block gets it appended. One with a block has only that
+    block's own lines rewritten, wherever it sits: it is appended the first
+    time, but ``match_experiments`` in GlobalAnalysis re-serialises a README
+    and puts a key it adds -- ``EXPERIMENT`` -- after it, and 33 BilayerData
+    simulations are laid out that way. Cutting from the block to the end of the
+    file, as ``strip_existing_block`` does, would delete that section.
+
+    An older block behind ``LEGACY_SENTINEL`` predates any such key and is
+    still stripped to the end of the file along with its banner.
+    """
+    match = BLOCK_KEY_RE.search(text)
+    if match is None or LEGACY_SENTINEL in text:
+        return strip_existing_block(text) + rendered
+    lines = text.splitlines(keepends=True)
+    start = text.count("\n", 0, match.start())
+    return "".join(lines[:start]) + rendered + "".join(lines[_node_end(lines, start):])
 
 
 class BlockDumper(yaml.SafeDumper):
@@ -231,8 +252,8 @@ def process(path, spdx, names, cache_dir, dry_run=False):
         print(f"  deprecated: {key} is no longer accepted; rename it to {replacement}")
 
     inherited = inherited_for(path)
-    if not templates_for(path):
-        print(f"  warning: no {TEMPLATE_FILENAME} above this record; "
+    if template_for(path) is None:
+        print(f"  warning: no {TEMPLATE_FILENAME} in this record's kind folder; "
               "the properties its kind shares will be missing")
 
     existing = readme.get("bioschema_properties")
@@ -278,7 +299,7 @@ def process(path, spdx, names, cache_dir, dry_run=False):
     else:
         block.setdefault("_source", {})["retrieved"] = date.today().isoformat()
 
-    updated = strip_existing_block(text) + render_block(block)
+    updated = replace_block(text, render_block(block))
     if updated == original:
         return False
     if not dry_run:

@@ -1,25 +1,26 @@
 """
-Inheritance of ``bioschema_properties`` from the folders above a record.
+Inheritance of ``bioschema_properties`` from the template of a record's kind.
 
 Much of a record's Bioschemas block follows from the kind of record alone: every
 simulation carries the same EDAM keywords, every order-parameter experiment the
-same measured variable, every experiment the databank's own licence. Those values
-are written once, in a ``bioschema_properties.yaml`` template in a folder, and
-inherited by every ``README.yaml`` below it. A README stores only what is
-specific to its record.
+same measured variable and the databank's own licence. Those values are written
+once, in a ``bioschema_properties.yaml`` template in the kind's folder --
+``Simulations``, ``experiments/OrderParameters``, ``experiments/FormFactors`` --
+and inherited by every ``README.yaml`` of that kind. A README stores only what
+is specific to its record.
 
-The *resolved* block is the record's own block applied on top of the templates
-of every folder from the kind base (``Simulations`` or ``experiments``) down to
-the record's parent folder, outermost first. Applying one level on top of another
-is a recursive dict update, with two departures:
+The *resolved* block has two layers and no more: the kind's template, and the
+record's own block applied on top of it. No folder between the two is read.
+Applying the record on top of the template is a recursive dict update, with two
+departures:
 
-- lists are *extended*: inherited items first, then the closer level's own,
-  without duplicates. A plain update would let a record's own ``keywords`` -- its
+- lists are *extended*: inherited items first, then the record's own, without
+  duplicates. A plain update would let a record's own ``keywords`` -- its
   molecule names -- replace the inherited ontology terms;
 - the properties in :data:`REPLACED_WHOLE` are value objects or lists belonging
-  to one record and are never merged into: a closer value replaces the inherited
-  one whole. Merged key by key, a record's own ``license`` would keep the
-  inherited licence's ``name`` and ``sameAs``.
+  to one record and are never merged into: the record's value replaces the
+  inherited one whole. Merged key by key, a record's own ``license`` would keep
+  the inherited licence's ``name`` and ``sameAs``.
 
 The properties in :data:`NOT_INHERITED` identify one record or record where its
 metadata came from, and a template value for them is ignored.
@@ -40,7 +41,7 @@ from pathlib import Path
 import yaml
 
 TEMPLATE_FILENAME = "bioschema_properties.yaml"
-"""Name of the template file a folder may hold."""
+"""Name of the template file a kind's folder may hold."""
 
 NOT_INHERITED = frozenset({"_source", "name", "alternateName", "description", "sameAs"})
 """Top-level properties a template may not set: the identity and provenance of one record."""
@@ -75,8 +76,8 @@ def _update(base, override):
 def merge_blocks(parent: dict | None, child: dict | None) -> dict:
     """Apply ``child`` on top of the inherited ``parent`` block.
 
-    :param parent: the inherited block; its :data:`NOT_INHERITED` keys are dropped.
-    :param child: the closer level, a template or the record's own block.
+    :param parent: the inherited block, a kind's template; its :data:`NOT_INHERITED` keys are dropped.
+    :param child: the record's own block.
     :return: a new dict; neither input is modified.
     """
     parent = {key: value for key, value in (parent or {}).items() if key not in NOT_INHERITED}
@@ -133,26 +134,13 @@ def compact_block(block: dict, inherited: dict | None) -> dict:
     return out
 
 
-def template_paths(record_dir, base_dir) -> list[Path]:
-    """The templates a record inherits from, outermost first.
+def template_path(template_dir) -> Path | None:
+    """The template a kind's folder holds, or None when it holds none.
 
-    :param record_dir: the folder holding the record's ``README.yaml``.
-    :param base_dir: the kind base, e.g. the ``Simulations`` or ``experiments`` folder.
-    :return: existing template files from ``base_dir`` down to the record's parent
-             folder; empty when the record is not below ``base_dir``.
+    :param template_dir: the kind's folder, e.g. ``Simulations`` or ``experiments/OrderParameters``.
     """
-    record_dir = Path(record_dir).resolve()
-    base_dir = Path(base_dir).resolve()
-    try:
-        relative = record_dir.relative_to(base_dir)
-    except ValueError:
-        return []
-    if not relative.parts:
-        return []
-    folders = [base_dir]
-    for part in relative.parts[:-1]:
-        folders.append(folders[-1] / part)
-    return [folder / TEMPLATE_FILENAME for folder in folders if (folder / TEMPLATE_FILENAME).is_file()]
+    path = Path(template_dir) / TEMPLATE_FILENAME
+    return path if path.is_file() else None
 
 
 @lru_cache(maxsize=None)
@@ -174,26 +162,23 @@ def load_template(path) -> dict:
     return copy.deepcopy(_read_template(str(path), path.stat().st_mtime_ns))
 
 
-def inherited_block(record_dir, base_dir) -> dict:
-    """The block a record inherits: its templates merged outermost first.
+def inherited_block(template_dir) -> dict:
+    """The block every record of a kind inherits: its template, identity keys dropped.
 
-    :param record_dir: the folder holding the record's ``README.yaml``.
-    :param base_dir: the kind base, e.g. the ``Simulations`` or ``experiments`` folder.
-    :return: a new dict, empty when no template applies.
+    :param template_dir: the kind's folder, e.g. ``Simulations`` or ``experiments/OrderParameters``.
+    :return: a new dict, empty when the folder holds no template.
     """
-    inherited = {}
-    for path in template_paths(record_dir, base_dir):
-        template = {key: value for key, value in load_template(path).items() if key not in NOT_INHERITED}
-        inherited = merge_blocks(inherited, template)
-    return inherited
+    path = template_path(template_dir)
+    if path is None:
+        return {}
+    return {key: value for key, value in load_template(path).items() if key not in NOT_INHERITED}
 
 
-def resolve_block(block: dict | None, record_dir, base_dir) -> dict:
-    """The record's complete Bioschemas block: what it inherits, updated by its own.
+def resolve_block(block: dict | None, template_dir) -> dict:
+    """The record's complete Bioschemas block: its kind's template, updated by its own.
 
     :param block: the ``bioschema_properties`` block stored in the README.
-    :param record_dir: the folder holding the record's ``README.yaml``.
-    :param base_dir: the kind base, e.g. the ``Simulations`` or ``experiments`` folder.
+    :param template_dir: the kind's folder, e.g. ``Simulations`` or ``experiments/OrderParameters``.
     :return: a new dict; the stored block is not modified.
     """
-    return merge_blocks(inherited_block(record_dir, base_dir), block)
+    return merge_blocks(inherited_block(template_dir), block)

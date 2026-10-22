@@ -1,8 +1,8 @@
 """
 The inheritance rules, shared with the package rather than copied.
 
-What a record inherits from the ``bioschema_properties.yaml`` templates above it,
-and how a block is compacted against them, is decided in one place:
+What a record inherits from the ``bioschema_properties.yaml`` template of its
+kind, and how a block is compacted against it, is decided in one place:
 ``src/fairmd/lipids/bioschema_inheritance.py``. The package resolves blocks with
 it when a record is loaded, and this tool compacts them with it when one is
 written, so the two can never disagree.
@@ -16,7 +16,7 @@ import importlib.util
 import sys
 from pathlib import Path
 
-from .fields import kind_base_of
+from .fields import template_dir_of
 
 SOURCE = Path(__file__).resolve().parents[2] / "src" / "fairmd" / "lipids" / "bioschema_inheritance.py"
 _MODULE_NAME = "_expsim_bioschema_inheritance"
@@ -46,16 +46,16 @@ def is_template(path):
     return Path(path).name == TEMPLATE_FILENAME
 
 
-def templates_for(path):
-    """The templates a ``README.yaml`` inherits from, outermost first."""
-    record_dir = Path(path).resolve().parent
-    return _rules.template_paths(record_dir, kind_base_of(path))
+def template_for(path):
+    """The template a ``README.yaml`` inherits from, or None when its kind has none."""
+    template_dir = template_dir_of(path)
+    return _rules.template_path(template_dir) if template_dir else None
 
 
 def inherited_for(path):
-    """The block a ``README.yaml`` inherits from the templates above it."""
-    record_dir = Path(path).resolve().parent
-    return _rules.inherited_block(record_dir, kind_base_of(path))
+    """The block a ``README.yaml`` inherits from its kind's template."""
+    template_dir = template_dir_of(path)
+    return _rules.inherited_block(template_dir) if template_dir else {}
 
 
 def resolved_for(path, block):

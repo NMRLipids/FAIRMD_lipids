@@ -33,9 +33,21 @@ def systems():
     return initialize_databank()
 
 
+def test_a_system_is_a_metadata_provider(systems):
+    from fairmd.lipids import FMDL_SIMU_PATH
+    from fairmd.lipids._base import MetadataProvider
+    from fairmd.lipids.core import System
+
+    assert System.bioschema_template_dir() == FMDL_SIMU_PATH
+    for system in systems:
+        assert isinstance(system, MetadataProvider)
+        # metadata is the README as stored: nothing inherited into it.
+        assert system.metadata is system.readme
+
+
 def test_every_toy_system_stores_a_compact_block(systems):
     for system in systems:
-        stored = system.readme["bioschema_properties"]
+        stored = system.metadata["bioschema_properties"]
         assert not [k for k in stored["keywords"] if isinstance(k, dict)], system
         assert all(isinstance(t, str) for t in stored["measurementTechnique"]), system
 

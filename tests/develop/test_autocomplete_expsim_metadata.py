@@ -53,9 +53,10 @@ SCHEMA_DIR = Path(__file__).resolve().parents[2] / "src" / "fairmd" / "lipids" /
 # The templates a record inherits from
 #
 # BilayerData states the properties a whole kind of record shares once, in a
-# bioschema_properties.yaml in the kind's folder. The simulation template is the
-# ToyData copy, so the two cannot drift apart; ToyData has no experiments, so the
-# experiment templates are spelled out here as BilayerData has them.
+# bioschema_properties.yaml in the kind's folder; a record inherits that one
+# template and nothing else. The simulation template is the ToyData copy, so the
+# two cannot drift apart; ToyData has no experiments, so the experiment template
+# is spelled out here as BilayerData has it.
 # ---------------------------------------------------------------------------
 
 TEMPLATE = "bioschema_properties.yaml"
@@ -87,8 +88,8 @@ ORDER_PARAMETER = {
     "unitText": "dimensionless",
 }
 EXPERIMENT_TEMPLATES = {
-    "experiments": {"license": DATASET_LICENSE},
     "experiments/OrderParameters": {
+        "license": DATASET_LICENSE,
         "keywords": [
             edam("topic_0593", "NMR"),
             edam("topic_0820", "Membrane and lipoproteins"),
@@ -1043,7 +1044,7 @@ def test_a_ph_range_is_bounded_to_the_ph_scale():
 # Inheritance
 #
 # A README stores only what is specific to its record; what its kind shares is
-# inherited from the bioschema_properties.yaml templates above it. The rules are
+# inherited from the bioschema_properties.yaml template of its kind. The rules are
 # the package's, src/fairmd/lipids/bioschema_inheritance.py, loaded by path.
 # ---------------------------------------------------------------------------
 
@@ -1149,7 +1150,7 @@ def test_a_record_with_no_template_above_it_fails_check(generated):
         template.unlink()
 
     errors = [message for level, message in mod.check(paths[0], None) if level == "ERROR"]
-    assert any(f"no {TEMPLATE} above this record" in m for m in errors)
+    assert any(f"no {TEMPLATE} in this record's kind folder" in m for m in errors)
 
 
 def test_check_validates_a_template(tmp_path):
@@ -1162,6 +1163,13 @@ def test_check_validates_a_template(tmp_path):
     typo.write_text(yaml.safe_dump({"keyword": ["POPC"]}), encoding="utf-8")
     errors = [message for level, message in checks.check(typo, None) if level == "ERROR"]
     assert any("'keyword'" in m for m in errors), errors
+
+    # Only a kind folder's template is read, so one anywhere else is a mistake.
+    for misplaced in (tmp_path / "experiments", tmp_path / "experiments" / "OrderParameters" / "10.1039"):
+        misplaced.mkdir(parents=True, exist_ok=True)
+        (misplaced / TEMPLATE).write_text(yaml.safe_dump({"publisher": "x"}), encoding="utf-8")
+        errors = [message for level, message in checks.check(misplaced / TEMPLATE, None) if level == "ERROR"]
+        assert any("no record reads this one" in m for m in errors), (misplaced, errors)
 
     record_only = tmp_path / "experiments" / "OrderParameters" / TEMPLATE
     record_only.write_text(yaml.safe_dump({"name": "every NMR record", "_source": {"api": None}}), encoding="utf-8")
@@ -1196,3 +1204,40 @@ def test_the_inheritance_rules_load_without_the_package():
         "assert not [m for m in sys.modules if m.split('.')[0] == 'fairmd'], 'fairmd was imported'"
     )
     subprocess.run([sys.executable, "-I", "-c", code, str(DEVELOPER_DIR)], check=True)
+
+
+def test_a_section_after_the_block_survives_a_rewrite(generated_simulation):
+    """GlobalAnalysis re-serialises a README and can leave EXPERIMENT after the block.
+
+    33 BilayerData simulations are laid out that way. Rewriting the block must
+    replace its own lines only, not cut the file from the block to its end.
+    """
+    mod, path, _ = generated_simulation
+    records = load_expsim_module("expsim_metadata.records")
+    after = "EXPERIMENT:\n  ORDERPARAMETER:\n    DMPC: []\n  FORMFACTOR:\n  - 10.1016/j.bbamem.2011.07.022/4\n"
+    compact_text = path.read_text(encoding="utf-8")
+    # A full block, from before inheritance, so that a rewrite is due.
+    full = records.render_block(resolved(path))
+    path.write_text(records.strip_existing_block(compact_text) + full + after, encoding="utf-8")
+
+    root = mod.data_root_of(path)
+    cache = root / "cache"
+    assert mod.process(path, mod.load_spdx(cache), mod.molecule_names(root), cache) is True
+    text = path.read_text(encoding="utf-8")
+    readme = yaml.safe_load(text)
+    # The section after the block is kept, byte for byte and in its place ...
+    assert text.endswith(after)
+    assert list(readme)[-2:] == ["bioschema_properties", "EXPERIMENT"]
+    # ... the block is compact again, and was built from that section too.
+    block = readme["bioschema_properties"]
+    assert not [k for k in block["keywords"] if isinstance(k, dict)]
+    assert block["isBasedOn"] == ["experiments/FormFactors/10.1016/j.bbamem.2011.07.022/4"]
+
+
+def test_replace_block_appends_when_there_is_none():
+    records = load_expsim_module("expsim_metadata.records")
+    rendered = records.render_block({"name": "x"})
+    assert records.replace_block("A: 1", rendered) == "A: 1\n" + rendered
+    assert records.replace_block("A: 1\n" + rendered + "B: 2\n", records.render_block({"name": "y"})) == (
+        "A: 1\n" + records.render_block({"name": "y"}) + "B: 2\n"
+    )

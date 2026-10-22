@@ -8,6 +8,7 @@ from typing import Any, Generic, TypeVar
 
 from tqdm import tqdm
 
+from fairmd.lipids.bioschema_inheritance import resolve_block
 from fairmd.lipids.molecules import Lipid, Molecule, NonLipid, lipids_set, solubles_set
 
 
@@ -82,6 +83,44 @@ class SampleComposition(ABC):
     @abstractmethod
     def solution_composition(self, basis: typing.Literal["molar", "mass"] = "molar") -> dict[str, float]:
         """Return the composition of the solution in system."""
+
+
+class MetadataProvider(ABC):
+    """Abstract base class for a databank record that carries metadata.
+
+    A record exposes two things:
+
+    - :attr:`metadata` -- the record's own metadata, exactly as its file stores
+      it. Nothing is inherited into it, so writing it back to the file never
+      bakes shared values in.
+    - :attr:`bioschema` -- the record's Bioschemas block, in two layers: the
+      ``bioschema_properties.yaml`` template of the record's kind, and the
+      record's own ``bioschema_properties`` applied on top of it. There is one
+      template per kind, in :meth:`bioschema_template_dir`, and no deeper chain;
+      the merge rules are in :mod:`fairmd.lipids.bioschema_inheritance`.
+    """
+
+    @property
+    @abstractmethod
+    def metadata(self) -> dict:
+        """The record's own metadata, as stored; nothing inherited."""
+
+    @classmethod
+    @abstractmethod
+    def bioschema_template_dir(cls) -> str:
+        """The folder holding the ``bioschema_properties.yaml`` every record of this kind inherits."""
+
+    @property
+    def bioschema(self) -> dict | None:
+        """The record's complete Bioschemas ``Dataset`` block.
+
+        :return: the kind's template updated by the record's own block, as a new
+                 dict; None when the record carries no block yet.
+        """
+        block = self.metadata.get("bioschema_properties")
+        if block is None:
+            return None
+        return resolve_block(block, self.bioschema_template_dir())
 
 
 T = TypeVar("T")

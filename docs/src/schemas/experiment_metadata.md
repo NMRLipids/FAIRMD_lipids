@@ -210,8 +210,8 @@ near-identical entries apart.
 
 The block a README stores leaves out everything its kind shares: the databank's licence, the EDAM
 keywords and technique term, and the measured variable are
-[inherited](bioschemainherit) from the `experiments/` folder and its `OrderParameters/` or
-`FormFactors/` subfolder. Its own `measurementTechnique` adds the CHMO term for the method. The
+[inherited](bioschemainherit) from the template in `experiments/OrderParameters/` or
+`experiments/FormFactors/`. Its own `measurementTechnique` adds the CHMO term for the method. The
 example is such a stored block:
 
 ```yaml

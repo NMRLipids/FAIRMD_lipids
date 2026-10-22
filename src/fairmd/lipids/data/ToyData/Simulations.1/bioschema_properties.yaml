@@ -1,13 +1,13 @@
 # A copy of BilayerData's Simulations/bioschema_properties.yaml; keep the two in step.
 #
-# Bioschemas properties inherited by every simulation below this folder.
+# Bioschemas properties inherited by every simulation.
 #
 # The `bioschema_properties` block of a README.yaml under Simulations/ holds only
-# what is specific to that record. Its complete block is that block applied on top
-# of this file, and of any bioschema_properties.yaml in a folder between here and
-# the record: a recursive dict update in which lists are extended, and in which a
-# few properties that belong to one record are never merged. The rules are in
-# FAIRMD_lipids, src/fairmd/lipids/bioschema_inheritance.py.
+# what is specific to that record. Its complete block has two layers: this file,
+# and the record's own block applied on top of it -- a recursive dict update in
+# which lists are extended, and in which a few properties that belong to one
+# record are never merged. No other bioschema_properties.yaml is read. The rules
+# are in FAIRMD_lipids, src/fairmd/lipids/bioschema_inheritance.py.
 #
 # State here only what is true of every simulation by definition. A record cannot
 # remove an inherited list item, so something true of most simulations belongs in

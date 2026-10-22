@@ -14,12 +14,11 @@ from typing import Any
 import yaml
 
 from fairmd.lipids import FMDL_SIMU_PATH
-from fairmd.lipids._base import CollectionSingleton, SampleComposition
-from fairmd.lipids.bioschema_inheritance import resolve_block
+from fairmd.lipids._base import CollectionSingleton, MetadataProvider, SampleComposition
 from fairmd.lipids.molecules import Lipid, NonLipid, lipids_set, solubles_set
 
 
-class System(MutableMapping, SampleComposition):
+class System(MutableMapping, SampleComposition, MetadataProvider):
     """
     Main Databank single object.
 
@@ -73,24 +72,17 @@ class System(MutableMapping, SampleComposition):
         return self._store
 
     @property
-    def bioschema(self) -> dict | None:
-        """Get the system's complete Bioschemas ``Dataset`` block.
+    def metadata(self) -> dict:
+        """Get the system's own metadata, the README as stored; nothing inherited.
 
-        The README stores only what is specific to this system; the rest is
-        inherited from the ``bioschema_properties.yaml`` templates in the folders
-        above it (see :mod:`fairmd.lipids.bioschema_inheritance`). This returns the
-        two merged, as a new dict: ``readme["bioschema_properties"]`` stays the
-        stored block, so writing the README back never bakes inherited values in.
-
-        :return: the resolved block, or None when the system carries no block yet.
+        :return: dict-type README (dict)
         """
-        block = self._store.get("bioschema_properties")
-        if block is None:
-            return None
-        if "path" not in self._store:
-            msg = "System has no 'path', so the folders it inherits from are unknown."
-            raise ValueError(msg)
-        return resolve_block(block, os.path.join(FMDL_SIMU_PATH, self._store["path"]), FMDL_SIMU_PATH)
+        return self._store
+
+    @classmethod
+    def bioschema_template_dir(cls) -> str:
+        """Simulations inherit the template in the simulations folder itself."""
+        return FMDL_SIMU_PATH
 
     @property
     def n_lipids(self) -> int:

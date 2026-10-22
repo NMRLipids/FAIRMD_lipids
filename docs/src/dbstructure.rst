@@ -22,7 +22,6 @@ It is connected into the FAIRMD Lipids repository as a submodule into :file:`./D
    │                   ├── data-piece.json
    │                   └── README.yaml
    ├── experiments/
-   │   ├── bioschema_properties.yaml
    │   ├── FormFactors/
    │   │   ├── bioschema_properties.yaml
    │   │   └── 10.1001/
@@ -68,11 +67,13 @@ For more information see :doc:`schemas/simulation_metadata`.
 
 Inherited Bioschemas properties
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A :file:`bioschema_properties.yaml` in a folder holds the Bioschemas properties that every
-``README.yaml`` below that folder shares -- for instance the ontology terms every simulation
-carries. Each ``README.yaml`` then stores only what is specific to its own entry, and
-:py:attr:`fairmd.lipids.core.System.bioschema` returns the two merged. The rules are in
-:py:mod:`fairmd.lipids.bioschema_inheritance`; see :ref:`bioschemainherit`.
+A :file:`bioschema_properties.yaml` in a kind's folder -- :file:`Simulations`,
+:file:`experiments/OrderParameters`, :file:`experiments/FormFactors` -- holds the Bioschemas
+properties that every ``README.yaml`` of that kind shares, for instance the ontology terms every
+simulation carries. Each ``README.yaml`` then stores only what is specific to its own entry.
+``MetadataProvider`` (in ``fairmd.lipids._base``) gives every record both views: ``metadata`` is the
+README as stored, and ``bioschema`` is the template and the README's block merged. The rules are
+in :py:mod:`fairmd.lipids.bioschema_inheritance`; see :ref:`bioschemainherit`.
 
 Simulation computed properties
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

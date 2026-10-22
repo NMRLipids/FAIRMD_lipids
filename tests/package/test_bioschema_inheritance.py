@@ -1,5 +1,5 @@
 """
-The inheritance of ``bioschema_properties`` from the templates above a record.
+The inheritance of ``bioschema_properties`` from the template of a record's kind.
 
 -------------------------------------------------------------------------------
 NOTE: globally import of fairmd-lipids is **STRICTLY FORBIDDEN** because it
@@ -174,131 +174,98 @@ def test_compacting_against_nothing_changes_nothing(rules):
 
 
 # ---------------------------------------------------------------------------
-# The chain of folders
+# Two layers: the kind's template, then the record
 # ---------------------------------------------------------------------------
 
 
-def test_templates_apply_outermost_first(rules, tmp_path):
-    base = tmp_path / "experiments"
-    write_template(base, {"license": CC_BY, "keywords": [BIOPHYSICS], "publisher": "outer"})
-    write_template(base / "OrderParameters", {"keywords": [MD_TOPIC], "publisher": "inner"})
-    record = base / "OrderParameters" / "10.1039" / "B508190D" / "1"
-    record.mkdir(parents=True)
+def test_a_record_inherits_its_kind_template(rules, tmp_path):
+    kind = tmp_path / "experiments" / "OrderParameters"
+    write_template(kind, {"license": CC_BY, "keywords": [BIOPHYSICS]})
 
-    assert rules.template_paths(record, base) == [
-        (base / TEMPLATE_FILENAME).resolve(),
-        (base / "OrderParameters" / TEMPLATE_FILENAME).resolve(),
-    ]
-    assert rules.inherited_block(record, base) == {
-        "license": CC_BY,
-        "keywords": [BIOPHYSICS, MD_TOPIC],
-        "publisher": "inner",
-    }
-    resolved = rules.resolve_block({"name": "x", "keywords": ["DMPC"]}, record, base)
-    assert resolved == {
+    assert rules.template_path(kind) == kind / TEMPLATE_FILENAME
+    assert rules.inherited_block(kind) == {"license": CC_BY, "keywords": [BIOPHYSICS]}
+    assert rules.resolve_block({"name": "x", "keywords": ["DMPC"]}, kind) == {
         "name": "x",
-        "keywords": [BIOPHYSICS, MD_TOPIC, "DMPC"],
+        "keywords": [BIOPHYSICS, "DMPC"],
         "license": CC_BY,
-        "publisher": "inner",
     }
 
 
-def test_a_template_in_the_record_folder_itself_is_not_inherited(rules, tmp_path):
-    base = tmp_path / "Simulations"
-    record = base / "aa0"
-    write_template(record, {"publisher": "nobody"})
-    assert rules.inherited_block(record, base) == {}
-
-
-def test_a_template_above_the_base_is_not_inherited(rules, tmp_path):
-    write_template(tmp_path, {"publisher": "nobody"})
-    base = tmp_path / "Simulations"
-    record = base / "aa0"
-    record.mkdir(parents=True)
-    assert rules.inherited_block(record, base) == {}
-
-
-def test_a_record_outside_the_base_inherits_nothing(rules, tmp_path):
-    base = tmp_path / "Simulations"
-    write_template(base, {"publisher": "Zenodo"})
-    elsewhere = tmp_path / "elsewhere" / "aa0"
-    elsewhere.mkdir(parents=True)
-    assert rules.inherited_block(elsewhere, base) == {}
-    assert rules.resolve_block({"name": "x"}, elsewhere, base) == {"name": "x"}
+def test_a_kind_without_a_template_inherits_nothing(rules, tmp_path):
+    assert rules.template_path(tmp_path) is None
+    assert rules.inherited_block(tmp_path) == {}
+    assert rules.resolve_block({"name": "x"}, tmp_path) == {"name": "x"}
 
 
 def test_identity_keys_in_a_template_are_ignored(rules, tmp_path):
-    base = tmp_path / "Simulations"
-    write_template(base, {"name": "every simulation", "_source": {"api": "x"}, "publisher": "Zenodo"})
-    record = base / "aa0"
-    record.mkdir(parents=True)
-    assert rules.inherited_block(record, base) == {"publisher": "Zenodo"}
+    write_template(tmp_path, {"name": "every simulation", "_source": {"api": "x"}, "publisher": "Zenodo"})
+    assert rules.inherited_block(tmp_path) == {"publisher": "Zenodo"}
 
 
 def test_an_edited_template_is_read_again(rules, tmp_path):
-    base = tmp_path / "Simulations"
-    path = write_template(base, {"publisher": "first"})
-    record = base / "aa0"
-    record.mkdir(parents=True)
-    assert rules.inherited_block(record, base) == {"publisher": "first"}
+    path = write_template(tmp_path, {"publisher": "first"})
+    assert rules.inherited_block(tmp_path) == {"publisher": "first"}
 
     path.write_text(yaml.safe_dump({"publisher": "second"}), encoding="utf-8")
     stat = path.stat()
     os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns + 1_000_000_000))
-    assert rules.inherited_block(record, base) == {"publisher": "second"}
+    assert rules.inherited_block(tmp_path) == {"publisher": "second"}
 
 
 def test_the_cached_template_cannot_be_changed_through_a_result(rules, tmp_path):
-    base = tmp_path / "Simulations"
-    path = write_template(base, {"keywords": [MD_TOPIC]})
-    record = base / "aa0"
-    record.mkdir(parents=True)
-
-    rules.inherited_block(record, base)["keywords"].append("leaked")
+    path = write_template(tmp_path, {"keywords": [MD_TOPIC]})
+    rules.inherited_block(tmp_path)["keywords"].append("leaked")
     rules.load_template(path)["keywords"].append("leaked")
-    assert rules.inherited_block(record, base) == {"keywords": [MD_TOPIC]}
+    assert rules.inherited_block(tmp_path) == {"keywords": [MD_TOPIC]}
 
 
 def test_a_template_that_is_not_a_mapping_is_an_error(rules, tmp_path):
-    base = tmp_path / "Simulations"
-    path = base / TEMPLATE_FILENAME
-    base.mkdir()
-    path.write_text("- just a list\n", encoding="utf-8")
-    record = base / "aa0"
-    record.mkdir()
+    (tmp_path / TEMPLATE_FILENAME).write_text("- just a list\n", encoding="utf-8")
     with pytest.raises(ValueError, match="mapping"):
-        rules.inherited_block(record, base)
+        rules.inherited_block(tmp_path)
 
 
 # ---------------------------------------------------------------------------
-# The package accessor: Experiment.bioschema
+# MetadataProvider: Experiment.metadata and Experiment.bioschema
 # ---------------------------------------------------------------------------
 
 
-def test_an_experiment_resolves_its_block_and_keeps_its_metadata_as_stored(rules, tmp_path, monkeypatch):
-    import fairmd.lipids.experiment as experiment
-
-    base = tmp_path / "experiments"
-    write_template(base, {"license": CC_BY})
-    write_template(base / "OrderParameters", {"keywords": [BIOPHYSICS]})
-    record = base / "OrderParameters" / "10.1039" / "B508190D" / "1"
+def write_op_experiment(record, bioschema=None):
     record.mkdir(parents=True)
-    stored = {"name": "C-H bond order parameters of a POPC bilayer", "keywords": ["POPC"]}
-    readme = {"MOLAR_FRACTIONS": {"POPC": 1.0}, "TEMPERATURE": 303, "bioschema_properties": stored}
+    readme = {"MOLAR_FRACTIONS": {"POPC": 1.0}, "TEMPERATURE": 303}
+    if bioschema is not None:
+        readme["bioschema_properties"] = bioschema
     (record / "README.yaml").write_text(yaml.safe_dump(readme), encoding="utf-8")
     (record / "POPC_OrderParameters.json").write_text('{"M_G1_M M_G1H1_M": [[-0.1, 0.02]]}', encoding="utf-8")
+
+
+def test_an_experiment_inherits_from_its_type_folder_only(rules, tmp_path, monkeypatch):
+    import fairmd.lipids.experiment as experiment
+    from fairmd.lipids._base import MetadataProvider
+
+    base = tmp_path / "experiments"
+    # Two layers only: neither the experiments folder itself nor a DOI folder is read.
+    write_template(base, {"publisher": "never inherited"})
+    write_template(base / "OrderParameters", {"license": CC_BY, "keywords": [BIOPHYSICS]})
+    write_template(base / "OrderParameters" / "10.1039", {"publisher": "never inherited"})
+    record = base / "OrderParameters" / "10.1039" / "B508190D" / "1"
+    stored = {"name": "C-H bond order parameters of a POPC bilayer", "keywords": ["POPC"]}
+    write_op_experiment(record, stored)
     monkeypatch.setattr(experiment, "FMDL_EXP_PATH", str(base))
 
     exp = experiment.OPExperiment("10.1039/B508190D/1", str(record))
+    assert isinstance(exp, MetadataProvider)
+    assert experiment.OPExperiment.bioschema_template_dir() == str(base / "OrderParameters")
+    assert experiment.FFExperiment.bioschema_template_dir() == str(base / "FormFactors")
     assert exp.bioschema == {"name": stored["name"], "keywords": [BIOPHYSICS, "POPC"], "license": CC_BY}
+    # metadata is the record's own, nothing inherited into it.
     assert exp.metadata["bioschema_properties"] == stored
+    assert "license" not in exp.metadata["bioschema_properties"]
 
 
 def test_an_experiment_without_a_block_has_no_resolved_one(rules, tmp_path):
     import fairmd.lipids.experiment as experiment
 
     record = tmp_path / "1"
-    record.mkdir()
-    (record / "README.yaml").write_text(yaml.safe_dump({"MOLAR_FRACTIONS": {"POPC": 1.0}}), encoding="utf-8")
-    (record / "POPC_OrderParameters.json").write_text("{}", encoding="utf-8")
+    write_op_experiment(record)
     assert experiment.OPExperiment("1", str(record)).bioschema is None

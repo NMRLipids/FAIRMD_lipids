@@ -10,7 +10,7 @@ it:
 - :mod:`licenses`     -- resolving a licence statement onto the SPDX list
 - :mod:`registries`   -- DataCite and CrossRef answers as Bioschemas blocks
 - :mod:`fields`       -- what a ``README.yaml`` says about itself
-- :mod:`inheritance`  -- what a record inherits from the templates above it
+- :mod:`inheritance`  -- what a record inherits from its kind's template
 - :mod:`descriptions` -- the composed ``name`` and ``description``
 - :mod:`bioschema`    -- assembling the block for one record
 - :mod:`records`      -- reading and rewriting ``README.yaml``

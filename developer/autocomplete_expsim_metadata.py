@@ -48,9 +48,10 @@ What the record's *kind* alone decides -- the EDAM keywords and technique
 terms, an experiment's measured variable, the databank's own licence -- is not
 written into any README. The data repository states it once, in a
 ``bioschema_properties.yaml`` template in the kind's folder, and every record
-below inherits it: the block a README stores is the *compact* one, holding only
-what is specific to that record, and the complete block is that applied on top
-of the templates, a recursive dict update whose rules live in
+of that kind inherits it: the block a README stores is the *compact* one,
+holding only what is specific to that record, and the complete block is that
+applied on top of the kind's template -- two layers, no deeper chain -- by a
+recursive dict update whose rules live in
 ``src/fairmd/lipids/bioschema_inheritance.py``. ``--check`` judges the resolved
 block, and given a template path it validates the template.
 

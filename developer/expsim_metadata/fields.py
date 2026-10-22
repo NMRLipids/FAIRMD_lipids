@@ -58,18 +58,20 @@ def experiment_kind(path):
 EXPERIMENTS_DIR = "experiments"
 
 
-def kind_base_of(path):
-    """The folder a record inherits its ``bioschema_properties.yaml`` templates from.
+def template_dir_of(path):
+    """The kind folder a record inherits its ``bioschema_properties.yaml`` template from.
 
-    The nearest ``Simulations*`` or ``experiments`` ancestor -- the folders the
-    package resolves blocks against, as ``FMDL_SIMU_PATH`` and ``FMDL_EXP_PATH``.
-    A path under neither inherits nothing, so its own folder is returned.
+    ``Simulations`` (or a toy ``Simulations.N``) for a simulation, and the
+    folder directly under ``experiments`` -- ``OrderParameters`` or
+    ``FormFactors`` -- for an experiment: the folders the package resolves
+    against, as ``FMDL_SIMU_PATH`` and ``FMDL_EXP_PATH/<target_folder>``. There
+    is one template per kind; no folder in between is read. A path under
+    neither inherits nothing, and gets None.
     """
-    path = Path(path).resolve()
-    for parent in path.parents:
-        if _is_simulations_dir(parent.name) or parent.name == EXPERIMENTS_DIR:
+    for parent in Path(path).resolve().parents:
+        if _is_simulations_dir(parent.name) or parent.parent.name == EXPERIMENTS_DIR:
             return parent
-    return path.parent
+    return None
 
 
 def data_root_of(path):
