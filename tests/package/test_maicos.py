@@ -11,6 +11,8 @@ from pathlib import Path
 import MDAnalysis as mda
 import numpy as np
 import pytest
+from maicos.lib.tables import electron_count
+from MDAnalysis.coordinates.memory import MemoryReader
 from numpy.testing import assert_allclose
 
 pytestmark = [pytest.mark.sim1, pytest.mark.min]
@@ -25,6 +27,8 @@ EQ_TIME = 118_000
 N_FRAMES_AFTER_EQ = 3
 
 requires_gmx = pytest.mark.skipif(shutil.which("gmx") is None, reason="GROMACS not installed")
+
+SHEET_BOX = (10.0, 10.0, 20.0)
 
 
 @pytest.fixture
@@ -51,18 +55,34 @@ def test_numpy_array_encoder_roundtrip(obj):
 @pytest.mark.parametrize(
     ("analysis", "kwargs", "columns"),
     [
-        ("DensityPlanar", {"output": "out.json"}, {"out.json": ("profile", "dprofile", 1e3)}),
-        ("DiporderPlanar", {"output": "out.json"}, {"out.json": ("profile", "dprofile", 1)}),
+        (
+            "DensityPlanar",
+            {"output": "out.json"},
+            {"out.json": [("bin_pos", 0.1), ("profile", 1e3), ("dprofile", 1e3)]},
+        ),
+        (
+            "DiporderPlanar",
+            {"output": "out.json"},
+            {"out.json": [("bin_pos", 0.1), ("profile", 1), ("dprofile", 1)]},
+        ),
         (
             "DielectricPlanar",
             {"output_prefix": "out", "temperature": 323},
-            {"out_perp.json": ("eps_perp", "deps_perp", 1), "out_par.json": ("eps_par", "deps_par", 1)},
+            {
+                "out_perp.json": [("bin_pos", 0.1), ("eps_perp", 1), ("deps_perp", 1)],
+                "out_par.json": [("bin_pos", 0.1), ("eps_par", 1), ("deps_par", 1)],
+            },
+        ),
+        (
+            "FormFactorPlanar",
+            {"output": "out.json"},
+            {"out.json": [("scattering_vectors", 1), ("form_factor", 1e2), ("dform_factor", 1e2)]},
         ),
     ],
 )
 @pytest.mark.filterwarnings("ignore:Your trajectory is too short:UserWarning")
-def test_save_writes_profiles_in_nm(universe, tmp_path, monkeypatch, analysis, kwargs, columns):
-    """Smoke-run each wrapper and check save() writes [z/nm, value, error] rows."""
+def test_save_converts_units(universe, tmp_path, monkeypatch, analysis, kwargs, columns):
+    """Smoke-run each wrapper and check save() writes the result columns with the Databank unit factors."""
     import fairmd.lipids.analib.maicos
 
     monkeypatch.chdir(tmp_path)
@@ -70,11 +90,9 @@ def test_save_writes_profiles_in_nm(universe, tmp_path, monkeypatch, analysis, k
     result = getattr(fairmd.lipids.analib.maicos, analysis)(water, **kwargs).run(stop=3)
     result.save()
 
-    for filename, (value, error, scale) in columns.items():
+    for filename, file_columns in columns.items():
         saved = json.loads((tmp_path / filename).read_text())
-        expected = np.column_stack(
-            [result.results.bin_pos / 10, scale * result.results[value], scale * result.results[error]]
-        )
+        expected = np.column_stack([scale * result.results[key] for key, scale in file_columns])
         # CompactJSONEncoder writes floats with 6 significant digits
         assert_allclose(saved, expected, rtol=1e-5)
 
@@ -201,3 +219,60 @@ def test_parallel_centering_matches_sequential(universe, tmp_path):
     for _ in zip(sequential.trajectory, parallel.trajectory, strict=True):
         # XTC stores positions to 0.01 Å
         assert_allclose(parallel.atoms.positions, sequential.atoms.positions, atol=0.01)
+
+
+def _sheet_universe(spacings, *, solvent=False):
+    """Two O atoms at z = L/2 ± d, one frame per spacing d, optionally in a flat O solvent."""
+    z_center = SHEET_BOX[2] / 2
+    z = np.array([[z_center - d, z_center + d] for d in spacings])
+    if solvent:
+        # one O on every 1 Å bin centre gives a flat profile, which is all bulk
+        solvent_z = np.arange(0.5, SHEET_BOX[2], 1.0)
+        z = np.hstack([z, np.tile(solvent_z, (len(spacings), 1))])
+
+    positions = np.empty((*z.shape, 3))
+    positions[..., 0] = SHEET_BOX[0] / 2
+    positions[..., 1] = SHEET_BOX[1] / 2
+    positions[..., 2] = z
+
+    universe = mda.Universe.empty(z.shape[1], trajectory=True)
+    universe.add_TopologyAttr("elements", ["O"] * z.shape[1])
+    universe.load_new(positions, format=MemoryReader, dimensions=[*SHEET_BOX, 90, 90, 90])
+    return universe
+
+
+def _sheet_form_factor(q, d):
+    """Signed form factor of two delta sheets at ±d, each carrying N_e / A excess electrons per Å²."""
+    # maicos >= 0.12 counts O as 8 electrons; 0.11 uses the Cromer-Mann sum at q = 0, 7.9994
+    excess = electron_count["O"] / (SHEET_BOX[0] * SHEET_BOX[1])
+    return 2 * excess * np.cos(q * d)
+
+
+@pytest.mark.parametrize("solvent", [False, True], ids=["vacuum", "solvent"])
+@pytest.mark.filterwarnings("ignore:Your trajectory is too short:UserWarning")
+def test_form_factor_of_two_sheets(solvent):
+    """The strip model of a bilayer: |F(q)| = 2 N_e / A |cos(qd)|, independent of a flat solvent."""
+    from fairmd.lipids.analib.maicos import FormFactorPlanar
+
+    # Sheets must sit on 1 Å bin centres and outside the 3.3 Å bulk margin at the box edges.
+    d = 4.5
+    ff = FormFactorPlanar(_sheet_universe([d], solvent=solvent).atoms, unwrap=False).run()
+
+    expected = np.abs(_sheet_form_factor(ff.results.scattering_vectors, d))
+    assert_allclose(ff.results.form_factor, expected, atol=1e-12)
+
+
+@pytest.mark.filterwarnings("ignore:Your trajectory is too short:UserWarning")
+def test_form_factor_error_of_fluctuating_spacing():
+    """Alternating spacings d1, d2 over N frames give an error of |F1 - F2| / (2 sqrt(N)).
+
+    maicos takes the SEM from the population variance, std(ddof=0) / sqrt(N).
+    """
+    from fairmd.lipids.analib.maicos import FormFactorPlanar
+
+    spacings = [2.5, 4.5] * 2
+    ff = FormFactorPlanar(_sheet_universe(spacings).atoms, unwrap=False).run()
+
+    q = ff.results.scattering_vectors
+    expected = np.abs(_sheet_form_factor(q, 2.5) - _sheet_form_factor(q, 4.5)) / (2 * np.sqrt(len(spacings)))
+    assert_allclose(ff.results.dform_factor, expected, atol=1e-12)
