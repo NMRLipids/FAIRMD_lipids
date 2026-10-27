@@ -1,221 +1,82 @@
-"""Unit tests for MAICoS-specific functionality."""
+"""Unit tests for the MAICoS wrappers in fairmd.lipids.analib.maicos."""
 
+import io
 import json
 import logging
 import os
 import shutil
 import tempfile
-import warnings
+from pathlib import Path
 
+import MDAnalysis as mda
+import numpy as np
 import pytest
-import pytest_check as check
+from numpy.testing import assert_allclose
 
-# run only on sim2 mocking data
 pytestmark = [pytest.mark.sim1, pytest.mark.min]
 
+TOY_SYSTEM = Path(__file__).parents[1] / "ToyData" / "Simulations.1" / "aa0"
+TPR = TOY_SYSTEM / "md.tpr"
+XTC = TOY_SYSTEM / "short.xtc"
+LAST_ATOM = "C50"  # terminal methyl carbon of the Berger DPPC sn-1 tail
+G3_ATOM = "C12"
+# The trajectory has 121 frames at 1 ns spacing; skipping 118 ns keeps the last 3.
+EQ_TIME = 118_000
+N_FRAMES_AFTER_EQ = 3
 
-@pytest.fixture
-def tip4p_trajectory(tmpdir):
-    import MDAnalysis as mda
-    import numpy as np
-    from MDAnalysis.coordinates.memory import MemoryReader
-
-    folder = str(tmpdir)
-    pdb_content = """TITLE     Single 4-site water
-CRYST1   63.646   63.646   86.762  90.00  90.00  90.00 P 1           1
-ATOM      1  OW  wate    1       4.370  31.010  61.030  1.00  0.00
-ATOM      2  HW1 wate    1       3.800  30.820  61.780  1.00  0.00
-ATOM      3  HW2 wate    1       5.250  30.760  61.320  1.00  0.00
-ATOM      4  MW  wate    1       4.410  30.950  61.170  1.00  0.00
-END
-"""
-    tmpfile = os.path.join(folder, "test_water_maicos.pdb")
-    with open(tmpfile, "w") as f:
-        f.write(pdb_content)
-    with pytest.warns(UserWarning, match="Element information is missing"):
-        u = mda.Universe(tmpfile, format="PDB")
-    nul_dim = u.dimensions
-    trajectory = np.zeros((10, u.atoms.n_atoms, 3), dtype=np.float32)
-    shift_v = np.array([0.0, 0.0, -0.5], dtype=np.float32)
-    for i in range(10):
-        trajectory[i] = u.atoms.positions.copy() + shift_v * i
-    u.load_new(trajectory, order="fac", format=MemoryReader)
-    for ts in u.trajectory:
-        ts.dimensions = nul_dim
-    yield u, folder
-    shutil.rmtree(folder)
+requires_gmx = pytest.mark.skipif(shutil.which("gmx") is None, reason="GROMACS not installed")
 
 
 @pytest.fixture
-def tip4p_random_rotation(tmpdir):
-    """TIP4P water rotating continuously for 1000 1-ps frames in memory."""
-    import MDAnalysis as mda
-    import numpy as np
-    from MDAnalysis.coordinates.memory import MemoryReader
+def universe():
+    return mda.Universe(TPR, XTC)
 
-    folder = str(tmpdir)
-    pdb_content = """TITLE     Single 4-site water
-CRYST1   63.646   63.646   86.762  90.00  90.00  90.00 P 1           1
-ATOM      1  OW  wate    1       4.370  31.010  61.030  1.00  0.00
-ATOM      2  HW1 wate    1       3.800  30.820  61.780  1.00  0.00
-ATOM      3  HW2 wate    1       5.250  30.760  61.320  1.00  0.00
-ATOM      4  MW  wate    1       4.410  30.950  61.170  1.00  0.00
-END
-"""
-    tmpfile = os.path.join(folder, "test_water_maicos.pdb")
-    with open(tmpfile, "w") as f:
-        f.write(pdb_content)
-    with pytest.warns(UserWarning, match="Element information is missing"):
-        u = mda.Universe(tmpfile, format="PDB")
 
-    box = u.dimensions.copy()
-    origin = u.atoms.positions[0].copy()
-    relative = u.atoms.positions - origin
-    rng = np.random.default_rng(seed=0)
-    n_frames = 400
-    trajectory = np.empty((n_frames, u.atoms.n_atoms, 3), dtype=np.float32)
-    rotation = np.eye(3)
-    for frame in range(n_frames):
-        axis = rng.normal(size=3)
-        axis /= np.linalg.norm(axis)
-        angle = rng.uniform(-np.pi / 12, np.pi / 12)
-        x, y, z = axis
-        c, s = np.cos(angle), np.sin(angle)
-        increment = np.array(
-            [
-                [c + x * x * (1 - c), x * y * (1 - c) - z * s, x * z * (1 - c) + y * s],
-                [y * x * (1 - c) + z * s, c + y * y * (1 - c), y * z * (1 - c) - x * s],
-                [z * x * (1 - c) - y * s, z * y * (1 - c) + x * s, c + z * z * (1 - c)],
-            ],
+@pytest.mark.parametrize(
+    "obj",
+    [np.arange(3.0), np.arange(6.0).reshape(3, 2), {"profile": np.arange(3.0)}],
+    ids=["1d", "2d", "nested"],
+)
+def test_numpy_array_encoder_roundtrip(obj):
+    from fairmd.lipids.analib.maicos import NumpyArrayEncoder
+
+    buffer = io.StringIO()
+    json.dump(obj, buffer, cls=NumpyArrayEncoder)
+    decoded = json.loads(buffer.getvalue())
+
+    expected = {k: v.tolist() for k, v in obj.items()} if isinstance(obj, dict) else obj.tolist()
+    assert decoded == expected
+
+
+@pytest.mark.parametrize(
+    ("analysis", "kwargs", "columns"),
+    [
+        ("DensityPlanar", {"output": "out.json"}, {"out.json": ("profile", "dprofile", 1e3)}),
+        ("DiporderPlanar", {"output": "out.json"}, {"out.json": ("profile", "dprofile", 1)}),
+        (
+            "DielectricPlanar",
+            {"output_prefix": "out", "temperature": 323},
+            {"out_perp.json": ("eps_perp", "deps_perp", 1), "out_par.json": ("eps_par", "deps_par", 1)},
+        ),
+    ],
+)
+@pytest.mark.filterwarnings("ignore:Your trajectory is too short:UserWarning")
+def test_save_writes_profiles_in_nm(universe, tmp_path, monkeypatch, analysis, kwargs, columns):
+    """Smoke-run each wrapper and check save() writes [z/nm, value, error] rows."""
+    import fairmd.lipids.analib.maicos
+
+    monkeypatch.chdir(tmp_path)
+    water = universe.select_atoms("resname SOL")
+    result = getattr(fairmd.lipids.analib.maicos, analysis)(water, **kwargs).run(stop=3)
+    result.save()
+
+    for filename, (value, error, scale) in columns.items():
+        saved = json.loads((tmp_path / filename).read_text())
+        expected = np.column_stack(
+            [result.results.bin_pos / 10, scale * result.results[value], scale * result.results[error]]
         )
-        rotation = increment @ rotation
-        trajectory[frame] = origin + relative @ rotation.T
-
-    u.load_new(trajectory, order="fac", format=MemoryReader, dt=1.0)
-    for ts in u.trajectory:
-        ts.dimensions = box
-    yield u, folder
-    shutil.rmtree(folder)
-
-
-def test_density_planar(tip4p_trajectory, tmp_path):
-    from fairmd.lipids.analib.maicos import DensityPlanar
-
-    u, _ = tip4p_trajectory
-    u.add_TopologyAttr("elements")
-    u.atoms.elements = ["O", "H", "H", "Dummy"]
-    ofname = tmp_path / "output.json"
-    dp = DensityPlanar(
-        u.atoms,
-        dens="electron",
-        zmin=0,
-        zmax=20,
-        unwrap=False,
-        bin_width=1,
-        pack=False,
-        output=ofname,
-    )
-    dp.run()
-    dp.save()
-    assert os.path.isfile(ofname)
-
-    with open(ofname) as output_file:
-        output = json.load(output_file)
-    assert len(output) == 20  # noqa: PLR2004
-    assert all(len(row) == 3 for row in output)  # noqa: PLR2004
-    assert max(row[1] for row in output) > 0
-    check.equal(output[0][1], pytest.approx(0.0, abs=1e-6))
-    check.equal(output[14][1], pytest.approx(0.493686, abs=1e-6))
-    check.equal(output[14][2], pytest.approx(0.294148, abs=1e-6))
-    check.equal(output[-1][1], pytest.approx(0.0, abs=1e-6))
-
-
-def test_dielectric_planar(tip4p_random_rotation, tmp_path):
-    from fairmd.lipids.analib.maicos import DielectricPlanar
-
-    u, _ = tip4p_random_rotation
-    u.add_TopologyAttr("resids", values=[1])
-    u.add_TopologyAttr("resnames", values=["WAT"])
-    u.add_TopologyAttr("charges")
-    u.atoms.charges = [-0.848, 0.424, 0.424, 0.0]
-    output_prefix = str(tmp_path / "dielectric")
-
-    class IgnoreDielectricWarning(logging.Filter):
-        def filter(self, record):
-            return "Setting `zmin` and `zmax` might cut off molecules." not in record.getMessage()
-
-    root_logger = logging.getLogger()
-    warning_filter = IgnoreDielectricWarning()
-    root_logger.addFilter(warning_filter)
-    with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore",
-            message=r"Your trajectory does not provide sufficient statistics to estimate a correlation time\.",
-            category=UserWarning,
-            module=r"maicos\.core\.base",
-        )
-        dielectric = DielectricPlanar(
-            u.atoms,
-            temperature=300,
-            zmin=0,
-            zmax=20,
-            unwrap=False,
-            bin_width=1,
-            pack=False,
-            output_prefix=output_prefix,
-        )
-        dielectric.run()
-    root_logger.removeFilter(warning_filter)
-    dielectric.save()
-
-    expected_val_17 = {
-        "_perp.json": (-0.0662769, 0.0137618),
-        "_par.json": (0.0840072, 0.00411034),
-    }
-    for suffix in ("_perp.json", "_par.json"):
-        output = f"{output_prefix}{suffix}"
-        assert os.path.isfile(output)
-        with open(output) as output_file:
-            result = json.load(output_file)
-        assert len(result) == 20  # noqa: PLR2004
-        assert all(len(row) == 3 for row in result)  # noqa: PLR2004
-        check.equal(result[0][0], pytest.approx(0.05, abs=1e-6))
-        check.equal(result[17][1], pytest.approx(expected_val_17[suffix][0], rel=1e-4))
-        check.equal(result[17][2], pytest.approx(expected_val_17[suffix][1], rel=1e-4))
-
-
-def test_diporder_planar(tip4p_trajectory, tmp_path):
-    from fairmd.lipids.analib.maicos import DiporderPlanar
-
-    u, _ = tip4p_trajectory
-    u.add_TopologyAttr("resids", values=[1])
-    u.add_TopologyAttr("resnames", values=["WAT"])
-    u.add_TopologyAttr("charges")
-    u.atoms.charges = [-0.848, 0.424, 0.424, 0.0]
-    output = tmp_path / "diporder.json"
-    dp = DiporderPlanar(
-        u.atoms,
-        zmin=0,
-        zmax=20,
-        unwrap=False,
-        bin_width=1,
-        pack=False,
-        output=output,
-    )
-    dp.run()
-    dp.save()
-
-    assert os.path.isfile(output)
-    with open(output) as output_file:
-        result = json.load(output_file)
-    assert len(result) == 20  # noqa: PLR2004
-    assert all(len(row) == 3 for row in result)  # noqa: PLR2004
-    assert max(row[1] for row in result) > 0
-    check.equal(result[0][0], pytest.approx(0.05, abs=1e-6))
-    check.equal(result[0][1], pytest.approx(0.0, abs=1e-6))
-    check.equal(result[14][1], pytest.approx(2.17714e-05, rel=1e-6))
-    check.equal(result[14][2], pytest.approx(1.37695e-05, rel=1e-6))
-    check.equal(result[-1][1], pytest.approx(0.0, abs=1e-6))
+        # CompactJSONEncoder writes floats with 6 significant digits
+        assert_allclose(saved, expected, rtol=1e-5)
 
 
 @pytest.mark.parametrize(
@@ -228,6 +89,7 @@ def test_diporder_planar(tip4p_trajectory, tmp_path):
         ({"TYPEOFSYSTEM": "lipid bilayer", "WARNINGS": {"NOWATER": True}}, False),
         ({"TYPEOFSYSTEM": "lipid bilayer", "WARNINGS": {"PBC": "rectangular-box"}}, True),
         ({"TYPEOFSYSTEM": "lipid bilayer", "WARNINGS": {}}, True),
+        ({"TYPEOFSYSTEM": "lipid bilayer", "WARNINGS": None}, True),
     ],
 )
 def test_maicos_suitable(system, expected):
@@ -268,43 +130,74 @@ def test_maicos_what_to_compute(caplog, logger):
         assert rcode == RCODE_ERROR
 
 
-def test_traj_centering_for_maicos_mda(tip4p_trajectory, tmp_path):
-    """Test that sequential MDA centering writes the expected trajectory."""
-    import MDAnalysis as mda
-    import numpy as np
-    from MDAnalysis.coordinates.XTC import XTCWriter
-
+def _center_mda(universe, path, **kwargs):
     from fairmd.lipids.analib.maicos import traj_centering_for_maicos_mda
 
-    source, _ = tip4p_trajectory
-    source.add_bonds([(0, 1), (0, 2), (0, 3)])
-    topology = tmp_path / "topology.pdb"
-    trajectory = tmp_path / "trajectory.xtc"
-    source.atoms.write(topology)
-    with XTCWriter(str(trajectory), n_atoms=source.atoms.n_atoms) as writer:
-        for ts in source.trajectory:
-            writer.write(source.atoms)
+    return traj_centering_for_maicos_mda(universe, path, LAST_ATOM, EQ_TIME, **kwargs)
 
-    universe = mda.Universe(topology, trajectory)
-    output_dir = tmp_path / "centered"
-    output_dir.mkdir()
-    result = traj_centering_for_maicos_mda(
-        universe,
-        str(output_dir),
-        "OW",
-        eq_time=0,
-        recompute=True,
-    )
 
-    assert os.path.isfile(result)
-    assert result.endswith("whole.xtc")
+def _center_mda_parallel(universe, path, **kwargs):
+    from fairmd.lipids.analib.maicos import traj_centering_for_maicos_mda_parallel
 
-    centered = mda.Universe(topology, result)
-    assert centered.trajectory.n_frames == universe.trajectory.n_frames
+    return traj_centering_for_maicos_mda_parallel(universe, path, LAST_ATOM, EQ_TIME, n_jobs=2, **kwargs)
 
+
+def _center_gromacs(_universe, path, **kwargs):
+    from fairmd.lipids.analib.maicos import traj_centering_for_maicos_gromacs
+
+    return traj_centering_for_maicos_gromacs(path, str(XTC), str(TPR), LAST_ATOM, G3_ATOM, EQ_TIME, **kwargs)
+
+
+@pytest.mark.parametrize(
+    ("center", "output_name"),
+    [
+        (_center_mda, "whole.xtc"),
+        (_center_mda_parallel, "whole.xtc"),
+        (_center_gromacs, "centered.xtc"),
+    ],
+    ids=["mda", "mda_parallel", "gromacs"],
+)
+def test_centering_reuses_existing_output(universe, tmp_path, center, output_name):
+    existing = tmp_path / output_name
+    existing.write_text("dummy")
+
+    assert center(universe, str(tmp_path)) == str(existing)
+    assert existing.read_text() == "dummy"
+
+
+def _bounding_box_center(atomgroup):
+    return (atomgroup.positions.min(axis=0) + atomgroup.positions.max(axis=0)) / 2
+
+
+@pytest.mark.parametrize(
+    ("center", "reference_atom", "group_center"),
+    [
+        (_center_mda, LAST_ATOM, lambda atomgroup: atomgroup.center_of_mass()),
+        # `gmx trjconv -center` centres the midpoint of the group's bounding box
+        pytest.param(_center_gromacs, G3_ATOM, _bounding_box_center, marks=requires_gmx),
+    ],
+    ids=["mda", "gromacs"],
+)
+def test_centering_puts_reference_at_box_center(universe, tmp_path, center, reference_atom, group_center):
+    centered = mda.Universe(TPR, center(universe, str(tmp_path), recompute=True))
+
+    assert centered.trajectory.n_frames == N_FRAMES_AFTER_EQ
+    reference = centered.select_atoms(f"name {reference_atom}")
     for ts in centered.trajectory:
-        np.testing.assert_allclose(
-            centered.select_atoms("name OW").center_of_mass()[2],
-            ts.dimensions[2] / 2.0,
-            atol=1e-4,
-        )
+        # 0.1 Å is well above the 0.01 Å XTC precision but far below any bilayer offset
+        assert_allclose(group_center(reference)[2], ts.dimensions[2] / 2, atol=0.1)
+
+
+def test_parallel_centering_matches_sequential(universe, tmp_path):
+    sequential_dir = tmp_path / "sequential"
+    parallel_dir = tmp_path / "parallel"
+    sequential_dir.mkdir()
+    parallel_dir.mkdir()
+
+    sequential = mda.Universe(TPR, _center_mda(universe, str(sequential_dir)))
+    parallel = mda.Universe(TPR, _center_mda_parallel(universe, str(parallel_dir)))
+
+    assert parallel.trajectory.n_frames == sequential.trajectory.n_frames
+    for _ in zip(sequential.trajectory, parallel.trajectory, strict=True):
+        # XTC stores positions to 0.01 Å
+        assert_allclose(parallel.atoms.positions, sequential.atoms.positions, atol=0.01)
