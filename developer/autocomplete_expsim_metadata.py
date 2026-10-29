@@ -95,13 +95,13 @@ try:  # run as a script: developer/ is on sys.path
     from expsim_metadata.fields import data_root_of, molecule_names
     from expsim_metadata.inheritance import is_template
     from expsim_metadata.licenses import load_spdx
-    from expsim_metadata.records import process
+    from expsim_metadata.records import TemplateError, process
 except ImportError:  # imported as developer.autocomplete_expsim_metadata, e.g. by autodoc
     from developer.expsim_metadata.checks import check, duplicate_names
     from developer.expsim_metadata.fields import data_root_of, molecule_names
     from developer.expsim_metadata.inheritance import is_template
     from developer.expsim_metadata.licenses import load_spdx
-    from developer.expsim_metadata.records import process
+    from developer.expsim_metadata.records import TemplateError, process
 
 
 def without_templates(paths):
@@ -160,8 +160,17 @@ def main():
         sys.exit(1 if failed or clashes else 0)
 
     names = molecule_names(root)
-    changed = sum(process(p, spdx, names, cache_dir, args.dry_run) for p in paths)
-    print(f"\n{changed} of {len(paths)} records {'would be ' if args.dry_run else ''}updated")
+    changed, refused = 0, []
+    for path in paths:
+        try:
+            changed += process(path, spdx, names, cache_dir, args.dry_run)
+        except TemplateError as exc:
+            print(f"error: {exc}")
+            refused.append(path)
+    print(f"\n{changed} of {len(paths)} records {'would be ' if args.dry_run else ''}updated"
+          + (f", {len(refused)} refused for a missing or incomplete template" if refused else ""))
+    if refused:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

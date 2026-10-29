@@ -227,7 +227,7 @@ def match_experiments() -> None:
         if "path" in simulation:
             del simulation["path"]
         with open(outfile_dict, "w", encoding="utf-8") as f:
-            f.write(encode_canonical_yaml(simulation.readme))
+            f.write(encode_canonical_yaml(simulation.to_readme()))
 
     print("Found order parameter data for " + str(len(pairs_op)) + " pairs")
     print("Found form factor data for " + str(len(pairs_ff)) + " pairs")

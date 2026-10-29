@@ -29,14 +29,14 @@ It is connected into the FAIRMD Lipids repository as a submodule into :file:`./D
    │   │           └── 1/
    │   │               ├── form-factor-data.json
    │   │               └── README.yaml
-   │   └── OrderParameter/
-   │   │   ├── bioschema_properties.yaml
-   │   │   └── 10.1001/
-   │   │       └── j.some.thing.3242.11/
-   │   │           └── 1/
-   │   │               ├── lipid1-data.json
-   │   │               ├── lipid2-data.json
-   │   │               └── README.yaml
+   │   └── OrderParameters/
+   │       ├── bioschema_properties.yaml
+   │       └── 10.1001/
+   │           └── j.some.thing.3242.11/
+   │               └── 1/
+   │                   ├── lipid1-data.json
+   │                   ├── lipid2-data.json
+   │                   └── README.yaml
    ├── lipid_json_buildH/
    │   ├── ua-dictionary-1.json
    │   └── ua-dictionary-2.json
@@ -71,9 +71,10 @@ A :file:`bioschema_properties.yaml` in a kind's folder -- :file:`Simulations`,
 :file:`experiments/OrderParameters`, :file:`experiments/FormFactors` -- holds the Bioschemas
 properties that every ``README.yaml`` of that kind shares, for instance the ontology terms every
 simulation carries. Each ``README.yaml`` then stores only what is specific to its own entry.
-``MetadataProvider`` (in ``fairmd.lipids._base``) gives every record both views: ``metadata`` is the
-README as stored, and ``bioschema`` is the template and the README's block merged. The rules are
-in :py:mod:`fairmd.lipids.bioschema_inheritance`; see :ref:`bioschemainherit`.
+Every public accessor of a record -- ``system["bioschema_properties"]``, ``system.metadata``,
+``system.bioschema`` -- returns the template and the README's block merged. Only
+``to_readme()`` returns what the file stores, and it is what code writing a README back must use.
+The rules are in :py:mod:`fairmd.lipids.bioschema_inheritance`; see :ref:`bioschemainherit`.
 
 Simulation computed properties
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

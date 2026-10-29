@@ -1241,3 +1241,36 @@ def test_replace_block_appends_when_there_is_none():
     assert records.replace_block("A: 1\n" + rendered + "B: 2\n", records.render_block({"name": "y"})) == (
         "A: 1\n" + records.render_block({"name": "y"}) + "B: 2\n"
     )
+
+
+@pytest.mark.parametrize(
+    ("template", "message"),
+    [(None, "no bioschema_properties.yaml"), ({"keywords": ["NMR"]}, "states no license")],
+)
+def test_a_record_is_refused_when_its_template_is_missing_or_lacks_the_licence(tmp_path, capsys, template, message):
+    """Nothing would supply what the kind shares later, so nothing is written."""
+    mod = load_autocomplete_module()
+    paths = build_databank(tmp_path, [base_record()])
+    kind = tmp_path / "experiments" / "OrderParameters" / TEMPLATE
+    if template is None:
+        kind.unlink()
+    else:
+        kind.write_text(yaml.safe_dump(template), encoding="utf-8")
+    before = paths[0].read_text(encoding="utf-8")
+    cache = tmp_path / "cache"
+    seed_cache(cache)
+
+    records = load_expsim_module("expsim_metadata.records")
+    with pytest.raises(records.TemplateError, match=message):
+        mod.process(paths[0], mod.load_spdx(cache), {}, cache)
+
+    original_argv = sys.argv
+    sys.argv = ["autocomplete_expsim_metadata.py", "--cache", str(cache), str(paths[0])]
+    try:
+        with pytest.raises(SystemExit) as excinfo:
+            mod.main()
+    finally:
+        sys.argv = original_argv
+    assert excinfo.value.code == 1
+    assert message in capsys.readouterr().out
+    assert paths[0].read_text(encoding="utf-8") == before

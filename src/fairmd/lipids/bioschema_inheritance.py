@@ -156,6 +156,20 @@ def _read_template(path: str, mtime_ns: int) -> dict:
     return data
 
 
+def _cached_template(template_dir) -> dict:
+    """The parsed template of a kind's folder, shared with the cache: never hand it out unchanged."""
+    path = template_path(template_dir)
+    if path is None:
+        return {}
+    return _read_template(str(path), path.stat().st_mtime_ns)
+
+
+def template_stamp(template_dir) -> int | None:
+    """The template's modification time, or None when there is none; a cache key for resolved blocks."""
+    path = template_path(template_dir)
+    return path.stat().st_mtime_ns if path else None
+
+
 def load_template(path) -> dict:
     """Read one template file, parsed once per modification and returned as a copy."""
     path = Path(path)
@@ -168,10 +182,8 @@ def inherited_block(template_dir) -> dict:
     :param template_dir: the kind's folder, e.g. ``Simulations`` or ``experiments/OrderParameters``.
     :return: a new dict, empty when the folder holds no template.
     """
-    path = template_path(template_dir)
-    if path is None:
-        return {}
-    return {key: value for key, value in load_template(path).items() if key not in NOT_INHERITED}
+    template = _cached_template(template_dir)
+    return copy.deepcopy({key: value for key, value in template.items() if key not in NOT_INHERITED})
 
 
 def resolve_block(block: dict | None, template_dir) -> dict:
@@ -181,4 +193,6 @@ def resolve_block(block: dict | None, template_dir) -> dict:
     :param template_dir: the kind's folder, e.g. ``Simulations`` or ``experiments/OrderParameters``.
     :return: a new dict; the stored block is not modified.
     """
-    return merge_blocks(inherited_block(template_dir), block)
+    # merge_blocks drops the identity keys and copies everything it returns, so
+    # the cached template is passed as it is: one filter and one copy per resolve.
+    return merge_blocks(_cached_template(template_dir), block)

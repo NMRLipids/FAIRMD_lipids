@@ -257,10 +257,17 @@ def test_an_experiment_inherits_from_its_type_folder_only(rules, tmp_path, monke
     assert isinstance(exp, MetadataProvider)
     assert experiment.OPExperiment.bioschema_template_dir() == str(base / "OrderParameters")
     assert experiment.FFExperiment.bioschema_template_dir() == str(base / "FormFactors")
-    assert exp.bioschema == {"name": stored["name"], "keywords": [BIOPHYSICS, "POPC"], "license": CC_BY}
-    # metadata is the record's own, nothing inherited into it.
-    assert exp.metadata["bioschema_properties"] == stored
-    assert "license" not in exp.metadata["bioschema_properties"]
+    resolved = {"name": stored["name"], "keywords": [BIOPHYSICS, "POPC"], "license": CC_BY}
+    # Every public view is the resolved block ...
+    assert exp.bioschema == resolved
+    assert exp.metadata["bioschema_properties"] == resolved
+    assert exp["bioschema_properties"] == resolved
+    assert exp.readme["bioschema_properties"] == resolved
+    # ... and only the inside, or to_readme() for writing back, sees what the file stores.
+    assert exp._metadata["bioschema_properties"] == stored
+    assert exp.to_readme()["bioschema_properties"] == stored
+    # The composition, read from the stored form inside the class, is unaffected.
+    assert exp.membrane_composition() == {"POPC": 1.0}
 
 
 def test_an_experiment_without_a_block_has_no_resolved_one(rules, tmp_path):
@@ -268,4 +275,69 @@ def test_an_experiment_without_a_block_has_no_resolved_one(rules, tmp_path):
 
     record = tmp_path / "1"
     write_op_experiment(record)
-    assert experiment.OPExperiment("1", str(record)).bioschema is None
+    exp = experiment.OPExperiment("1", str(record))
+    assert exp.bioschema is None
+    assert "bioschema_properties" not in exp.metadata
+
+
+def test_a_template_edit_reaches_a_loaded_experiment(rules, tmp_path, monkeypatch):
+    import fairmd.lipids.experiment as experiment
+
+    base = tmp_path / "experiments"
+    path = write_template(base / "OrderParameters", {"keywords": [BIOPHYSICS]})
+    record = base / "OrderParameters" / "1"
+    write_op_experiment(record, {"name": "x", "keywords": ["POPC"]})
+    monkeypatch.setattr(experiment, "FMDL_EXP_PATH", str(base))
+    exp = experiment.OPExperiment("1", str(record))
+    assert exp["bioschema_properties"]["keywords"] == [BIOPHYSICS, "POPC"]
+
+    path.write_text(yaml.safe_dump({"keywords": [MD_TOPIC]}), encoding="utf-8")
+    stat = path.stat()
+    os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns + 1_000_000_000))
+    assert exp["bioschema_properties"]["keywords"] == [MD_TOPIC, "POPC"]
+
+
+# ---------------------------------------------------------------------------
+# The package and the metadata generator find the same template folder
+# ---------------------------------------------------------------------------
+
+
+def generator_fields():
+    import importlib
+    import sys
+    from pathlib import Path
+
+    developer = Path(__file__).resolve().parents[2] / "developer"
+    if str(developer) not in sys.path:
+        sys.path.insert(0, str(developer))
+    return importlib.import_module("expsim_metadata.fields")
+
+
+def test_the_generator_and_the_package_agree_on_the_template_folder(rules, tmp_path, monkeypatch):
+    import fairmd.lipids.core as core
+    import fairmd.lipids.experiment as experiment
+
+    fields = generator_fields()
+    assert fields.EXPERIMENT_KINDS == (
+        experiment.OPExperiment.target_folder(),
+        experiment.FFExperiment.target_folder(),
+    )
+
+    exp_base = tmp_path / "BilayerData" / "experiments"
+    monkeypatch.setattr(experiment, "FMDL_EXP_PATH", str(exp_base))
+    for cls in (experiment.OPExperiment, experiment.FFExperiment):
+        readme = exp_base / cls.target_folder() / "10.1039" / "B508190D" / "1" / "README.yaml"
+        assert fields.template_dir_of(readme) == (exp_base / cls.target_folder()).resolve(), cls
+
+    for name in ("Simulations", "Simulations.1"):
+        simu = tmp_path / "BilayerData" / name
+        monkeypatch.setattr(core, "FMDL_SIMU_PATH", str(simu))
+        readme = simu / "aa0" / "bb1" / "README.yaml"
+        assert fields.template_dir_of(readme) == simu.resolve(), name
+        assert core.System.bioschema_template_dir() == str(simu)
+
+
+def test_a_folder_merely_below_experiments_is_not_a_kind_folder(rules, tmp_path):
+    fields = generator_fields()
+    stray = tmp_path / "experiments" / "BilayerData" / "README.yaml"
+    assert fields.template_dir_of(stray) is None

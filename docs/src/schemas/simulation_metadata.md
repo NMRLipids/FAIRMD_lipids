@@ -347,10 +347,21 @@ the README on top is a recursive dict update:
   inherited; a template setting one fails `--check`.
 
 A template states only what is true of every entry of its kind, since an entry cannot remove an
-inherited list item. In Python, `System` and `Experiment` are both a `MetadataProvider`:
-`metadata` is the README as stored, with nothing inherited into it, so writing it back never bakes
-inherited values in, and `bioschema` is the resolved two-layer block. The rules are in
-`fairmd.lipids.bioschema_inheritance`.
+inherited list item. The rules are in `fairmd.lipids.bioschema_inheritance`.
+
+In Python, `System` and `Experiment` are both a `MetadataProvider`, and every public accessor
+returns the *resolved* block, so these are always equal:
+
+```python
+system.bioschema == system["bioschema_properties"] == system.metadata["bioschema_properties"]
+```
+
+`system.readme`, `system.get(...)` and `dict(system)` give the same resolved block. Only the class
+itself works with what the README stores. Code that writes a README back must use
+`system.to_readme()`, which returns the stored form with the compact block; writing
+`system.metadata` or `dict(system)` instead would bake the template into the file. Assigning
+`system["bioschema_properties"] = block` stores the block compact again, so a resolved block can be
+assigned back unchanged.
 
 ```yaml
 # Simulations/bioschema_properties.yaml (abridged)

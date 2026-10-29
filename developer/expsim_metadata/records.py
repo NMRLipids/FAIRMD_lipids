@@ -238,6 +238,10 @@ def drop_publication(text, block):
     return "".join(lines[:start] + lines[_node_end(lines, start):]), True
 
 
+class TemplateError(Exception):
+    """A record's kind template is missing, or lacks what the record must inherit."""
+
+
 def process(path, spdx, names, cache_dir, dry_run=False):
     """Enrich one README.yaml in place. Returns True when the file changed."""
     path = Path(path)
@@ -251,10 +255,16 @@ def process(path, spdx, names, cache_dir, dry_run=False):
     for key, replacement in deprecated_keys(readme, kind).items():
         print(f"  deprecated: {key} is no longer accepted; rename it to {replacement}")
 
+    # A block written without its template would lack everything the kind shares
+    # -- for an experiment, the databank's own licence -- and nothing would
+    # supply it later. Refuse rather than write an incomplete record.
     inherited = inherited_for(path)
     if template_for(path) is None:
-        print(f"  warning: no {TEMPLATE_FILENAME} in this record's kind folder; "
-              "the properties its kind shares will be missing")
+        raise TemplateError(f"{path}: no {TEMPLATE_FILENAME} in this record's kind folder; "
+                            "nothing written, since the properties its kind shares would be missing")
+    if kind == "experiments" and not inherited.get("license"):
+        raise TemplateError(f"{path}: the {TEMPLATE_FILENAME} of this record's kind states no license; "
+                            "nothing written, since the record would carry no dataset licence")
 
     existing = readme.get("bioschema_properties")
 
