@@ -110,6 +110,10 @@ gromacs_dict = {
         "REQUIRED": True,
         "TYPE": "string",
     },
+    "DATE": {
+        "REQUIRED": False,
+        "TYPE": "date",
+    },
     "SYSTEM": {
         "REQUIRED": True,
         "TYPE": "string",
@@ -212,6 +216,10 @@ amber_dict = {
         "REQUIRED": True,
         "TYPE": "string",
     },
+    "DATE": {
+        "REQUIRED": False,
+        "TYPE": "date",
+    },
     "SYSTEM": {
         "REQUIRED": True,
         "TYPE": "string",
@@ -311,6 +319,10 @@ namd_dict = {
     "DOI": {
         "REQUIRED": True,
         "TYPE": "string",
+    },
+    "DATE": {
+        "REQUIRED": False,
+        "TYPE": "date",
     },
     "SYSTEM": {
         "REQUIRED": True,
@@ -428,6 +440,10 @@ openmm_dict = {
     "DOI": {
         "REQUIRED": True,
         "TYPE": "string",
+    },
+    "DATE": {
+        "REQUIRED": False,
+        "TYPE": "date",
     },
     "SYSTEM": {
         "REQUIRED": True,

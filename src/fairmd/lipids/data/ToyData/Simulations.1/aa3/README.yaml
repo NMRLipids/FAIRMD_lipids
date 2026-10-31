@@ -36,7 +36,6 @@ COMPOSITION:
     MAPPING: mappingSOD.yaml
     COUNT: 60
 DIR_WRK: /home/sosamuli/temp/DataBank/
-PUBLICATION: Castillo et al, 2022, Mol. Pharmaceutics. 19:1839-1852 (https://doi.org/10.1021/acs.molpharmaceut.1c00926)
 AUTHORS_CONTACT: Milka Doktorova
 SYSTEM: POPC/POPE/TOCL mixture
 SOFTWARE_VERSION: null
@@ -47,12 +46,70 @@ TOP: null
 TRAJECTORY_SIZE: 200000000
 TRJLENGTH: 570020.0
 NUMBER_OF_ATOMS: 46290
-DATEOFRUNNING: 05/10/2023
+DATEOFRUNNING: '2023-10-05'
 TYPEOFSYSTEM: lipid bilayer
 ID: 787
 EXPERIMENT:
   ORDERPARAMETER:
-    TOCL: {}
-    POPC: {}
-    POPE: {}
-  FORMFACTOR: {}
+    TOCL: []
+    POPC: []
+    POPE: []
+  FORMFACTOR: []
+bioschema_properties:
+  name: >-
+    Molecular dynamics trajectory of a POPC/SOD/POPE/TOCL (33:33:17:17) bilayer at 310 K (Charmm36,
+    GROMACS, 570 ns)
+  alternateName: POPC/POPE/TOCL mixture
+  description: >-
+    Molecular dynamics trajectory of a lipid bilayer of 60 POPC
+    (1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine, 33 mol%), 60 SOD (33 mol%), 30 POPE
+    (1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoethanolamine, 17 mol%) and 30 TOCL
+    (1’,3’-Bis[1,2-dioleoyl-sn-glycero-3-phospho]-glycerol, 17 mol%) at 310 K. Simulated with
+    Charmm36 in GROMACS for 570 ns (46290 atoms). Part of the NMRlipids Databank and available from
+    https://doi.org/10.5281/zenodo.11614468.
+  sameAs: https://doi.org/10.5281/zenodo.11614468
+  datePublished: '2024-06-13'
+  license:
+    spdx: CC-BY-4.0
+    name: Creative Commons Attribution 4.0 International
+    url: https://spdx.org/licenses/CC-BY-4.0.html
+    sameAs: https://creativecommons.org/licenses/by/4.0/legalcode
+  publisher: Zenodo
+  creator:
+  - name: Hörstel, Ferdinand
+  - name: Nesterenko, Alexey
+    identifier: https://orcid.org/0000-0003-1592-257X
+  citation:
+  - 10.1021/acs.molpharmaceut.1c00926
+  keywords:
+  - POPC
+  - 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine
+  - SOD
+  - POPE
+  - 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoethanolamine
+  - TOCL
+  - 1’,3’-Bis[1,2-dioleoyl-sn-glycero-3-phospho]-glycerol
+  measurementTechnique:
+  - Molecular dynamics simulation (gromacs)
+  - Charmm36 force field
+  distribution:
+  - '@type': DataDownload
+    contentUrl: https://doi.org/10.5281/zenodo.11614468
+    name: POPC/POPE/TOCL mixture
+    contentSize: 200000000
+    encodingFormat: application/x-xtc
+    hasPart:
+    - 787.xtc
+    - 787.gro
+  isPartOf:
+    '@type': Dataset
+    '@id': https://doi.org/10.5281/zenodo.11614468
+    identifier: 10.5281/zenodo.11614468
+    url: https://doi.org/10.5281/zenodo.11614468
+    name: Test Dataset for calculation of order parameters and form factors
+    publisher: Zenodo
+  _source:
+    api: datacite
+    doi: 10.5281/zenodo.11614468
+    spdxLicenseList: 3.29.0
+    retrieved: '2026-09-24'

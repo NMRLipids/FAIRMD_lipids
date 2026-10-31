@@ -3,13 +3,20 @@
 # it by reading any Python. `constants.py` loads this file once and exposes each
 # entry as a module-level constant; nothing else reads it.
 #
+# Only what differs from record to record is here. What a record's *kind* alone
+# decides -- the EDAM keywords and technique terms every simulation, every NMR
+# experiment and every X-ray experiment carries, an experiment's measured
+# variable, the databank's own licence -- is stated once in the data repository,
+# in the `bioschema_properties.yaml` template of the kind's folder, and inherited
+# by every record below it. Edit those terms there, not here.
+#
 # The file has two parts, and they are not the same kind of thing:
 #
-#   ONTOLOGY TERMS   -- `sets`, `chmo`, `edam_keywords`, `edam_techniques` and
-#                       `units`. Each entry is a term some external vocabulary
-#                       defines, and changing one changes what the published
-#                       metadata claims. They are checkable against EDAM, CHMO,
-#                       UO and QUDT, and should be checked before being edited.
+#   ONTOLOGY TERMS   -- `sets`, `chmo` and `units`. Each entry is a term some
+#                       external vocabulary defines, and changing one changes
+#                       what the published metadata claims. They are checkable
+#                       against CHMO, UO and QUDT, and should be checked before
+#                       being edited.
 #
 #   DATABANK FACTS   -- `variables` and `trajectory_formats`. Nothing external
 #                       defines these: they are what this databank happens to
@@ -21,52 +28,29 @@
 # Ontology terms
 # ===========================================================================
 #
-# CHMO is exact for the experimental methods and EDAM sits alongside it; neither
-# covers this databank alone, since EDAM has no scattering term and CHMO no
-# molecular-dynamics term. EDAM-Bioimaging was evaluated as a fallback and is
-# not citable: it declares itself 1.0alpha_pre-pre-release and only 36 of its
-# 505 classes carry stable numeric ids, those being EDAM terms it re-uses.
+# CHMO is exact for the experimental methods and EDAM sits alongside it in the
+# templates; neither covers this databank alone, since EDAM has no scattering
+# term and CHMO no molecular-dynamics term. EDAM-Bioimaging was evaluated as a
+# fallback and is not citable: it declares itself 1.0alpha_pre-pre-release and
+# only 36 of its 505 classes carry stable numeric ids, those being EDAM terms it
+# re-uses.
 
 # The term sets themselves, used both to build a term's URL and to state which
 # vocabulary it came from.
 sets:
-  edam: http://edamontology.org
   obo: http://purl.obolibrary.org/obo
   qudt_unit: http://qudt.org/vocab/unit
 
 # Methods, most specific first: the record is mapped onto the narrowest term its
-# NMR METHOD field supports, and onto SAXS when it sits under FormFactors.
+# NMR METHOD field supports, and onto SAXS when it sits under FormFactors. These
+# stay per record, because the NMR term depends on the record's own METHOD and
+# the composed description names the term.
 chmo:
   saxs: [CHMO_0000204, small-angle X-ray scattering]
   nmr: [CHMO_0000591, nuclear magnetic resonance spectroscopy]
   ssnmr: [CHMO_0000614, solid-state nuclear magnetic resonance spectroscopy]
   pdlf: [CHMO_0001067, proton detected separated local field spectroscopy]
   pdlf_r: [CHMO_0001068, R-type recoupling proton detected separated local field spectroscopy]
-
-# Keywords per kind of record. The first entry of each list is the one that says
-# what the record is; the rest place it in its field.
-edam_keywords:
-  simulation:
-    - [topic_3892, Biomolecular simulation]
-    - [topic_0176, Molecular dynamics]
-    - [topic_0820, Membrane and lipoproteins]
-    - [topic_3306, Biophysics]
-    - [data_3870, Trajectory data]
-  nmr:
-    - [topic_0593, NMR]
-    - [topic_0820, Membrane and lipoproteins]
-    - [topic_3306, Biophysics]
-  # EDAM has no small-angle-scattering term; X-ray diffraction is the closest.
-  xray:
-    - [topic_2828, X-ray diffraction]
-    - [topic_0820, Membrane and lipoproteins]
-    - [topic_3306, Biophysics]
-
-# Single terms naming the technique itself, used in `measurementTechnique`.
-edam_techniques:
-  md_operation: [operation_2476, Molecular dynamics]
-  nmr_topic: [topic_0593, NMR]
-  xray_topic: [topic_2828, X-ray diffraction]
 
 # Units of the measured quantities, as `<set>/<code>` against the sets above.
 #

@@ -18,7 +18,7 @@ import numpy as np
 import yaml
 
 from fairmd.lipids import FMDL_EXP_PATH
-from fairmd.lipids._base import CollectionSingleton, SampleComposition
+from fairmd.lipids._base import CollectionSingleton, MetadataProvider, SampleComposition
 from fairmd.lipids.molecules import Lipid, NonLipid
 
 
@@ -26,7 +26,7 @@ class ExperimentError(Exception):
     """Experiment-related exception"""
 
 
-class Experiment(SampleComposition):
+class Experiment(SampleComposition, MetadataProvider):
     """Abstract base class representing an experimental dataset in the databank.
 
     Implements important methods from :class:`SampleComposition`: :meth:`get_hydration`,
@@ -67,14 +67,14 @@ class Experiment(SampleComposition):
             raise FileNotFoundError(msg)
 
     @property
-    def metadata(self) -> dict:
-        """Access the experiment's metadata."""
+    def _stored_metadata(self) -> dict:
+        """The README as loaded, compact block included. For use inside the class only."""
         if self._metadata is None:
             self._populate_meta_data()
         return self._metadata
 
     def __getitem__(self, key: str):
-        return self.metadata[key]
+        return self._metadata_item(key)
 
     def __repr__(self):
         return f"{type(self).__name__}(id='{self.exp_id}')"
@@ -87,7 +87,7 @@ class Experiment(SampleComposition):
 
     @property
     def readme(self) -> dict:
-        """Provides access to the experiment's metadata (for backward compatibility)."""
+        """Provides access to the experiment's metadata (for backward compatibility); same as :attr:`metadata`."""
         return self.metadata
 
     @property
@@ -120,28 +120,33 @@ class Experiment(SampleComposition):
         msg = "This method should be implemented in subclasses."
         raise NotImplementedError(msg)
 
+    @classmethod
+    def bioschema_template_dir(cls) -> str:
+        """Experiments inherit the template in their type's folder, e.g. ``experiments/OrderParameters``."""
+        return os.path.join(FMDL_EXP_PATH, cls.target_folder())
+
     # Implementation of SampleComposition interface
 
     def _initialize_content(self) -> None:
         null_concentration_threshold = 1e-7  # 0.1 uM
         self._content = {}
-        for k in self.metadata["MOLAR_FRACTIONS"]:
+        for k in self._stored_metadata["MOLAR_FRACTIONS"]:
             lip = Lipid(k)
             lip.register_mapping()
             self._content[k] = lip
-        for k, v in self.metadata.get("ION_CONCENTRATIONS", {}).items():
+        for k, v in self._stored_metadata.get("ION_CONCENTRATIONS", {}).items():
             if np.abs(float(v)) < null_concentration_threshold:
                 continue
             self._content[k] = NonLipid(k)
-        for k in self.metadata.get("COUNTER_IONS", {}):
+        for k in self._stored_metadata.get("COUNTER_IONS", {}):
             if k not in self._content:
                 self._content[k] = NonLipid(k)
 
     def get_hydration(self, basis: typing.Literal["number", "mass"] = "number") -> float:
         if basis == "mass":
-            return float(self.metadata["TOTAL_HYDRATION"])
+            return float(self._stored_metadata["TOTAL_HYDRATION"])
         if basis == "number":
-            tlc = self.metadata["TOTAL_LIPID_CONCENTRATION"]
+            tlc = self._stored_metadata["TOTAL_LIPID_CONCENTRATION"]
             if tlc == "full hydration":
                 return 70
             return 55.5 / float(tlc)  # water per lipid from outdated field
@@ -150,11 +155,11 @@ class Experiment(SampleComposition):
 
     def membrane_composition(self, basis: typing.Literal["molar", "mass"] = "molar") -> dict[str, float]:
         if basis == "molar":
-            return self.metadata["MOLAR_FRACTIONS"]
+            return self._stored_metadata["MOLAR_FRACTIONS"]
         if basis == "mass":
             comp: dict[str, float] = {}
             total_mass = 0.0
-            for k, v in self.metadata["MOLAR_FRACTIONS"].items():
+            for k, v in self._stored_metadata["MOLAR_FRACTIONS"].items():
                 mol: Lipid = self._content[k]
                 mw = float(mol.metadata["bioschema_properties"]["molecularWeight"])
                 comp[k] = v * mw
@@ -169,11 +174,11 @@ class Experiment(SampleComposition):
         if basis == "molar":
             concs = {}
             _tlc = 55.5 / self.get_hydration("number")
-            for k, v in self.metadata.get("ION_CONCENTRATIONS", {}).items():
+            for k, v in self._stored_metadata.get("ION_CONCENTRATIONS", {}).items():
                 if k not in self.solubles:
                     continue
                 concs[k] = float(v)
-            for k, v in self.metadata.get("COUNTER_IONS", {}).items():
+            for k, v in self._stored_metadata.get("COUNTER_IONS", {}).items():
                 if k not in concs:
                     concs[k] = 0.0
                 concs[k] += _tlc * self.membrane_composition("molar")[v]

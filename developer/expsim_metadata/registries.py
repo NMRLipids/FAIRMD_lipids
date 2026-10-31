@@ -190,7 +190,11 @@ def with_dataset_license(block, licence, article=None):
 
     An experiment record digitises values out of a source: the source carries
     its own terms, while what this repository distributes is the digitised
-    values, under its own licence. Where the fetched licence goes depends on
+    values, under its own licence. That licence is the data repository's to
+    state, in the ``bioschema_properties.yaml`` template of each experiment
+    kind, which every experiment inherits ``license`` from; it is passed in
+    from there, and the compaction in ``expsim_metadata.records`` then drops it
+    from the record again, since it is inherited anyway. Where the fetched licence goes depends on
     what answered for it, not on which registry did: it is an ``articleLicense``
     only when the DOI that was looked up is the article the values came from.
     The four nmrXiv records give a ``DATA_DOI`` and no article, and their

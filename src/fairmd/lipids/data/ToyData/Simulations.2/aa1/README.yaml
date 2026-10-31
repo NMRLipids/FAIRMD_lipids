@@ -3,12 +3,12 @@ FF_DATE: null
 SYSTEM: 128POPC_4040SOL_8A-switch_v1
 TYPEOFSYSTEM: lipid bilayer
 TEMPERATURE: 303.0
-PUBLICATION: null
 NUMBER_OF_ATOMS: 29272
 EXPERIMENT:
   ORDERPARAMETER:
-    POPC: {}
-  FORMFACTOR: 10.1016/j.bbamem.2011.07.022/2
+    POPC: []
+  FORMFACTOR:
+  - 10.1016/j.bbamem.2011.07.022/2
 FF_SOURCE: http://mackerell.umaryland.edu/charmm_ff.shtml#gromacs
 COMPOSITION:
   POPC:
@@ -30,7 +30,7 @@ FF: CHARMM36
 TOP: null
 PREEQTIME: 0
 DOI: 10.5281/zenodo.11614468
-DATEOFRUNNING: 04/10/2021
+DATEOFRUNNING: '2021-10-04'
 TPR:
 - - 281.tpr
 TRJ:
@@ -41,3 +41,73 @@ LOG: null
 SOFTWARE: gromacs
 DIR_WRK: /set-locally
 ID: 281
+bioschema_properties:
+  name: Molecular dynamics trajectory of a POPC bilayer at 303 K (CHARMM36, GROMACS 5.0.6, 500 ns)
+  alternateName: 128POPC_4040SOL_8A-switch_v1
+  description: >-
+    Molecular dynamics trajectory of a lipid bilayer of 128 POPC
+    (1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine) at 303 K. Simulated with CHARMM36 in GROMACS
+    5.0.6 for 500 ns (29272 atoms). Part of the NMRlipids Databank and available from
+    https://doi.org/10.5281/zenodo.11614468.
+  sameAs: https://doi.org/10.5281/zenodo.11614468
+  datePublished: '2024-06-13'
+  license:
+    spdx: CC-BY-4.0
+    name: Creative Commons Attribution 4.0 International
+    url: https://spdx.org/licenses/CC-BY-4.0.html
+    sameAs: https://creativecommons.org/licenses/by/4.0/legalcode
+  publisher: Zenodo
+  creator:
+  - name: Hörstel, Ferdinand
+  - name: Nesterenko, Alexey
+    identifier: https://orcid.org/0000-0003-1592-257X
+  keywords:
+  - POPC
+  - 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine
+  measurementTechnique:
+  - Molecular dynamics simulation (gromacs 5.0.6)
+  - CHARMM36 force field
+  variableMeasured:
+  - '@type': PropertyValue
+    name: area per lipid
+    unitCode: http://purl.obolibrary.org/obo/UO_0000324
+    unitText: Å²
+  - '@type': PropertyValue
+    name: total density profile
+    unitText: nm⁻³
+  - '@type': PropertyValue
+    name: X-ray scattering form factor
+    unitCode: http://qudt.org/vocab/unit/PER-ANGSTROM
+    unitText: Å⁻¹
+  - '@type': PropertyValue
+    name: equilibration time
+    unitCode: http://purl.obolibrary.org/obo/UO_0000150
+    unitText: ns
+  - '@type': PropertyValue
+    name: C-H bond order parameter
+    unitCode: http://purl.obolibrary.org/obo/UO_0000186
+    unitText: dimensionless
+  distribution:
+  - '@type': DataDownload
+    contentUrl: https://doi.org/10.5281/zenodo.11614468
+    name: 128POPC_4040SOL_8A-switch_v1
+    contentSize: 114609357
+    encodingFormat: application/x-xtc
+    hasPart:
+    - 281.xtc
+    - 281.tpr
+    - 281.gro
+  isBasedOn:
+  - experiments/FormFactors/10.1016/j.bbamem.2011.07.022/2
+  isPartOf:
+    '@type': Dataset
+    '@id': https://doi.org/10.5281/zenodo.11614468
+    identifier: 10.5281/zenodo.11614468
+    url: https://doi.org/10.5281/zenodo.11614468
+    name: Test Dataset for calculation of order parameters and form factors
+    publisher: Zenodo
+  _source:
+    api: datacite
+    doi: 10.5281/zenodo.11614468
+    spdxLicenseList: 3.29.0
+    retrieved: '2026-09-24'

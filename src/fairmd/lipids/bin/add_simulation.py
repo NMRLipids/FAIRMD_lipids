@@ -70,8 +70,8 @@ pd.set_option("display.max_colwidth", 1000)
 def add_simulation():
     info_template_path = os.path.join(
         importlib.util.find_spec("fairmd.lipids").submodule_search_locations[0],
-        "SchemaValidation",
-        "Schema",
+        "schema_validation",
+        "schema",
         "info_template.yaml",
     )
     # parse input yaml file
@@ -614,7 +614,7 @@ Returns error codes:
     # dictionary saved in yaml format
     outfile_dict = os.path.join(dir_tmp, "README.yaml")
     with open(outfile_dict, "w") as f:
-        yaml.dump(sim.readme, f, sort_keys=False, allow_unicode=True)
+        yaml.dump(sim.to_readme(), f, sort_keys=False, allow_unicode=True)
     logger.info(f"Databank README was saved to '{outfile_dict}'")
 
     # Try to create final directory

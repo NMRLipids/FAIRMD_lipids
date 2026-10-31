@@ -65,26 +65,11 @@ def _unit(entry):
     return (f"{_DATA['sets'][term_set]}/{code}", entry["symbol"])
 
 
-def _terms(*keys):
-    """A list of ``(termCode, name)`` pairs from constants.yaml."""
-    entry = _DATA
-    for key in keys:
-        entry = entry[key]
-    return [tuple(term) for term in entry]
-
-
-# The two sets the generated terms name themselves against; the QUDT set is
-# only ever reached through a unit, so it stays in constants.yaml.
-EDAM_SET = _DATA["sets"]["edam"]
+# The set the generated CHMO terms name themselves against; the QUDT set is only
+# ever reached through a unit, so it stays in constants.yaml. EDAM terms are not
+# generated at all: they belong to a whole kind of record and are inherited from
+# the data repository's bioschema_properties.yaml templates.
 OBO_SET = _DATA["sets"]["obo"]
-
-EDAM_SIMULATION = _terms("edam_keywords", "simulation")
-EDAM_NMR = _terms("edam_keywords", "nmr")
-EDAM_XRAY = _terms("edam_keywords", "xray")
-
-EDAM_MD_OP = _term("edam_techniques", "md_operation")
-EDAM_NMR_TOPIC = _term("edam_techniques", "nmr_topic")
-EDAM_XRAY_TOPIC = _term("edam_techniques", "xray_topic")
 
 CHMO_SAXS = _term("chmo", "saxs")
 CHMO_NMR = _term("chmo", "nmr")
@@ -95,14 +80,6 @@ CHMO_PDLF_R = _term("chmo", "pdlf_r")
 # The units of the measured quantities, as ``(uri, symbol)``; which term was
 # picked for what, and why one quantity has none, is in constants.yaml.
 UNITS = {name: _unit(entry) for name, entry in _DATA["units"].items()}
-
-# Licence of the data this repository distributes, per its own LICENSE file. An
-# experiment record digitises values out of a paper: the paper carries the
-# publisher's copyright, the digitised values are distributed under CC-BY-4.0.
-# Those are different facts, so `license` states the dataset licence and
-# `articleLicense` keeps whatever the registry said about the publication.
-DATASET_LICENSE_SPDX = "CC-BY-4.0"
-DATASET_LICENSE_URI = "https://creativecommons.org/licenses/by/4.0/"
 
 # COAR access statuses. DataCite returns these in rightsList alongside real
 # licences -- and they are the most frequent entry there -- but they describe
@@ -121,8 +98,10 @@ VARIABLES = dict(_DATA["variables"])
 TRAJECTORY_FORMATS = dict(_DATA["trajectory_formats"])
 
 # The generated block carries no marker comment: it is found by its own
-# top-level key, always the last thing in the file. LEGACY_SENTINEL is kept only
-# so an older banner is stripped along with the block rather than stranded.
+# top-level key. It is appended, so it starts out as the last thing in the file,
+# but it does not always stay there -- GlobalAnalysis re-serialises a README
+# with the keys it adds after it. LEGACY_SENTINEL is kept only so an older
+# banner is stripped along with the block rather than stranded.
 BLOCK_KEY = "bioschema_properties:"
 BLOCK_KEY_RE = re.compile(rf"^{re.escape(BLOCK_KEY)}", re.MULTILINE)
 LEGACY_SENTINEL = "# --- bioschema_properties:"
