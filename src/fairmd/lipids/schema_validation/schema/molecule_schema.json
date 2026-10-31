@@ -114,7 +114,11 @@
           "$comment": "Local extension: not a schema.org property of MolecularEntity. When serialising JSON-LD, express `image` as an ImageObject and map `creditText`, `license`, `usageInfo`, `source` and `citation` onto it, or drop this block.",
           "type": "object",
           "additionalProperties": false,
-          "required": ["creditText", "license", "source"],
+          "required": [
+            "creditText",
+            "license",
+            "source"
+          ],
           "description": "Credit for the depiction in `image`: who published it, where it came from and under what terms. Creative Commons sources follow the CC recommended practices for attribution, https://wiki.creativecommons.org/wiki/Recommended_practices_for_attribution ; sources that publish their own citation guidelines, such as PubChem, follow those instead and add `usageInfo` and `citation`",
           "properties": {
             "creditText": {
@@ -124,7 +128,10 @@
             "license": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["name", "url"],
+              "required": [
+                "name",
+                "url"
+              ],
               "description": "The terms the depiction is offered under",
               "properties": {
                 "spdx": {
@@ -150,7 +157,10 @@
             "source": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["name", "url"],
+              "required": [
+                "name",
+                "url"
+              ],
               "description": "The database that published the depiction",
               "properties": {
                 "name": {
@@ -176,7 +186,10 @@
             "citation": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["name", "url"],
+              "required": [
+                "name",
+                "url"
+              ],
               "description": "The paper the source asks to be cited alongside its data. Absent when the source asks for no citation",
               "properties": {
                 "name": {

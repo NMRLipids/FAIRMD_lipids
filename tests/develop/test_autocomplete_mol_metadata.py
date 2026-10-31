@@ -39,7 +39,12 @@ def load_schema():
     # without the package being installed.
     schema_path = (
         Path(__file__).resolve().parents[2]
-        / "src" / "fairmd" / "lipids" / "schema_validation" / "schema" / "molecule_schema.json"
+        / "src"
+        / "fairmd"
+        / "lipids"
+        / "schema_validation"
+        / "schema"
+        / "molecule_schema.json"
     )
     return json.loads(schema_path.read_text(encoding="utf-8"))
 
@@ -271,8 +276,10 @@ def test_images_only_rewrites_the_pair_and_nothing_else(tmp_path, monkeypatch):
             "image": PUBCHEM_IMAGE,
             "imageAttribution": {
                 "creditText": "stale credit",
-                "license": {"name": "NLM Copyright and Privacy Policies",
-                            "url": "https://www.nlm.nih.gov/web_policies.html"},
+                "license": {
+                    "name": "NLM Copyright and Privacy Policies",
+                    "url": "https://www.nlm.nih.gov/web_policies.html",
+                },
                 "source": {"name": "PubChem", "url": "https://pubchem.ncbi.nlm.nih.gov/"},
             },
         },
@@ -305,8 +312,11 @@ def test_unresolvable_image_leaves_the_existing_one_alone(tmp_path, monkeypatch)
 
     attribution = {
         "creditText": "an existing credit",
-        "license": {"spdx": "CC-BY-4.0", "name": "Creative Commons Attribution 4.0 International",
-                    "url": "https://creativecommons.org/licenses/by/4.0/"},
+        "license": {
+            "spdx": "CC-BY-4.0",
+            "name": "Creative Commons Attribution 4.0 International",
+            "url": "https://creativecommons.org/licenses/by/4.0/",
+        },
         "source": {"name": "LIPID MAPS®", "url": "https://www.lipidmaps.org/"},
     }
     metadata_path = write_metadata(
