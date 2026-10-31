@@ -52,4 +52,4 @@ jobs:
       with:
         fail_ci_if_error: true
         files: tests/coverage.xml
-        token: ${{ github.event_name == 'push' && secrets.CODECOV_TOKEN || '' }}
+        token: ${{ secrets.CODECOV_TOKEN }}
