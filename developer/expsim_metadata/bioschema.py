@@ -2,9 +2,14 @@
 Building the Bioschemas ``Dataset`` block of one record.
 
 Everything the block states about a record that is not simply copied from a
-registry is decided here: which ontology terms describe the analysis, which
-keywords the composition contributes, what the analysis outputs beside the
+registry is decided here: which ontology term describes the record's own method,
+which keywords the composition contributes, what the analysis outputs beside the
 README amount to as a distribution, and which work the record is part of.
+
+What the record's *kind* alone decides -- the EDAM keywords and technique terms,
+an experiment's measured variable, the databank's licence -- is not written
+here at all: the ``bioschema_properties.yaml`` templates in the data repository
+state it once for every record below them (see ``expsim_metadata.inheritance``).
 
 ``enrich`` is the whole of it in order, and is what ``expsim_metadata.records`` calls
 once the registry answer has been fetched.
@@ -14,13 +19,6 @@ import re
 from pathlib import Path
 
 from .constants import (
-    EDAM_MD_OP,
-    EDAM_NMR,
-    EDAM_NMR_TOPIC,
-    EDAM_SET,
-    EDAM_SIMULATION,
-    EDAM_XRAY,
-    EDAM_XRAY_TOPIC,
     OBO_SET,
     TRAJECTORY_FORMATS,
     UNITS,
@@ -29,16 +27,6 @@ from .constants import (
 from .descriptions import compose_description, compose_name
 from .fields import chmo_for_method, composition_items, experiment_kind, solution_ids
 from .helpers import dedupe, normalize_doi
-
-
-def edam(code, name):
-    return {
-        "@type": "DefinedTerm",
-        "name": name,
-        "termCode": code,
-        "inDefinedTermSet": EDAM_SET,
-        "url": f"{EDAM_SET}/{code}",
-    }
 
 
 def obo(code, name):
@@ -62,10 +50,21 @@ def split_subjects(subjects):
     return out
 
 
-def dedupe_keywords(entries):
-    seen, out = set(), []
+def _keyword_key(entry):
+    return ((entry.get("name") or "") if isinstance(entry, dict) else str(entry)).lower()
+
+
+def dedupe_keywords(entries, inherited=()):
+    """Drop repeated keywords, by name and regardless of case.
+
+    Seeded with the keywords the record inherits, so a free-text Zenodo subject
+    such as "Molecular dynamics" is not repeated beside the EDAM term of that
+    name that every simulation already inherits.
+    """
+    seen = {_keyword_key(entry) for entry in inherited}
+    out = []
     for entry in entries:
-        key = (entry["name"] if isinstance(entry, dict) else str(entry)).lower()
+        key = _keyword_key(entry)
         if key and key not in seen:
             seen.add(key)
             out.append(entry)
@@ -85,9 +84,14 @@ def composition_keywords(readme, kind, names):
 
 
 def measurement_technique(readme, path, kind):
-    """Ontology terms first, then the free-text detail no term captures."""
+    """The record's own method: its CHMO term, then the free-text detail no term captures.
+
+    The technique terms shared by the whole kind -- EDAM's molecular dynamics
+    operation, its NMR and X-ray diffraction topics -- are inherited from the
+    templates, not written per record.
+    """
     if kind == "simulations":
-        out = [edam(*EDAM_MD_OP)]
+        out = []
         engine, version = readme.get("SOFTWARE"), readme.get("SOFTWARE_VERSION")
         if engine:
             out.append(f"Molecular dynamics simulation ({engine}" + (f" {version}" if version else "") + ")")
@@ -98,13 +102,11 @@ def measurement_technique(readme, path, kind):
     nmr, xray = readme.get("NMR") or {}, readme.get("XRAY") or {}
     out = [obo(*chmo_for_method(readme, path))]
     if nmr or experiment_kind(path) == "nmr":
-        out.append(edam(*EDAM_NMR_TOPIC))
         if nmr.get("METHOD"):
             out.append(f"NMR: {nmr['METHOD']}")
         if nmr.get("INSTRUMENT"):
             out.append(nmr["INSTRUMENT"])
     else:
-        out.append(edam(*EDAM_XRAY_TOPIC))
         label = "X-ray scattering"
         if xray.get("SAMPLE_TYPE"):
             label += f" ({xray['SAMPLE_TYPE']})"
@@ -114,17 +116,18 @@ def measurement_technique(readme, path, kind):
     return out
 
 
-def variables_measured(path, kind):
-    """Read off which analyses actually exist beside this README."""
+def variables_measured(path):
+    """Read off which analyses actually exist beside this README.
+
+    An experiment's variable is also stated by its kind's template, and the
+    compaction in ``expsim_metadata.records`` drops it here when the two agree.
+    """
     directory = Path(path).resolve().parent
     found = [label for name, label in VARIABLES.items() if (directory / name).is_file()]
     if any(directory.glob("*OrderParameters.json")):
         found.append("C-H bond order parameter")
     if any(directory.glob("*_FormFactor.json")):
         found.append("X-ray scattering form factor")
-    if kind == "experiments" and not found:
-        found.append("C-H bond order parameter" if experiment_kind(path) == "nmr"
-                     else "X-ray scattering form factor")
 
     seen, out = set(), []
     for item in found:
@@ -278,8 +281,13 @@ def experiment_citations(block, dois):
     return dedupe(cites + [dois.cited])
 
 
-def enrich(block: dict, readme, path, kind, dois, names) -> dict:
-    """Add every Bioschemas property derivable from local data."""
+def enrich(block: dict, readme, path, kind, dois, names, inherited=None) -> dict:
+    """Add every Bioschemas property derivable from local data.
+
+    ``inherited`` is the block the record inherits from its templates. Nothing
+    of it is written here; it only keeps the record's own keywords from
+    repeating an inherited one.
+    """
     subjects = block.pop("_subjects", [])
     # Composed, never fetched: a registry title names the paper or deposition, and
     # hundreds of records share one of those.
@@ -294,16 +302,12 @@ def enrich(block: dict, readme, path, kind, dois, names) -> dict:
     if kind == "simulations" and readme.get("SYSTEM"):
         block["alternateName"] = readme["SYSTEM"]
 
-    terms = EDAM_SIMULATION if kind == "simulations" else (
-        EDAM_XRAY if experiment_kind(path) == "xray" else EDAM_NMR
-    )
     block["keywords"] = dedupe_keywords(
-        [edam(code, label) for code, label in terms]
-        + composition_keywords(readme, kind, names)
-        + split_subjects(subjects)
+        composition_keywords(readme, kind, names) + split_subjects(subjects),
+        (inherited or {}).get("keywords") or (),
     )
     block["measurementTechnique"] = measurement_technique(readme, path, kind)
-    block["variableMeasured"] = variables_measured(path, kind)
+    block["variableMeasured"] = variables_measured(path)
     if kind == "experiments":
         block["citation"] = experiment_citations(block, dois)
 

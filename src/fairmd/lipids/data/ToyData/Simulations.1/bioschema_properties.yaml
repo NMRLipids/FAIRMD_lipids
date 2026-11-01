@@ -1,0 +1,50 @@
+# A copy of BilayerData's Simulations/bioschema_properties.yaml; keep the two in step.
+#
+# Bioschemas properties inherited by every simulation.
+#
+# The `bioschema_properties` block of a README.yaml under Simulations/ holds only
+# what is specific to that record. Its complete block has two layers: this file,
+# and the record's own block applied on top of it -- a recursive dict update in
+# which lists are extended, and in which a few properties that belong to one
+# record are never merged. No other bioschema_properties.yaml is read. The rules
+# are in FAIRMD_lipids, src/fairmd/lipids/bioschema_inheritance.py.
+#
+# State here only what is true of every simulation by definition. A record cannot
+# remove an inherited list item, so something true of most simulations belongs in
+# the records instead.
+#
+# EDAM (http://edamontology.org) supplies the topics and the operation; CHMO has no
+# molecular-dynamics term. The first keyword says what the record is, the rest
+# place it in its field.
+keywords:
+- '@type': DefinedTerm
+  name: Biomolecular simulation
+  termCode: topic_3892
+  inDefinedTermSet: http://edamontology.org
+  url: http://edamontology.org/topic_3892
+- '@type': DefinedTerm
+  name: Molecular dynamics
+  termCode: topic_0176
+  inDefinedTermSet: http://edamontology.org
+  url: http://edamontology.org/topic_0176
+- '@type': DefinedTerm
+  name: Membrane and lipoproteins
+  termCode: topic_0820
+  inDefinedTermSet: http://edamontology.org
+  url: http://edamontology.org/topic_0820
+- '@type': DefinedTerm
+  name: Biophysics
+  termCode: topic_3306
+  inDefinedTermSet: http://edamontology.org
+  url: http://edamontology.org/topic_3306
+- '@type': DefinedTerm
+  name: Trajectory data
+  termCode: data_3870
+  inDefinedTermSet: http://edamontology.org
+  url: http://edamontology.org/data_3870
+measurementTechnique:
+- '@type': DefinedTerm
+  name: Molecular dynamics
+  termCode: operation_2476
+  inDefinedTermSet: http://edamontology.org
+  url: http://edamontology.org/operation_2476

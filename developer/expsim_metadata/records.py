@@ -6,8 +6,12 @@ block is rewritten, so the hand-written comments most experiment records carry
 survive a run. What is normalised beyond the block are the date fields, which
 YAML would otherwise parse into date objects the schemas reject.
 
-``process`` is one record end to end -- read, resolve the DOI, enrich, write --
-and is what the command line maps over the databank.
+``process`` is one record end to end -- read, resolve the DOI, enrich, compact,
+write -- and is what the command line maps over the databank.
+
+What is written is the *compact* block: everything the record would inherit
+from its kind's ``bioschema_properties.yaml`` template is left out, so a README
+states only what is specific to it (see ``expsim_metadata.inheritance``).
 """
 
 import json
@@ -22,7 +26,8 @@ from .bioschema import enrich
 from .constants import BLOCK_KEY_RE, BLOCK_ORDER, DATE_FIELDS, FOLD_WIDTH, FOLDABLE, LEGACY_SENTINEL
 from .fields import deprecated_keys, record_dois, record_kind
 from .helpers import parse_publication
-from .licenses import compact_license, dataset_license
+from .inheritance import TEMPLATE_FILENAME, compact_block, inherited_for, merge_blocks, template_for
+from .licenses import compact_license
 from .registries import from_crossref, from_datacite, resolve_doi, with_dataset_license
 
 
@@ -64,6 +69,27 @@ def strip_existing_block(text):
     if index == -1:
         return text if text.endswith("\n") else text + "\n"
     return text[:index]
+
+
+def replace_block(text, rendered):
+    """``text`` with its generated block replaced by ``rendered``; nothing else changes.
+
+    A README without a block gets it appended. One with a block has only that
+    block's own lines rewritten, wherever it sits: it is appended the first
+    time, but ``match_experiments`` in GlobalAnalysis re-serialises a README
+    and puts a key it adds -- ``EXPERIMENT`` -- after it, and 33 BilayerData
+    simulations are laid out that way. Cutting from the block to the end of the
+    file, as ``strip_existing_block`` does, would delete that section.
+
+    An older block behind ``LEGACY_SENTINEL`` predates any such key and is
+    still stripped to the end of the file along with its banner.
+    """
+    match = BLOCK_KEY_RE.search(text)
+    if match is None or LEGACY_SENTINEL in text:
+        return strip_existing_block(text) + rendered
+    lines = text.splitlines(keepends=True)
+    start = text.count("\n", 0, match.start())
+    return "".join(lines[:start]) + rendered + "".join(lines[_node_end(lines, start):])
 
 
 class BlockDumper(yaml.SafeDumper):
@@ -116,7 +142,10 @@ def render_block(block):
 def volatile_stripped(block):
     """A block with ``retrieved`` removed, for change detection.
 
-    Without this the retrieval date alone would make every rerun a diff.
+    Without this the retrieval date alone would make every rerun a diff. Callers
+    compare *resolved* blocks, so a block that only changed how much of itself
+    it inherits -- the full blocks written before inheritance, say -- keeps its
+    date too.
     """
     if not isinstance(block, dict):
         return block
@@ -209,6 +238,10 @@ def drop_publication(text, block):
     return "".join(lines[:start] + lines[_node_end(lines, start):]), True
 
 
+class TemplateError(Exception):
+    """A record's kind template is missing, or lacks what the record must inherit."""
+
+
 def process(path, spdx, names, cache_dir, dry_run=False):
     """Enrich one README.yaml in place. Returns True when the file changed."""
     path = Path(path)
@@ -221,6 +254,17 @@ def process(path, spdx, names, cache_dir, dry_run=False):
 
     for key, replacement in deprecated_keys(readme, kind).items():
         print(f"  deprecated: {key} is no longer accepted; rename it to {replacement}")
+
+    # A block written without its template would lack everything the kind shares
+    # -- for an experiment, the databank's own licence -- and nothing would
+    # supply it later. Refuse rather than write an incomplete record.
+    inherited = inherited_for(path)
+    if template_for(path) is None:
+        raise TemplateError(f"{path}: no {TEMPLATE_FILENAME} in this record's kind folder; "
+                            "nothing written, since the properties its kind shares would be missing")
+    if kind == "experiments" and not inherited.get("license"):
+        raise TemplateError(f"{path}: the {TEMPLATE_FILENAME} of this record's kind states no license; "
+                            "nothing written, since the record would carry no dataset licence")
 
     existing = readme.get("bioschema_properties")
 
@@ -241,15 +285,15 @@ def process(path, spdx, names, cache_dir, dry_run=False):
             block, notes = mapper(payload, doi, readme, spdx)
     if block is None:
         # unpublished/<slug> records have nothing to look up, but they are still
-        # data this repository distributes, so they carry the dataset licence.
+        # data this repository distributes, so they inherit the dataset licence.
         block = {"_source": {"api": None, "doi": None}}
     for note in notes:
         print(f"  note: {note}")
 
-    block = enrich(block, readme, path, kind, dois, names)
+    block = enrich(block, readme, path, kind, dois, names, inherited)
     if kind == "experiments":
-        block = with_dataset_license(block, dataset_license(spdx), dois.article)
-    block = ordered(prune(block))
+        block = with_dataset_license(block, inherited.get("license"), dois.article)
+    block = compact_block(ordered(prune(block)), inherited)
 
     text, dates_changed = normalize_dates(original, kind)
     # Both kinds: the field is retired once ``citation`` carries its content, and
@@ -257,14 +301,15 @@ def process(path, spdx, names, cache_dir, dry_run=False):
     # additionalProperties: false, so a record keeping it would not validate.
     text, _ = drop_publication(text, block)
 
-    if volatile_stripped(existing) == volatile_stripped(block):
+    if (isinstance(existing, dict) and volatile_stripped(merge_blocks(inherited, existing))
+            == volatile_stripped(merge_blocks(inherited, block))):
         block.setdefault("_source", {})["retrieved"] = (
             ((existing or {}).get("_source") or {}).get("retrieved") or date.today().isoformat()
         )
     else:
         block.setdefault("_source", {})["retrieved"] = date.today().isoformat()
 
-    updated = strip_existing_block(text) + render_block(block)
+    updated = replace_block(text, render_block(block))
     if updated == original:
         return False
     if not dry_run:

@@ -14,6 +14,7 @@ It is connected into the FAIRMD Lipids repository as a submodule into :file:`./D
 
    Data/
    ├── Simulations/
+   │   ├── bioschema_properties.yaml
    │   └── rw5/
    │       └── g8v/
    │           └── au3/
@@ -22,18 +23,20 @@ It is connected into the FAIRMD Lipids repository as a submodule into :file:`./D
    │                   └── README.yaml
    ├── experiments/
    │   ├── FormFactors/
+   │   │   ├── bioschema_properties.yaml
    │   │   └── 10.1001/
    │   │       └── j.some.thing.3242.11/
    │   │           └── 1/
    │   │               ├── form-factor-data.json
    │   │               └── README.yaml
-   │   └── OrderParameter/
-   │   │   └── 10.1001/
-   │   │       └── j.some.thing.3242.11/
-   │   │           └── 1/
-   │   │               ├── lipid1-data.json
-   │   │               ├── lipid2-data.json
-   │   │               └── README.yaml
+   │   └── OrderParameters/
+   │       ├── bioschema_properties.yaml
+   │       └── 10.1001/
+   │           └── j.some.thing.3242.11/
+   │               └── 1/
+   │                   ├── lipid1-data.json
+   │                   ├── lipid2-data.json
+   │                   └── README.yaml
    ├── lipid_json_buildH/
    │   ├── ua-dictionary-1.json
    │   └── ua-dictionary-2.json
@@ -61,6 +64,17 @@ A file containing all the relevant information of each simulation entry. These f
 stored at :py:data:`fairmd.lipids.FMDL_SIMU_PATH`.
 
 For more information see :doc:`schemas/simulation_metadata`.
+
+Inherited Bioschemas properties
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A :file:`bioschema_properties.yaml` in a kind's folder -- :file:`Simulations`,
+:file:`experiments/OrderParameters`, :file:`experiments/FormFactors` -- holds the Bioschemas
+properties that every ``README.yaml`` of that kind shares, for instance the ontology terms every
+simulation carries. Each ``README.yaml`` then stores only what is specific to its own entry.
+Every public accessor of a record -- ``system["bioschema_properties"]``, ``system.metadata``,
+``system.bioschema`` -- returns the template and the README's block merged. Only
+``to_readme()`` returns what the file stores, and it is what code writing a README back must use.
+The rules are in :py:mod:`fairmd.lipids.bioschema_inheritance`; see :ref:`bioschemainherit`.
 
 Simulation computed properties
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

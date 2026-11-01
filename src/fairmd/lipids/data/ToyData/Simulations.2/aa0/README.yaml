@@ -28,7 +28,6 @@ COMPOSITION:
     MAPPING: mappingCL.yaml
     COUNT: 8
 DIR_WRK: /home/lara/Databank
-PUBLICATION: null
 AUTHORS_CONTACT: "M\xE4\xE4tt\xE4, Jukka"
 SYSTEM: 72DPPC_2864SOL_8SOD_8CLA_323K
 SOFTWARE_VERSION: 5.0.4
@@ -47,10 +46,62 @@ TRAJECTORY_SIZE: 5362124
 TRJLENGTH: 120020.0
 TEMPERATURE: 323.0
 NUMBER_OF_ATOMS: 12208
-DATEOFRUNNING: 27/03/2022
+DATEOFRUNNING: '2022-03-27'
 TYPEOFSYSTEM: lipid bilayer
 EXPERIMENT:
   ORDERPARAMETER:
     DPPC: []
   FORMFACTOR: []
 ID: 243
+bioschema_properties:
+  name: >-
+    Molecular dynamics trajectory of a DPPC/CLA/SOD (82:9:9) bilayer at 323 K (Berger-DPPC-98,
+    GROMACS 5.0.4, 120 ns)
+  alternateName: 72DPPC_2864SOL_8SOD_8CLA_323K
+  description: >-
+    Molecular dynamics trajectory of a lipid bilayer of 72 DPPC
+    (1,2-dipalmitoyl-sn-glycero-3-phosphocholine, 82 mol%), 8 CLA (9 mol%) and 8 SOD (9 mol%) at 323
+    K. Simulated with Berger-DPPC-98 in GROMACS 5.0.4 for 120 ns (12208 atoms). Part of the
+    NMRlipids Databank.
+  keywords:
+  - DPPC
+  - 1,2-dipalmitoyl-sn-glycero-3-phosphocholine
+  - CLA
+  - SOD
+  measurementTechnique:
+  - Molecular dynamics simulation (gromacs 5.0.4)
+  - Berger-DPPC-98 force field
+  variableMeasured:
+  - '@type': PropertyValue
+    name: area per lipid
+    unitCode: http://purl.obolibrary.org/obo/UO_0000324
+    unitText: Å²
+  - '@type': PropertyValue
+    name: total density profile
+    unitText: nm⁻³
+  - '@type': PropertyValue
+    name: X-ray scattering form factor
+    unitCode: http://qudt.org/vocab/unit/PER-ANGSTROM
+    unitText: Å⁻¹
+  - '@type': PropertyValue
+    name: equilibration time
+    unitCode: http://purl.obolibrary.org/obo/UO_0000150
+    unitText: ns
+  - '@type': PropertyValue
+    name: C-H bond order parameter
+    unitCode: http://purl.obolibrary.org/obo/UO_0000186
+    unitText: dimensionless
+  distribution:
+  - '@type': DataDownload
+    name: 72DPPC_2864SOL_8SOD_8CLA_323K
+    contentSize: 5362124
+    encodingFormat: application/x-xtc
+    hasPart:
+    - short.xtc
+    - md.tpr
+    - topol.top
+    - md.gro
+  _source:
+    api: null
+    doi: null
+    retrieved: '2026-09-24'

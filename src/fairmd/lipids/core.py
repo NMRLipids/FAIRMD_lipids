@@ -14,11 +14,12 @@ from typing import Any
 import yaml
 
 from fairmd.lipids import FMDL_SIMU_PATH
-from fairmd.lipids._base import CollectionSingleton, SampleComposition
+from fairmd.lipids._base import CollectionSingleton, MetadataProvider, SampleComposition
+from fairmd.lipids.bioschema_inheritance import compact_block, inherited_block
 from fairmd.lipids.molecules import Lipid, NonLipid, lipids_set, solubles_set
 
 
-class System(MutableMapping, SampleComposition):
+class System(MutableMapping, SampleComposition, MetadataProvider):
     """
     Main Databank single object.
 
@@ -42,13 +43,23 @@ class System(MutableMapping, SampleComposition):
         else:
             expect_type_msg = "Expected dict or Mapping"
             raise TypeError(expect_type_msg)
+        # Built from a resolved view -- System(dict(other)), say -- the block would
+        # hold the whole template, and to_readme() would write it back. Store it
+        # compact, as __setitem__ does.
+        if isinstance(self._store.get(self.BIOSCHEMA_KEY), dict):
+            self[self.BIOSCHEMA_KEY] = self._store[self.BIOSCHEMA_KEY]
 
         self._initialize_content()
 
     def __getitem__(self, key: str):  # noqa: ANN204
-        return self._store[key]
+        return self._metadata_item(key)
 
     def __setitem__(self, key: str, value) -> None:
+        if key == self.BIOSCHEMA_KEY and isinstance(value, dict):
+            # The public sees the resolved block, so that is what comes back in.
+            # Store it compact, as the README does: nothing inherited is kept.
+            # compact_block copies, so a frozen view comes in as a plain dict.
+            value = compact_block(value, inherited_block(self.bioschema_template_dir()))
         self._store[key] = value
 
     def __delitem__(self, key: str) -> None:
@@ -65,11 +76,24 @@ class System(MutableMapping, SampleComposition):
 
     @property
     def readme(self) -> dict:
-        """Get the README dictionary of the system in true dict format.
+        """Get the README dictionary of the system, its Bioschemas block resolved.
 
-        :return: dict-type README (dict)
+        The same as :attr:`metadata`: read-only at its top level, so set a value
+        with ``system[key] = value``. To write the README back, use
+        :meth:`to_readme`, which keeps the block compact.
+
+        :return: dict-type README (a read-only dict)
         """
+        return self.metadata
+
+    @property
+    def _stored_metadata(self) -> dict:
         return self._store
+
+    @classmethod
+    def bioschema_template_dir(cls) -> str:
+        """Simulations inherit the template in the simulations folder itself."""
+        return FMDL_SIMU_PATH
 
     @property
     def n_lipids(self) -> int:

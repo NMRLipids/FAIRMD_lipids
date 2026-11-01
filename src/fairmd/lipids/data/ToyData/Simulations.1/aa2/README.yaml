@@ -27,7 +27,6 @@ COMPOSITION:
     MAPPING: mappingwaterlipid14.yaml
     COUNT: 3968
 DIR_WRK: /usr/home/bort/Databank
-PUBLICATION: null
 AUTHORS_CONTACT: Jesper J Madsen
 SYSTEM: 120POPC_8CHOL_3968SOL_303K
 SOFTWARE_VERSION: 5.0.4
@@ -42,13 +41,66 @@ TRAJECTORY_SIZE: 43000000
 TRJLENGTH: 200100.0
 TEMPERATURE: 303.0
 NUMBER_OF_ATOMS: 28576
-DATEOFRUNNING: 03/01/2022
+DATEOFRUNNING: '2022-01-03'
 TYPEOFSYSTEM: lipid bilayer
 EXPERIMENT:
   ORDERPARAMETER:
-    POPC: {}
-    CHOL: {}
-  FORMFACTOR: {}
+    POPC: []
+    CHOL: []
+  FORMFACTOR: []
 WARNINGS:
   PBC: z-jumps
 ID: 566
+bioschema_properties:
+  name: >-
+    Molecular dynamics trajectory of a POPC/CHOL (94:6) bilayer at 303 K (Lipid14, GROMACS 5.0.4,
+    200 ns)
+  alternateName: 120POPC_8CHOL_3968SOL_303K
+  description: >-
+    Molecular dynamics trajectory of a lipid bilayer of 120 POPC
+    (1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine, 94 mol%) and 8 CHOL (cholesterol, 6 mol%) at
+    303 K. Simulated with Lipid14 in GROMACS 5.0.4 for 200 ns (28576 atoms). Part of the NMRlipids
+    Databank and available from https://doi.org/10.5281/zenodo.11614468.
+  sameAs: https://doi.org/10.5281/zenodo.11614468
+  datePublished: '2024-06-13'
+  license:
+    spdx: CC-BY-4.0
+    name: Creative Commons Attribution 4.0 International
+    url: https://spdx.org/licenses/CC-BY-4.0.html
+    sameAs: https://creativecommons.org/licenses/by/4.0/legalcode
+  publisher: Zenodo
+  creator:
+  - name: Hörstel, Ferdinand
+  - name: Nesterenko, Alexey
+    identifier: https://orcid.org/0000-0003-1592-257X
+  keywords:
+  - POPC
+  - 1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine
+  - CHOL
+  - cholesterol
+  measurementTechnique:
+  - Molecular dynamics simulation (gromacs 5.0.4)
+  - Lipid14 force field
+  distribution:
+  - '@type': DataDownload
+    contentUrl: https://doi.org/10.5281/zenodo.11614468
+    name: 120POPC_8CHOL_3968SOL_303K
+    contentSize: 43000000
+    encodingFormat: application/x-xtc
+    hasPart:
+    - 566.xtc
+    - 566.tpr
+    - md.top
+    - 566.gro
+  isPartOf:
+    '@type': Dataset
+    '@id': https://doi.org/10.5281/zenodo.11614468
+    identifier: 10.5281/zenodo.11614468
+    url: https://doi.org/10.5281/zenodo.11614468
+    name: Test Dataset for calculation of order parameters and form factors
+    publisher: Zenodo
+  _source:
+    api: datacite
+    doi: 10.5281/zenodo.11614468
+    spdxLicenseList: 3.29.0
+    retrieved: '2026-09-24'

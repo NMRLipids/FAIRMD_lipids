@@ -55,6 +55,30 @@ def experiment_kind(path):
     return "xray" if "FormFactors" in Path(path).resolve().parts else "nmr"
 
 
+EXPERIMENTS_DIR = "experiments"
+# The experiment kinds, as the package's OPExperiment and FFExperiment name
+# their folders (``target_folder()``); a test pins the two together.
+EXPERIMENT_KINDS = ("OrderParameters", "FormFactors")
+
+
+def template_dir_of(path):
+    """The kind folder a record inherits its ``bioschema_properties.yaml`` template from.
+
+    ``Simulations`` (or a toy ``Simulations.N``) for a simulation, and
+    ``experiments/OrderParameters`` or ``experiments/FormFactors`` for an
+    experiment: the folders the package resolves against, as ``FMDL_SIMU_PATH``
+    and ``FMDL_EXP_PATH/<target_folder>``. There is one template per kind; no
+    folder in between is read. A path under neither inherits nothing, and gets
+    None.
+    """
+    for parent in Path(path).resolve().parents:
+        if _is_simulations_dir(parent.name) or (
+            parent.name in EXPERIMENT_KINDS and parent.parent.name == EXPERIMENTS_DIR
+        ):
+            return parent
+    return None
+
+
 def data_root_of(path):
     """Walk up from a README.yaml to the databank root."""
     for parent in Path(path).resolve().parents:

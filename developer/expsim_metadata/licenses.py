@@ -13,8 +13,6 @@ import re
 
 from .constants import (
     ACCESS_RIGHTS_PREFIX,
-    DATASET_LICENSE_SPDX,
-    DATASET_LICENSE_URI,
     SPDX_LICENSES_URL,
 )
 from .helpers import fetch_json
@@ -106,15 +104,6 @@ def compact_license(licence) -> dict:
     compact = {key: value for key, value in licence.items() if value is not None}
     compact.setdefault("spdx", None)
     return compact
-
-
-def dataset_license(spdx):
-    """This repository's own licence, resolved through the SPDX list."""
-    if spdx is not None:
-        licence, _ = spdx.resolve(DATASET_LICENSE_URI)
-        if licence:
-            return license_block(licence, DATASET_LICENSE_URI)
-    return {"spdx": DATASET_LICENSE_SPDX, "url": DATASET_LICENSE_URI}
 
 
 def resolve_license(rights_list, spdx):

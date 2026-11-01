@@ -150,7 +150,7 @@ def pair_one_simulation(experiments: ExperimentCollection, simulation: System) -
     paired_exps = _find_pairs_for_simulation(experiments, simulation)
     outfile = os.path.join(FMDL_SIMU_PATH, simulation["path"], "README.yaml")
     with open(outfile, "w", encoding="utf-8") as f:
-        f.write(encode_canonical_yaml(simulation.readme))
+        f.write(encode_canonical_yaml(simulation.to_readme()))
     return [[simulation, experiment] for experiment in paired_exps]
 
 

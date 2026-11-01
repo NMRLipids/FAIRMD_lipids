@@ -1,5 +1,6 @@
 """Base abstract classes for the FairMD Lipid Databank."""
 
+import copy
 import sys
 import typing
 from abc import ABC, abstractmethod
@@ -8,6 +9,7 @@ from typing import Any, Generic, TypeVar
 
 from tqdm import tqdm
 
+from fairmd.lipids.bioschema_inheritance import resolve_block, template_stamp
 from fairmd.lipids.molecules import Lipid, Molecule, NonLipid, lipids_set, solubles_set
 
 
@@ -82,6 +84,161 @@ class SampleComposition(ABC):
     @abstractmethod
     def solution_composition(self, basis: typing.Literal["molar", "mass"] = "molar") -> dict[str, float]:
         """Return the composition of the solution in system."""
+
+
+_READ_ONLY_MSG = (
+    "{kind} is a read-only view of a databank record's metadata. Assign through the record, "
+    "e.g. system['bioschema_properties'] = block, or edit the copy that bioschema or "
+    "to_readme() returns."
+)
+
+
+class FrozenDict(dict):
+    """A ``dict`` that refuses changes; a read-only view handed out by :class:`MetadataProvider`.
+
+    It is still a ``dict``: it compares equal to one and serialises to JSON as one.
+    Copying it, shallow or deep, gives back a plain, mutable ``dict``.
+    """
+
+    def _read_only(self, *args, **kwargs):  # noqa: ANN002, ANN003, ANN202, ARG002
+        raise TypeError(_READ_ONLY_MSG.format(kind=type(self).__name__))
+
+    __setitem__ = __delitem__ = __ior__ = _read_only
+    clear = pop = popitem = setdefault = update = _read_only
+
+    def copy(self) -> dict:
+        return dict(self)
+
+    __copy__ = copy
+
+    def __deepcopy__(self, memo: dict) -> dict:
+        return {copy.deepcopy(k, memo): copy.deepcopy(v, memo) for k, v in self.items()}
+
+    def __reduce__(self):  # noqa: ANN204
+        return (dict, (dict(self),))
+
+
+class FrozenList(list):
+    """A ``list`` that refuses changes; see :class:`FrozenDict`."""
+
+    def _read_only(self, *args, **kwargs):  # noqa: ANN002, ANN003, ANN202, ARG002
+        raise TypeError(_READ_ONLY_MSG.format(kind=type(self).__name__))
+
+    __setitem__ = __delitem__ = __iadd__ = __imul__ = _read_only
+    append = extend = insert = pop = remove = clear = sort = reverse = _read_only
+
+    def copy(self) -> list:
+        return list(self)
+
+    __copy__ = copy
+
+    def __deepcopy__(self, memo: dict) -> list:
+        return [copy.deepcopy(v, memo) for v in self]
+
+    def __reduce__(self):  # noqa: ANN204
+        return (list, (list(self),))
+
+
+def freeze(value):  # noqa: ANN001, ANN201
+    """A read-only copy of ``value``: dicts and lists, at every depth, become frozen."""
+    if isinstance(value, dict):
+        return FrozenDict({key: freeze(item) for key, item in value.items()})
+    if isinstance(value, list):
+        return FrozenList(freeze(item) for item in value)
+    return value
+
+
+class MetadataProvider(ABC):
+    """Abstract base class for a databank record that carries metadata.
+
+    A record's README stores a *compact* ``bioschema_properties`` block: what the
+    ``bioschema_properties.yaml`` template of the record's kind already states is
+    left out. Every public accessor returns the *resolved* block instead -- the
+    kind's template with the record's own block applied on top (two layers; one
+    template per kind, in :meth:`bioschema_template_dir`; merge rules in
+    :mod:`fairmd.lipids.bioschema_inheritance`) -- so these are always equal::
+
+        record.metadata["bioschema_properties"] == record.bioschema == record["bioschema_properties"]
+
+    The views are read-only, so a change can never be made to a copy and lost:
+
+    - ``record["bioschema_properties"]`` and the block inside :attr:`metadata`
+      are frozen at every depth (:class:`FrozenDict`, :class:`FrozenList`).
+      Change the block by assigning a new one to ``record["bioschema_properties"]``.
+    - :attr:`metadata` itself is frozen at its top level. Its other values are
+      the record's own objects, so changing one in place changes the record,
+      exactly as ``record[key]`` does.
+    - :attr:`bioschema` is a new, mutable ``dict``: a value to use, not a view.
+
+    Only code inside the class sees the stored form, through
+    :attr:`_stored_metadata`. The one sanctioned way out is :meth:`to_readme`,
+    which is what any code writing a ``README.yaml`` back must use; a frozen view
+    cannot be written by a YAML dumper, which keeps the template from being baked
+    into a file.
+    """
+
+    BIOSCHEMA_KEY = "bioschema_properties"
+
+    @property
+    @abstractmethod
+    def _stored_metadata(self) -> dict:
+        """The README as loaded, compact block included. For use inside the class only."""
+
+    @classmethod
+    @abstractmethod
+    def bioschema_template_dir(cls) -> str:
+        """The folder holding the ``bioschema_properties.yaml`` every record of this kind inherits."""
+
+    def _resolved_block(self) -> FrozenDict | None:
+        """The resolved block, frozen; None when the README has none.
+
+        Cached per record and recomputed only when the stored block is replaced
+        or the template file changes, so reading the block -- or any key of
+        :attr:`metadata` -- does not re-read and re-copy the template each time.
+        """
+        stored = self._stored_metadata.get(self.BIOSCHEMA_KEY)
+        if stored is None:
+            return None
+        template_dir = self.bioschema_template_dir()
+        stamp = (str(template_dir), template_stamp(template_dir))
+        cached = self.__dict__.get("_bioschema_cache")
+        if cached is not None and cached[0] is stored and cached[1] == stamp:
+            return cached[2]
+        resolved = freeze(resolve_block(stored, template_dir))
+        self._bioschema_cache = (stored, stamp, resolved)
+        return resolved
+
+    def _metadata_item(self, key: str):  # noqa: ANN202
+        """One metadata value as the public sees it: the block resolved, anything else as stored."""
+        if key == self.BIOSCHEMA_KEY and self._stored_metadata[key] is not None:
+            return self._resolved_block()
+        return self._stored_metadata[key]
+
+    @property
+    def metadata(self) -> FrozenDict:
+        """The record's metadata, with its Bioschemas block resolved; read-only at its top level.
+
+        ``bioschema_properties`` is present only when the README has a block.
+        """
+        return FrozenDict({key: self._metadata_item(key) for key in self._stored_metadata})
+
+    @property
+    def bioschema(self) -> dict | None:
+        """The record's complete Bioschemas ``Dataset`` block.
+
+        :return: the kind's template updated by the record's own block, as a new,
+                 mutable dict; None when the record carries no block yet.
+        """
+        resolved = self._resolved_block()
+        return None if resolved is None else copy.deepcopy(resolved)
+
+    def to_readme(self) -> dict:
+        """The dict to write to ``README.yaml``: the stored form, with the compact block.
+
+        Nothing inherited is in it, so writing it back never bakes the kind's
+        template into the file. A deep copy: changing it does not change the record.
+        """
+        return copy.deepcopy(dict(self._stored_metadata))
 
 
 T = TypeVar("T")

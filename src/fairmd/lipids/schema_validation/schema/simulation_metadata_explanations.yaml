@@ -57,7 +57,7 @@ WARNINGS:
 ID:
  FAIRMD Lipids ID number of the simulation.
 bioschema_properties:
- Machine-readable description of the entry following the Bioschemas Dataset profile 1.0-RELEASE (https://bioschemas.org/profiles/Dataset/1.0-RELEASE), used to publish the entry as schema.org JSON-LD. Written by the metadata enrichment tooling from the deposition record (DataCite/CrossRef), not user given. Only properties of that profile are accepted; publication references live here as bioschema_properties.citation, a list of bare DOIs. The bookkeeping key _source records which API the record came from and when, and is stripped before serialising JSON-LD.
+ Machine-readable description of the entry following the Bioschemas Dataset profile 1.0-RELEASE (https://bioschemas.org/profiles/Dataset/1.0-RELEASE), used to publish the entry as schema.org JSON-LD. Written by the metadata enrichment tooling from the deposition record (DataCite/CrossRef), not user given. Only properties of that profile are accepted; publication references live here as bioschema_properties.citation, a list of bare DOIs. The bookkeeping key _source records which API the record came from and when, and is stripped before serialising JSON-LD. The README stores only what is specific to the entry: properties every simulation shares, such as the EDAM keywords, are inherited from the bioschema_properties.yaml template in the Simulations folder, and System.bioschema returns the resolved block.
 
 
 

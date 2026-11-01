@@ -2,18 +2,68 @@
 Validating what a run wrote.
 
 ``check`` re-reads one record and reports what is missing, malformed or
-inconsistent with the record's own fields; ``duplicate_names`` is the one test
-that cannot be made record by record, since two records only clash when both are
-looked at. Both are what ``--check`` reports, and neither modifies anything.
+inconsistent with the record's own fields, judged on the *resolved* block -- the
+record's own block applied on top of what it inherits. Given a
+``bioschema_properties.yaml`` template instead, it validates the template.
+``duplicate_names`` is the one test that cannot be made record by record, since
+two records only clash when both are looked at. All are what ``--check``
+reports, and none modifies anything.
 """
 
+import json
 from pathlib import Path
 
 import yaml
+from jsonschema import Draft7Validator
 
 from .constants import DATE_RE, ORCID_RE
-from .fields import deprecated_keys, record_dois, record_kind
+from .fields import deprecated_keys, record_dois, record_kind, template_dir_of
 from .helpers import clean_text, normalize_doi
+from .inheritance import NOT_INHERITED, TEMPLATE_FILENAME, is_template, load_template, resolved_for, template_for
+
+# Read from the source tree rather than the installed package, like the
+# inheritance rules: this tool runs from a plain checkout.
+SCHEMA_DIR = Path(__file__).resolve().parents[2] / "src" / "fairmd" / "lipids" / "schema_validation" / "schema"
+SCHEMA_FILES = {"simulations": "simulation_schema.json", "experiments": "experiment_schema.json"}
+
+
+def block_schema(filename):
+    """The ``bioschema_properties`` subschema of a README schema, made standalone."""
+    schema = json.loads((SCHEMA_DIR / filename).read_text(encoding="utf-8"))
+    block = schema["properties"]["bioschema_properties"]
+    block["definitions"] = schema["definitions"]
+    return block
+
+
+def check_template(path):
+    """Validate a ``bioschema_properties.yaml`` template. Returns ``(level, message)`` pairs.
+
+    A template is a partial block, so it is held to the block schema of its
+    kind with nothing required. What it may not hold are the properties that
+    identify one record, which the inheritance ignores in a template, and it
+    must sit in a kind folder -- ``Simulations``, ``experiments/OrderParameters``,
+    ``experiments/FormFactors`` -- since no other folder is read. Either mistake
+    would otherwise pass silently.
+    """
+    if template_dir_of(path) != Path(path).resolve().parent:
+        return [("ERROR", f"ERROR: {path}: only a kind folder's template is inherited "
+                          "(Simulations, experiments/OrderParameters, experiments/FormFactors); "
+                          "no record reads this one")]
+    try:
+        template = load_template(path)
+    except (yaml.YAMLError, ValueError) as exc:
+        return [("ERROR", f"ERROR: {path}: {exc}")]
+
+    found = [("ERROR", f"ERROR: {path}: {key} belongs to one record and cannot be inherited")
+             for key in sorted(set(template) & NOT_INHERITED)]
+
+    schema = block_schema(SCHEMA_FILES[record_kind(path)])
+    schema.pop("required", None)
+    errors = sorted(Draft7Validator(schema).iter_errors(template), key=lambda e: list(e.absolute_path))
+    found.extend(("ERROR", f"ERROR: {path}: {list(err.absolute_path)}: {err.message}") for err in errors)
+    if not template:
+        found.append(("WARNING", f"WARNING: {path}: the template is empty"))
+    return found
 
 
 def check(path, spdx, strict=False):
@@ -24,14 +74,22 @@ def check(path, spdx, strict=False):
     expected outcome for experiments, whose CrossRef licences are publisher
     text-mining terms, and a missing block is normal for a freshly uploaded
     record the workflow has not reached yet.
+
+    The checks read the resolved block, so an inherited licence counts. A record
+    whose kind folder holds no template fails: its stored block lacks everything
+    its kind shares, and nothing would supply it.
     """
+    if is_template(path):
+        return check_template(path)
+
     readme = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
-    block = readme.get("bioschema_properties")
+    stored = readme.get("bioschema_properties")
     level = "ERROR" if strict else "WARNING"
-    if block is None:
+    if stored is None:
         return [(level, f"{level}: {path}: missing bioschema_properties block")]
-    if not isinstance(block, dict):
+    if not isinstance(stored, dict):
         return [("ERROR", f"ERROR: {path}: bioschema_properties is not a mapping")]
+    block = resolved_for(path, stored)
 
     found = []
 
@@ -40,6 +98,9 @@ def check(path, spdx, strict=False):
 
     def warn(message):
         found.append(("WARNING", f"WARNING: {path}: {message}"))
+
+    if template_for(path) is None:
+        error(f"no {TEMPLATE_FILENAME} in this record's kind folder: the properties its kind shares are missing")
 
     resolved = (block.get("_source") or {}).get("doi") is not None
     # name and description are composed from the record itself, so unlike the
