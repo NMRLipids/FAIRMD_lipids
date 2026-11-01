@@ -3,10 +3,10 @@
 Adding experimental data
 ========================
 
-Experimental data is stored in :ref:`BilayerData/experiments <dbstructure_exp>` folder. C-H bond
-order parameters from NMR are in ``OrderParameters`` subfolder and X-ray scattering form factors in
-``FormFactors`` subfolder. The keys of these dictionaries are summarized in the :ref:`Experiment
-metadata description <readmeexp>`.
+Experimental data is stored in :ref:`the experiments folder <dbstructure_exp>` of the BilayerData
+repository. C-H bond order parameters from NMR are in ``OrderParameters`` subfolder and X-ray
+scattering form factors in ``FormFactors`` subfolder. The keys of these dictionaries are summarized
+in the :ref:`Experiment metadata description <readmeexp>`.
 
 **Additional material for the chapter:**
 
@@ -19,14 +19,16 @@ metadata description <readmeexp>`.
 Steps to add experimental data
 ------------------------------
 
-#. Fork the BilayerData repository in the GitHub interface and add+checkout the branch with an explicit
+#. Fork the BilayerData repository in the GitHub interface and add and check out a branch with an explicit
    naming, e.g., ``add-exp-Smidth-2023-dpps``. Work only in this branch. You can add several experiments into
    one branch, it's also fine.
 
-#. Create and fill the ``README.yaml`` file of your data. This is not as simple as it seems,
-   please read the :ref:`experiment metadata guidelines <addexp_guidelines>` if you are not feeling familiar.
+#. Create and fill the ``README.yaml`` file for the experiment. This is not as simple as it seems,
+   please read the :ref:`experiment metadata guidelines <addexp_guidelines>` if you are not feeling
+   familiar.
 
-#. Copy this README file data into a appropriate directory named as described above.
+#. Copy this README file and the data into an appropriate directory under the relevant experiment
+   folder. Note that the directory name should identify the dataset unambiguously.
 
 #. If you have order parameter data, create a file named ``{lipidname}_OrderParameters.json``
    where ``{lipidname}`` is the universal name of the lipid from which the data is measured
@@ -44,19 +46,19 @@ Steps to add experimental data
    <https://github.com/NMRLipids/BilayerData/tree/main/experiments/OrderParameters>`_. You can see
    previously added experiments for examples.
 
-#. If you have X-ray scattering form factor data, store the form factor into appropriate
+#. If you have X-ray scattering form factor data, store the form factor in the appropriate
    folders in ASCII format where first column in x-axis values (Å\ :sup:`-1`), second
    column is y-axis value, and third is the error. Then create ``json`` file by runnig
 
    .. code-block:: bash
 
-      python data_to_json.py ascii-file.txt
+       python data_to_json.py ascii-file.txt
 
    in folder `experiments/FormFactors
    <https://github.com/NMRLipids/BilayerData/tree/main/experiments/FormFactors>`_. Please see
    previously added experiments for examples.
 
-#. Adding experiments can lead to recalculation of quality of some simulations and rankings.
+#. Adding experiments can lead to recalculation of the quality of some simulations and rankings.
    So, after the addition, you may want to run
 
    .. code-block:: bash
@@ -102,7 +104,7 @@ most strange points.
 
    .. code-block:: yaml
 
-      REAGENT_SOURCES:
+      SOLUTION_COMPOSITION:
          CLA: 0.53
          SOD: 0.25
 
@@ -156,17 +158,18 @@ Guidelines to fill experiment metadata
    It is not clear if the experiment is performed with knowledge of the real temperature. The pulse
    program often imposes heating inside the sample rotor, which cannot be measured directly. The
    correction should be applied, but it is sometimes unclear whether it was. This must be reflected
-   in the metadata field called ``T_RF_HEATING``. If you cannot find any signs of temperature
+   in the metadata field called ``NMR.T_RF_HEATING``. If you cannot find any signs of temperature
    correction, use "UNKNOWN".
 
 #. **Knowledge of the sign**
 
    99.99% of experiments don't give a sign of the order parameter, just the absolute value, and we
    should guess them when we add. The easiest way is to inherit this guess from MD. There are
-   experiments where signs are measured, then we write them explicitly in ``SIGN_MEASURED`` field.
+   experiments where signs are measured, then we write them explicitly in the ``NMR.SIGN_MEASURED``
+   field.
 
 #. **Details of pulse sequence**
 
    Modern techniques like R-PDLF have a lot of settings in their pulse sequences. We want to reflect
-   some of them in ``DETAILS`` field, but don't make it too large. If some papers are cited, we can
-   cite them as well in DETAILS. Let's keep this field to a few-line paragraph.
+   some of them in the ``NMR.DETAILS`` field, but don't make it too large. If some papers are cited,
+   we can cite them as well in ``NMR.DETAILS``. Let's keep this field to a few-line paragraph.
