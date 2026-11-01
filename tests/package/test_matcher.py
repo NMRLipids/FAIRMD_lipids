@@ -50,6 +50,9 @@ def test_find_pairs_and_change_sims_works(tmp_path):
         def readme(self):
             return {key: value for key, value in self.items()}
 
+        def to_readme(self):
+            return self.readme
+
         def membrane_composition(self, basis):
             assert basis == "molar"
             return {"POPC": 1.0}
