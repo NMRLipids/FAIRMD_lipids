@@ -1,199 +1,13 @@
 #!/usr/bin/env python3
-r"""
-Match simulations with experiments in the databank.
+"""Command-line entry point for matching simulations and experiments."""
 
-Script goes through all simulations and experiments in the databank and finds
-pairs of simulations and experiments that match in composition, temperature and
-other conditions. The found pairs are written into the simulation :ref:`README.yaml <readmesimu>`
-files and into a log file.
-
-**Usage:**
-
-.. code-block:: console
-
-    fmdl_match_experiments
-
-No arguments are needed.
-TODO: check if EXPERIMENT section changed and trigger the action!
-"""
-
-import logging
-import os
-import warnings
-from copy import copy
-from typing import IO
-
-import numpy as np
-
-from fairmd.lipids import FMDL_SIMU_PATH, progress
-from fairmd.lipids.auxiliary import encode_canonical_yaml
-from fairmd.lipids.core import System, SystemsCollection, initialize_databank
-from fairmd.lipids.experiment import Experiment, ExperimentCollection
-
-logger = logging.getLogger("__name__")
-
-# Helper functions for matching criteria
-# TODO: remove to a module and TEST!
-
-
-def _match_membrane_composition(sim_mf: dict, exp_mf: dict) -> bool:
-    """Compare two membrane compositions given as molar fractions."""
-    if not (set(sim_mf.keys()) & set(exp_mf.keys())):
-        return False
-    _sim_mf = copy(sim_mf)
-    _exp_mf = copy(exp_mf)
-    # Presence tolerance: remove molecules with very small fractions
-    presence_tol = 0.01
-    for key in set(sim_mf.keys()) - set(exp_mf.keys()):
-        if sim_mf[key] < presence_tol:
-            del _sim_mf[key]
-    for key in set(exp_mf.keys()) - set(sim_mf.keys()):
-        if exp_mf[key] < presence_tol:
-            del _exp_mf[key]
-    if set(_sim_mf.keys()) != set(_exp_mf.keys()):
-        return False
-    # SQRT-based tolerance
-    sqrt_tolerance_molfraction = 0.03
-    membrane_composition_ok = True
-    for key in _sim_mf:
-        if np.abs(np.sqrt(_exp_mf[key]) - np.sqrt(_sim_mf[key])) > sqrt_tolerance_molfraction:
-            # more sensitive to small fraction changes and less to large fraction changes
-            membrane_composition_ok = False
-            break
-    return membrane_composition_ok
-
-
-def _match_solution_composition(sim_mf: dict, exp_mf: dict) -> bool:
-    """Compare two solution compositions given as molar fractions."""
-    if not sim_mf and not exp_mf:
-        return True  # pure water
-    if not (set(sim_mf.keys()) & set(exp_mf.keys())):
-        return False
-    _sim_mf = copy(sim_mf)
-    _exp_mf = copy(exp_mf)
-    # Presence tolerance: remove molecules with very small fractions
-    presence_tol = 0.02  # this is set to 20 mM (should depend on charge?)
-    for key in set(sim_mf.keys()) - set(exp_mf.keys()):
-        if sim_mf[key] < presence_tol:
-            del _sim_mf[key]
-    for key in set(exp_mf.keys()) - set(sim_mf.keys()):
-        if exp_mf[key] < presence_tol:
-            del _exp_mf[key]
-    if set(_sim_mf.keys()) != set(_exp_mf.keys()):
-        return False
-    # Relative log10-based tolerance
-    solution_rel_log10_tol = 0.5
-    solution_composition_ok = True
-    for key in _sim_mf:
-        if np.abs(np.log10(_exp_mf[key] / _sim_mf[key])) > solution_rel_log10_tol:
-            solution_composition_ok = False
-            break
-    return solution_composition_ok
-
-
-def _match_temperature(sim_t: float, exp_t: float) -> bool:
-    """Check if two temperatures match within tolerance."""
-    abs_tolerance_t = 2.5
-    return np.abs(sim_t - exp_t) <= abs_tolerance_t
-
-
-def _match_hydration(sim_h: float, exp_h: float) -> bool:
-    """Check if two hydration levels match within tolerance."""
-    if exp_h > 25 and sim_h > 25:  # both not full hydration
-        return True
-    lip_rel_hydration_tol = 0.15  # relative acceptable error for determination
-    return np.abs(exp_h / sim_h - 1) <= lip_rel_hydration_tol
-
-
-def find_pairs_and_change_sims(experiments: ExperimentCollection, simulations: SystemsCollection):
-    """Find matching simulation-experiment pairs and update simulations' README data."""
-    pairs = []
-    for simulation in progress(simulations, desc="Simulation"):
-        sim_lipids_mf = simulation.membrane_composition(basis="molar")
-        try:
-            sim_ions_mf = simulation.solution_composition(basis="molar")
-            sim_hydr = simulation.get_hydration(basis="number")
-        except ValueError:
-            # implicit water - hydration is not supported currently => don't pair
-            warnings.warn(
-                f"Simulation {simulation['ID']} has implicit water; skipping experiment matching.",
-                stacklevel=2,
-            )
-            continue
-
-        for experiment in experiments:
-            exp_lipids_mf = experiment.membrane_composition(basis="molar")
-            if not _match_membrane_composition(sim_lipids_mf, exp_lipids_mf):
-                continue
-
-            exp_ions_mf = experiment.solution_composition(basis="molar")
-            if not _match_solution_composition(sim_ions_mf, exp_ions_mf):
-                continue
-
-            exp_hydr = experiment.get_hydration(basis="number")
-            if not _match_hydration(sim_hydr, exp_hydr):
-                continue
-
-            if not _match_temperature(simulation["TEMPERATURE"], experiment["TEMPERATURE"]):
-                continue
-
-            pairs.append([simulation, experiment])
-
-            # Add path to experiment into simulation README.yaml
-            # many experiment entries can match to same simulation
-            if experiment.exptype == "OrderParameters":
-                for lipid in experiment.data:
-                    if lipid not in simulation["EXPERIMENT"]["ORDERPARAMETER"]:
-                        simulation["EXPERIMENT"]["ORDERPARAMETER"][lipid] = []
-                    simulation["EXPERIMENT"]["ORDERPARAMETER"][lipid].append(experiment.exp_id)
-            elif experiment.exptype == "FormFactors":
-                simulation["EXPERIMENT"]["FORMFACTOR"].append(experiment.exp_id)
-
-        # sorting experiment lists to keep experimental order strict
-        cur_exp = simulation["EXPERIMENT"]
-        cur_exp["FORMFACTOR"].sort()
-        for _lipid in cur_exp["ORDERPARAMETER"]:
-            cur_exp["ORDERPARAMETER"][_lipid].sort()
-
-    return pairs
-
-
-def log_pairs(pairs, fd: IO[str]) -> None:
-    """
-    Write found correspondences into log file.
-
-    pairs: [(Simulation, Experiment), ...]
-    fd: file descriptor for writting into
-    """
-    for p in pairs:
-        sim: System = p[0]
-        exp: Experiment = p[1]
-
-        sysn = sim["SYSTEM"]
-        simp = sim["path"]
-
-        expp = exp.path
-        # The two DOI fields an experiment may give. The deprecated plain `DOI:`
-        # key is deliberately not read here: renaming it is what the deprecation
-        # asks for, and a log line is not a reason to keep it alive.
-        expd = exp.readme.get("ARTICLE_DOI") or exp.readme.get("DATA_DOI") or "[no DOI]"
-
-        fd.write(f"""
---------------------------------------------------------------------------------
-Simulation:
- - {sysn}
- - {simp}
-Experiment:
- - {expd}
- - {expp}""")
-        # end for
-    fd.write("""
---------------------------------------------------------------------------------
-    \n""")
+from fairmd.lipids.core import initialize_databank
+from fairmd.lipids.experiment import ExperimentCollection
+from fairmd.lipids.matcher import log_pairs, pair_all_simulations
 
 
 def match_experiments() -> None:
-    """Do main program work. Not for exporting."""
+    """Run matching for all databank simulations and experiment types."""
     simulations = initialize_databank()
 
     # clear all EXPERIMENT sections in all simulations
@@ -204,30 +18,20 @@ def match_experiments() -> None:
         for lipid in simulation.lipids:
             simulation["EXPERIMENT"]["ORDERPARAMETER"][lipid] = []
 
-    # Pair each simulation with an experiment with the closest matching temperature
-    # and composition
     with open("search-databank-pairs.log", "w") as logf:
         print("Scanning simulation-experiment pairs among order parameter experiments.")
         exps = ExperimentCollection.load_from_data("OPExperiment")
         print(f"{len(exps)} OP experiments loaded.")
-        pairs_op = find_pairs_and_change_sims(exps, simulations)
+        pairs_op = pair_all_simulations(exps, simulations)
         logf.write("=== OP PAIRS ===\n")
         log_pairs(pairs_op, logf)
 
         exps = ExperimentCollection.load_from_data("FFExperiment")
         print(f"{len(exps)} FF experiments loaded.")
         print("Scanning simulation-experiment pairs among form factor experiments.")
-        pairs_ff = find_pairs_and_change_sims(exps, simulations)
+        pairs_ff = pair_all_simulations(exps, simulations)
         logf.write("=== FF PAIRS ===\n")
         log_pairs(pairs_ff, logf)
-
-    # save changed simulations
-    for simulation in progress(simulations, desc="Saving READMEs"):
-        outfile_dict = os.path.join(FMDL_SIMU_PATH, simulation["path"], "README.yaml")
-        if "path" in simulation:
-            del simulation["path"]
-        with open(outfile_dict, "w", encoding="utf-8") as f:
-            f.write(encode_canonical_yaml(simulation.to_readme()))
 
     print("Found order parameter data for " + str(len(pairs_op)) + " pairs")
     print("Found form factor data for " + str(len(pairs_ff)) + " pairs")
