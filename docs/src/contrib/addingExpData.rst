@@ -85,14 +85,25 @@ most strange points.
 #. **Hydration**
 
    We use water mass % for hydration, i.e., 10 mg in 100 ml water is ``10/(10+100)*100`` (%).
-   Experimentators could use whatever - v/w %, lipid:water ratio, or molar concentration. They should
-   be converted to water mass %.
+   Experimentators could use whatever - v/w %, lipid:water ratio, or molar concentration. They
+   should be converted to water mass %. If the hydration reaches the plateau, we can set it to 50%
+   or to 'full hydration'. We consider for regular phospholipids, around 25 water molecules per
+   phosphate reaches the plateau.
 
 #. **Membrane composition**
 
    We use molar fractions for membrane composition. It should not be mixed with mass fraction. E.g. if
    the experiment has 1:1 (mass) TOCL and POPC, which means that it has 1:2 (mol) because TOCL is
-   almost two times harder than POPC.
+   almost two times harder than POPC. Please also note that
+
+   #. We don't distinguish deuteration in the composition. We should mention it in reagent sources,
+     but the composition for deuterated and non-deuterated forms is the same.
+   #. Minor deviation of fatty acids are also tolerable. For example, you have bovine heart
+      cardiolipin which is almost completely tetralinoleic, but not 100%.
+   #. We can have some lipid which is 95% purity. If the impurity is not critical, we can omit
+      mentioning it in the composition.
+   #. We can have molecules added in very small concentration for monitoring tools and we believe
+      they don't affect the mobility very much (e.g., NMR probes).
 
 #. **Solution composition**
 
@@ -148,6 +159,16 @@ most strange points.
    We do mention water as well. It can be Type I, distilled, degassed, deuterium-depleted. It’s
    important for reproducibility, and we appreciate a data curator mentioning it.
 
+#. **Sample protocol**
+
+   The protocol must be given in a free form but it should be descriptive itself to give at least
+   first assumption of which way was used. Very details can be referenced but not the entire block.
+   At minimum, please mention how the current sample type was achived. If it's lamellar phase, it
+   should be mentioned whether it's made by centrifugation from MLV suspension or by simple adding
+   water to dried lipid powder. If it's SUV, it should be written where they extruded or obtained by
+   sonication. Please be compact in this field, we do not expect the whole methods block from the
+   paper was copied into it.
+
 .. _metanmr_guidelines:
 
 Guidelines to fill experiment metadata
@@ -168,8 +189,12 @@ Guidelines to fill experiment metadata
    experiments where signs are measured, then we write them explicitly in the ``NMR.SIGN_MEASURED``
    field.
 
-#. **Details of pulse sequence**
+#. **Details of pulse sequence and assignment**
 
    Modern techniques like R-PDLF have a lot of settings in their pulse sequences. We want to reflect
    some of them in the ``NMR.DETAILS`` field, but don't make it too large. If some papers are cited,
    we can cite them as well in ``NMR.DETAILS``. Let's keep this field to a few-line paragraph.
+
+   Assignment is also important to mention. Very often the authors assign by assumption and this
+   assumption migrate to the data. We don't currently have schemas to document ambiguity in carbon
+   assignments structurally, so we require it to be mentioned in this field.
