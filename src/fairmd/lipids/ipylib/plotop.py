@@ -66,9 +66,9 @@ def _plot_general_lipid(op_nice_sim: dict, op_nice_exp: dict | None, lipid_obj: 
 def _plot_glyhead_united(op_sim: dict, op_exp: dict | None, lipid_obj: Lipid) -> dict[str, Figure]:
     """Plot simulation and experimental order parameters by fragment."""
 
-    def _unite_headgroup(op_dict: dict) -> dict:
+    def _unite_headgroup(op_dict: dict, *, error_index: int = 1) -> dict:
         """Unite glycerol + head into head."""
-        nicedic = build_nice_OPdict(op_dict, lipid_obj)
+        nicedic = build_nice_OPdict(op_dict, lipid_obj, error_index=error_index)
         nicedic["head"] = nicedic.get("glycerol backbone", []) + nicedic.get("headgroup", [])
         nicedic.pop("glycerol backbone", None)
         nicedic.pop("headgroup", None)
@@ -76,7 +76,7 @@ def _plot_glyhead_united(op_sim: dict, op_exp: dict | None, lipid_obj: Lipid) ->
             nicedic.pop("head", None)
         return nicedic
 
-    op_sim_nice = _unite_headgroup(op_sim)
+    op_sim_nice = _unite_headgroup(op_sim, error_index=2)
     op_exp_nice = _unite_headgroup(op_exp) if op_exp else None
 
     return _plot_general_lipid(op_sim_nice, op_exp_nice, lipid_obj)
