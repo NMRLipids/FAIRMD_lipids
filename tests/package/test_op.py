@@ -90,7 +90,7 @@ class TestBuildNiceOPdict:
         kwargs = {} if error_index is None else {"error_index": error_index}
         result = build_nice_OPdict({"M_G1_M M_G1H1_M": values}, lipid, **kwargs)
         assert result["glycerol backbone"] == [
-            {"C": "g1", "H": "1", "OP": values[0], "STD": expected},
+            {"C": "g1", "H": "1", "OP": values[0], "ERRBAR": expected},
         ]
 
     def test_cnames_pl(self, systems):

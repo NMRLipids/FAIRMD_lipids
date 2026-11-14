@@ -166,7 +166,7 @@ def build_nice_OPdict(src: dict, lipid: Lipid, *, error_index: int = 1) -> dict:
     :param src: raw OP data (dict)
     :param lipid: Lipid object
     :param error_index: Uncertainty index: 1 for experimental error (default),
-                        2 for simulation SEM. The output key remains ``STD``.
+                        2 for simulation SEM. The selected uncertainty is returned as ``ERRBAR``.
     :return: nicely formatted OP dictionary
     """
 
@@ -190,7 +190,7 @@ def build_nice_OPdict(src: dict, lipid: Lipid, *, error_index: int = 1) -> dict:
                     "C": atom_c,
                     "H": atom_h,
                     "OP": opvals[0],
-                    "STD": _rnan(opvals[error_index]) if len(opvals) > error_index else None,
+                    "ERRBAR": _rnan(opvals[error_index]) if len(opvals) > error_index else None,
                 },
             )
             r[frag_c].sort(key=lambda x: x["C"])

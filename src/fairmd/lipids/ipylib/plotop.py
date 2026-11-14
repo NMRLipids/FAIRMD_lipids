@@ -26,7 +26,7 @@ def _plot_general_lipid(op_nice_sim: dict, op_nice_exp: dict | None, lipid_obj: 
             if _df.empty:
                 nicedic[frag] = None
                 continue
-            _df["STD"] = pd.to_numeric(_df["STD"], errors="coerce")  # nan-ificate
+            _df["ERRBAR"] = pd.to_numeric(_df["ERRBAR"], errors="coerce")  # nan-ificate
             nicedic[frag] = _df
         return nicedic
 
@@ -43,14 +43,14 @@ def _plot_general_lipid(op_nice_sim: dict, op_nice_exp: dict | None, lipid_obj: 
             axis.errorbar(
                 simdf["C"],
                 simdf["OP"],
-                yerr=simdf["STD"],
+                yerr=simdf["ERRBAR"],
                 **fmdl_plot_style["simulation"],
             )
             if expdf is not None:
                 axis.errorbar(
                     expdf["C"],
                     expdf["OP"],
-                    yerr=expdf["STD"],
+                    yerr=expdf["ERRBAR"],
                     **fmdl_plot_style["experimental"],
                 )
             axis.set_xticks(simdf.C)
