@@ -19,14 +19,20 @@ We are using automatic testing with `pytest` please consult (test-README)[Script
 
 # Repository rules
 
-1. Please create an issue, and then pull-request, not vice versa.
-2. Please keep the main branch in your fork updated so that it can be rebased (we prefer rebasing over merging).
-3. Once you address an issue, please refer it in the commit message by using a phrase such a 'Partially fixes #000'.
-4. You must make sure that the tests don't break before you make a PR.
-5. We don't oblige contributors to squash commits. We appreciate if the commit has a considerable size.
-6. We require at least one review from an organization member to accept a pull-request.
-7. Check representation of yourself in the `AUTHORS.md` and `CITATION.cff` files.
-8. You are always welcome to participate in repository discussions and NMRlipids community events to develop code together.
+1. We are using the `develop` branch for development and `main` for stable.
+2. We open `develop`→`main` pull requests (PR) right before releases.
+3. Please create an issue and then a PR, not vice versa.
+4. We allow both working in forks and in side branches.
+5. Please keep the `develop` branch in your fork updated so that your PR will not make a lot of conflicts.
+6. We prefer rebasing over merging, but not strongly. If you are not comfortable with rebasing, you can opt for merging as well.
+7. Once you address an issue, please reference it in the commit/PR message by using a phrase such as 'Partially fixes #000'.
+8. You must make sure that the tests don't break and CI passes before you make a PR non-draft.
+9. We appreciate when commits have considerable sizes.
+10. We require at least one review from an organization member to accept a `develop`→`main` pull request.
+11. We recommend undergoing review before merging a `your-branch`→`develop` PR. Otherwise, this review will fall on the head of the person who will have to review the `develop`→`main` PR.
+12. We don't oblige contributors to squash commits, but for small changes it can be opted.
+13. Check the representation of yourself in the `AUTHORS.md` and `CITATION.cff` files.
+14. You are always welcome to participate in repository discussions and NMRlipids community events to develop code together.
 
 # PATH handling in our code
 
@@ -41,7 +47,7 @@ We currently construct paths using `os.path.join(a,b)`.
 
 #  Getting started
 
-To help with developing start by installing the development dependencies. Our continuous
+To contribute, start by installing the development dependencies. Our continuous
 integration pipeline is based on [Tox](https://tox.readthedocs.io/en/latest/). So you
 need to install `tox` first
 
