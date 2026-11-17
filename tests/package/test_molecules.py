@@ -9,6 +9,11 @@ pytestmark = [pytest.mark.sim2, pytest.mark.min]
 
 LIPIDS_SET_LENGTH = 6
 POPE_MOLECULAR_WEIGHT = 717.5
+SOLUBLE_METADATA = {
+    "CLA": {"id": "CLA", "charge": -1, "mass": 35.5},
+    "SOD": {"id": "SOD", "charge": 1, "mass": 23.0},
+    "SOL": {"id": "SOL", "charge": 0, "mass": 18.0},
+}
 
 
 @pytest.fixture(scope="module")
@@ -213,3 +218,14 @@ def test_lipids_metadata():
         "CCCCCCCCCCCCCCCC(=O)OC[C@H](COP(=O)(O)OCCN)OC(=O)CCCCCCC/C=C\\CCCCCCCC",
         "POPE bioschema_properties smiles should match expected value",
     )
+
+
+@pytest.mark.parametrize(("name", "expected"), SOLUBLE_METADATA.items())
+def test_solubles_metadata(name, expected):
+    """Soluble molecules expose their NMRlipids mass and charge metadata."""
+    from fairmd.lipids.molecules import solubles_set
+
+    soluble = solubles_set.get(name)
+
+    assert soluble is not None
+    assert soluble.metadata == {"NMRlipids": expected}
