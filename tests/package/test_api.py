@@ -187,12 +187,38 @@ def test_GetFormFactorMin(systems, systemid, result):
     )
 
 
-@pytest.mark.parametrize("systemid, result", [(281, 31.5625), (566, 31.0), (787, 75.0), (243, 39.7778), (86, 27.75)])
-def test_get_hydration(systems, systemid, result):
+@pytest.mark.parametrize(
+    "systemid, result",
+    [
+        (281, 31.5625),  # keep muliline
+        (566, 31.0),
+        (787, 75.0),
+        (243, 39.7778),
+        (86, 27.75),
+    ],
+)
+def test_get_hydration_number(systems, systemid, result):
     sys0 = systems.loc(systemid)
     hl = sys0.get_hydration()
     check.almost_equal(hl, sys0.get_hydration(basis="number"))  # number is default
     check.almost_equal(hl, result, abs=1e-4)
+
+
+@pytest.mark.parametrize(
+    "systemid, result",
+    [
+        (281, 42.7739),  # keep multiline
+        (566, 43.0973),
+        (787, 59.0702),
+        (243, 49.1589),
+        (86, 41.0435),
+    ],
+)
+def test_get_hydration_mass(systems, systemid, result):
+    """Mass hydration is the water mass percentage of the complete system."""
+    sys0 = systems.loc(systemid)
+
+    check.almost_equal(sys0.get_hydration(basis="mass"), result, abs=1e-4)
 
 
 @pytest.mark.parametrize(

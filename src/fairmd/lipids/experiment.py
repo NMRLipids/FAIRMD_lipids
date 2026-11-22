@@ -19,7 +19,7 @@ import yaml
 
 from fairmd.lipids import FMDL_EXP_PATH
 from fairmd.lipids._base import CollectionSingleton, MetadataProvider, SampleComposition
-from fairmd.lipids.molecules import Lipid, NonLipid
+from fairmd.lipids.molecules import Lipid, NonLipid, solubles_set
 
 
 class ExperimentError(Exception):
@@ -146,10 +146,19 @@ class Experiment(SampleComposition, MetadataProvider):
         if basis == "mass":
             return float(self._stored_metadata["TOTAL_HYDRATION"])
         if basis == "number":
-            tlc = self._stored_metadata["TOTAL_LIPID_CONCENTRATION"]
-            if tlc == "full hydration":
-                return 70
-            return 55.5 / float(tlc)  # water per lipid from outdated field
+            # TODO: This is a deprecated field. We will remove it completely in future
+            if "TOTAL_LIPID_CONCENTRATION" in self._stored_metadata:
+                tlc = self._stored_metadata["TOTAL_LIPID_CONCENTRATION"]
+                if tlc == "full hydration":
+                    return 70
+                return 55.5 / float(tlc)
+            water_mass_fraction = float(self._stored_metadata["TOTAL_HYDRATION"]) / 100
+            lipid_mass = sum(
+                fraction * float(self._content[name].metadata["bioschema_properties"]["molecularWeight"])
+                for name, fraction in self._stored_metadata["MOLAR_FRACTIONS"].items()
+            )
+            water_mass = float(solubles_set.get("SOL").metadata["NMRlipids"]["mass"])
+            return water_mass_fraction / (1 - water_mass_fraction) * lipid_mass / water_mass
         msg = "Basis must be 'molar' or 'mass'"
         raise ValueError(msg)
 

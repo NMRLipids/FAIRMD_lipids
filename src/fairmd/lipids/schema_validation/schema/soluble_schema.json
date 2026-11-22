@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "NMRlipids": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "charge",
+        "mass"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the soluble molecule"
+        },
+        "charge": {
+          "type": "integer",
+          "description": "Net molecular charge in elementary-charge units"
+        },
+        "mass": {
+          "type": "number",
+          "description": "Molecular mass in g mol-1"
+        }
+      }
+    }
+  },
+  "required": [
+    "NMRlipids"
+  ],
+  "additionalProperties": false,
+  "description": "Metadata schema for NMRlipids soluble molecules"
+}
