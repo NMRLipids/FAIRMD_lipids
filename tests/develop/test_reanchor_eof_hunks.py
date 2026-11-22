@@ -1,4 +1,5 @@
 import importlib.util
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -24,9 +25,15 @@ mod = load_module()
 
 
 def git(repo, *args):
+    env = {
+        "PATH": os.defpath,
+        "HOME": str(repo / ".git-home"),
+        "LANG": "C.UTF-8",
+    }
     return subprocess.run(
         ["git", "-c", "user.email=t@t", "-c", "user.name=t", *args],
         cwd=repo,
+        env=env,
         capture_output=True,
         text=True,
         check=True,
