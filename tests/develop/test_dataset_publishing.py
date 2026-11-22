@@ -1,15 +1,46 @@
 """Tests for the developer dataset-generation workflow."""
 
+import logging
 import sys
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import pytest_check as check
 
 pytestmark = [pytest.mark.develop, pytest.mark.nodata]
 
 DEVELOPER_DIR = Path(__file__).resolve().parents[2] / "developer"
 sys.path.insert(0, str(DEVELOPER_DIR))
+
+
+def test_cli_arguments(tmp_path, monkeypatch):
+    """Smoke test of OP dataset generator CLI behavior"""
+    import gen_op_dataset as cli
+
+    check.equal(cli.main([]), 1, "gen_op_dataset requires arguments")
+
+    calls = []
+
+    def fake_generator(_: logging.Logger, hdf_fname: str) -> tuple[int, int]:
+        calls.append(hdf_fname)
+        return 1, 0
+
+    monkeypatch.setattr(cli, "gen_op_from_exps", fake_generator)
+    monkeypatch.setattr(cli, "gen_op_from_sims", fake_generator)
+    monkeypatch.setattr(cli, "gen_opq_ds", fake_generator)
+
+    expected_fname = {"exps": "exp-op-dataset.h5", "sims": "sims-op-dataset.h5", "qual": "atomic-opq-dataset.h5"}
+    for arg0 in "exps", "sims", "qual":
+        args = cli.build_parser().parse_args(["--" + arg0, "--output-dir", str(tmp_path)])
+        calls = []
+        result = cli.run(args)
+
+        assert arg0 in result, f"requested {arg0} should be in results map"
+        check.equal(result[arg0], (1, 0), "expected number of success and failed records differs")
+        assert len(calls) == 1, "only one call is expected"
+
+        check.equal(calls[0].rsplit("/", 1)[-1], expected_fname[arg0], "unexpected file stored")
 
 
 class FakeSample(dict):
@@ -115,33 +146,3 @@ def test_experiment_storer_writes_expected_hdf5_tables(tmp_path):
     with pd.HDFStore(output) as store:
         assert "/Eexp_1__LIPID/op_values" in store.keys()
         assert store["/Eexp_1__LIPID/op_values"].iloc[0]["val"] == pytest.approx(0.1)
-
-
-def test_cli_dispatches_all_selected_outputs(tmp_path, monkeypatch):
-    import gen_op_dataset as cli
-
-    calls = []
-
-    def fake_generator(log, hdf_fname):
-        calls.append(hdf_fname)
-        return 1, 0
-
-    monkeypatch.setattr(cli, "gen_op_from_exps", fake_generator)
-    monkeypatch.setattr(cli, "gen_op_from_sims", fake_generator)
-    monkeypatch.setattr(cli, "gen_opq_ds", fake_generator)
-    args = cli.build_parser().parse_args(["--exps", "--sims", "--qual", "--output-dir", str(tmp_path)])
-
-    result = cli.run(args)
-
-    assert result == {"exps": (1, 0), "sims": (1, 0), "qual": (1, 0)}
-    assert {path.rsplit("/", 1)[-1] for path in calls} == {
-        "exp-op-dataset.h5",
-        "sims-op-dataset.h5",
-        "atomic-opq-dataset.h5",
-    }
-
-
-def test_cli_requires_a_dataset_selection():
-    import gen_op_dataset as cli
-
-    assert cli.main([]) == 1
