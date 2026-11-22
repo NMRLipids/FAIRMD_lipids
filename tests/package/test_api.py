@@ -16,6 +16,7 @@ import copy
 import os
 import sys
 import warnings
+
 import numpy as np
 import pytest
 import pytest_check as check
@@ -102,7 +103,7 @@ def test_print_README(systems, capsys):
 
 
 @pytest.mark.parametrize(
-    "systemid, result",
+    ("systemid", "result"),
     [
         (281, 64.722),
         (566, 61.306),  # 1
@@ -120,7 +121,7 @@ def test_get_mean_apl(systems, systemid, result):
 
 
 @pytest.mark.parametrize(
-    "systemid, nlines",
+    ("systemid", "nlines"),
     [
         (281, 1001),
         (566, 401),  # 1
@@ -143,7 +144,7 @@ def test_get_apl_data(systems, systemid, nlines):
 
 
 @pytest.mark.parametrize(
-    "systemid, result",
+    ("systemid", "result"),
     [(281, 4142.234), (566, 3923.568), (787, 4694.191), (243, 2241.920), (86, 3869.417)],
 )
 def test_get_total_area(systems, systemid, result):
@@ -154,7 +155,10 @@ def test_get_total_area(systems, systemid, result):
     assert area == pytest.approx(result, abs=6e-4)
 
 
-@pytest.mark.parametrize("systemid, result", [(281, 128), (566, 128), (787, 120), (243, 72), (86, 128)])
+@pytest.mark.parametrize(
+    ("systemid", "result"),
+    [(281, 128), (566, 128), (787, 120), (243, 72), (86, 128)],
+)
 def test_n_lipids(systems, systemid, result):
     sys0 = systems.loc(systemid)
     nlip = sys0.n_lipids
@@ -162,7 +166,7 @@ def test_n_lipids(systems, systemid, result):
 
 
 @pytest.mark.parametrize(
-    "systemid, result",
+    ("systemid", "result"),
     [
         (281, [0.261, 0.415, 0.609]),
         (566, [0.260, 0.405, 0.597]),
@@ -173,8 +177,8 @@ def test_n_lipids(systems, systemid, result):
 def test_GetFormFactorMin(systems, systemid, result):
     import numpy as np
 
-    from fairmd.lipids.api import get_FF
     from fairmd.lipids.analib.formfactor import get_mins_from_ffdata
+    from fairmd.lipids.api import get_FF
 
     sys0 = systems.loc(systemid)
     ff_data = get_FF(sys0)
@@ -188,7 +192,7 @@ def test_GetFormFactorMin(systems, systemid, result):
 
 
 @pytest.mark.parametrize(
-    "systemid, result",
+    ("systemid", "result"),
     [
         (281, 31.5625),  # keep muliline
         (566, 31.0),
@@ -222,7 +226,7 @@ def test_get_hydration_mass(systems, systemid, result):
 
 
 @pytest.mark.parametrize(
-    "systemid, lipid, result_molar, result_mass",
+    ("systemid", "lipid", "result_molar", "result_mass"),
     [
         (281, ["POPC"], [1], [1]),
         (566, ["POPC", "CHOL"], [0.9375, 0.0625], [0.9672, 0.0328]),
@@ -250,21 +254,25 @@ def test_membrane_composition(systems, systemid, lipid, result_molar, result_mas
 
 
 @pytest.mark.parametrize(
-    "systemid, result_molar",
+    ("systemid", "result_molar", "result_mass"),
     [
-        (243, {"SOD": 0.155, "CLA": 0.155}),
-        (787, {"SOD": 0.37}),
-        (281, {}),
+        (243, {"SOD": 0.155, "CLA": 0.155}, {"SOD": 0.3537, "CLA": 0.5459}),
+        (787, {"SOD": 0.37}, {"SOD": 0.8447}),
+        (281, {}, {}),
     ],
 )
-def test_solution_composition(systems, systemid, result_molar):
+def test_solution_composition(systems, systemid, result_molar, result_mass):
     sys0 = systems.loc(systemid)
     molar_fractions = sys0.solution_composition(basis="molar")
+    mass_fractions = sys0.solution_composition(basis="mass")
     with check.raises(ValueError):
         _ = sys0.solution_composition(basis="invalid_option")
     check.equal(molar_fractions.keys(), result_molar.keys())
     for k, v in result_molar.items():
         check.almost_equal(molar_fractions[k], v, abs=1e-3)
+    check.equal(mass_fractions.keys(), result_mass.keys())
+    for k, v in result_mass.items():
+        check.almost_equal(mass_fractions[k], v, abs=1e-3)
 
 
 @pytest.mark.parametrize(
@@ -330,8 +338,9 @@ def test_analyze_th(systems, systemid, result, wipeth, thickres, logger):
     ],
 )
 def test_get_thickness(systems, systemid, result):
-    from fairmd.lipids.api import get_thickness
     import numbers
+
+    from fairmd.lipids.api import get_thickness
 
     sys0 = systems.loc(systemid)
     if result is None:
@@ -474,12 +483,12 @@ def test_GetOP_missing_file_warns(systems, systemid, testmol, result):
 
 
 def test_run_analysis_interface():
-    from fairmd.lipids import RCODE_COMPUTED, RCODE_ERROR, RCODE_SKIPPED
-    from fairmd.lipids.utils import run_analysis
-
     # create logger for testing
     import logging
     from io import StringIO
+
+    from fairmd.lipids import RCODE_COMPUTED, RCODE_ERROR, RCODE_SKIPPED
+    from fairmd.lipids.utils import run_analysis
 
     log_stream = StringIO()
     _logger = logging.getLogger("test_run_analysis")
