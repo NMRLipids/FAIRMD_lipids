@@ -52,15 +52,15 @@ class FakeSample(dict):
             "LIPID": SimpleNamespace(
                 mapping_dict={"C1": {"SMILEIDX": 1}, "C2": {"SMILEIDX": 2}},
                 metadata={"bioschema_properties": {"inChIKey": "KEY", "smiles": "C"}},
-            )
+            ),
         }
         self.readme = {}
 
-    def membrane_composition(self, basis):
+    def membrane_composition(self, basis: str) -> dict:
         assert basis == "molar"
         return {"LIPID": 1.0}
 
-    def solution_composition(self, basis):
+    def solution_composition(self, basis: str) -> dict:
         assert basis == "molar"
         return {"water": 1.0}
 
