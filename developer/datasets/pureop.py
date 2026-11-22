@@ -138,7 +138,7 @@ class ExpOPDataStorer(OPDataStorer):
 
     def get_DF_attrs(self) -> tuple[dict, dict]:
         opt_attr, smp_attr = super().get_DF_attrs()
-        opt_attr ["fmdl_expid"] = self._e.exp_id
+        opt_attr["fmdl_expid"] = self._e.exp_id
         nmr_method = self._e.metadata.get("NMR", {}).get("METHOD", False)
         if nmr_method:
             opt_attr["nmr_method"] = nmr_method
@@ -200,7 +200,7 @@ class SimOPDataStorer(OPDataStorer):
     def get_DF_attrs(self) -> tuple[dict, dict]:
         opt_attr, smp_attr = super().get_DF_attrs()
         opt_attr["fmdl_simid"] = self._s["ID"]
-        smp_attr["temperature"] =  self._s["TEMPERATURE"]
+        smp_attr["temperature"] = self._s["TEMPERATURE"]
         ff_name = self._s.readme.get("FF", False)
         if ff_name:
             smp_attr["ff_name"] = ff_name
@@ -211,7 +211,7 @@ class SimOPDataStorer(OPDataStorer):
         self._lname = lname
 
 
-def gen_op_from_exps(log: logging.Logger) -> tuple[int, int]:
+def gen_op_from_exps(log: logging.Logger, hdf_fname: str = ExpOPDataStorer.DEFAULT_EXP_HDFNAME) -> tuple[int, int]:
     """Generate dataset for experiments"""
     stat_ok, stat_fail = 0, 0
     log.info("\n\nGenerating OP datasets from experiments.")
@@ -228,12 +228,12 @@ def gen_op_from_exps(log: logging.Logger) -> tuple[int, int]:
                 continue
             else:
                 stat_ok += 1
-            ods.store_to_hdf5(ExpOPDataStorer.DEFAULT_EXP_HDFNAME)
+            ods.store_to_hdf5(hdf_fname)
             log.info("..stored!")
     return stat_ok, stat_fail
 
 
-def gen_op_from_sims(log: logging.Logger) -> tuple[int, int]:
+def gen_op_from_sims(log: logging.Logger, hdf_fname: str = SimOPDataStorer.DEFAULT_SIMS_HDFNAME) -> tuple[int, int]:
     """Generate dataset from simulations"""
     stat_ok, stat_fail = 0, 0
     log.info("\n\nGenerating OP dataset from simulations.")
@@ -254,7 +254,6 @@ def gen_op_from_sims(log: logging.Logger) -> tuple[int, int]:
                 continue
             else:
                 stat_ok += 1
-            ods.store_to_hdf5(SimOPDataStorer.DEFAULT_SIMS_HDFNAME)
+            ods.store_to_hdf5(hdf_fname)
             log.info("..stored!")
     return stat_ok, stat_fail
-

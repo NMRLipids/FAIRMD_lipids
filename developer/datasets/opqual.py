@@ -1,4 +1,5 @@
 import logging
+
 import numpy as np
 import pandas as pd
 
@@ -11,9 +12,7 @@ class OPQDataError(Exception):
     """Our specific exception"""
 
 
-class OPQDataStorer():
-
-
+class OPQDataStorer:
     DEFAULT_OPQ_HDFNAME = "atomic-opq-dataset.h5"
 
     def __init__(self, s: System, lname: str) -> None:
@@ -146,9 +145,7 @@ class OPQDataStorer():
                 sample_storer.attrs[k] = v
 
 
-
-
-def gen_opq_ds(log: logging.Logger) -> tuple[int, int]:
+def gen_opq_ds(log: logging.Logger, hdf_fname: str = OPQDataStorer.DEFAULT_OPQ_HDFNAME) -> tuple[int, int]:
     """Generate dataset with atomic qualities"""
     stat_ok, stat_fail = 0, 0
     log.info("\n\nGenerating OP dataset with atomic qualities from experiment-simulation pairs.")
@@ -175,7 +172,6 @@ def gen_opq_ds(log: logging.Logger) -> tuple[int, int]:
             ods.average_experiment_data()
 
             ods.compute_q_points()
-            ods.store_to_hdf5(OPQDataStorer.DEFAULT_OPQ_HDFNAME)
+            ods.store_to_hdf5(hdf_fname)
             stat_ok += 1
     return stat_ok, stat_fail
-
