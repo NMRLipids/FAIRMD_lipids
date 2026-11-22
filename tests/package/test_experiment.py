@@ -24,6 +24,7 @@ def mock_op_experiment_path(tmpdir):
         "TEMPERATURE": 303.15,
         "ION_CONCENTRATIONS": {"CLA": 0.1},
         "COUNTER_IONS": {"SOD": "POPC"},
+        "TOTAL_HYDRATION": 42.5,
     }
     with open(exp_dir.join("README.yaml"), "w") as f:
         yaml.dump(readme_content, f)
@@ -145,6 +146,13 @@ class TestExperimentBase:
         assert "SOD" in ions
         assert "CLA" in ions
         assert "POT" not in ions
+
+    def test_get_hydration_mass(self, mock_op_experiment_path):
+        from fairmd.lipids.experiment import OPExperiment
+
+        exp = OPExperiment("exp1", mock_op_experiment_path)
+
+        assert exp.get_hydration(basis="mass") == pytest.approx(42.5)
 
     def test_dunder_methods(self, mock_op_experiment_path):
         from fairmd.lipids.experiment import OPExperiment
