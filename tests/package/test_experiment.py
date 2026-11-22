@@ -154,6 +154,14 @@ class TestExperimentBase:
 
         assert exp.get_hydration(basis="mass") == pytest.approx(42.5)
 
+    def test_get_hydration_number(self, mock_op_experiment_path):
+        from fairmd.lipids.experiment import OPExperiment
+
+        exp = OPExperiment("exp1", mock_op_experiment_path)
+
+        assert exp.get_hydration() == pytest.approx(30.9968, abs=1e-4)
+        assert exp.get_hydration(basis="number") == pytest.approx(30.9968, abs=1e-4)
+
     def test_dunder_methods(self, mock_op_experiment_path):
         from fairmd.lipids.experiment import OPExperiment
 

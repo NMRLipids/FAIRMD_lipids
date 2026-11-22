@@ -149,14 +149,22 @@ class System(MutableMapping, SampleComposition, MetadataProvider):
         if basis not in ["number", "mass"]:
             msg = "Basis must be 'molar' or 'mass'"
             raise ValueError(msg)
+        if "SOL" not in self["COMPOSITION"]:
+            msg = "Cannot compute hydration for implicit water (system #{}).".format(self["ID"])
+            raise ValueError(msg)
         if basis == "number":
-            if "SOL" not in self["COMPOSITION"]:
-                msg = "Cannot compute hydration for implicit water (system #{}).".format(self["ID"])
-                raise ValueError(msg)
             hyval = self["COMPOSITION"]["SOL"]["COUNT"] / self.n_lipids
         else:  # basis == "mass"
-            msg = "Mass hydration is not implemented yet."
-            raise NotImplementedError(msg)
+            masses: dict[str, float] = {}
+            for k, v in self["COMPOSITION"].items():
+                count = sum(v["COUNT"]) if isinstance(v["COUNT"], list) else v["COUNT"]
+                mol = self._content[k]
+                if k in lipids_set:
+                    molecular_weight = mol.metadata["bioschema_properties"]["molecularWeight"]
+                else:
+                    molecular_weight = mol.metadata["NMRlipids"]["mass"]
+                masses[k] = count * float(molecular_weight)
+            hyval = 100 * masses["SOL"] / sum(masses.values())
         return hyval
 
     def solution_composition(self, basis="molar"):
