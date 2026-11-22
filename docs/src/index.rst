@@ -130,6 +130,12 @@ More detailed instructions are coming soon.
 
    curation/curatingSimulation
 
+.. toctree::
+   :maxdepth: 3
+   :caption: Data workflows
+
+   wfhelpers/datasetpublishing
+
 Indices and tables
 ==================
 
