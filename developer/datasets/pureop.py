@@ -1,3 +1,5 @@
+"""Saver classes and major functions for pure order parameter dataset savers"""
+
 import logging
 import re
 from abc import ABC, abstractmethod
@@ -83,7 +85,7 @@ class OPDataStorer(ABC):
             "inchikey": inchikey,
             "smiles": smiles,
         }
-        hydration = self.sample.get_hydration()
+        hydration = self.sample.get_hydration(basis="mass")
         scontent = self.sample.solution_composition(basis="molar")
         smp_attr = {
             "hydration": hydration,

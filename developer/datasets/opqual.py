@@ -111,7 +111,7 @@ class OPQDataStorer:
             mcontent["inchikey"] += [ik]
             mcontent["number"] += [sum(cnt) / 2]
             mcontent["asymmetry"] += [asm]
-        hydration = self._s.get_hydration()
+        hydration = self._s.get_hydration(basis="mass")
         scontent = self._s.solution_composition(basis="molar")
         temperature = self._s["TEMPERATURE"]
         inchikey = self._s.lipids[self._lname].metadata["bioschema_properties"]["inChIKey"]
