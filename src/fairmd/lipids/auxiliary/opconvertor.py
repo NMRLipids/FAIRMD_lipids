@@ -158,13 +158,15 @@ class NamingRegistry:
         cls._register("_all_", _plain_c_renamer)
 
 
-def build_nice_OPdict(src: dict, lipid: Lipid) -> dict:  # noqa: N802
+def build_nice_OPdict(src: dict, lipid: Lipid, *, error_index: int = 1) -> dict:  # noqa: N802
     """Build nicely formatted OP dictionary from raw OP data.
 
     Handles fragmentation of lipids.
 
     :param src: raw OP data (dict)
     :param lipid: Lipid object
+    :param error_index: Uncertainty index: 1 for experimental error (default),
+                        2 for simulation SEM. The selected uncertainty is returned as ``ERRBAR``.
     :return: nicely formatted OP dictionary
     """
 
@@ -188,7 +190,7 @@ def build_nice_OPdict(src: dict, lipid: Lipid) -> dict:  # noqa: N802
                     "C": atom_c,
                     "H": atom_h,
                     "OP": opvals[0],
-                    "STD": _rnan(opvals[1]) if len(opvals) > 1 else None,
+                    "ERRBAR": _rnan(opvals[error_index]) if len(opvals) > error_index else None,
                 },
             )
             r[frag_c].sort(key=lambda x: x["C"])

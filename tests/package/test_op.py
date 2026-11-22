@@ -68,6 +68,31 @@ class TestBuildNiceOPdict:
         h_order = [int(x["H"]) for x in rdict["sn-1"]]
         check.is_true(h_order[:6] == [1, 2, 1, 2, 1], "sn-1 H ordering is not sorted")
 
+    @pytest.mark.parametrize(
+        ("values", "error_index", "expected"),
+        [
+            ([-0.1368, 0.00775834, 0.00048208], 2, 0.00048208),
+            ([-0.1368, 0.00775834, 0.00048208], None, 0.00775834),
+            ([-0.13, 0.02], None, 0.02),
+            ([-0.13], None, None),
+            ([-0.1368, 0.00775834], 2, None),
+            ([-0.1368, 0.00775834, None], 2, None),
+            ([-0.1368, 0.00775834, float("nan")], 2, None),
+            ([-0.1368, 0.00775834, 0.0], 2, 0.0),
+        ],
+    )
+    def test_error_selection(self, values, error_index, expected):
+        from fairmd.lipids.auxiliary.opconvertor import build_nice_OPdict
+        from fairmd.lipids.molecules import Lipid
+
+        lipid = Lipid("POPC")
+        lipid.register_mapping()
+        kwargs = {} if error_index is None else {"error_index": error_index}
+        result = build_nice_OPdict({"M_G1_M M_G1H1_M": values}, lipid, **kwargs)
+        assert result["glycerol backbone"] == [
+            {"C": "g1", "H": "1", "OP": values[0], "ERRBAR": expected},
+        ]
+
     def test_cnames_pl(self, systems):
         from fairmd.lipids.auxiliary.opconvertor import build_nice_OPdict
         from fairmd.lipids.api import get_OP
@@ -157,3 +182,28 @@ def rotating_ethylene() -> tuple[dict, mda.Universe]:
         positions[frame, :, 1:3] = np.array([rotation @ ethylene[name] for name in names])
     universe.load_new(positions, order="fac")
     return mapping, universe
+
+
+def test_notebook_error_bars_use_simulation_sem_and_experimental_uncertainty():
+    matplotlib = pytest.importorskip("matplotlib")
+    pytest.importorskip("IPython")
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    from fairmd.lipids.ipylib.plotop import _plot_glyhead_united
+    from fairmd.lipids.molecules import Lipid
+
+    lipid = Lipid("POPC")
+    lipid.register_mapping()
+    simulation = {"M_G1_M M_G1H1_M": [-0.1368, 0.00775834, 0.00048208]}
+    experiment = {"M_G1_M M_G1H1_M": [-0.13, 0.02]}
+    figures = _plot_glyhead_united(simulation, experiment, lipid)
+    try:
+        axis = figures["head"].axes[0]
+        sim_bar, exp_bar = axis.collections
+        np.testing.assert_allclose(sim_bar.get_segments()[0][:, 1], [-0.13728208, -0.13631792])
+        np.testing.assert_allclose(exp_bar.get_segments()[0][:, 1], [-0.15, -0.11])
+    finally:
+        for figure in figures.values():
+            plt.close(figure)
