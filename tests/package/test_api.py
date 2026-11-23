@@ -209,7 +209,7 @@ def test_get_hydration_number(systems, systemid, result):
 
 
 @pytest.mark.parametrize(
-    "systemid, result",
+    ("systemid", "result"),
     [
         (281, 42.7739),  # keep multiline
         (566, 43.0973),
@@ -276,7 +276,7 @@ def test_solution_composition(systems, systemid, result_molar, result_mass):
 
 
 @pytest.mark.parametrize(
-    "systemid, result",
+    ("systemid", "result"),
     [
         (281, "resname POPC"),
         (566, "resname CHL or resname OL or resname PA or resname PC"),
@@ -328,7 +328,7 @@ def test_analyze_th(systems, systemid, result, wipeth, thickres, logger):
 
 
 @pytest.mark.parametrize(
-    "systemid, result",
+    ("systemid", "result"),
     [
         (281, None),
         (243, None),
@@ -353,7 +353,7 @@ def test_get_thickness(systems, systemid, result):
 
 
 @pytest.mark.parametrize(
-    "systemid, result",
+    ("systemid", "result"),
     [
         (243, 0.7212884475213442),
         (86, 1.5018596337724872),
@@ -384,7 +384,7 @@ def test_get_eqtimes(systems, systemid, result):
 
 # Test that a valid JSON file is read correctly, left out full comparison of the OP-dictionary
 @pytest.mark.parametrize(
-    "systemid, lipid",
+    ("systemid", "lipid"),
     [
         (281, "POPC"),
     ],
@@ -462,7 +462,7 @@ def test_get_FF_missing_file(systems, systemid):
 
 
 @pytest.mark.parametrize(
-    "systemid, testmol ,result",
+    ("systemid", "testmol", "result"),
     [
         (787, "TOCL", None),
     ],
