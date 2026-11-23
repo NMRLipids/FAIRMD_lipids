@@ -6,17 +6,17 @@
 
 import json
 import os
+
 import numpy as np
 import pytest
 import pytest_check as check
 import yaml
 
-
 pytestmark = [pytest.mark.min, pytest.mark.nodata]
 
 
 @pytest.fixture
-def mock_op_experiment_path(tmpdir):
+def mock_op_experiment_path(tmpdir) -> str:
     """Fixture for a mock order parameter experiment path."""
     exp_dir = tmpdir.mkdir("OPExperiment_1")
     readme_content = {
@@ -37,7 +37,7 @@ def mock_op_experiment_path(tmpdir):
 
 
 @pytest.fixture
-def mock_op_bad_experiment_path(tmpdir):
+def mock_op_bad_experiment_path(tmpdir) -> str:
     """Fixture for a mock order parameter experiment path with bad atom names."""
     exp_dir = tmpdir.mkdir("OPExperiment_1")
     readme_content = {
@@ -97,18 +97,18 @@ class TestOPExperiment:
     """Test the OPExperiment class."""
 
     def test_initialization(self, mock_op_experiment_path):
+        """Test successful initialization."""
         from fairmd.lipids.experiment import OPExperiment
 
-        """Test successful initialization."""
         exp = OPExperiment("exp1", mock_op_experiment_path)
-        assert exp.exp_id == "exp1"
-        assert exp.path == mock_op_experiment_path
-        assert exp.metadata["TEMPERATURE"] == 303.15
+        check.equal(exp.exp_id, "exp1")
+        check.equal(exp.path, mock_op_experiment_path)
+        check.almost_equal(exp.metadata["TEMPERATURE"], 303.15, abs=1e-3)
 
     def test_data_loading(self, mock_op_experiment_path):
+        """Test correct loading of order parameter data."""
         from fairmd.lipids.experiment import OPExperiment
 
-        """Test correct loading of order parameter data."""
         exp = OPExperiment("exp1", mock_op_experiment_path)
         data = exp.data
         exp.verify_data()
@@ -116,9 +116,9 @@ class TestOPExperiment:
         np.testing.assert_allclose(data["POPC"]["M_G1_M M_G1H1_M"], [-0.1, 0.02])
 
     def test_properties(self, mock_op_experiment_path):
+        """Test properties of OPExperiment"""
         from fairmd.lipids.experiment import OPExperiment
 
-        """Test properties of OPExperiment."""
         exp = OPExperiment("exp1", mock_op_experiment_path)
         check.equal(exp.exptype, "OrderParameters")
         check.equal(OPExperiment.target_folder(), "OrderParameters")
@@ -128,18 +128,17 @@ class TestExperimentBase:
     """Test base Experiment class functionality through a subclass."""
 
     def test_get_lipids(self, mock_op_experiment_path):
+        """Test the get_lipids method."""
         from fairmd.lipids.experiment import OPExperiment
 
-        """Test the get_lipids method."""
         exp = OPExperiment("exp1", mock_op_experiment_path)
         assert "POPC" in exp.lipids
         assert "POPE" not in exp.lipids
 
     def test_get_ions(self, mock_op_experiment_path):
-        from fairmd.lipids.molecules import solubles_set
+        """Test the get_ions method."""
         from fairmd.lipids.experiment import OPExperiment
 
-        """Test the get_ions method."""
         exp = OPExperiment("exp1", mock_op_experiment_path)
         ions = exp.solubles.keys()
         print(exp.content)
@@ -163,9 +162,9 @@ class TestExperimentBase:
         assert exp.get_hydration(basis="number") == pytest.approx(30.9968, abs=1e-4)
 
     def test_dunder_methods(self, mock_op_experiment_path):
+        """Test __repr__, __eq__, __hash__, and __getitem__."""
         from fairmd.lipids.experiment import OPExperiment
 
-        """Test __repr__, __eq__, __hash__, and __getitem__."""
         exp1 = OPExperiment("exp1", mock_op_experiment_path)
         exp2 = OPExperiment("exp1", mock_op_experiment_path)
         exp3 = OPExperiment("exp3", mock_op_experiment_path)
@@ -182,24 +181,24 @@ class TestBadOPExperiment:
     """Test the OPExperiment class with bad atom names."""
 
     def test_missing_readme_raises_error(self, mock_missing_readme_path):
+        """Test that FileNotFoundError is raised if README.yaml is missing."""
         from fairmd.lipids.experiment import OPExperiment
 
-        """Test that FileNotFoundError is raised if README.yaml is missing."""
         with pytest.raises(FileNotFoundError):
             OPExperiment("exp_fail", mock_missing_readme_path)
 
     def test_bad_atom_names_raise_error(self, mock_op_bad_experiment_path):
-        from fairmd.lipids.experiment import OPExperiment, ExperimentError
-
         """Test that ExperimentError is raised for bad atom names."""
+        from fairmd.lipids.experiment import ExperimentError, OPExperiment
+
         exp = OPExperiment("exp_bad", mock_op_bad_experiment_path)
         with pytest.raises(ExperimentError):
             exp.verify_data()
 
     def test_empty_data(self, mock_empty_data_path):
-        from fairmd.lipids.experiment import OPExperiment, ExperimentError
-
         """Test behavior with no data files."""
+        from fairmd.lipids.experiment import ExperimentError, OPExperiment
+
         exp = OPExperiment("exp_empty", mock_empty_data_path)
         with pytest.raises(ExperimentError):
             _ = exp.data
@@ -209,35 +208,35 @@ class TestFFExperiment:
     """Test the FFExperiment class."""
 
     def test_initialization(self, mock_ff_experiment_path):
+        """Test successful initialization."""
         from fairmd.lipids.experiment import FFExperiment
 
-        """Test successful initialization."""
         exp = FFExperiment("exp2", mock_ff_experiment_path)
         assert exp.exp_id == "exp2"
         assert exp.path == mock_ff_experiment_path
         check.almost_equal(exp.metadata["TEMPERATURE"], 298.15, abs=1e-6)
 
     def test_data_loading(self, mock_ff_experiment_path):
+        """Test correct loading of form factor data."""
         from fairmd.lipids.experiment import FFExperiment
 
-        """Test correct loading of form factor data."""
         exp = FFExperiment("exp2", mock_ff_experiment_path)
         data = exp.data
         assert "q" in data
         np.testing.assert_allclose(data["I"], [1.0, 0.5, 0.2], atol=1e-5)
 
     def test_properties(self, mock_ff_experiment_path):
+        """Test properties of FFExperiment."""
         from fairmd.lipids.experiment import FFExperiment
 
-        """Test properties of FFExperiment."""
         exp = FFExperiment("exp2", mock_ff_experiment_path)
         assert exp.exptype == "FormFactors"
         assert FFExperiment.target_folder() == "FormFactors"
 
     def test_empty_data(self, mock_empty_data_path):
-        from fairmd.lipids.experiment import FFExperiment, ExperimentError
-
         """Test behavior with no data files."""
+        from fairmd.lipids.experiment import ExperimentError, FFExperiment
+
         exp = FFExperiment("exp_empty", mock_empty_data_path)
         with pytest.raises(ExperimentError):
             _ = exp.data
@@ -283,17 +282,17 @@ class TestExperimentCollection:
     """Test the ExperimentCollection class."""
 
     def test_singleton(self):
+        """Test that ExperimentCollection is a singleton."""
         from fairmd.lipids.experiment import ExperimentCollection
 
-        """Test that ExperimentCollection is a singleton."""
         c1 = ExperimentCollection()
         c2 = ExperimentCollection()
         assert c1 is c2
 
     def test_add_and_get(self, mock_op_experiment_path):
-        from fairmd.lipids.experiment import OPExperiment, ExperimentCollection
-
         """Test adding and retrieving an experiment."""
+        from fairmd.lipids.experiment import ExperimentCollection, OPExperiment
+
         ExperimentCollection.clear_instance()
         collection = ExperimentCollection()
         exp = OPExperiment("exp1", mock_op_experiment_path)
@@ -302,9 +301,9 @@ class TestExperimentCollection:
         assert "exp1" in collection
 
     def test_load_from_data(self, mock_exp_data_path):
-        from fairmd.lipids.experiment import OPExperiment, FFExperiment, ExperimentCollection
-
         """Test loading experiments from a mock data directory."""
+        from fairmd.lipids.experiment import ExperimentCollection, FFExperiment, OPExperiment
+
         ExperimentCollection.clear_instance()
         collection = ExperimentCollection.load_from_data("OPExperiment")
 
@@ -328,9 +327,9 @@ class TestExperimentCollection:
         assert isinstance(collection.get("exp2"), FFExperiment)
 
     def test_load_all_types(self, mock_exp_data_path):
-        from fairmd.lipids.experiment import OPExperiment, FFExperiment, ExperimentCollection
-
         """Test loading all experiment types into one collection."""
+        from fairmd.lipids.experiment import ExperimentCollection, FFExperiment, OPExperiment
+
         ExperimentCollection.clear_instance()
         collection = ExperimentCollection.load_from_data()  # Loads OP
 
@@ -349,9 +348,9 @@ class TestExperimentCollection:
         assert isinstance(collection.get("exp2"), FFExperiment)
 
     def test_load_invalid_type_raises_error(self):
+        """Test that loading an invalid experiment type raises ValueError."""
         from fairmd.lipids.experiment import ExperimentCollection
 
-        """Test that loading an invalid experiment type raises ValueError."""
         ExperimentCollection.clear_instance()
         with pytest.raises(ValueError):
             ExperimentCollection.load_from_data(exp_type="InvalidType")
