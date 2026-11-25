@@ -6,6 +6,7 @@
 
 import json
 import os
+import sys
 
 import numpy as np
 import pytest
@@ -145,6 +146,31 @@ class TestExperimentBase:
         assert "SOD" in ions
         assert "CLA" in ions
         assert "POT" not in ions
+
+    def test_membrane_composition(self, mock_op_experiment_path):
+        """membrane_composition property testing (both bases)"""
+        from fairmd.lipids.experiment import OPExperiment
+
+        exp = OPExperiment("exp1", mock_op_experiment_path)
+        cmolar = exp.membrane_composition(basis="molar")
+        cmass = exp.membrane_composition(basis="mass")
+        print(str(cmolar) + "//" + str(cmass), file=sys.stderr)
+        check.equal(cmolar.keys(), cmass.keys(), "Molar and mass dicts should have the same keys")
+        check.is_true(
+            all(isinstance(v, float) for v in cmolar.values()),
+            msg="Not all molar fractions are floats",
+        )
+        check.is_true(
+            all(isinstance(v, float) for v in cmass.values()),
+            msg="Not all mass fractions are floats",
+        )
+        check.almost_equal(1, sum(cmass.values()), abs=1e-6, msg="Sum of mass fractions must give 1")
+        check.almost_equal(1, sum(cmolar.values()), abs=1e-6, msg="Sum of molar fractions must give 1")
+        check.equal(0.8, cmolar["POPC"])
+        check.equal(0.2, cmolar["DPPC"])
+        popc_m = exp.lipids.get("POPC").metadata["bioschema_properties"]["molecularWeight"] * cmolar["POPC"]
+        dppc_m = exp.lipids.get("DPPC").metadata["bioschema_properties"]["molecularWeight"] * cmolar["DPPC"]
+        check.equal(popc_m / (popc_m + dppc_m), cmass["POPC"])
 
     def test_get_hydration_mass(self, mock_op_experiment_path):
         from fairmd.lipids.experiment import OPExperiment

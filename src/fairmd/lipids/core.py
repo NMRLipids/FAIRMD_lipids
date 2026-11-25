@@ -190,7 +190,7 @@ class System(MutableMapping, SampleComposition, MetadataProvider):
             for k, v in self["COMPOSITION"].items():
                 if k in self.solubles:
                     _mol = self.solubles.get(k)
-                    _cur_mass = v["COUNT"]*_mol.metadata["NMRlipids"]["mass"]
+                    _cur_mass = v["COUNT"] * _mol.metadata["NMRlipids"]["mass"]
                     _tot_mass += _cur_mass
                     comp[k] = _cur_mass
             _w_mw = solubles_set.get("SOL").metadata["NMRlipids"]["mass"]
