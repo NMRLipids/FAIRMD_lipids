@@ -189,6 +189,15 @@ class Molecule(ABC):
         self._mapping_fpath = None
         self._mapping_dict = None
 
+    def _load_metadata(self) -> dict:
+        """Load the molecule metadata stored in ``metadata.yaml``."""
+        metadata_path = os.path.join(self._get_path(), "metadata.yaml")
+        if not os.path.isfile(metadata_path):
+            msg = f"Metadata file not found for {self.name}."
+            raise FileNotFoundError(msg)
+        with open(metadata_path, encoding="utf-8") as yaml_file:
+            return yaml.safe_load(yaml_file)
+
     @staticmethod
     def __check_name(name: str) -> None:
         """
@@ -259,14 +268,7 @@ class Lipid(Molecule):
 
     def _populate_meta_data(self) -> None:
         """Populate metadata for the lipid from its YAML file."""
-        self._metadata = {}
-        meta_path = os.path.join(self._get_path(), "metadata.yaml")
-        if os.path.isfile(meta_path):
-            with open(meta_path) as yaml_file:
-                self._metadata = yaml.load(yaml_file, Loader=yaml.FullLoader)
-        else:
-            msg = f"Metadata file not found for {self.name}."
-            raise FileNotFoundError(msg)
+        self._metadata = self._load_metadata()
 
     def _can_load_mapping(self) -> bool:
         super_is_reg = super()._can_load_mapping()
@@ -410,11 +412,20 @@ class NonLipid(Molecule):
         return os.path.join(self._nonlipids_dir, self.name)
 
     def _populate_meta_data(self) -> None:
-        pass
+        """Populate metadata for the soluble molecule from its YAML file."""
+        self._metadata = self._load_metadata()
 
     @property
     def metadata(self) -> dict:
-        return {}
+        """Return metadata for the soluble molecule."""
+        if not hasattr(self, "_metadata"):
+            self._populate_meta_data()
+        return self._metadata
+
+    def __init__(self, name: str) -> None:
+        """Create a soluble molecule and load its metadata."""
+        super().__init__(name)
+        self._populate_meta_data()
 
 
 class MoleculeSet(MutableSet[Molecule], ABC):

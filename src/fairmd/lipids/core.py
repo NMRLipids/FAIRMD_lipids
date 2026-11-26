@@ -149,14 +149,22 @@ class System(MutableMapping, SampleComposition, MetadataProvider):
         if basis not in ["number", "mass"]:
             msg = "Basis must be 'molar' or 'mass'"
             raise ValueError(msg)
+        if "SOL" not in self["COMPOSITION"]:
+            msg = "Cannot compute hydration for implicit water (system #{}).".format(self["ID"])
+            raise ValueError(msg)
         if basis == "number":
-            if "SOL" not in self["COMPOSITION"]:
-                msg = "Cannot compute hydration for implicit water (system #{}).".format(self["ID"])
-                raise ValueError(msg)
             hyval = self["COMPOSITION"]["SOL"]["COUNT"] / self.n_lipids
         else:  # basis == "mass"
-            msg = "Mass hydration is not implemented yet."
-            raise NotImplementedError(msg)
+            masses: dict[str, float] = {}
+            for k, v in self["COMPOSITION"].items():
+                count = sum(v["COUNT"]) if isinstance(v["COUNT"], list) else v["COUNT"]
+                mol = self._content[k]
+                if k in lipids_set:
+                    molecular_weight = mol.metadata["bioschema_properties"]["molecularWeight"]
+                else:
+                    molecular_weight = mol.metadata["NMRlipids"]["mass"]
+                masses[k] = count * float(molecular_weight)
+            hyval = 100 * masses["SOL"] / sum(masses.values())
         return hyval
 
     def solution_composition(self, basis="molar"):
@@ -170,17 +178,26 @@ class System(MutableMapping, SampleComposition, MetadataProvider):
             raise ValueError(msg)
         n_water = self["COMPOSITION"].get("SOL")
         comp: dict[str, float] = {}
-        for k, v in self["COMPOSITION"].items():
-            if k in lipids_set or k == "SOL":
-                continue
-            # convert to molar concentration
-            # NOTE: we assume dilute solution. Sometimes not true!
-            comp[k] = v["COUNT"] / n_water["COUNT"] * 55.5
         if basis == "molar":
-            return comp
-        # TODO: solubles doesn't have mass data yet
-        msg = "Mass basis not implemented for solubles."
-        raise NotImplementedError(msg)
+            for k, v in self["COMPOSITION"].items():
+                if k in lipids_set or k == "SOL":
+                    continue
+                # convert to molar concentration
+                # NOTE: we assume dilute solution. Sometimes not true!
+                comp[k] = v["COUNT"] / n_water["COUNT"] * 55.5
+        if basis == "mass":
+            _tot_mass = 0
+            for k, v in self["COMPOSITION"].items():
+                if k in self.solubles:
+                    _mol = self.solubles.get(k)
+                    _cur_mass = v["COUNT"] * _mol.metadata["NMRlipids"]["mass"]
+                    _tot_mass += _cur_mass
+                    comp[k] = _cur_mass
+            _w_mw = solubles_set.get("SOL").metadata["NMRlipids"]["mass"]
+            _tot_mass += self["COMPOSITION"]["SOL"]["COUNT"] * _w_mw
+            for k in comp:  # noqa: PLC0206
+                comp[k] = comp[k] / _tot_mass * 100
+        return comp
 
 
 class SystemsCollection(CollectionSingleton[System]):

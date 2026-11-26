@@ -139,8 +139,9 @@ SOLUTION_COMPOSITION:
   CLA: 0.24
   GLUCOSE: 0.1
 ```
-All the molecules should be registered in the [molecular inventory](molecule_record) in the ``solution`` subfolder.
-Do not provide whole salts! Only separated ions. Remember that the counterions of charged lipids are also part of the solution.
+All the molecules should be registered in the [molecular inventory](molecule_record) in the
+``solution`` subfolder. Do not provide whole salts! Only separated ions. Remember that the
+counterions of charged lipids are also part of the solution.
 
 8. **ADDITIONAL_MOLECULES**
 Dictionary of additional molecules in the format:
@@ -324,4 +325,3 @@ Number of frames collected for dataset.
 
 9. **SAMPLE_TYPE**
 'MLV', 'SUV', 'GUV', 'OS' (oriented sample), 'BIC'. The type of sample used, with definitions: MLV (multilamellar vesicles), SUV (small unilamellar vesicles), GUV (giant unilamellar vesicles), OS (oriented sample), BIC (bicelles).
-
