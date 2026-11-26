@@ -128,6 +128,7 @@ More detailed instructions are coming soon.
    :maxdepth: 3
    :caption: Curation
 
+   curation/curatingExperiment
    curation/curatingSimulation
 
 Indices and tables
