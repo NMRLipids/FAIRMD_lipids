@@ -16,7 +16,8 @@ Collaboration](http://nmrlipids.blogspot.com/2021/03/second-online-meeting-on-nm
 The code has been tested in Linux and MacOS environment with python 3.10 and 3.13.
 Recent [Gromacs](https://manual.gromacs.org/current/install-guide/index.html) version
 should be available in the system. All dependecies are listed in
-[pyproject.toml](pyproject.toml).
+[pyproject.toml](pyproject.toml). Reading TPR files written by GROMACS 2026 requires
+MDAnalysis 2.11, which needs python 3.11 or newer.
 
 We recommend installing python libraries into an environment, for example, using conda:
 
